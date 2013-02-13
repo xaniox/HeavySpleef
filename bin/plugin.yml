@@ -1,0 +1,15 @@
+name: HeavySpleef
+description: Powerful spleef plugin for Bukkit
+
+version: 0.2
+author: matzefratze123
+
+softdepend: [Vault]
+website: http://dev.bukkit.org/server-mods/heavyspleef/
+
+main: me.matzefratze123.heavyspleef.HeavySpleef
+
+commands:
+  spleef:
+    aliases: [hs, hspleef]
+    description: General Spleef command for HeavySpleef

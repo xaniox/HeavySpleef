@@ -1,0 +1,115 @@
+####################################
+### -- HeavySpleef  -  Config -- ###
+### Developed by matzefratze123  ###
+####################################
+#
+# This is the main configuration file of HeavySpleef.
+# Language files are coming soon...
+#
+# If the server stopps correctly and a game is running
+# the game will be stopped and players that joins the
+# next time will be automatically teleported out of the
+# game. Use '/spleef save' to save all data of the spleef
+# games to the database...
+
+# Should the plugin check for updates?
+updateCheck: true
+
+general:
+  
+  # Should spleef messages be globally broadcasted? If false the messages will be
+  # broadcasted if a player has a specified radius from the arena (Configurable)
+  # If true, the messages will be broadcasted for every player... 
+  globalBroadcast: false
+  
+  # How far away should spleefmessages be broadcasted for players?
+  # This works only if the globalBroadcast is set to false...
+  broadcast-radius: 40
+  
+  # Should player inventorys and other stuff (for expample health, foodlevel etc.) be cleared and saved?
+  # The state of the player will be restored on leave, lose and win.
+  savePlayerState: true
+  
+  # Should an arena be protected?
+  protectArena: true
+  
+  # Set the length of the countdown until a game is starting
+  countdownFrom: 10
+  
+  # Should an arena-cuboid be created on defining a new game?
+  generateArena: false
+  
+  # Default value of players that have to be in the lobby to start a game...
+  neededPlayers: 2
+  
+  # Should games be saved to the database at intervall time?
+  # This can cause lag but it's saver if you set this to true...
+  # (You can save games manually with the command: /spleef save)
+  saveInIntervall: false
+  
+  # In which intervall should games be saved?
+  # (Only works if saveInIntervall is set to true)
+  # (In minutes)
+  saveIntervall: 30
+  
+  # Default value that the players must pay to play a game.
+  # Only works if Vault is enabled!
+  # (money value can be configured for every game)
+  defaultToPay: 5
+  
+  # Which wand tool should be used?
+  # (Default: 280 = Stick)
+  wandItem: 280
+  
+  # Command Whitelist
+  # A list of commands that users can use while spleefing...
+  commandWhitelist:
+  - /spleef
+  - /money
+  - /msg
+  - /tell
+  
+  # Should players be able to join the game while it's counting?
+  joinAtCountdown: true
+  
+  # Language that should be used (Accepted: en, de | fr isn't supported yet...)
+  language: en
+  
+anticamping:
+
+  # Should the anti-camping feature be enabled?
+  # If true, players can't camp in corners to win
+  # the game! They will be teleported a floor down if they camp...
+  enabled: true
+
+  # Should a player be warned of camping?
+  campWarn: true
+
+  # At how many seconds of camping should a warning be send to the player?
+  # (Only works if campWarn is set to true)
+  warnAt: 3
+  
+  # At how many seconds of camping should a player teleported one floor down?
+  teleportAt: 6
+  
+sounds:
+
+  # Should a pling sound be played if a player joins a game? This sound
+  # will be only heared by players that joined the game...
+  plingSound: true
+  
+  # Should a levelup sound be played to the player that wins the game?
+  levelUp: true
+  
+blocks:
+
+  # A list of blocks that can't be broken by players while spleefing (only id is permitted)
+  cantBreak:
+  - 20 # Glass
+  - 89 # Glowstone
+  - 49 # Obsidian
+  
+  # Should water and lava be an automatic losezone?
+  loseOnTouchWaterOrLava: true
+  
+# How much... No, you've finished the configuration ;)
