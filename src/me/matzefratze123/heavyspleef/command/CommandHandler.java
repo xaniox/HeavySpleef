@@ -73,7 +73,9 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("leave", new CommandLeave());
 		addSubCommand("start", new CommandStart());
 		addSubCommand("addfloor", new CommandAddFloor());
+		addSubCommand("addlayer", new CommandAddFloor());
 		addSubCommand("removefloor", new CommandRemoveFloor());
+		addSubCommand("removelayer", new CommandRemoveFloor());
 		addSubCommand("setlose", new CommandSetLose());
 		addSubCommand("addlose", new CommandAddLose());
 		addSubCommand("setwin", new CommandSetWin());
@@ -87,6 +89,10 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("enable", new CommandEnable());
 		addSubCommand("save", new CommandSave());
 		addSubCommand("stop", new CommandStop());
+		addSubCommand("setshovel", new CommandSetShovel());
+		addSubCommand("setcountdown", new CommandSetCountdown());
+		addSubCommand("startonminplayers", new CommandStartOnReachMinimum());
+		addSubCommand("stats", new CommandStats());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

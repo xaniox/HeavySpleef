@@ -1,7 +1,7 @@
 name: HeavySpleef
 description: Powerful spleef plugin for Bukkit
 
-version: 0.2
+version: 0.4
 author: matzefratze123
 
 softdepend: [Vault]

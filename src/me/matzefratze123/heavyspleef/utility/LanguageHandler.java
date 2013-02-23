@@ -2,11 +2,13 @@ package me.matzefratze123.heavyspleef.utility;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,7 @@ public class LanguageHandler {
 		acceptedLanguages.add("de");
 		acceptedLanguages.add("en");
 		acceptedLanguages.add("fr");
+		acceptedLanguages.add("ru");
 		
 		String language = HeavySpleef.instance.getConfig().getString("general.language");
 		if (!acceptedLanguages.contains(language)) {
@@ -53,8 +56,17 @@ public class LanguageHandler {
 	
 	private static void setLanguage(String lang) {
 		File langFile = new File(HeavySpleef.instance.getDataFolder() + "/language/" + lang + ".lang");
+		if (!langFile.exists())
+			langFile = null;
+		
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(langFile));
+			InputStream stream;
+			if (langFile == null)
+				stream = HeavySpleef.class.getResourceAsStream("/resource/en.lang");
+			else
+				stream = new FileInputStream(langFile);
+			InputStreamReader streamReader = new InputStreamReader(stream, Charset.forName("UTF-8"));
+			BufferedReader reader = new BufferedReader(streamReader);
 			String read;
 			while ((read = reader.readLine()) != null) {
 				read = read.trim();
@@ -86,7 +98,7 @@ public class LanguageHandler {
 	 * (It doesn't copy if the files are existing!)
 	 */
 	private static void copyLanguageFiles() {
-		String[] languageFiles = new String[] {"de", "en", "fr"};
+		String[] languageFiles = new String[] {"de", "en", "fr", "ru"};
 		File dataFolder = new File(HeavySpleef.instance.getDataFolder().getPath() + "/language");
 		dataFolder.mkdirs();
 		

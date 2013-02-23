@@ -23,7 +23,7 @@ pageDoesntExists: &cThis page doesn't exists!
 gameIsDisabled: &cThis game is disabled!
 isntReadyToPlay: &cThis arena isn't ready to play, yet!
 notEnoughMoneyToJoin: &cYou don't have enough money to join this game!
-playerNotOnline: &cThis player isn't online!
+playerNotOnline: &cCan't find player...
 targetHasntEnoughMoney: &cThis player doesn't has enough money to join this game!
 gameAlreadyRunning: &cThere is a game already running on this arena!
 cantJoinMultipleGames: &cCan't join multiple games!
@@ -91,6 +91,14 @@ spleefSignCreated: &aSpleef sign sucessfully created!
 stateSaved: &aYour state and inventory has been saved!
 stateRestored: &aYour state has been restored!
 gameStopped: &cThe game has been stopped!
+
+startOnMinPlayersInfo: &aGame will start on reaching minimum count of players: %a
+startOnMinPlayersTrue: &aThe game will now start when the minimum count of players are reached!
+startOnMinPlayersFalse: &aThe game will no longer start when the minimum count of players are reached!
+countdownSet: &aCountdown set to %a!
+
+shovelInfo: Current value: %a
+shovelToggled: Game with shovels was set to %a.
 
 # Broadcast Messages
 

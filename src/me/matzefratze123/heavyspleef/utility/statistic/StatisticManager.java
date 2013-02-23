@@ -9,6 +9,8 @@ public class StatisticManager {
 	private static Map<String, Statistic> statistics = new HashMap<String, Statistic>();
 	
 	public static Statistic getStatistic(String owner) {
+		if (!statistics.containsKey(owner))
+			addNewStatistic(owner);
 		return statistics.get(owner);
 	}
 	
@@ -32,6 +34,10 @@ public class StatisticManager {
 	
 	public static Collection<Statistic> getStatistics() {
 		return statistics.values();
+	}
+	
+	public static Map<String, Statistic> getMap() {
+		return statistics;
 	}
 	
 }

@@ -45,6 +45,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 			section.set("loses", stat.getLoses());
 			section.set("knockouts", stat.getKnockouts());
 			section.set("games", stat.getGamesPlayed());
+			section.set("score", stat.getScore());
 		}
 		
 		try {

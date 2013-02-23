@@ -3,6 +3,7 @@ package me.matzefratze123.heavyspleef.core;
 import java.util.Random;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,14 +27,8 @@ public class CountingTask implements Runnable {
 	@Override
 	public void run() {
 		if (remaining <= 0) {
-			game.tellAll(Game._("gameHasStarted"));
-			game.broadcast(Game._("gameOnArenaHasStarted", game.getName()));
-			game.broadcast(Game._("startedGameWith", String.valueOf(game.players.size())));
-			game.setGameState(GameState.INGAME);
-			int taskID = GameManager.getTaskID(id);
-			GameManager.tasks.remove(id);
-			Bukkit.getScheduler().cancelTask(taskID);
-		} else {
+			start();
+		} else if (remaining <= 10){
 			if (HeavySpleef.instance.getConfig().getBoolean("sounds.plingSound")) {
 				if (remaining <= 5) {
 					for (Player p : game.getPlayers()) {
@@ -43,6 +38,10 @@ public class CountingTask implements Runnable {
 			}
 			game.tellAll(Game._("gameIsStarting", String.valueOf(remaining)));
 			remaining--;
+		} else {
+			if (remaining % 10 == 0)
+				game.tellAll(Game._("gameIsStarting", String.valueOf(remaining)));
+			remaining--;
 		}
 	}
 	
@@ -50,6 +49,19 @@ public class CountingTask implements Runnable {
 		for (Player p : game.getPlayers()) {
 			p.teleport(getRandomSpleefLocation(game)); // Teleport every player to a random location inside the arena at the start of the game
 		}
+	}
+	
+	private void start() {
+		game.tellAll(Game._("gameHasStarted"));
+		game.broadcast(Game._("gameOnArenaHasStarted", game.getName()));
+		game.broadcast(Game._("startedGameWith", String.valueOf(game.players.size())));
+		game.setGameState(GameState.INGAME);
+		int taskID = GameManager.getTaskID(id);
+		GameManager.tasks.remove(id);
+		Bukkit.getScheduler().cancelTask(taskID);
+		
+		for (Player p : game.getPlayers())
+			StatisticManager.getStatistic(p.getName()).addGame();
 	}
 	
 	//Returns a random location inside a spleef arena
@@ -69,7 +81,7 @@ public class CountingTask implements Runnable {
 		int randomX = minX + random.nextInt(differenceX + 1); // Choose a random X location
 		int randomZ = minZ + random.nextInt(differenceZ + 1); // Choose a random Z location
 		
-		int y = Math.max(game.getFirstCorner().getBlockY(), game.getSecondCorner().getBlockY()) - 2; // Highest Y of the arena -2 because of the ceiling
+		int y = Math.max(game.getHighestFloor().getFirstCorner().getBlockY(), game.getHighestFloor().getSecondCorner().getBlockY()) + 1;
 		
 		return new Location(game.getFirstCorner().getWorld(), randomX, y, randomZ); // Return the location
 	}

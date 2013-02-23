@@ -87,10 +87,48 @@ public class Statistic {
 	}
 	
 	/**
+	 * Get's the score of the player </br>
+	 * <b>formula: 1000 + wins * games - (loses * games / 3)<b>
+	 */
+	public int getScore() {
+		if (gamesPlayed == 0)
+			return 0;
+		return 1000 + (wins * gamesPlayed) - ((loses * gamesPlayed) / 3);
+	}
+	
+	/**
 	 * Get's the owner of this statistic
 	 * @return Name of the owner
 	 */
 	public String getName() {
 		return this.name;
+	}
+	
+	/**
+	 * Add's a win
+	 */
+	public void addWin() {
+		wins++;
+	}
+	
+	/**
+	 * Add's a lose
+	 */
+	public void addLose() {
+		loses++;
+	}
+	
+	/**
+	 * Add's a knockout
+	 */
+	public void addKnockout() {
+		knockouts++;
+	}
+	
+	/**
+	 * Add's a game
+	 */
+	public void addGame() {
+		gamesPlayed++;
 	}
 }

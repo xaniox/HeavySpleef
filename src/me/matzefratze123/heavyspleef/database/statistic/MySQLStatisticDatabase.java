@@ -1,10 +1,13 @@
 package me.matzefratze123.heavyspleef.database.statistic;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.utility.statistic.Statistic;
@@ -20,6 +23,8 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 	private String dbUser;
 	private String dbPassword;
 	
+	private final String tableName = "HeavySpleef_Statistics";
+	
 	private HeavySpleef plugin;
 	private Connection conn;
 	
@@ -30,11 +35,13 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		this.databaseName = plugin.getConfig().getString("statistic.databaseName");
 		this.dbUser = plugin.getConfig().getString("statistic.user");
 		this.dbPassword = plugin.getConfig().getString("statistic.password");
+		createConnection();
 	}
 	
 	private Connection getInstance() {
 		try {
 			if (conn == null || conn.isClosed())
+			
 				createConnection();
 			return conn;
 		} catch (SQLException e) {
@@ -46,19 +53,19 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 	private void createConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-	        
-	        conn = DriverManager.getConnection("jdbc:mysql://" + dbHost + ":"
+	        String url = "jdbc:mysql://" + dbHost + ":"
 	                + dbPort + "/" + databaseName + "?" + "user="
-	        		+ dbUser + "&" + "password=" + dbPassword);
+	        		+ dbUser + "&" + "password=" + dbPassword;
+			
+	        conn = DriverManager.getConnection(url);
 	    } catch (ClassNotFoundException e) {
 	        Bukkit.getLogger().severe("No drivers found for MySQL statistic database! Changing to YAML!");
 	        plugin.statisticDatabase = new YamlStatisticDatabase();
-	        plugin.statisticDatabase.load();
 	    } catch (SQLException e) {
+	    	e.printStackTrace();
 	        Bukkit.getLogger().severe("Could not connect to MySQL database! Bad username or password?");
 	        Bukkit.getLogger().severe("Using YAML Database!");
 	        plugin.statisticDatabase = new YamlStatisticDatabase();
-	        plugin.statisticDatabase.load();
 	    }
 	}
 	
@@ -76,14 +83,72 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public void save() {
-		for (Statistic stat : StatisticManager.getStatistics()) {
-			int wins = stat.getWins();
+		conn = getInstance();
+		
+		try {
+			executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner TEXT, wins INT, loses INT, knockouts INT, games INT, score INT)");
+			for (Statistic stat : StatisticManager.getStatistics()) {
+				
+				int wins = stat.getWins();
+				int loses = stat.getLoses();
+				int knockouts = stat.getKnockouts();
+				int games = stat.getGamesPlayed();
+				int score = stat.getScore();	
+				
+				String owner = stat.getName();
+				
+				executeUpdate("INSERT INTO " + tableName + " (owner, wins, loses, knockouts, games, score) VALUES ('" + owner + "', '" + wins + "', '" + loses + "', '" + knockouts + "', '" + games + "', '" + score + "')");
+			}
+			conn.close();
+		} catch (SQLException e) {
+			plugin.getLogger().severe("An SQL Error occured while saving statistic database! Look at the error below for more information...");
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void load() {
+		conn = getInstance();
 		
+		try {
+			List<String> tables = new ArrayList<String>();
+			
+			DatabaseMetaData metaData = conn.getMetaData();
+			ResultSet table = metaData.getTables(null, null, null, new String[] {"TABLE"});
+			
+			while (table.next()) {
+				String tableName = table.getString("TABLE_NAME");
+				tables.add(tableName);
+			}
+			
+			if (!tables.contains(tableName)) {
+				plugin.getLogger().warning("WARNING! Failed to load statistics!!! Could not find a MySQL TABLE!");
+				plugin.getLogger().info("Creating a new table instead...");
+				executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner, wins, loses, knockouts, games)");
+				return;
+			}
+			
+			ResultSet stats = executeQuery("SELECT * FROM " + tableName);
+			int c = 0;
+			
+			while (stats.next()) {
+				String owner = stats.getString("owner");
+				
+				int wins = stats.getInt("names");
+				int loses = stats.getInt("loses");
+				int knockouts = stats.getInt("knockouts");
+				int games = stats.getInt("games");
+				
+				Statistic s = new Statistic(owner, loses, wins, knockouts, games);
+				StatisticManager.addExistingStatistic(s);
+				c++;
+			}
+			
+			plugin.getLogger().info("Loaded " + c + " statistics data sets!");
+		} catch (SQLException e) {
+			plugin.getLogger().severe("An SQL Error occured while loading statistic database! Look at the error below for more information...");
+			e.printStackTrace();
+		}
 	}
 
 }

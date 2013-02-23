@@ -54,7 +54,6 @@ public class PlayerListener implements Listener {
 		final Player p = e.getPlayer();
 		
 		Location to = e.getTo();
-		Location from = e.getFrom();
 		
 		if (!GameManager.isInAnyGame(p))
 			return;
@@ -68,13 +67,6 @@ public class PlayerListener implements Listener {
 		for (Cuboid loseZone : game.getLoseZones()) {
 			if (LocationHelper.isInsideRegion(to, loseZone.getFirstCorner(), loseZone.getSecondCorner()))
 				out(p, game);
-		}
-		
-		if (!LocationHelper.isInsideRegion(to, game.getFirstCorner(), game.getSecondCorner())) {
-			if (game.isCounting() || game.isIngame()) {
-				p.teleport(from);
-				p.sendMessage(Game._("notAllowedLeaveArena"));
-			}
 		}
 		
 	}
@@ -110,8 +102,11 @@ public class PlayerListener implements Listener {
 			return;
 		if (!game.isIngame())
 			return;
-		block.setType(Material.AIR);
+		if (game.isShovels())
+			return;
+		
 		game.addBrokenBlock(p, block);
+		block.setType(Material.AIR);
 	}
 	
 	@EventHandler
@@ -122,7 +117,7 @@ public class PlayerListener implements Listener {
 		if (!GameManager.isInAnyGame(p)) {
 			for (Game game : GameManager.getGames()) {
 				if (LocationHelper.isInsideRegion(block, game.getFirstCorner(), game.getSecondCorner())) {
-					if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()) && !game.isIngame())
+					if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 						return;
 					if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena"))
 						return;
@@ -151,16 +146,14 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (LocationHelper.isInsideRegion(block, game.getFirstInnerCorner(), game.getSecondInnerCorner())) {
-			if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()) && !game.isIngame())
+		if (!LocationHelper.isInsideRegion(block, game.getFirstInnerCorner(), game.getSecondInnerCorner())) {
+			if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 				return;
 			e.setCancelled(true);
 			fixBlockGlitch(p, block);
 			p.sendMessage(Game._("notAllowedToBuild"));
 		} else {
-			e.setCancelled(true);
-			fixBlockGlitch(p, block);
-			p.sendMessage(Game._("notAllowedToBuild"));
+			e.getBlock().setTypeId(0);
 		}
 	}
 	
@@ -171,11 +164,13 @@ public class PlayerListener implements Listener {
 		if (pLoc.getBlockX() == bLoc.getBlockX() && pLoc.getBlockZ() == bLoc.getBlockZ() && pLoc.getY() > bLoc.getY()) {
 			if (!GameManager.isSolid(b))
 				return;
+			
 			bLoc.setY(bLoc.getY() + 1);
 			bLoc.setX(pLoc.getX());
 			bLoc.setZ(pLoc.getZ());
 			bLoc.setPitch(pLoc.getPitch());
 			bLoc.setYaw(pLoc.getYaw());
+			
 			p.teleport(bLoc);
 		}
 	}
@@ -224,7 +219,7 @@ public class PlayerListener implements Listener {
 		for (Game game : GameManager.getGames()) {
 			if (!LocationHelper.isInsideRegion(e.getBlock().getLocation(), game.getFirstCorner(), game.getSecondCorner()))
 				return;
-			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm()) && !game.isIngame())
+			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 				return;
 			if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena"))
 				return;
@@ -255,6 +250,8 @@ public class PlayerListener implements Listener {
 		if (!GameManager.isInAnyGame(e.getPlayer()))
 			return;
 		Game game = GameManager.getGameFromPlayer(e.getPlayer());
+		if (!game.isIngame() || !game.isCounting())
+			return;
 		if (LocationHelper.isInsideRegion(e.getTo(), game.getFirstCorner(), game.getSecondCorner()))
 			return;
 		if (isSameBlockLocation(e.getTo(), game.getWinPoint()))
@@ -263,9 +260,8 @@ public class PlayerListener implements Listener {
 			return;
 		if (shouldFix(e.getTo(), e.getFrom()))
 			return;
-		
-		
-		
+		if (LocationHelper.getDistance3D(e.getTo(), e.getFrom()) < 4.0D)
+			return;
 		e.setCancelled(true);
 	}
 	

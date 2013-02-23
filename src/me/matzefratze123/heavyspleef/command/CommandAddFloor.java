@@ -19,7 +19,7 @@ public class CommandAddFloor extends HSCommand {
 		setMinArgs(0);
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_FLOOR.getPerm());
-		setUsage("/spleef addfloor [Block-ID[:DATA]]");
+		setUsage("/spleef addfloor [Block-ID[:DATA]|given]");
 	}
 	
 	@Override
@@ -53,6 +53,12 @@ public class CommandAddFloor extends HSCommand {
 		int id = 0;
 		while (g.hasFloor(id))
 			id++;
+		if (args.length == 1 && args[0].equalsIgnoreCase("given")) {
+			g.addFloor(selManager.getFirstSelection(player), selManager.getSecondSelection(player), id, -1, (byte)0, false, true);
+			player.sendMessage(_("floorCreated"));
+			return;
+		}
+		
 		if (args.length == 1) {
 			
 			int blockID = 35;
@@ -79,13 +85,13 @@ public class CommandAddFloor extends HSCommand {
 						return;
 					}
 				}
-				g.addFloor(loc1, loc2, id, blockID, blockData, false);
+				g.addFloor(loc1, loc2, id, blockID, blockData, false, false);
 			} catch (NumberFormatException e) {
 				player.sendMessage(_("blockIDIsntNumber"));
 				return;
 			}
 		} else
-			g.addFloor(selManager.getFirstSelection(player), selManager.getSecondSelection(player), id, 35, (byte)0, true);
+			g.addFloor(selManager.getFirstSelection(player), selManager.getSecondSelection(player), id, 35, (byte)0, true, false);
 		player.sendMessage(_("floorCreated"));
 	}
 

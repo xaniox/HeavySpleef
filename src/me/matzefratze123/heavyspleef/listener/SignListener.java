@@ -39,7 +39,7 @@ public class SignListener implements Listener {
 			return;
 		}
 		if (line2.equalsIgnoreCase("[Join]")) {
-			if (!GameManager.hasGame(line3)) {
+			if (!GameManager.hasGame(line3.toLowerCase())) {
 				p.sendMessage(Game._("arenaDoesntExists"));
 				block.breakNaturally();
 				return;
@@ -51,7 +51,7 @@ public class SignListener implements Listener {
 			e.setLine(2, line3);
 			e.setLine(3, "");
 		} else if (line2.equalsIgnoreCase("[Start]")) {
-			if (!GameManager.hasGame(line3)) {
+			if (!GameManager.hasGame(line3.toLowerCase())) {
 				p.sendMessage(Game._("arenaDoesntExists"));
 				block.breakNaturally();
 				return;
@@ -99,10 +99,25 @@ public class SignListener implements Listener {
 		line3 = ChatColor.stripColor(sign.getLine(2));
 		
 		if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Join]")) {
+			if (!p.hasPermission(Permissions.SIGN_JOIN.getPerm())) {
+				p.sendMessage(Game._("noPermission"));
+				return;
+			}
+			
 			p.performCommand("spleef join " + line3.toLowerCase());
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Start]")) {
+			if (!p.hasPermission(Permissions.SIGN_START.getPerm())) {
+				p.sendMessage(Game._("noPermission"));
+				return;
+			}
+			
 			p.performCommand("spleef start " + line3.toLowerCase());
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Leave]")) {
+			if (!p.hasPermission(Permissions.SIGN_LEAVE.getPerm())) {
+				p.sendMessage(Game._("noPermission"));
+				return;
+			}
+			
 			p.performCommand("spleef leave");
 		}
 		

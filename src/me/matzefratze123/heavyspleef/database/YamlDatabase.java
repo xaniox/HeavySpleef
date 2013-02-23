@@ -1,13 +1,18 @@
 package me.matzefratze123.heavyspleef.database;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,6 +31,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.GameState;
 import me.matzefratze123.heavyspleef.core.LoseZone;
+import me.matzefratze123.heavyspleef.utility.BlockInfo;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 
@@ -107,11 +113,17 @@ public class YamlDatabase {
 			
 			int money = section.getInt("money");
 			int minPlayers = section.getInt("minPlayers");
+			int countdown = section.getInt("countdown");
+			if (countdown <= 0)
+				countdown = plugin.getConfig().getInt("general.countdownFrom");
+			boolean startOnMinPlayers = section.getBoolean("startOnMinPlayers");
+			boolean useShovels = section.getBoolean("shovels");
 			
 			Game game = GameManager.createGame(key, firstCorner, secondCorner, false);
 			for (Floor floor : floors) {
 				game.addFloor(floor, false);
-				floor.create();
+				if (floor.useGivenFloor)
+					loadFloor(floor, key);
 			}
 			for (LoseZone loseZone : loseZones)
 				game.addLoseZone(loseZone);
@@ -121,6 +133,9 @@ public class YamlDatabase {
 			game.setPreGamePoint(preGamePoint);
 			game.setGameState(GameState.NOT_INGAME);
 			game.setMoney(money);
+			game.setCountdown(countdown);
+			game.setStartOnMinPlayers(startOnMinPlayers);
+			game.setShovels(useShovels);
 			game.setNeededPlayers(minPlayers);
 			
 			List<String> wereOfflineConfigList = section.getStringList("wereOfflineAtShutdown");
@@ -166,7 +181,11 @@ public class YamlDatabase {
 			for (Floor f : game.getFloors()) {
 				floorsAsList.add(Parser.convertFloorToString(f));
 				f.create();
+				
+				if (f.useGivenFloor)
+					saveFloor(f, game);
 			}
+			
 			for (Cuboid c : game.getLoseZones())
 				loseZonesAsList.add(Parser.convertCuboidToString(c));
 			
@@ -175,6 +194,9 @@ public class YamlDatabase {
 			section.set("wereOfflineAtShutdown", wereOffline);
 			section.set("money", game.getMoney());
 			section.set("minPlayers", game.getNeededPlayers());
+			section.set("countdown", game.getCountdown());
+			section.set("startOnMinPlayers", game.startsOnMinPlayers());
+			section.set("shovels", game.isShovels());
 			
 			if (game.getWinPoint() != null)
 				section.set("winPoint", Parser.convertLocationtoString(game.getWinPoint()));
@@ -295,6 +317,49 @@ public class YamlDatabase {
 
 	public ConfigurationSection getConfigurationSection(String name) {
 		return db.getConfigurationSection(name);
+	}
+	
+	public void saveFloor(Floor f, Game game) {
+		File file = new File("plugins/HeavySpleef/games/floor_" + game.getName() + "_" + f.getId() + ".floor");
+		try {
+			if (!file.exists())
+				file.createNewFile();
+			
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			Set<Location> keySet = f.givenFloor.keySet();
+			
+			for (Location loc : keySet) {
+				BlockInfo info = f.givenFloor.get(loc);
+				writer.write(info.toString() + "\n");
+			}
+			
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadFloor(Floor floor, String gameName) {
+		File file = new File("plugins/HeavySpleef/games/floor_" + gameName + "_" + floor.getId() + ".floor");
+		try {
+			if (!file.exists())
+				return;
+			
+			floor.setGiven(true);
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			
+			String line;
+			
+			while ((line = reader.readLine()) != null) {
+				BlockInfo info = new BlockInfo(line);
+				Location loc = info.getLocation();
+				floor.givenFloor.put(loc, info);
+			}
+			
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

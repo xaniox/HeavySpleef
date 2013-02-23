@@ -11,14 +11,17 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.LocationHelper;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
+import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class Game {
 
@@ -45,6 +48,10 @@ public class Game {
 	private int jackpot = 0;
 	private int money;
 	private int neededPlayers;
+	private int countdown;
+	
+	private boolean startOnMinPlayers = false;
+	private boolean shovels = false;
 	
 	private ConfigurationSection gameSection;
 	private String name;
@@ -57,6 +64,7 @@ public class Game {
 		this.gameSection = HeavySpleef.instance.database.getConfigurationSection(name);
 		this.neededPlayers = HeavySpleef.instance.getConfig().getInt("general.neededPlayers");
 		this.money = HeavySpleef.instance.getConfig().getInt("general.defaultToPay");
+		this.setCountdown(HeavySpleef.instance.getConfig().getInt("general.countdownFrom"));
 		
 		calculateInnerCorners();
 	}
@@ -77,49 +85,27 @@ public class Game {
 		this.firstInnerCorner = corner1;
 		this.secondInnerCorner = corner2;
 	}
-
-	public Location getFirstCorner() {
-		return firstCorner;
-	}
-
-	public void setFirstCorner(Location firstCorner) {
-		this.firstCorner = firstCorner;
-	}
-
-	public Location getSecondCorner() {
-		return secondCorner;
-	}
-
-	public void setSecondCorner(Location secondCorner) {
-		this.secondCorner = secondCorner;
-	}
-
-	public void setGameState(GameState state) {
-		this.state = state;
-	}
 	
-	public GameState getGameState() {
-		return state;
-	}
-	
-	public boolean isIngame() {
-		return state == GameState.INGAME;
-	}
-	
-	public boolean isCounting() {
-		return state == GameState.COUNTING;
-	}
-	
-	public boolean isNotIngame() {
-		return state == GameState.NOT_INGAME;
-	}
-	
-	public boolean isPreLobby() {
-		return state == GameState.PRE_LOBBY;
-	}
-	
-	public boolean isDisabled() {
-		return state == GameState.DISABLED;
+	@SuppressWarnings("deprecation")
+	public void start() {
+		this.jackpot = 0;
+		if (HeavySpleef.hasVault) {
+			if (getMoney() > 0) {
+				for (Player p : getPlayers()) {
+					HeavySpleef.econ.withdrawPlayer(p.getName(), getMoney());
+					p.sendMessage(_("paidIntoJackpot", HeavySpleef.econ.format(getMoney())));
+					this.jackpot += getMoney();
+				}
+			}
+		}
+		int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new CountingTask(countdown, this.name), 20L, 20L);
+		GameManager.tasks.put(this.name, taskID);
+		if (isShovels()) {
+			for (Player p : getPlayers()) {
+				p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE, 1));
+				p.updateInventory();
+			}
+		}
 	}
 	
 	public void stop(boolean disable) {
@@ -139,89 +125,9 @@ public class Game {
 		if (!disable)
 			addPlayersFromQueue();
 	}
-
-	public Location getWinPoint() {
-		return winPoint;
-	}
-
-	public void setWinPoint(Location winPoint) {
-		this.winPoint = winPoint;
-	}
-
-	public Location getLosePoint() {
-		return losePoint;
-	}
-
-	public void setLosePoint(Location losePoint) {
-		this.losePoint = losePoint;
-	}
 	
-	public boolean addFloor(Location loc1, Location loc2, int id, int blockID, byte blockData, boolean wool) {
-		Floor floor = new Floor(id, loc1, loc2, blockID, blockData, wool);
-		if (floors.containsKey(id))
-			return false;
-		floors.put(id, floor);
-		floor.create();
-		return true;
-	}
-	
-	public boolean addFloor(Floor floor, boolean create) {
-		if (floors.containsKey(floor.getId()))
-			return false;
-		floors.put(floor.getId(), floor);
-		if (create)
-			floor.create();
-		return true;
-	}
- 	
-	public void removeFloor(int id) {
-		floors.remove(id);
-	}
-	
-	public boolean hasFloor(int id) {
-		return floors.containsKey(id);
-	}
-	
-	public int getFloorSize() {
-		return floors.size();
-	}
-	
-	public int getLoseZoneSize() {
-		return loseZones.size();
-	}
-	
-	public boolean addLoseZone(int id, Location loc1, Location loc2) {
-		Cuboid loseZone = new LoseZone(loc1, loc2, id);
-		if (loseZones.containsKey(id))
-			return false;
-		loseZones.put(id, loseZone);
-		return true;	
-	}
-	
-	public boolean addLoseZone(LoseZone loseZone) {
-		if (loseZones.containsKey(loseZone.getId()))
-			return false;
-		loseZones.put(loseZone.getId(), loseZone);
-		return true;
-	}
-	
-	public void removeLoseZone(int id) {
-		loseZones.remove(id);
-	}
-	
-	public boolean hasLoseZone(int id) {
-		return loseZones.containsKey(id);
-	}
-	
-	public Collection<Floor> getFloors() {
-		return floors.values();
-	}
-	
-	public Collection<Cuboid> getLoseZones() {
-		return loseZones.values();
-	}
-	
-	public void addPlayer(Player player, boolean atCountdown) {
+	@SuppressWarnings("deprecation")
+	public void addPlayer(Player player) {
 		players.add(player.getName());
 		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
 			PlayerStateManager.savePlayerState(player);
@@ -229,34 +135,20 @@ public class Game {
 			for (Player p : getPlayers())
 				p.playSound(p.getLocation(), Sound.NOTE_PLING, 4.0F, p.getLocation().getPitch());
 		}
+		if (isWaiting() && !isCounting() && !isIngame())
+			setGameState(GameState.PRE_LOBBY);
 		tellAll(_("playerJoinedGame", player.getName()));
-		if (HeavySpleef.hasVault && getMoney() > 0 && atCountdown) {
+		if (HeavySpleef.hasVault && getMoney() > 0 && isCounting()) {
 			HeavySpleef.econ.withdrawPlayer(player.getName(), getMoney());
 			player.sendMessage(_("paidIntoJackpot", HeavySpleef.econ.format(getMoney())));
 			this.jackpot += getMoney();
 		}
-	}
-	
-	protected void tellAll(String msg) {
-		for (Player p : getPlayers()) {
-			p.sendMessage(msg);
+		if (isCounting() && this.shovels) {
+			player.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE, 1));
+			player.updateInventory();
 		}
-	}
-
-	public void start() {
-		this.jackpot = 0;
-		if (HeavySpleef.hasVault) {
-			if (getMoney() > 0) {
-				for (Player p : getPlayers()) {
-					HeavySpleef.econ.withdrawPlayer(p.getName(), getMoney());
-					p.sendMessage(_("paidIntoJackpot", HeavySpleef.econ.format(getMoney())));
-					this.jackpot += getMoney();
-				}
-			}
-		}
-		int countdown = HeavySpleef.instance.getConfig().getInt("general.countdownFrom");
-		int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new CountingTask(countdown, this.name), 20L, 20L);
-		GameManager.tasks.put(this.name, taskID);
+		if (isStartingOnMinPlayers() && players.size() >= getNeededPlayers() && isPreLobby())
+			start();
 	}
 	
 	public void removePlayer(Player player, LoseCause cause) {
@@ -267,6 +159,8 @@ public class Game {
 		broadcast(getLoseMessage(cause, player));
 		player.teleport(getLosePoint());
 		player.setFireTicks(0);
+		if (cause == LoseCause.LOSE)
+			StatisticManager.getStatistic(player.getName()).addLose();
 		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
 			PlayerStateManager.restorePlayerState(player);
 		if (players.size() <= 0)
@@ -274,11 +168,42 @@ public class Game {
 		if (state == GameState.INGAME || state == GameState.COUNTING) {
 			if (players.size() != 1)
 				return;
-			
+			if (GameManager.tasks.containsKey(this.getName()))
+				Bukkit.getScheduler().cancelTask(GameManager.getTaskID(getName()));
 			for (int i = 0; i < players.size(); i++) {
 				Player winner = Bukkit.getPlayer(players.get(i));
 				this.win(winner);
 			}
+		}
+	}
+	
+	private void win(Player p) {
+		if (p == null) //No NPEs
+			return;
+		
+		p.teleport(getWinPoint());
+		setGameState(GameState.NOT_INGAME);
+		setupFloors();
+		players.clear();
+		StatisticManager.getStatistic(p.getName()).addWin();
+		
+		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
+			PlayerStateManager.restorePlayerState(p);
+		
+		broadcast(_("hasWon", p.getName(), this.getName()));
+		p.sendMessage(_("win"));
+		p.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(p))));
+		this.brokenBlocks.clear();
+		this.knockouts.clear();
+		if (HeavySpleef.instance.getConfig().getBoolean("sounds.levelUp"))
+			p.playSound(p.getLocation(), Sound.LEVEL_UP, 4.0F, p.getLocation().getPitch());
+		addPlayersFromQueue();
+		if (HeavySpleef.hasVault) {
+			if (this.jackpot == 0)
+				return;
+			HeavySpleef.econ.depositPlayer(p.getName(), this.jackpot);
+			p.sendMessage(_("jackpotReceived", HeavySpleef.econ.format(this.jackpot)));
+			this.jackpot = 0;
 		}
 	}
 	
@@ -327,12 +252,145 @@ public class Game {
 			knockouts.put(player, knockouts.get(player) + 1);
 		else
 			knockouts.put(player, 1);
+		StatisticManager.getStatistic(player).addKnockout();
 	}
 	
 	public int getKnockouts(Player player) {
 		if (knockouts.containsKey(player.getName()))
 			return knockouts.get(player.getName());
 		return 0;
+	}
+	public Location getFirstCorner() {
+		return firstCorner;
+	}
+
+	public void setFirstCorner(Location firstCorner) {
+		this.firstCorner = firstCorner;
+	}
+
+	public Location getSecondCorner() {
+		return secondCorner;
+	}
+
+	public void setSecondCorner(Location secondCorner) {
+		this.secondCorner = secondCorner;
+	}
+
+	public void setGameState(GameState state) {
+		this.state = state;
+	}
+	
+	public GameState getGameState() {
+		return state;
+	}
+	
+	public boolean isIngame() {
+		return state == GameState.INGAME;
+	}
+	
+	public boolean isCounting() {
+		return state == GameState.COUNTING;
+	}
+	
+	public boolean isWaiting() {
+		return state == GameState.NOT_INGAME;
+	}
+	
+	public boolean isPreLobby() {
+		return state == GameState.PRE_LOBBY;
+	}
+	
+	public boolean isDisabled() {
+		return state == GameState.DISABLED;
+	}
+	
+	public Location getWinPoint() {
+		return winPoint;
+	}
+
+	public void setWinPoint(Location winPoint) {
+		this.winPoint = winPoint;
+	}
+
+	public Location getLosePoint() {
+		return losePoint;
+	}
+
+	public void setLosePoint(Location losePoint) {
+		this.losePoint = losePoint;
+	}
+	
+	public boolean addFloor(Location loc1, Location loc2, int id, int blockID, byte blockData, boolean wool, boolean givenFloor) {
+		Floor floor = new Floor(id, loc1, loc2, blockID, blockData, wool, givenFloor);
+		if (floors.containsKey(id))
+			return false;
+		floors.put(id, floor);
+		floor.create();
+		return true;
+	}
+	
+	public boolean addFloor(Floor floor, boolean create) {
+		if (floors.containsKey(floor.getId()))
+			return false;
+		floors.put(floor.getId(), floor);
+		if (create)
+			floor.create();
+		return true;
+	}
+ 	
+	public void removeFloor(int id) {
+		floors.remove(id);
+	}
+	
+	public boolean hasFloor(int id) {
+		return floors.containsKey(id);
+	}
+	
+	public int getFloorSize() {
+		return floors.size();
+	}
+	
+	public boolean addLoseZone(int id, Location loc1, Location loc2) {
+		Cuboid loseZone = new LoseZone(loc1, loc2, id);
+		if (loseZones.containsKey(id))
+			return false;
+		loseZones.put(id, loseZone);
+		return true;	
+	}
+	
+	public boolean addLoseZone(LoseZone loseZone) {
+		if (loseZones.containsKey(loseZone.getId()))
+			return false;
+		loseZones.put(loseZone.getId(), loseZone);
+		return true;
+	}
+	
+	public void removeLoseZone(int id) {
+		loseZones.remove(id);
+	}
+	
+	public boolean hasLoseZone(int id) {
+		return loseZones.containsKey(id);
+	}
+	
+	public int getLoseZoneSize() {
+		return loseZones.size();
+	}
+	
+	public Collection<Floor> getFloors() {
+		return floors.values();
+	}
+	
+	public Collection<Cuboid> getLoseZones() {
+		return loseZones.values();
+	}
+	
+	
+	
+	protected void tellAll(String msg) {
+		for (Player p : getPlayers()) {
+			p.sendMessage(msg);
+		}
 	}
 	
 	public Floor getLowermostFloor() {
@@ -347,44 +405,30 @@ public class Game {
 		Arrays.sort(keySet);
 		return floorsWithY.get(keySet[0]);
 	}
-
-	private void win(Player p) {
-		if (p == null)
-			return;
-		
-		p.teleport(getWinPoint());
-		setGameState(GameState.NOT_INGAME);
-		setupFloors();
-		players.clear();
-		
-		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
-			PlayerStateManager.restorePlayerState(p);
-		
-		broadcast(_("hasWon", p.getName(), this.getName()));
-		p.sendMessage(_("win"));
-		p.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(p))));
-		this.brokenBlocks.clear();
-		this.knockouts.clear();
-		if (HeavySpleef.instance.getConfig().getBoolean("sounds.levelUp"))
-			p.playSound(p.getLocation(), Sound.LEVEL_UP, 4.0F, p.getLocation().getPitch());
-		addPlayersFromQueue();
-		if (HeavySpleef.hasVault) {
-			if (this.jackpot == 0)
-				return;
-			HeavySpleef.econ.depositPlayer(p.getName(), this.jackpot);
-			p.sendMessage(_("jackpotReceived", HeavySpleef.econ.format(this.jackpot)));
-			this.jackpot = 0;
-		}
-	}
 	
+	public Floor getHighestFloor() {
+		Map<Integer, Floor> floorsWithY = new HashMap<Integer, Floor>();
+		
+		for (Floor f : getFloors()) {
+			int minY = Math.min(f.getFirstCorner().getBlockY(), f.getSecondCorner().getBlockY());
+			floorsWithY.put(minY, f);
+		}
+		
+		Integer[] keySet = floorsWithY.keySet().toArray(new Integer[floorsWithY.size()]);
+		Arrays.sort(keySet);
+		return floorsWithY.get(keySet[keySet.length - 1]);
+	}
+
 	private void addPlayersFromQueue() {
 		for (String name : GameManager.queues.keySet()) {
 			if (GameManager.queues.get(name).equalsIgnoreCase(getName())) {
 				Player currentPlayer = Bukkit.getPlayer(name);
-				if (currentPlayer == null)
+				if (currentPlayer == null) {
+					GameManager.queues.remove(name);
 					continue;
+				}
 				currentPlayer.teleport(getPreGamePoint());
-				addPlayer(currentPlayer, false);
+				addPlayer(currentPlayer);
 				currentPlayer.sendMessage(_("noLongerInQueue"));
 				GameManager.queues.remove(currentPlayer.getName());
 			}
@@ -507,4 +551,33 @@ public class Game {
 			brokenBlocks.put(p.getName(), blocks);
 		}
 	}
+
+	public void setStartOnMinPlayers(boolean startOnMinPlayers) {
+		this.startOnMinPlayers = startOnMinPlayers;
+	}
+	
+	public boolean isStartingOnMinPlayers() {
+		return this.startOnMinPlayers;
+	}
+
+	public void setCountdown(int countdown) {
+		this.countdown = countdown;
+	}
+	
+	public int getCountdown() {
+		return this.countdown;
+	}
+	
+	public boolean startsOnMinPlayers() {
+		return this.startOnMinPlayers;
+	}
+
+	public boolean isShovels() {
+		return shovels;
+	}
+
+	public void setShovels(boolean shovels) {
+		this.shovels = shovels;
+	}
+
 }

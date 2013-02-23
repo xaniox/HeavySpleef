@@ -46,12 +46,13 @@ public class HeavySpleef extends JavaPlugin {
 		database.load();
 		LanguageHandler.loadLanguageFiles();
 		UpdateChecker.check();
-		setupStatisticDatabase();
 		
+		this.setupStatisticDatabase();
 		this.statisticDatabase.load();
 		this.startMetrics();
 		this.registerEvents();
 		this.getCommand("spleef").setExecutor(new CommandHandler());
+		
 		if (getConfig().getBoolean("anticamping.enabled"))
 			this.startAntiCampingTask();
 		if (getConfig().getBoolean("general.saveInIntervall"))

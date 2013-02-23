@@ -4,7 +4,6 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.CountingTask;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.core.GameState;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Bukkit;
@@ -83,7 +82,7 @@ public class CommandJoin extends HSCommand {
 		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown")) {
 			player.teleport(CountingTask.getRandomSpleefLocation(game));
 			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
-			game.addPlayer(player, true);
+			game.addPlayer(player);
 			return true;
 		} else if (game.isCounting() && !plugin.getConfig().getBoolean("general.joinAtCountdown")){
 			player.sendMessage(_("gameAlreadyRunning"));
@@ -93,8 +92,9 @@ public class CommandJoin extends HSCommand {
 		
 		player.teleport(game.getPreGamePoint());
 		player.sendMessage(_("playerJoinedToPlayer", game.getName()));
-		game.addPlayer(player, false);
-		game.setGameState(GameState.PRE_LOBBY);
+		game.addPlayer(player);
+		if (GameManager.queues.containsKey(player.getName()))
+			GameManager.queues.remove(player.getName());
 		return true;
 	}
 

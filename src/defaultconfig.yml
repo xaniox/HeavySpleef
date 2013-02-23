@@ -4,7 +4,6 @@
 ####################################
 #
 # This is the main configuration file of HeavySpleef.
-# Language files are coming soon...
 #
 # If the server stopps correctly and a game is running
 # the game will be stopped and players that joins the
@@ -33,7 +32,7 @@ general:
   # Should an arena be protected?
   protectArena: true
   
-  # Set the length of the countdown until a game is starting
+  # Set the length of the default countdown until a game is starting
   countdownFrom: 10
   
   # Should an arena-cuboid be created on defining a new game?
@@ -111,5 +110,19 @@ blocks:
   
   # Should water and lava be an automatic losezone?
   loseOnTouchWaterOrLava: true
+  
+statistic:
+
+  # Which database type should be used for statistic database storing?
+  # Allowed types: 'yaml', 'mysql'
+  dbType: yaml
+  
+  # If you use mysql you have to fill the following things:
+  
+  host: 'localhost'
+  port: '3306'
+  databaseName: ''
+  user: 'root'
+  password: ''
   
 # How much... No, you've finished the configuration ;)

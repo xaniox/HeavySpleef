@@ -23,7 +23,7 @@ pageDoesntExists: &cDiese Seite exestiert nicht!
 gameIsDisabled: &cDiese Arena ist deaktiviert!
 isntReadyToPlay: &cDiese Arena ist noch nicht fertig!
 notEnoughMoneyToJoin: &cDu hast nicht genügend Geld diesem Spiel beizutreten!
-playerNotOnline: &cDieser Spieler ist nicht online!
+playerNotOnline: &cKann Spieler nicht finden...
 targetHasntEnoughMoney: &cDieser Spieler hat nicht genügend Geld um dem Spiel beizutreten!
 gameAlreadyRunning: &cIn dieser Arena findet bereits ein Spiel statt!
 cantJoinMultipleGames: &cDu kannst nicht mehreren Arenen gleichzeitig beitreten!
@@ -48,7 +48,6 @@ loginAfterServerShutdown: &cDu wurdest zum Verlierpunkt teleportiert da der Serv
 notAllowedToCreateSpleefSigns: &cDir ist es nicht erlaubt Spleef-Schilder zu erstellen!
 
 errorOnState: &cEin Fehler trat auf während dein Inventar geladen wurde... :(
-
 
 # Erfolgsnachrichten
 
@@ -92,6 +91,13 @@ stateRestored: &aDein Inventar wurde wiederhergestellt!
 stateSaved: &aDein Inventar wurde gespeichert!
 gameStopped: &cDas Spiel wurde gestoppt!
 
+startOnMinPlayersInfo: &aDerzeitiger Wert für den Start bei der Erreichung der minimalen Spielerzahl: %a
+startOnMinPlayersTrue: &aDas Spiel wird nun starten wenn die minimale Anzahl an Spielern erreicht ist.
+startOnMinPlayersFalse: &aDas Spiel startet nun nicht länger wenn die minimale Anzahl an Spielern erreicht ist.
+countdownSet: &aDer Countdown wurde zu %a gesetzt!
+
+shovelInfo: Derzeitiger Wert: %a
+shovelToggled: Spiel mit Schaufeln auf %a gesetzt.
 
 # Broadcast nachrichten
 

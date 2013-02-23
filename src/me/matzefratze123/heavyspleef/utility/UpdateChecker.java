@@ -63,7 +63,6 @@ public class UpdateChecker {
 		} catch (MalformedURLException e) {
 			return new String[] {"Couldn't check updates!"};
 		} catch (IOException e) {
-			e.printStackTrace();
 			return new String[] {"Couldn't check updates! IOException?!"};
 		} catch (Exception e) {
 			return new String[] {""};

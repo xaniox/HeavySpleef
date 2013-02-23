@@ -87,8 +87,10 @@ public class Parser {
 		byte data = Byte.parseByte(split[4]);
 		
 		if (blockID == 0)
-			return new Floor(id, firstCorner, secondCorner, 35, data, true);
-		return new Floor(id, firstCorner, secondCorner, blockID, data, false);
+			return new Floor(id, firstCorner, secondCorner, 35, data, true, false);
+		else if (blockID == -1)
+			return new Floor(id, firstCorner, secondCorner, -1, data, false, true);
+		return new Floor(id, firstCorner, secondCorner, blockID, data, false, false);
 	}
 	
 	public static LoseZone convertStringToLosezone(String s) {
