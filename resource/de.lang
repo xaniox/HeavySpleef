@@ -68,8 +68,8 @@ floorRemoved: &aDie Spleefebene wurde entfernt!
 loseZoneRemoved: &aDie Verliererzone mit der ID %a wurde entfernt!
 gamesSaved: &aAlle Spiele wurden in der Datenbank gesichert!
 lobbyPointSet: &aDer Lobbypunkt für das Spiel %a wurde gesetzt!
-winPointSet: &aDer Verlierpunkt für das Spiel %a wurde gesetzt!
-losePointSet: &aDer Gewinnpunkt für das Spiel %a wurde gesetzt!
+winPointSet: &aDer Gewinnpunkt für das Spiel %a wurde gesetzt!
+losePointSet: &aDer Verlierpunkt für das Spiel %a wurde gesetzt!
 moneySet: &aDas Geld wurde dem Spiel hinzugefügt!
 gameStarted: &aSpiel gestartet!
 win: &6Du hast das Spiel gewonnen!

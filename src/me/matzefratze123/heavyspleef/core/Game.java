@@ -38,9 +38,6 @@ public class Game {
 	
 	private GameState state;
 	
-	public List<String> players = new ArrayList<String>();
-	public List<String> wereOffline = new ArrayList<String>();
-	
 	private Location winPoint;
 	private Location losePoint;
 	private Location preLobbyPoint;
@@ -55,6 +52,9 @@ public class Game {
 	
 	private ConfigurationSection gameSection;
 	private String name;
+	
+	public List<String> players = new ArrayList<String>();
+	public List<String> wereOffline = new ArrayList<String>();
 	
 	public Game(Location firstCorner, Location secondCorner, String name) {
 		this.firstCorner = firstCorner;
@@ -147,7 +147,7 @@ public class Game {
 			player.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE, 1));
 			player.updateInventory();
 		}
-		if (isStartingOnMinPlayers() && players.size() >= getNeededPlayers() && isPreLobby())
+		if (startsOnMinPlayers() && players.size() >= getNeededPlayers() && isPreLobby())
 			start();
 	}
 	
@@ -155,7 +155,8 @@ public class Game {
 		if (!players.contains(player.getName()))
 			return;
 		players.remove(player.getName());
-		player.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(player))));
+		if (!isPreLobby())
+			player.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(player))));
 		broadcast(getLoseMessage(cause, player));
 		player.teleport(getLosePoint());
 		player.setFireTicks(0);
@@ -244,6 +245,8 @@ public class Game {
 				
 			}
 		}
+		
+		//If nothing was found in the hashmap, it should be the AntiCamping feature...
 		return "AntiCamping";
 	}
 	
@@ -495,6 +498,11 @@ public class Game {
 		return locs;
 	}
 	
+	/**
+	 * Broadcasts a message to the game
+	 * 
+	 * @param msg Message to broadcast
+	 */
 	public void broadcast(String msg) {
 		if (HeavySpleef.instance.getConfig().getBoolean("general.globalBroadcast")) {
 			Bukkit.broadcastMessage(msg);
@@ -518,10 +526,16 @@ public class Game {
 		}
 	}
 
+	/**
+	 * Get's the name of the game
+	 * 
+	 * @return The name of the game
+	 */
 	public String getName() {
 		return name;
 	}
 
+	
 	public ConfigurationSection getGameSection() {
 		return gameSection;
 	}
@@ -534,14 +548,32 @@ public class Game {
 		this.neededPlayers = neededPlayers;
 	}
 
+	/**
+	 * Get's the money that every player has to pay
+	 * into the jackpot at the beginning of the game
+	 * 
+	 * @return The money value
+	 */
 	public int getMoney() {
 		return money;
 	}
 
+	/**
+	 * Set's the money that every player has to pay
+	 * into the jackpot at the beginning of the game
+	 * 
+	 * @param money Value to set
+	 */
 	public void setMoney(int money) {
 		this.money = money;
 	}
 	
+	/**
+	 * Adds a broken block to the game
+	 * 
+	 * @param p The player that broke this block
+	 * @param b The block that was broken
+	 */
 	public void addBrokenBlock(Player p, Block b) {
 		if (brokenBlocks.containsKey(p.getName()))
 			brokenBlocks.get(p.getName()).add(b);
@@ -552,30 +584,58 @@ public class Game {
 		}
 	}
 
+	/**
+	 * Set's the value if the game should start </br>
+	 * when the minimum count of players are reached.
+	 * 
+	 * @param startOnMinPlayers The value
+	 */
 	public void setStartOnMinPlayers(boolean startOnMinPlayers) {
 		this.startOnMinPlayers = startOnMinPlayers;
 	}
-	
-	public boolean isStartingOnMinPlayers() {
-		return this.startOnMinPlayers;
-	}
 
+	/**
+	 * Set's the countdown to the specified value
+	 * 
+	 * @param countdown The countdown to set
+	 */
 	public void setCountdown(int countdown) {
 		this.countdown = countdown;
 	}
 	
+	/**
+	 * Get's the countdown of the game
+	 * 
+	 * @return The countdown
+	 */
 	public int getCountdown() {
 		return this.countdown;
 	}
 	
+	/**
+	 * Checks wether the game starts when the </br>
+	 * minimum count of players are reached...
+	 * 
+	 * @return True if the game starts on min players, otherwise false
+	 */
 	public boolean startsOnMinPlayers() {
 		return this.startOnMinPlayers;
 	}
 
+	/**
+	 * Checks if this game starts with shovels
+	 * 
+	 * @return True if the game starts with shovels, otherwise false
+	 */
 	public boolean isShovels() {
 		return shovels;
 	}
 
+	/**
+	 * Set's the value if this game should start with shovels
+	 * 
+	 * @param shovels The value
+	 */
 	public void setShovels(boolean shovels) {
 		this.shovels = shovels;
 	}

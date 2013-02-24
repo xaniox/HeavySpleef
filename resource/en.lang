@@ -69,8 +69,8 @@ floorRemoved: &aThe floor has been removed!
 loseZoneRemoved: &aThe losezone with the id %a has been removed!
 gamesSaved: &aAll games have been saved to the database!
 lobbyPointSet: &aThe lobbypoint for the game %a has been set!
-winPointSet: &aThe losepoint for the game %a has been set!
-losePointSet: &aThe winpoint for the game %a has been set!
+winPointSet: &aThe winpoint for the game %a has been set!
+losePointSet: &aThe losepoint for the game %a has been set!
 moneySet: &aMoney sucessfully binded to game!
 gameStarted: &aGame started!
 win: &6You won the game!

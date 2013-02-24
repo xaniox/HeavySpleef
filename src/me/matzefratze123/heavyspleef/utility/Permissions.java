@@ -8,7 +8,6 @@ package me.matzefratze123.heavyspleef.utility;
 public enum Permissions {
 
 	// Command
-	
 	KICK("heavyspleef.kick"),
 	SET_MIN_PLAYERS("heavyspleef.setminplayers"),
 	DISABLE("heavyspleef.disable"),
@@ -35,14 +34,14 @@ public enum Permissions {
 	SET_SHOVEL("heavyspleef.setshovel"),
 	STATS("heavyspleef.statistic"),
 	STATS_OTHERS("heavyspleef.statistic.others"),
+	
 	// Bypass
-	
 	BUILD_BYPASS("heavyspleef.build.bypass"),
+	
 	//Selection
-	
 	SELECTION("heavyspleef.selection"),
-	//Sign
 	
+	//Sign
 	CREATE_SPLEEF_SIGN("heavyspleef.createsign"),
 	SIGN_JOIN("heavyspleef.sign.join"),
 	SIGN_LEAVE("heavyspleef.sign.leave"),

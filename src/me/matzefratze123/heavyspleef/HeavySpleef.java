@@ -147,6 +147,4 @@ public class HeavySpleef extends JavaPlugin {
 		}, 0L, getConfig().getInt("general.saveIntervall") * 20L * 60L);
 	}
 	
-} 
-
-	
+}

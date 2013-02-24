@@ -10,12 +10,9 @@
 # next time will be automatically teleported out of the
 # game. Use '/spleef save' to save all data of the spleef
 # games to the database...
-
+#
 # Should the plugin check for updates?
 updateCheck: true
-
-# DO NOT TOUCH THIS, UNLESS YOU WANT TO DELETE YOUR LANGUAGE FILES!!!
-firstRun: true
 
 general:
   
@@ -74,7 +71,7 @@ general:
   # Should players be able to join the game while it's counting?
   joinAtCountdown: true
   
-  # Language that should be used (Accepted: en, de | fr isn't supported yet...)
+  # Language that should be used (Accepted: en, de, ru | fr isn't supported yet...)
   language: en
   
 anticamping:

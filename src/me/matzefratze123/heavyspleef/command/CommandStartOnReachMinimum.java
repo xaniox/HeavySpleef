@@ -27,7 +27,7 @@ public class CommandStartOnReachMinimum extends HSCommand {
 		
 		Game game = GameManager.getGame(args[0].toLowerCase());
 		if (args.length == 1) {
-			p.sendMessage(_("startOnMinPlayersInfo", String.valueOf(game.isStartingOnMinPlayers())));
+			p.sendMessage(_("startOnMinPlayersInfo", String.valueOf(game.startsOnMinPlayers())));
 			return;
 		} else if (args.length == 2) {
 			boolean start = Boolean.parseBoolean(args[1]);
