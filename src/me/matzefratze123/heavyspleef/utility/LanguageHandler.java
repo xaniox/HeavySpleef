@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - The simple spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package me.matzefratze123.heavyspleef.utility;
 
 import java.io.BufferedReader;
@@ -44,6 +63,8 @@ public class LanguageHandler {
 		acceptedLanguages.add("en");
 		acceptedLanguages.add("fr");
 		acceptedLanguages.add("ru");
+		acceptedLanguages.add("es");
+		acceptedLanguages.add("pt");
 		
 		String language = HeavySpleef.instance.getConfig().getString("general.language");
 		if (!acceptedLanguages.contains(language)) {
@@ -79,9 +100,9 @@ public class LanguageHandler {
 					continue;
 				split[1] = ChatColor.translateAlternateColorCodes('&', split[1]);
 				
-				split[1] = split[1].replaceAll("ä", "\u00E4");
-				split[1] = split[1].replaceAll("ö", "\u00F6");
-				split[1] = split[1].replaceAll("ü", "\u00FC");
+				split[1] = split[1].replace("ä", "\u00E4");
+				split[1] = split[1].replace("ö", "\u00F6");
+				split[1] = split[1].replace("ü", "\u00FC");
 						
 				messages.put(split[0], split[1]);
 			}

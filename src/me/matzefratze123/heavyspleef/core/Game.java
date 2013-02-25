@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - The simple spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package me.matzefratze123.heavyspleef.core;
 
 import java.util.ArrayList;
@@ -161,7 +180,7 @@ public class Game {
 		player.teleport(getLosePoint());
 		player.setFireTicks(0);
 		if (cause == LoseCause.LOSE)
-			StatisticManager.getStatistic(player.getName()).addLose();
+			StatisticManager.getStatistic(player.getName(), true).addLose();
 		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
 			PlayerStateManager.restorePlayerState(player);
 		if (players.size() <= 0)
@@ -186,7 +205,7 @@ public class Game {
 		setGameState(GameState.NOT_INGAME);
 		setupFloors();
 		players.clear();
-		StatisticManager.getStatistic(p.getName()).addWin();
+		StatisticManager.getStatistic(p.getName(), true).addWin();
 		
 		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
 			PlayerStateManager.restorePlayerState(p);
@@ -255,7 +274,7 @@ public class Game {
 			knockouts.put(player, knockouts.get(player) + 1);
 		else
 			knockouts.put(player, 1);
-		StatisticManager.getStatistic(player).addKnockout();
+		StatisticManager.getStatistic(player, true).addKnockout();
 	}
 	
 	public int getKnockouts(Player player) {

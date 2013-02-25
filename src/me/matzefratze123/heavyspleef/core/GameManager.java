@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - The simple spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package me.matzefratze123.heavyspleef.core;
 
 import java.util.HashMap;
@@ -185,13 +204,13 @@ public class GameManager {
 	}
 	
 	public static boolean isSolid(Block block) {
-		Integer[] solidIDs = new Integer[] {1,2,3,4,5,7,12,13,14,15,16,17,18,19,
-									29,33,35,41,42,43,44,45,46,477,48,49,
-									52,53,54,56,57,58,61,6267,68,69,73,74,
-									79,80,82,84,86,87,88,89,91,95,97,98,
-									103,108,109,110,112,113,114,116,118,
-									120,121,123,124,125,128,129,130,133,
-									134,135,136,137,138,152,153,155,158};
+		int[] solidIDs = new int[] {1,2,3,4,5,7,12,13,14,15,16,17,18,19,
+											29,33,35,41,42,43,44,45,46,477,48,49,
+											52,53,54,56,57,58,61,6267,68,69,73,74,
+											79,80,82,84,86,87,88,89,91,95,97,98,
+											103,108,109,110,112,113,114,116,118,
+											120,121,123,124,125,128,129,130,133,
+											134,135,136,137,138,152,153,155,158};
 		for (int s : solidIDs)
 			if (s == block.getTypeId())
 				return true;

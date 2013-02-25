@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - The simple spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package me.matzefratze123.heavyspleef.command;
 
 import java.util.ArrayList;
@@ -12,6 +31,7 @@ import me.matzefratze123.heavyspleef.utility.statistic.Statistic;
 import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,8 +56,12 @@ public class CommandStats extends HSCommand {
 				p.sendMessage(_("noPermission"));
 				return;
 			}
+			if (!StatisticManager.hasStatistic(p.getName())) {
+				p.sendMessage(ChatColor.RED + "You don't have statistics!");
+				return;
+			}
 			
-			Statistic stat = StatisticManager.getStatistic(p.getName());
+			Statistic stat = StatisticManager.getStatistic(p.getName(), false);
 			printStatistics(stat, p);
 		} else if (args.length >= 1 && args[0].equalsIgnoreCase("top")) {
 			
@@ -88,8 +112,12 @@ public class CommandStats extends HSCommand {
 				p.sendMessage(_("playerNotOnline"));
 				return;
 			}
+			if (!StatisticManager.hasStatistic(args[0])) {
+				p.sendMessage(ChatColor.RED + "This player doesn't have statistics!");
+				return;
+			}
 			
-			Statistic stat = StatisticManager.getStatistic(target.getName());
+			Statistic stat = StatisticManager.getStatistic(target.getName(), false);
 			printStatistics(stat, p);
 		}
 	}
@@ -109,7 +137,7 @@ public class CommandStats extends HSCommand {
 		p.sendMessage(DARK_AQUA + "Knockouts: " + GOLD + stat.getKnockouts());
 		p.sendMessage(GREEN + "Games played: " + GOLD + stat.getGamesPlayed());
 		p.sendMessage(GREEN + "Wins / Game: " + GOLD + winsPerGame);
-		p.sendMessage(GREEN + "Your score: " + GOLD + stat.getScore());
+		p.sendMessage(GREEN + "Score: " + GOLD + stat.getScore());
 	}
 
 }
