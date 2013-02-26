@@ -75,6 +75,7 @@ moneySet: &aДеньги успешно привязаны к игре!
 gameStarted: &aНачало игры!
 win: &6Вы выиграли игру!
 jackpotReceived: &aВы получили джекпот %a за победу в этой игре!
+rewardReceived: &aYou received %a reward for winning this game!
 
 antiCampWarn: &4AntiCamping&c: У вас осталось &4%a &cдо того как вы упадете вниз!
 antiCampTeleport: &4AntiCamping&c: Вы упали вниз из-за того, что долго стояли на одном месте!

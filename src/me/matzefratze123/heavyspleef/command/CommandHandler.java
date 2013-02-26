@@ -103,7 +103,8 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("help", new CommandHelp());
 		addSubCommand("setminplayers", new CommandMinPlayers());
 		addSubCommand("kick", new CommandKick());
-		addSubCommand("setmoney", new CommandSetMoney());
+		addSubCommand("setjackpot", new CommandSetJackpot());
+		addSubCommand("setreward", new CommandSetReward());
 		addSubCommand("disable", new CommandDisable());
 		addSubCommand("enable", new CommandEnable());
 		addSubCommand("save", new CommandSave());

@@ -127,10 +127,12 @@ public class YamlDatabase {
 			Location preGamePoint = Parser.convertStringtoLocation(section.getString("preGamePoint"));
 			
 			int money = section.getInt("money");
+			int reward = section.getInt("reward");
 			int minPlayers = section.getInt("minPlayers");
 			int countdown = section.getInt("countdown");
 			if (countdown <= 0)
 				countdown = plugin.getConfig().getInt("general.countdownFrom");
+			
 			boolean startOnMinPlayers = section.getBoolean("startOnMinPlayers");
 			boolean useShovels = section.getBoolean("shovels");
 			
@@ -147,7 +149,8 @@ public class YamlDatabase {
 			game.setLosePoint(losePoint);
 			game.setPreGamePoint(preGamePoint);
 			game.setGameState(GameState.NOT_INGAME);
-			game.setMoney(money);
+			game.setJackpotToPay(money);
+			game.setReward(reward);
 			game.setCountdown(countdown);
 			game.setStartOnMinPlayers(startOnMinPlayers);
 			game.setShovels(useShovels);
@@ -207,7 +210,8 @@ public class YamlDatabase {
 			section.set("floors", floorsAsList);
 			section.set("losezones", loseZonesAsList);
 			section.set("wereOfflineAtShutdown", wereOffline);
-			section.set("money", game.getMoney());
+			section.set("money", game.getJackpotToPay());
+			section.set("reward", game.getReward());
 			section.set("minPlayers", game.getNeededPlayers());
 			section.set("countdown", game.getCountdown());
 			section.set("startOnMinPlayers", game.startsOnMinPlayers());

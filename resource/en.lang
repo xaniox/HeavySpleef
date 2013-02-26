@@ -75,6 +75,7 @@ moneySet: &aMoney sucessfully binded to game!
 gameStarted: &aGame started!
 win: &6You won the game!
 jackpotReceived: &aYou received %a jackpot for winning this game!
+rewardReceived: &aYou received %a reward for winning this game!
 
 antiCampWarn: &4AntiCamping&c: You still have &4%a &cseconds until you are ported down!
 antiCampTeleport: &4AntiCamping&c: You have been teleported one floor down for being to long on one point!

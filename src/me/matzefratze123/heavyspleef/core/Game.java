@@ -31,6 +31,7 @@ import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.LocationHelper;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
+import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,8 +62,9 @@ public class Game {
 	private Location losePoint;
 	private Location preLobbyPoint;
 	
+	private int reward;
 	private int jackpot = 0;
-	private int money;
+	private int jackpotToPay;
 	private int neededPlayers;
 	private int countdown;
 	
@@ -82,7 +84,8 @@ public class Game {
 		this.state = GameState.NOT_INGAME;
 		this.gameSection = HeavySpleef.instance.database.getConfigurationSection(name);
 		this.neededPlayers = HeavySpleef.instance.getConfig().getInt("general.neededPlayers");
-		this.money = HeavySpleef.instance.getConfig().getInt("general.defaultToPay");
+		this.jackpotToPay = HeavySpleef.instance.getConfig().getInt("general.defaultToPay");
+		this.reward = HeavySpleef.instance.getConfig().getInt("general.defaultReward");
 		this.setCountdown(HeavySpleef.instance.getConfig().getInt("general.countdownFrom"));
 		
 		calculateInnerCorners();
@@ -109,11 +112,11 @@ public class Game {
 	public void start() {
 		this.jackpot = 0;
 		if (HeavySpleef.hasVault) {
-			if (getMoney() > 0) {
+			if (getJackpotToPay() > 0) {
 				for (Player p : getPlayers()) {
-					HeavySpleef.econ.withdrawPlayer(p.getName(), getMoney());
-					p.sendMessage(_("paidIntoJackpot", HeavySpleef.econ.format(getMoney())));
-					this.jackpot += getMoney();
+					HeavySpleef.econ.withdrawPlayer(p.getName(), getJackpotToPay());
+					p.sendMessage(_("paidIntoJackpot", HeavySpleef.econ.format(getJackpotToPay())));
+					this.jackpot += getJackpotToPay();
 				}
 			}
 		}
@@ -157,10 +160,10 @@ public class Game {
 		if (isWaiting() && !isCounting() && !isIngame())
 			setGameState(GameState.PRE_LOBBY);
 		tellAll(_("playerJoinedGame", player.getName()));
-		if (HeavySpleef.hasVault && getMoney() > 0 && isCounting()) {
-			HeavySpleef.econ.withdrawPlayer(player.getName(), getMoney());
-			player.sendMessage(_("paidIntoJackpot", HeavySpleef.econ.format(getMoney())));
-			this.jackpot += getMoney();
+		if (HeavySpleef.hasVault && getJackpotToPay() > 0 && isCounting()) {
+			HeavySpleef.econ.withdrawPlayer(player.getName(), getJackpotToPay());
+			player.sendMessage(_("paidIntoJackpot", HeavySpleef.econ.format(getJackpotToPay())));
+			this.jackpot += getJackpotToPay();
 		}
 		if (isCounting() && this.shovels) {
 			player.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE, 1));
@@ -219,11 +222,15 @@ public class Game {
 			p.playSound(p.getLocation(), Sound.LEVEL_UP, 4.0F, p.getLocation().getPitch());
 		addPlayersFromQueue();
 		if (HeavySpleef.hasVault) {
-			if (this.jackpot == 0)
-				return;
-			HeavySpleef.econ.depositPlayer(p.getName(), this.jackpot);
-			p.sendMessage(_("jackpotReceived", HeavySpleef.econ.format(this.jackpot)));
-			this.jackpot = 0;
+			if (this.jackpot > 0) {
+				EconomyResponse r = HeavySpleef.econ.depositPlayer(p.getName(), this.jackpot);
+				p.sendMessage(_("jackpotReceived", HeavySpleef.econ.format(r.amount)));
+				this.jackpot = 0;
+			}
+			if (reward > 0) {
+				EconomyResponse r = HeavySpleef.econ.depositPlayer(p.getName(), getReward());
+				p.sendMessage(_("rewardReceived", HeavySpleef.econ.format(r.amount)));
+			}
 		}
 	}
 	
@@ -573,8 +580,8 @@ public class Game {
 	 * 
 	 * @return The money value
 	 */
-	public int getMoney() {
-		return money;
+	public int getJackpotToPay() {
+		return this.jackpotToPay;
 	}
 
 	/**
@@ -583,8 +590,16 @@ public class Game {
 	 * 
 	 * @param money Value to set
 	 */
-	public void setMoney(int money) {
-		this.money = money;
+	public void setJackpotToPay(int jackpotToPay) {
+		this.jackpotToPay = jackpotToPay;
+	}
+	
+	public int getReward() {
+		return this.reward;
+	}
+	
+	public void setReward(int reward) {
+		this.reward = reward;
 	}
 	
 	/**

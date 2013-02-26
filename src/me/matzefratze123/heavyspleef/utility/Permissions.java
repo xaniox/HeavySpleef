@@ -45,6 +45,7 @@ public enum Permissions {
 	START_GAME("heavyspleef.start"),
 	CREATE_GAME("heavyspleef.create"),
 	DELETE_GAME("heavyspleef.delete"),
+	SET_JACKPOT("heavyspleef.setjackpot"),
 	SET_MONEY("heavyspleef.setmoney"),
 	SAVE("heavyspleef.save"),
 	STOP("heavyspleef.stop"),

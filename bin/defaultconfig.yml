@@ -56,6 +56,11 @@ general:
   # (money value can be configured for every game)
   defaultToPay: 5
   
+  # Default reward value for the winner
+  # Only works if Vault is enabled!
+  # (reward value can be configured for every game)
+  defaultReward: 0
+  
   # Which wand tool should be used?
   # (Default: 280 = Stick)
   wandItem: 280

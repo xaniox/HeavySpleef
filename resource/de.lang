@@ -74,6 +74,7 @@ moneySet: &aDas Geld wurde dem Spiel hinzugefügt!
 gameStarted: &aSpiel gestartet!
 win: &6Du hast das Spiel gewonnen!
 jackpotReceived: &aDu hast %a Jackpot bekommen!
+rewardReceived: &aDu hast %a Belohnung bekommen!
 
 antiCampWarn: &4AntiCamping&c: Du hast noch &4%a &cSekunden bevor du eine Ebene nach unten teleportiert wirst!
 antiCampTeleport: &4AntiCamping&c: Du wurdest eine Ebene nach unten teleportiert weil du zulange an einem Punkt standest!

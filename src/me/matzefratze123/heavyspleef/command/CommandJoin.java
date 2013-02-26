@@ -60,7 +60,7 @@ public class CommandJoin extends HSCommand {
 		
 		if (args.length == 1) {
 			if (HeavySpleef.hasVault) {
-				if (HeavySpleef.econ.getBalance(player.getName()) < game.getMoney()) {
+				if (HeavySpleef.econ.getBalance(player.getName()) < game.getJackpotToPay()) {
 					player.sendMessage(_("notEnoughMoneyToJoin"));
 					return;
 				}
@@ -74,7 +74,7 @@ public class CommandJoin extends HSCommand {
 				return;
 			}
 			if (HeavySpleef.hasVault) {
-				if (HeavySpleef.econ.getBalance(target.getName()) < game.getMoney()) {
+				if (HeavySpleef.econ.getBalance(target.getName()) < game.getJackpotToPay()) {
 					player.sendMessage(_("targetHasntEnoughMoney"));
 					return;
 				}

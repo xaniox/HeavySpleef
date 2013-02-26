@@ -83,7 +83,7 @@ public class UpdateChecker {
 			return new String[] {"Couldn't check updates!"};
 		} catch (IOException e) {
 			return new String[] {"Couldn't check updates! IOException?!"};
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			return new String[] {""};
 		}
 	}

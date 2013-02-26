@@ -49,7 +49,7 @@ public class CommandHelp extends HSCommand {
 			   								   ChatColor.GOLD + "/spleef disable <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Disabled a spleef game",
 			   								   ChatColor.GOLD + "/spleef enable <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Enables a disabled spleef game",
 			   								   ChatColor.GOLD + "/spleef setminplayers <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Set's the minimum size of players that are needed to start the game",
-			   								   ChatColor.GOLD + "/spleef setmoney <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Set's the money that every player has to pay for the game",
+			   								   ChatColor.GOLD + "/spleef setjackpot <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Set's the money that every player has to pay for the game",
 			   								   ChatColor.GOLD + "/spleef save" + ChatColor.RED + " - " + ChatColor.GOLD + "Saves all games to the database"};
 	
 	private String[] fifthPage = new String[]{ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 5/5  -----   ",
