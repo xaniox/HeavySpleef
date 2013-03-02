@@ -104,7 +104,7 @@ public class PlayerListener implements Listener {
 		}, 20L);
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		Block block = e.getClickedBlock();
@@ -173,6 +173,7 @@ public class PlayerListener implements Listener {
 			p.sendMessage(Game._("notAllowedToBuild"));
 		} else {
 			e.getBlock().setTypeId(0);
+			game.addBrokenBlock(p, block);
 		}
 	}
 	

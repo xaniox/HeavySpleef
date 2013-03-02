@@ -103,6 +103,8 @@ public class LanguageHandler {
 				split[1] = split[1].replace("ä", "\u00E4");
 				split[1] = split[1].replace("ö", "\u00F6");
 				split[1] = split[1].replace("ü", "\u00FC");
+				
+				split[1] = new String(split[1].getBytes(Charset.forName("UTF-8")), "UTF-8");
 						
 				messages.put(split[0], split[1]);
 			}
