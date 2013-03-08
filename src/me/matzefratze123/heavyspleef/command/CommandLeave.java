@@ -41,7 +41,12 @@ public class CommandLeave extends HSCommand {
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
 		if (!GameManager.isInAnyGame(player)) {
-			player.sendMessage(_("playerIsntInAnyGameToPlayer"));
+			if (!GameManager.isInQueue(player)) {
+				player.sendMessage(_("notInQueue"));
+				return;
+			}
+			
+			GameManager.removeFromQueue(player);
 			return;
 		}
 		Game game = GameManager.getGameFromPlayer(player);

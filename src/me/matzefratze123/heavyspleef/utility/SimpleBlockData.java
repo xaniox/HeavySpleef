@@ -23,13 +23,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 
 /**
  * Simple storing class for blockdata
  * 
  * @author matzefratze123
  */
-public class BlockInfo {
+public class SimpleBlockData {
 	
 	private Material mat;
 	private byte data;
@@ -40,7 +41,7 @@ public class BlockInfo {
 	
 	private String worldName;
 	
-	public BlockInfo(Material mat, byte data, int x, int y, int z, String worldname) {
+	public SimpleBlockData(Material mat, byte data, int x, int y, int z, String worldname) {
 		this.mat = mat;
 		this.data = data;
 		this.worldName = worldname;
@@ -49,7 +50,7 @@ public class BlockInfo {
 		this.z = z;
 	}
 	
-	public BlockInfo(String fromString) {
+	public SimpleBlockData(String fromString) {
 		String[] parts = fromString.split(",");
 		this.mat = Material.getMaterial(Integer.parseInt(parts[0]));
 		this.data = Byte.parseByte(parts[1]);
@@ -90,6 +91,20 @@ public class BlockInfo {
 	@Override
 	public String toString() {
 		return mat.getId() + "," + data + "," + x + "," + y + "," + z + "," + worldName;
+	}
+	
+	public static boolean isSolid(Block block) {
+		int[] solidIDs = new int[] {1,2,3,4,5,7,12,13,14,15,16,17,18,19,
+									29,33,35,41,42,43,44,45,46,477,48,49,
+									52,53,54,56,57,58,61,6267,68,69,73,74,
+									79,80,82,84,86,87,88,89,91,95,97,98,
+									103,108,109,110,112,113,114,116,118,
+									120,121,123,124,125,128,129,130,133,
+									134,135,136,137,138,152,153,155,158};
+		for (int s : solidIDs)
+			if (s == block.getTypeId())
+				return true;
+		return false;
 	}
 	
 }

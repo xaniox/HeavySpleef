@@ -53,6 +53,8 @@ public class HeavySpleef extends JavaPlugin {
 	public static boolean hasVault;
 	public static Economy econ;
 	
+	public static String PREFIX = "[Spleef]"; 
+
 	public YamlDatabase database;
 	public IStatisticDatabase statisticDatabase;
 	
@@ -63,6 +65,8 @@ public class HeavySpleef extends JavaPlugin {
 		config = new FileConfig(this);
 		database = new YamlDatabase();
 		database.load();
+		PREFIX = getConfig().getString("general.spleef-prefix");
+		
 		LanguageHandler.loadLanguageFiles();
 		UpdateChecker.check();
 		

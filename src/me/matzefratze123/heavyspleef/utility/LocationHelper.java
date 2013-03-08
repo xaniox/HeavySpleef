@@ -20,34 +20,8 @@
 package me.matzefratze123.heavyspleef.utility;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 
 public class LocationHelper {
-	
-	public static boolean isInsideRegion(Block toCheck, Location corner1, Location corner2) {
-		return isInsideRegion(toCheck.getLocation(), corner1, corner2);
-	}
-	
-	public static boolean isInsideRegion(Location toCheck, Location corner1, Location corner2) {
-		int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
-		int maxX = Math.max(corner1.getBlockX(), corner2.getBlockX());
-		
-		int minY = Math.min(corner1.getBlockY(), corner2.getBlockY());
-		int maxY = Math.max(corner1.getBlockY(), corner2.getBlockY());
-		
-		int minZ = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
-		int maxZ = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
-		
-		if (!toCheck.getWorld().getName().equalsIgnoreCase(corner1.getWorld().getName()))
-			return false;
-		if (toCheck.getBlockX() > maxX || toCheck.getBlockX() < minX)
-			return false;
-		if (toCheck.getBlockY() > maxY || toCheck.getBlockY() < minY)
-			return false;
-		if (toCheck.getBlockZ() > maxZ || toCheck.getBlockZ() < minZ)
-			return false;
-		return true;
-	}
 	
 	public static double getDistance2D(Location loc1, Location loc2) {
 		

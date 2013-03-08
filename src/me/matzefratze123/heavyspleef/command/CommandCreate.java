@@ -23,20 +23,20 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.selection.SelectionManager;
-import me.matzefratze123.heavyspleef.utility.LocationHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandCreate extends HSCommand {
 
 	public CommandCreate() {
-		setMaxArgs(1);
-		setMinArgs(1);
+		setMaxArgs(4);
+		setMinArgs(2);
 		setOnlyIngame(true);
 		setPermission(Permissions.CREATE_GAME.getPerm());
-		setUsage("/spleef create <Name>");
+		setUsage("/spleef create <name> <cuboid|cylinder <radius> <height>>");
 	}
 	
 	@Override
@@ -46,29 +46,56 @@ public class CommandCreate extends HSCommand {
 			player.sendMessage(_("arenaAlreadyExists"));
 			return;
 		}
-		SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
 		
-		if (!selManager.hasSelection(player) || selManager.getFirstSelection(player) == null || selManager.getSecondSelection(player) == null) {
-			player.sendMessage(_("needSelection"));
-			return;
-		}
-		if (selManager.isTroughWorlds(player)) {
-			player.sendMessage(_("selectionCantTroughWorlds"));
-			return;
-		}
-		
-		for (Game game : GameManager.getGames()) {
-			if (LocationHelper.isInsideRegion(selManager.getFirstSelection(player), game.getFirstCorner(), game.getSecondCorner())) {
-				player.sendMessage(_("arenaCantBeInsideAnother"));
+		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
+			//Create a new cylinder game
+			//TODO WorldEdit check
+			if (args.length < 4) {
+				player.sendMessage(getUsage());
 				return;
 			}
-			if (LocationHelper.isInsideRegion(selManager.getSecondSelection(player), game.getFirstCorner(), game.getSecondCorner())) {
-				player.sendMessage(_("arenaCantBeInsideAnother"));
+			for (Game game : GameManager.getGames()) {
+				if (game.contains(player.getLocation())) {
+					player.sendMessage(_("arenaCantBeInsideAnother"));
+					return;
+				}
+			}
+			try {
+				int radius = Integer.parseInt(args[2]);
+				int height = Integer.parseInt(args[3]);
+				
+				Location center = player.getLocation();
+				
+				int minY = center.getBlockY();
+				int maxY = center.getBlockY() + height;
+				
+				GameManager.createCylinderGame(args[0].toLowerCase(), center, radius, minY, maxY);
+			} catch (NumberFormatException e) {
+				player.sendMessage(_("notANumber", args[2]));
 				return;
 			}
+			
+		} else if (args[1].equalsIgnoreCase("cuboid") || args[1].equalsIgnoreCase("cub")) {
+			//Create a new cuboid game
+			SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
+			if (!selManager.hasSelection(player) || selManager.getFirstSelection(player) == null || selManager.getSecondSelection(player) == null) {
+				player.sendMessage(_("needSelection"));
+				return;
+			}
+			if (selManager.isTroughWorlds(player)) {
+				player.sendMessage(_("selectionCantTroughWorlds"));
+				return;
+			}
+			
+			for (Game game : GameManager.getGames()) {
+				if (game.contains(selManager.getFirstSelection(player)) || game.contains(selManager.getSecondSelection(player))) {
+					player.sendMessage(_("arenaCantBeInsideAnother"));
+					return;
+				}
+			}
+			
+			GameManager.createCuboidGame(args[0].toLowerCase(), selManager.getFirstSelection(player), selManager.getSecondSelection(player));
 		}
-		
-		GameManager.createGame(args[0].toLowerCase(), selManager.getFirstSelection(player), selManager.getSecondSelection(player), true);
 		player.sendMessage(_("gameCreated"));
 	}
 

@@ -49,7 +49,7 @@ public class CommandStop extends HSCommand {
 			player.sendMessage(_("noGameRunning"));
 			return;
 		}
-		game.stop(false);
+		game.stop();
 	}
 
 }

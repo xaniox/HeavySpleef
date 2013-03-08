@@ -86,6 +86,7 @@ yourKnockOuts: &aВы победили: %a
 noLongerInQueue: &7Вас нет больше в очереди!
 leftQueue: &7Вы покинули очередь на игру %a
 addedToQueue: &7Вы находитесь в очереди на игру %a
+notInQueue: &7You are not in a queue!
 
 outOfGame: &cВы вышли из игры...
 spleefSignCreated: &aSpleef табличка успешно создана!
@@ -100,6 +101,10 @@ countdownSet: &aCountdown set to %a!
 
 shovelInfo: Current value: %a
 shovelToggled: Game with shovels was set to %a.
+
+chancesSet: &aThe chance amount of %a was binded to the game!
+chancesLeft: &cYou have %a chances left!
+chancesLeftBroadcast: &c%a has %a chances left!
 
 # Публичные сообщения
 

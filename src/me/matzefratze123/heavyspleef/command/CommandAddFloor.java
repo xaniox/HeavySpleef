@@ -21,13 +21,15 @@ package me.matzefratze123.heavyspleef.command;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
+import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.selection.SelectionManager;
-import me.matzefratze123.heavyspleef.utility.LocationHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -44,44 +46,31 @@ public class CommandAddFloor extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
-		
-		if (!selManager.hasSelection(player) || selManager.getFirstSelection(player) == null || selManager.getSecondSelection(player) == null) {
-			player.sendMessage(_("needSelection"));
-			return;
-		}
-		if (selManager.isTroughWorlds(player)) {
-			player.sendMessage(_("selectionCantTroughWorlds"));
-			return;
-		}
-		Game g = null;
-		Location loc1 = selManager.getFirstSelection(player);
-		Location loc2 = selManager.getSecondSelection(player);
+		Block block = player.getTargetBlock(null, 100);
 		
 		
-		for (Game game : GameManager.getGames()) {
-			if (LocationHelper.isInsideRegion(loc1, game.getFirstCorner(), game.getSecondCorner()) &&
-					LocationHelper.isInsideRegion(loc2, game.getFirstCorner(), game.getSecondCorner()))
-				g = game;
-		}
-		if (g == null) {
-			player.sendMessage(_("notInsideArena"));
-			return;
-		}
+		int blockID = 0;
+		byte data = 0;
 		
-		int id = 0;
-		while (g.hasFloor(id))
-			id++;
-		if (args.length == 1 && args[0].equalsIgnoreCase("given")) {
-			g.addFloor(selManager.getFirstSelection(player), selManager.getSecondSelection(player), id, -1, (byte)0, false, true);
-			player.sendMessage(_("floorCreated"));
-			return;
-		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("given"))
+			blockID = -1;
 		
-		if (args.length == 1) {
-			
-			int blockID = 35;
-			byte blockData = 0;
+		if (blockID == -1) {
+			for (Game game : GameManager.getGames()) {
+				if (!game.contains(block))
+					continue;
+				if (game.getType() != Type.CYLINDER)
+					continue;
+				GameCylinder cylGame = (GameCylinder) game;
+				Location center = cylGame.getCenter();
+				
+				game.addFloor(blockID, data, false, true, new Location(center.getWorld(), center.getBlockX(), block.getLocation().getBlockY(), center.getBlockZ()));
+				player.sendMessage(_("floorCreated"));
+				return;
+			}
+		}
+		//First check if the arguments are longer then one and get the blockID and data...
+		else if (args.length == 1) {
 			
 			try {
 				String[] split = args[0].split(":"); 
@@ -98,19 +87,68 @@ public class CommandAddFloor extends HSCommand {
 				}
 				
 				if (split.length > 1) {
-					blockData = Byte.parseByte(split[1]);
-					if (blockData > Byte.MAX_VALUE || blockData < Byte.MIN_VALUE) {
+					data = Byte.parseByte(split[1]);
+					if (data > Byte.MAX_VALUE || data < Byte.MIN_VALUE) {
 						player.sendMessage(_("toBigData"));
 						return;
 					}
 				}
-				g.addFloor(loc1, loc2, id, blockID, blockData, false, false);
 			} catch (NumberFormatException e) {
 				player.sendMessage(_("blockIDIsntNumber"));
 				return;
 			}
-		} else
-			g.addFloor(selManager.getFirstSelection(player), selManager.getSecondSelection(player), id, 35, (byte)0, true, false);
+		}
+		
+		for (Game game : GameManager.getGames()) {
+			if (game.contains(player.getLocation()) && game.getType() == Type.CYLINDER) {
+				boolean given = blockID == -1;
+				boolean wool = args.length < 1;
+				
+				if ((given && wool)) //A floor can't be wool and given. That would interrupt the floor...
+					return;
+				GameCylinder gameC = (GameCylinder)game; //Cast the game to a GameCylinder because we can be sure that it is one...
+				
+				Location center = gameC.getCenter();
+						
+				game.addFloor(blockID, data, wool, given, new Location(center.getWorld(), center.getBlockX(), player.getLocation().getBlockY(), center.getBlockZ()));
+				player.sendMessage(_("floorCreated"));
+				return;
+			}
+		}
+		//If the player does not stand inside a cylinder game, we are going to check for cuboid regions...
+		
+		SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
+		if (!selManager.hasSelection(player) || selManager.getFirstSelection(player) == null || selManager.getSecondSelection(player) == null) {
+			player.sendMessage(_("needSelection"));
+			return;
+		}
+		if (selManager.isTroughWorlds(player)) {
+			player.sendMessage(_("selectionCantTroughWorlds"));
+			return;
+		}
+		Game g = null;
+		Location loc1 = selManager.getFirstSelection(player);
+		Location loc2 = selManager.getSecondSelection(player);
+		
+		
+		for (Game game : GameManager.getGames()) {
+			if (game.contains(loc1) && game.contains(loc2))
+				g = game;
+		}
+		if (g == null) {
+			player.sendMessage(_("notInsideArena"));
+			return;
+		}
+		
+		if (blockID == -1) {
+			g.addFloor(0, (byte)0, false, true, loc1, loc2);
+			player.sendMessage(_("floorCreated"));
+			return;
+		}
+		
+		if (blockID > 0)
+			g.addFloor(blockID, data, false, false, loc1, loc2);
+		g.addFloor(35, (byte)0, true, false, loc1, loc2);
 		player.sendMessage(_("floorCreated"));
 	}
 

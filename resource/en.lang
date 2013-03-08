@@ -86,6 +86,7 @@ yourKnockOuts: &aYour knockouts: %a
 noLongerInQueue: &7You are not longer in queue!
 leftQueue: &7You left the queue for the game %a
 addedToQueue: &7You are now in queue for the game %a
+notInQueue: &7You are not in a queue!
 
 outOfGame: &cYou are out of the game...
 spleefSignCreated: &aSpleef sign sucessfully created!
@@ -100,6 +101,10 @@ countdownSet: &aCountdown set to %a!
 
 shovelInfo: Current value: %a
 shovelToggled: Game with shovels was set to %a.
+
+chancesSet: &aThe chance amount of %a was binded to the game!
+chancesLeft: &cYou have %a chances left!
+chancesLeftBroadcast: &c%a has %a chances left!
 
 # Broadcast Messages
 

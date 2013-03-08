@@ -21,7 +21,6 @@ package me.matzefratze123.heavyspleef.command;
 
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.core.GameState;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.command.CommandSender;
@@ -51,10 +50,8 @@ public class CommandDisable extends HSCommand {
 			player.sendMessage(_("gameIsAlreadyDisabled"));
 			return;
 		}
-		game.broadcast(_("gameDisabled", game.getName(), player.getName()));
-		if (game.isCounting() || game.isIngame() || game.isPreLobby())
-			game.stop(true);
-		game.setGameState(GameState.DISABLED);
+		
+		game.disable(player.getName());
 		player.sendMessage(_("gameDisabledToPlayer", game.getName()));
 	}
 

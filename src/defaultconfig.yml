@@ -25,6 +25,9 @@ general:
   # This works only if the globalBroadcast is set to false...
   broadcast-radius: 40
   
+  # Which spleef prefix should be used?
+  spleef-prefix: 'Spleef'
+  
   # Should player inventorys and other stuff (for expample health, foodlevel etc.) be cleared and saved?
   # The state of the player will be restored on leave, lose and win.
   savePlayerState: true
@@ -34,9 +37,6 @@ general:
   
   # Set the length of the default countdown until a game is starting
   countdownFrom: 10
-  
-  # Should an arena-cuboid be created on defining a new game?
-  generateArena: false
   
   # Default value of players that have to be in the lobby to start a game...
   neededPlayers: 2

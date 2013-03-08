@@ -21,9 +21,7 @@ package me.matzefratze123.heavyspleef.database;
 
 import java.io.File;
 
-import me.matzefratze123.heavyspleef.core.Cuboid;
-import me.matzefratze123.heavyspleef.core.Floor;
-import me.matzefratze123.heavyspleef.core.LoseZone;
+import me.matzefratze123.heavyspleef.core.region.LoseZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,11 +30,6 @@ import org.bukkit.WorldCreator;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-/**
- * Methods to parse Locations to Strings and back
- * 
- * @author matzefratze123
- */
 public class Parser {
 
 	public static String convertLocationtoString(Location location) {
@@ -81,37 +74,6 @@ public class Parser {
 		return new Location(world, x, y, z);
 	}
 	
-	public static String convertFloorToString(Floor f) {
-		int id = f.getId();
-		String base = id + ";" + convertLocationtoString(f.getFirstCorner()) + ";" + convertLocationtoString(f.getSecondCorner());
-		
-		if (f.wool)
-			return base + ";0;0"; 
-		return base + ";" + f.getBlockID() + ";" + f.getBlockData();
-	}
-	
-	public static String convertCuboidToString(Cuboid c) {
-		int id = c.getId();
-		return id + ";" + convertLocationtoString(c.getFirstCorner()) + ";" + convertLocationtoString(c.getSecondCorner());
-	}
-	
-	public static Floor convertStringToFloor(String s) {
-		String[] split = s.split(";");
-		
-		int id = Integer.parseInt(split[0]);
-		Location firstCorner = convertStringtoLocation(split[1]);
-		Location secondCorner = convertStringtoLocation(split[2]);
-		
-		int blockID = Integer.parseInt(split[3]);
-		byte data = Byte.parseByte(split[4]);
-		
-		if (blockID == 0)
-			return new Floor(id, firstCorner, secondCorner, 35, data, true, false);
-		else if (blockID == -1)
-			return new Floor(id, firstCorner, secondCorner, -1, data, false, true);
-		return new Floor(id, firstCorner, secondCorner, blockID, data, false, false);
-	}
-	
 	public static LoseZone convertStringToLosezone(String s) {
 		String[] split = s.split(";");
 		
@@ -120,6 +82,15 @@ public class Parser {
 		Location secondCorner = convertStringtoLocation(split[2]);
 		
 		return new LoseZone(secondCorner, firstCorner, id);
+	}
+	
+	public static String convertLoseZoneToString(LoseZone z) {
+		
+		int id = z.getId();
+		String firstCorner = convertLocationtoString(z.getFirstCorner());
+		String secondCorner = convertLocationtoString(z.getSecondCorner());
+		
+		return id + ";" + firstCorner + ";" + secondCorner;
 	}
 	
 	public static String convertPotionEffectToString(PotionEffect pe) {
@@ -136,5 +107,5 @@ public class Parser {
 		PotionEffectType type = PotionEffectType.getByName(split[0]);
 		return new PotionEffect(type, durationTicks, amplifier);
 	}
-	
+
 }

@@ -19,7 +19,7 @@
  */
 package me.matzefratze123.heavyspleef.listener;
 
-import me.matzefratze123.heavyspleef.core.Game;
+import me.matzefratze123.heavyspleef.core.GameCuboid;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
@@ -53,17 +53,17 @@ public class SignListener implements Listener {
 		if (!line1.equalsIgnoreCase("[Spleef]"))
 			return;
 		if (!p.hasPermission(Permissions.CREATE_SPLEEF_SIGN.getPerm())) {
-			p.sendMessage(Game._("notAllowedToCreateSpleefSigns"));
+			p.sendMessage(GameCuboid._("notAllowedToCreateSpleefSigns"));
 			block.breakNaturally();
 			return;
 		}
 		if (line2.equalsIgnoreCase("[Join]")) {
 			if (!GameManager.hasGame(line3.toLowerCase())) {
-				p.sendMessage(Game._("arenaDoesntExists"));
+				p.sendMessage(GameCuboid._("arenaDoesntExists"));
 				block.breakNaturally();
 				return;
 			}
-			p.sendMessage(Game._("spleefSignCreated"));
+			p.sendMessage(GameCuboid._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 			e.setLine(1, ChatColor.RED + "[Join]");
@@ -71,18 +71,18 @@ public class SignListener implements Listener {
 			e.setLine(3, "");
 		} else if (line2.equalsIgnoreCase("[Start]")) {
 			if (!GameManager.hasGame(line3.toLowerCase())) {
-				p.sendMessage(Game._("arenaDoesntExists"));
+				p.sendMessage(GameCuboid._("arenaDoesntExists"));
 				block.breakNaturally();
 				return;
 			}
-			p.sendMessage(Game._("spleefSignCreated"));
+			p.sendMessage(GameCuboid._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 			e.setLine(1, ChatColor.RED + "[Start]");
 			e.setLine(2, line3);
 			e.setLine(3, "");
 		} else if (line2.equalsIgnoreCase("[Leave]")) {
-			p.sendMessage(Game._("spleefSignCreated"));
+			p.sendMessage(GameCuboid._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 			e.setLine(1, ChatColor.RED + "[Leave]");
@@ -119,21 +119,21 @@ public class SignListener implements Listener {
 		
 		if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Join]")) {
 			if (!p.hasPermission(Permissions.SIGN_JOIN.getPerm())) {
-				p.sendMessage(Game._("noPermission"));
+				p.sendMessage(GameCuboid._("noPermission"));
 				return;
 			}
 			
 			p.performCommand("spleef join " + line3.toLowerCase());
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Start]")) {
 			if (!p.hasPermission(Permissions.SIGN_START.getPerm())) {
-				p.sendMessage(Game._("noPermission"));
+				p.sendMessage(GameCuboid._("noPermission"));
 				return;
 			}
 			
 			p.performCommand("spleef start " + line3.toLowerCase());
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Leave]")) {
 			if (!p.hasPermission(Permissions.SIGN_LEAVE.getPerm())) {
-				p.sendMessage(Game._("noPermission"));
+				p.sendMessage(GameCuboid._("noPermission"));
 				return;
 			}
 			

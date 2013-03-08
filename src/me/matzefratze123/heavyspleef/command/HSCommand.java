@@ -67,7 +67,7 @@ public abstract class HSCommand {
 	}
 	
 	String getUsage() {
-		return ChatColor.RED + "[HeavySpleef] " + usage;
+		return ChatColor.RED + "[" + plugin.getConfig().getString("general.spleef-prefix") + "] " + usage;
 	}
 	
 	String getExactUsage() {
@@ -83,7 +83,7 @@ public abstract class HSCommand {
 	}
 	
 	public static String _(String... key) {
-		return ChatColor.RED + "[" + ChatColor.GOLD + "HeavySpleef" + ChatColor.RED + "] " + ChatColor.RESET + LanguageHandler._(key);
+		return ChatColor.RED + "[" + ChatColor.GOLD + plugin.getConfig().getString("general.spleef-prefix") + ChatColor.RED + "] " + ChatColor.RESET + LanguageHandler._(key);
 	}
 	
 	static void setPluginInstance(HeavySpleef instance) {

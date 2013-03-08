@@ -25,7 +25,6 @@ public enum LoseCause {
 	LEAVE,
 	KICK,
 	LOSE,
-	WIN,
 	UNKNOWN;
 	
 }

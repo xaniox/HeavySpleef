@@ -79,9 +79,9 @@ public class AntiCampingTask implements Runnable {
 		
 		if (current == this.warnAt) {
 			if (this.warn)
-				p.sendMessage(Game._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
+				p.sendMessage(GameCuboid._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
 		} else if (current >= this.teleportAt) {
-			p.sendMessage(Game._("antiCampTeleport"));
+			p.sendMessage(GameCuboid._("antiCampTeleport"));
 			teleportDown(p);
 			GameManager.antiCamping.put(p.getName(), 0);
 			return;

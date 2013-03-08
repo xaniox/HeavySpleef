@@ -17,38 +17,54 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package me.matzefratze123.heavyspleef.core;
+package me.matzefratze123.heavyspleef.core.region;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import me.matzefratze123.heavyspleef.utility.BlockInfo;
+import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.database.FloorLoader;
+import me.matzefratze123.heavyspleef.database.Parser;
+import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-public class Floor extends Cuboid {
-
-	private Random random = new Random();
-	private int blockID = 0;
-	private byte blockData = 0;
+public class FloorCuboid extends Floor {
 	
-	public  Map<Location, BlockInfo> givenFloor = new HashMap<Location, BlockInfo>();
-	public  boolean wool;
-	public  boolean useGivenFloor;
+	private Location firstCorner;
+	private Location secondCorner;
 	
-	public Floor(int id, Location corner1, Location corner2, int blockID, byte data, boolean wool, boolean givenFloor) {
-		super(corner1, corner2, id);
-		this.blockID = blockID;
-		this.blockData = data;
-		this.wool = wool;
-		this.useGivenFloor = givenFloor;
+	public FloorCuboid(int id, int y, Location corner1, Location corner2, int blockID, byte data, boolean wool, boolean givenFloor) {
+		super(id, blockID, data, wool, givenFloor, y);
+		
+		this.setFirstCorner(corner1);
+		this.setSecondCorner(corner2);
+		
 		if (givenFloor)
 			initFloor();
 	}
 	
+	public static FloorCuboid fromString(String fromString, String gameName) {
+		String[] split = fromString.split(";");
+		
+		int id = Integer.parseInt(split[0]);
+		Location firstCorner = Parser.convertStringtoLocation(split[1]);
+		Location secondCorner = Parser.convertStringtoLocation(split[2]);
+		
+		int blockID = Integer.parseInt(split[3]);
+		byte data = Byte.parseByte(split[4]);
+		int y = firstCorner.getBlockY();
+		
+		if (blockID == 0)
+			return new FloorCuboid(id, y, firstCorner, secondCorner, 35, data, true, false);
+		else if (blockID == -1) {
+			FloorCuboid floor =  new FloorCuboid(id, y, firstCorner, secondCorner, -1, data, false, true);
+			FloorLoader.loadFloor(floor, gameName);
+			return floor;
+		}
+		return new FloorCuboid(id, y, firstCorner, secondCorner, blockID, data, false, false);
+	}
+	
+	@Override
 	public void initFloor() {
 		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
 		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
@@ -65,7 +81,7 @@ public class Floor extends Cuboid {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
 					b = getFirstCorner().getWorld().getBlockAt(x, y, z);
-					givenFloor.put(b.getLocation(), new BlockInfo(b.getType(), b.getData(), x, y, z, getFirstCorner().getWorld().getName()));
+					givenFloorMap.put(b.getLocation(), new SimpleBlockData(b.getType(), b.getData(), x, y, z, getFirstCorner().getWorld().getName()));
 				}
 			}
 		}
@@ -87,8 +103,8 @@ public class Floor extends Cuboid {
 		
 		if (wool)
 			data = (byte)(random.nextInt(17) - 1);
-		else if (blockData > 0)
-			data = blockData;
+		else if (getData() > 0)
+			data = getData();
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
@@ -98,13 +114,15 @@ public class Floor extends Cuboid {
 					if (wool) {
 						currentBlock.setType(Material.WOOL);
 						currentBlock.setData(data);
-					} else if (useGivenFloor) {
-						BlockInfo b = givenFloor.get(currentBlock.getLocation());
+					} else if (givenFloor) {
+						SimpleBlockData b = givenFloorMap.get(currentBlock.getLocation());
+						if (b == null)
+							continue;
 						currentBlock.setType(b.getMaterial());
 						currentBlock.setData(b.getData());
 					} else {
-						currentBlock.setTypeId(blockID);
-						currentBlock.setData(blockData);
+						currentBlock.setTypeId(getBlockID());
+						currentBlock.setData(getData());
 					}
 				}
 			}
@@ -134,17 +152,60 @@ public class Floor extends Cuboid {
 			}
 		}
 	}
-	
-	public int getBlockID() {
-		return blockID;
+
+	public Location getFirstCorner() {
+		return firstCorner;
 	}
-	
-	public byte getBlockData() {
-		return blockData;
+
+	public void setFirstCorner(Location firstCorner) {
+		this.firstCorner = firstCorner;
 	}
-	
-	public void setGiven(boolean given) {
-		this.useGivenFloor = given;
+
+	public Location getSecondCorner() {
+		return secondCorner;
+	}
+
+	public void setSecondCorner(Location secondCorner) {
+		this.secondCorner = secondCorner;
+	}
+
+	@Override
+	public Type getType() {
+		return Type.CUBOID;
+	}
+
+	@Override
+	public String toString() {
+		int id = getId();
+		String base = id + ";" + Parser.convertLocationtoString(getFirstCorner()) + ";" + Parser.convertLocationtoString(getSecondCorner());
+		
+		if (isWoolFloor())
+			return base + ";0;0"; 
+		if (isGivenFloor())
+			return base + ";-1;0";
+		return base + ";" + getBlockID() + ";" + getData();
+	}
+
+	@Override
+	public boolean contains(Location toCheck) {
+		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
+		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
+		
+		int minY = Math.min(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
+		int maxY = Math.max(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
+		
+		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
+		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
+		
+		if (!toCheck.getWorld().getName().equalsIgnoreCase(getFirstCorner().getWorld().getName()))
+			return false;
+		if (toCheck.getBlockX() > maxX || toCheck.getBlockX() < minX)
+			return false;
+		if (toCheck.getBlockY() > maxY || toCheck.getBlockY() < minY)
+			return false;
+		if (toCheck.getBlockZ() > maxZ || toCheck.getBlockZ() < minZ)
+			return false;
+		return true;
 	}
 	
 }

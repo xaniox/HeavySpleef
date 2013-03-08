@@ -23,7 +23,6 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.selection.SelectionManager;
-import me.matzefratze123.heavyspleef.utility.LocationHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Location;
@@ -33,16 +32,20 @@ import org.bukkit.entity.Player;
 public class CommandAddLose extends HSCommand {
 
 	public CommandAddLose() {
-		setMaxArgs(0);
-		setMinArgs(0);
+		setMaxArgs(1);
+		setMinArgs(1);
 		setPermission(Permissions.ADD_LOSEZONE.getPerm());
 		setOnlyIngame(true);
-		setUsage("/spleef addlose");
+		setUsage("/spleef addlose <name>");
 	}
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
+		if (!GameManager.hasGame(args[0].toLowerCase())) {
+			player.sendMessage(_("arenaDoesntExists"));
+			return;
+		}
 		
 		SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
 		
@@ -55,26 +58,11 @@ public class CommandAddLose extends HSCommand {
 			return;
 		}
 		
-		Game g = null;
+		Game g = GameManager.getGame(args[0]);
 		Location loc1 = selManager.getFirstSelection(player);
 		Location loc2 = selManager.getSecondSelection(player);
-		
-		
-		for (Game game : GameManager.getGames()) {
-			if (LocationHelper.isInsideRegion(loc1, game.getFirstCorner(), game.getSecondCorner()) &&
-					LocationHelper.isInsideRegion(loc2, game.getFirstCorner(), game.getSecondCorner()))
-				g = game;
-		}
-		if (g == null) {
-			player.sendMessage(_("notInsideArena"));
-			return;
-		}
-		
-		int id = 0;
-		while (g.hasLoseZone(id))
-			id++;
 	
-		g.addLoseZone(id, selManager.getFirstSelection(player), selManager.getSecondSelection(player));
+		int id = g.addLoseZone(loc1, loc2);
 		player.sendMessage(_("loseZoneCreated", String.valueOf(id), g.getName(), String.valueOf(id)));
 	}
 

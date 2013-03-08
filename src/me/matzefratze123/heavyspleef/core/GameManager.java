@@ -25,9 +25,6 @@ import java.util.Map;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class GameManager {
@@ -39,6 +36,7 @@ public class GameManager {
 	public static Map<String, String> queues = new HashMap<String, String>();
 	
 	public static Game getGame(String id) {
+		id = id.toLowerCase();
 		return games.get(id);
 	}
 	
@@ -46,11 +44,17 @@ public class GameManager {
 		return games.values().toArray(new Game[games.size()]);
 	}
 	
-	public static Game createGame(String id, Location firstCorner, Location secondCorner, boolean generateArena) {
-		games.put(id, new Game(firstCorner, secondCorner, id));
+	public static Game createCuboidGame(String id, Location firstCorner, Location secondCorner) {
+		games.put(id, new GameCuboid(firstCorner, secondCorner, id));
 		if (HeavySpleef.instance.getConfig().getBoolean("general.generateArena"))
-			if (generateArena)
-				createGlasArena(getGame(id));
+			getGame(id).generate();
+		return getGame(id);
+	}
+	
+	public static Game createCylinderGame(String id, Location center, int radius, int minY, int maxY) {
+		games.put(id, new GameCylinder(id, center, radius, minY, maxY));
+		if (HeavySpleef.instance.getConfig().getBoolean("general.generateArena"))
+			getGame(id).generate();
 		return getGame(id);
 	}
 	
@@ -59,6 +63,7 @@ public class GameManager {
 	}
 	
 	public static boolean hasGame(String id) {
+		id = id.toLowerCase();
 		return games.containsKey(id);
 	}
 	
@@ -89,10 +94,16 @@ public class GameManager {
 	}
 	
 	public static void addQueue(Player p, String gameName) {
+		gameName = gameName.toLowerCase();
 		if (queues.containsKey(p.getName()))
 			p.sendMessage(Game._("leftQueue", queues.get(p.getName())));
 		p.sendMessage(Game._("addedToQueue", gameName));
 		queues.put(p.getName(), gameName);
+	}
+	
+	public static void removeFromQueue(Player player) {
+		queues.remove(player.getName());
+		player.sendMessage(Game._("noLongerInQueue"));
 	}
 	
 	public static boolean isInQueue(Player p) {
@@ -104,117 +115,11 @@ public class GameManager {
 	}
 	
 	public static void removeAllPlayersFromGameQueue(String gameName) {
+		gameName = gameName.toLowerCase();
 		for (String player : queues.keySet()) {
 			if (queues.get(player).equalsIgnoreCase(gameName))
 				queues.remove(player);
 		}
-	}
-	
-	private static void createGlasArena(Game game) {
-		
-		Location loc1 = game.getFirstCorner();
-		Location loc2 = game.getSecondCorner();
-		
-		int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
-		int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
-		
-		int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
-		int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
-		
-		int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
-		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
-		
-		World world = loc1.getWorld();
-		Block currentBlock;
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(x, minY, z);
-				if (currentBlock.getType() == Material.AIR || !isSolid(currentBlock))
-					currentBlock.setType(Material.OBSIDIAN);
-			}
-		}
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(x, maxY, z);
-				if (currentBlock.getType() == Material.AIR || !isSolid(currentBlock))
-					currentBlock.setType(Material.GLOWSTONE);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(minX, y, z);
-				if (currentBlock.getType() == Material.AIR || !isSolid(currentBlock))
-					currentBlock.setTypeId(20);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(maxX, y, z);
-				if (currentBlock.getType() == Material.AIR || !isSolid(currentBlock))
-					currentBlock.setTypeId(20);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int x = minX; x <= maxX; x++) {
-				currentBlock = world.getBlockAt(x, y, minZ);
-				if (currentBlock.getType() == Material.AIR || !isSolid(currentBlock))
-					currentBlock.setTypeId(20);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int x = minX; x <= maxX; x++) {
-				currentBlock = world.getBlockAt(x, y, maxZ);
-				if (currentBlock.getType() == Material.AIR || !isSolid(currentBlock))
-					currentBlock.setTypeId(20);
-				
-			}
-		}
-		
-		emptyInnerArena(game);
-	}
-	
-	private static void emptyInnerArena(Game game) {
-		Location loc1 = game.getFirstInnerCorner();
-		Location loc2 = game.getSecondInnerCorner();
-		
-		World world = loc1.getWorld();
-		
-		int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
-		int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
-		
-		int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
-		int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
-		
-		int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
-		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int y = minY; y <= maxY; y++) {
-				for (int z = minZ; z <= maxZ; z++) {
-					world.getBlockAt(x, y, z).setType(Material.AIR);
-				}
-			}
-		}
-	}
-	
-	public static boolean isSolid(Block block) {
-		int[] solidIDs = new int[] {1,2,3,4,5,7,12,13,14,15,16,17,18,19,
-											29,33,35,41,42,43,44,45,46,477,48,49,
-											52,53,54,56,57,58,61,6267,68,69,73,74,
-											79,80,82,84,86,87,88,89,91,95,97,98,
-											103,108,109,110,112,113,114,116,118,
-											120,121,123,124,125,128,129,130,133,
-											134,135,136,137,138,152,153,155,158};
-		for (int s : solidIDs)
-			if (s == block.getTypeId())
-				return true;
-		return false;
 	}
 
 	public static boolean isInAnyGameIngame(Player p) {

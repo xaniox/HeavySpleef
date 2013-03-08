@@ -17,20 +17,31 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package me.matzefratze123.heavyspleef.core;
+package me.matzefratze123.heavyspleef.core.region;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 
-public class LoseZone extends Cuboid {
+public abstract class RegionBase {
 
-	public LoseZone(Location loc1, Location loc2, int id) {
-		super(loc1, loc2, id);
+	private int id;
+	
+	protected RegionBase(int id) {
+		this.setId(id);
+	}
+	
+	public abstract boolean contains(Location l);
+	
+	public boolean contains(Block b) {
+		return contains(b.getLocation());
 	}
 
-	@Override
-	public void create() {}
+	public int getId() {
+		return id;
+	}
 
-	@Override
-	public void remove() {}
-
+	protected void setId(int id) {
+		this.id = id;
+	}
+	
 }

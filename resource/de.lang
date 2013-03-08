@@ -85,6 +85,7 @@ yourKnockOuts: &aDeine Knockouts: %a
 noLongerInQueue: &7Du bist nicht länger in der Warteschlange!
 leftQueue: &7Du hast das die Warteschlange für das Spiel %a verlassen!
 addedToQueue: &7Du bist nun in der Warteschlange für das Spiel %a
+notInQueue: &7Du bist in keiner Warteschlange!
 
 outOfGame: &cDu hast verloren!
 spleefSignCreated: &aSpleef Schild erfolgreich erstellt!
@@ -99,6 +100,10 @@ countdownSet: &aDer Countdown wurde zu %a gesetzt!
 
 shovelInfo: Derzeitiger Wert: %a
 shovelToggled: Spiel mit Schaufeln auf %a gesetzt.
+
+chancesSet: &aChancenanzahl von %a wurde an das Spiel gebunden!
+chancesLeft: &cDir verbleiben noch %a Chancen!
+chancesLeftBroadcast: &c%a hat noch %a Chancen!
 
 # Broadcast nachrichten
 

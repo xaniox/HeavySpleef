@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package me.matzefratze123.heavyspleef.utility;
+package me.matzefratze123.heavyspleef.database;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,8 +27,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
 
-import me.matzefratze123.heavyspleef.core.Floor;
 import me.matzefratze123.heavyspleef.core.Game;
+import me.matzefratze123.heavyspleef.core.region.Floor;
+import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Location;
 
@@ -41,10 +42,10 @@ public class FloorLoader {
 				file.createNewFile();
 			
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			Set<Location> keySet = f.givenFloor.keySet();
+			Set<Location> keySet = f.givenFloorMap.keySet();
 			
 			for (Location loc : keySet) {
-				BlockInfo info = f.givenFloor.get(loc);
+				SimpleBlockData info = f.givenFloorMap.get(loc);
 				writer.write(info.toString() + "\n");
 			}
 			
@@ -66,9 +67,10 @@ public class FloorLoader {
 			String line;
 			
 			while ((line = reader.readLine()) != null) {
-				BlockInfo info = new BlockInfo(line);
+				SimpleBlockData info = new SimpleBlockData(line);
 				Location loc = info.getLocation();
-				floor.givenFloor.put(loc, info);
+				
+				floor.givenFloorMap.put(loc, info);
 			}
 			
 			reader.close();

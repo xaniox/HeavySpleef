@@ -20,7 +20,6 @@
 package me.matzefratze123.heavyspleef.command;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.core.CountingTask;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.utility.Permissions;
@@ -99,7 +98,7 @@ public class CommandJoin extends HSCommand {
 			return false;
 		}
 		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown")) {
-			player.teleport(CountingTask.getRandomSpleefLocation(game));
+			player.teleport(game.getRandomLocation());
 			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
 			game.addPlayer(player);
 			return true;

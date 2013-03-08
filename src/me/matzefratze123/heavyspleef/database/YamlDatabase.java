@@ -19,6 +19,13 @@
  */
 package me.matzefratze123.heavyspleef.database;
 
+import static me.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
+import static me.matzefratze123.heavyspleef.database.Parser.convertLoseZoneToString;
+import static me.matzefratze123.heavyspleef.database.Parser.convertPotionEffectToString;
+import static me.matzefratze123.heavyspleef.database.Parser.convertStringToLosezone;
+import static me.matzefratze123.heavyspleef.database.Parser.convertStringToPotionEffect;
+import static me.matzefratze123.heavyspleef.database.Parser.convertStringtoLocation;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,13 +36,16 @@ import java.util.List;
 import java.util.Map;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.core.Cuboid;
-import me.matzefratze123.heavyspleef.core.Floor;
 import me.matzefratze123.heavyspleef.core.Game;
+import me.matzefratze123.heavyspleef.core.GameCuboid;
+import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.GameState;
-import me.matzefratze123.heavyspleef.core.LoseZone;
-import me.matzefratze123.heavyspleef.utility.FloorLoader;
+import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.region.Floor;
+import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
+import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
+import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 
@@ -100,143 +110,203 @@ public class YamlDatabase {
 		int count = 0;
 		
 		for (String key : db.getKeys(false)) {
-			ConfigurationSection section = getConfigurationSection(key);
+			ConfigurationSection section = db.getConfigurationSection(key);
 			
-			Location firstCorner = Parser.convertStringtoLocation(section.getString("firstCorner"));
-			Location secondCorner = Parser.convertStringtoLocation(section.getString("secondCorner"));
-			
-			if (firstCorner == null)
-				continue;
-			
-			List<String> floorsAsStrings = section.getStringList("floors");
-			List<Floor> floors = new ArrayList<Floor>();
-			if (floorsAsStrings != null) {
-				for (String floor : floorsAsStrings)
-					floors.add(Parser.convertStringToFloor(floor));
-			}
-			
-			List<String> loseZonesAsString = section.getStringList("losezones");
-			List<LoseZone> loseZones = new ArrayList<LoseZone>();
-			if (loseZonesAsString != null) {
-				for (String loseZone : loseZonesAsString)
-					loseZones.add(Parser.convertStringToLosezone(loseZone));
-			}
-			
-			Location winPoint = Parser.convertStringtoLocation(section.getString("winPoint"));
-			Location losePoint = Parser.convertStringtoLocation(section.getString("losePoint"));
-			Location preGamePoint = Parser.convertStringtoLocation(section.getString("preGamePoint"));
-			
-			int money = section.getInt("money");
-			int reward = section.getInt("reward");
-			int minPlayers = section.getInt("minPlayers");
-			int countdown = section.getInt("countdown");
-			if (countdown <= 0)
-				countdown = plugin.getConfig().getInt("general.countdownFrom");
-			
-			boolean startOnMinPlayers = section.getBoolean("startOnMinPlayers");
-			boolean useShovels = section.getBoolean("shovels");
-			
-			Game game = GameManager.createGame(key, firstCorner, secondCorner, false);
-			for (Floor floor : floors) {
-				game.addFloor(floor, false);
-				if (floor.useGivenFloor)
-					FloorLoader.loadFloor(floor, key);
-			}
-			for (LoseZone loseZone : loseZones)
-				game.addLoseZone(loseZone);
-			
-			game.setWinPoint(winPoint);
-			game.setLosePoint(losePoint);
-			game.setPreGamePoint(preGamePoint);
-			game.setGameState(GameState.NOT_INGAME);
-			game.setJackpotToPay(money);
-			game.setReward(reward);
-			game.setCountdown(countdown);
-			game.setStartOnMinPlayers(startOnMinPlayers);
-			game.setShovels(useShovels);
-			game.setNeededPlayers(minPlayers);
-			
-			List<String> wereOfflineConfigList = section.getStringList("wereOfflineAtShutdown");
-			List<String> wereOffline = new ArrayList<String>();
-			if (wereOfflineConfigList != null) {
-				for (String offlinePlayer : wereOfflineConfigList) {
-					Player p = Bukkit.getPlayer(offlinePlayer);
-					if (p == null)
-						wereOffline.add(offlinePlayer);
-					else {
-						p.teleport(game.getLosePoint());
-						p.sendMessage(ChatColor.RED + "A reload of the server has stopped the game and you were teleported out of it!");
-						if (plugin.getConfig().getBoolean("general.savePlayerState"))
-							PlayerStateManager.restorePlayerState(p);
-					}
-				}
-			}
-			game.wereOffline.addAll(wereOffline);
+			if (section.getString("type") == null || Type.valueOf(section.getString("type")) == Type.CUBOID)
+				loadCuboid(section);
+			else if (Type.valueOf(section.getString("type")) == Type.CYLINDER)
+				loadCylinder(section);
 			count++;
-			section.set("wereOfflineAtShutdown", null);
 		}
 		
 		plugin.getLogger().info("Loaded " + count + " games!");
-		try {
-			db.save(databaseFile);
-		} catch (IOException e) {
-			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
-			e.printStackTrace();
-		}
+		saveConfig();
 	}
 
 	public void save(boolean savePlayerStates) {
 		for (Game game : GameManager.getGames()) {
 			ConfigurationSection section = db.createSection(game.getName());
 			
-			section.set("firstCorner", Parser.convertLocationtoString(game.getFirstCorner()));
-			section.set("secondCorner", Parser.convertLocationtoString(game.getSecondCorner()));
-			
-			List<String> floorsAsList = new ArrayList<String>();
-			List<String> loseZonesAsList = new ArrayList<String>();
-			List<String> wereOffline = game.players;
-			
-			for (Floor f : game.getFloors()) {
-				floorsAsList.add(Parser.convertFloorToString(f));
-				f.create();
-				
-				if (f.useGivenFloor)
-					FloorLoader.saveFloor(f, game);
-			}
-			
-			for (Cuboid c : game.getLoseZones())
-				loseZonesAsList.add(Parser.convertCuboidToString(c));
-			
-			section.set("floors", floorsAsList);
-			section.set("losezones", loseZonesAsList);
-			section.set("wereOfflineAtShutdown", wereOffline);
-			section.set("money", game.getJackpotToPay());
-			section.set("reward", game.getReward());
-			section.set("minPlayers", game.getNeededPlayers());
-			section.set("countdown", game.getCountdown());
-			section.set("startOnMinPlayers", game.startsOnMinPlayers());
-			section.set("shovels", game.isShovels());
-			
-			if (game.getWinPoint() != null)
-				section.set("winPoint", Parser.convertLocationtoString(game.getWinPoint()));
-			
-			if (game.getLosePoint() != null)
-				section.set("losePoint", Parser.convertLocationtoString(game.getLosePoint()));
-			
-			if (game.getPreGamePoint() != null)
-				section.set("preGamePoint", Parser.convertLocationtoString(game.getPreGamePoint()));
-			
+			saveBasics(game, section);
+			if (game.getType() == Type.CUBOID)
+				saveCuboid((GameCuboid) game, section);
+			else if (game.getType() == Type.CYLINDER)
+				saveCylinder((GameCylinder) game, section);
 		}
 		
 		if (savePlayerStates)
 			savePlayerStates();
+		saveConfig();
+	}
+	
+	private void saveCuboid(GameCuboid game, ConfigurationSection section) {
+		if (game.getType() != Type.CUBOID)
+			return;
+		section.set("firstCorner", convertLocationtoString(game.getFirstCorner()));
+		section.set("secondCorner", convertLocationtoString(game.getSecondCorner()));
 		
-		try {
-			db.save(databaseFile);
-		} catch (IOException e) {
-			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
-			e.printStackTrace();
+		List<String> floorsAsList = new ArrayList<String>();
+		List<FloorCuboid> floors = new ArrayList<FloorCuboid>();
+		
+		for (Floor f : game.getFloors())
+			floors.add((FloorCuboid)f);
+		
+		for (FloorCuboid f : floors) {
+			floorsAsList.add(f.toString());
+			f.create();
+			
+			if (f.isGivenFloor())
+				FloorLoader.saveFloor(f, game);
 		}
+	}
+	
+	
+	private void saveCylinder(GameCylinder game, ConfigurationSection section) {
+		if (game.getType() != Type.CYLINDER)
+			return;
+		section.set("center", convertLocationtoString(game.getCenter()));
+		section.set("radius", game.getRadius());
+		section.set("minY", game.getMinY());
+		section.set("maxY", game.getMaxY());
+		
+		List<String> floorsAsList = new ArrayList<String>();
+		List<FloorCylinder> floors = new ArrayList<FloorCylinder>();
+		
+		for (Floor f : game.getFloors())
+			floors.add((FloorCylinder)f);
+		
+		for (FloorCylinder c : floors) {
+			floorsAsList.add(c.toString());
+			c.create();
+			
+			if (c.isGivenFloor())
+				FloorLoader.saveFloor(c, game);
+		}
+		
+		section.set("floors", floorsAsList);
+	}
+	
+	private void loadCuboid(ConfigurationSection section) {
+		String name = section.getName();
+		
+		Location firstCorner = convertStringtoLocation(section.getString("firstCorner"));
+		Location secondCorner = convertStringtoLocation(section.getString("secondCorner"));
+		
+		if (firstCorner == null)
+			return;
+		if (secondCorner == null)
+			return;
+		
+		Game game = GameManager.createCuboidGame(name, firstCorner, secondCorner);
+		
+		List<String> floorsAsStrings = section.getStringList("floors");
+		if (floorsAsStrings != null) {
+			for (String floor : floorsAsStrings)
+				game.addFloor(FloorCuboid.fromString(floor, game.getName()), true);
+		}
+		
+		loadBasics(section, game);
+	}
+	
+	private void loadCylinder(ConfigurationSection section) {
+		String name = section.getName();
+		
+		Location center = convertStringtoLocation(section.getString("center"));
+		int radius = section.getInt("radius");
+		int minY = section.getInt("minY");
+		int maxY = section.getInt("maxY");
+		
+		Game game = GameManager.createCylinderGame(name, center, radius, minY, maxY);
+		
+		List<String> floorsAsStrings = section.getStringList("floors");
+		if (floorsAsStrings != null) {
+			for (String floor : floorsAsStrings)
+				game.addFloor(FloorCylinder.fromString(floor, game.getName()), true);
+		}
+		
+		loadBasics(section, game);
+	}
+	
+	private void loadBasics(ConfigurationSection section, Game game) {
+		
+		List<String> loseZonesAsString = section.getStringList("losezones");
+		List<LoseZone> loseZones = new ArrayList<LoseZone>();
+		if (loseZonesAsString != null) {
+			for (String loseZone : loseZonesAsString)
+				loseZones.add(convertStringToLosezone(loseZone));
+		}
+		
+		Location winPoint = convertStringtoLocation(section.getString("winPoint"));
+		Location losePoint = convertStringtoLocation(section.getString("losePoint"));
+		Location preGamePoint = convertStringtoLocation(section.getString("preGamePoint"));
+		
+		int money = section.getInt("money");
+		int reward = section.getInt("reward");
+		int minPlayers = section.getInt("minPlayers");
+		int countdown = section.getInt("countdown");
+		if (countdown <= 0)
+			countdown = plugin.getConfig().getInt("general.countdownFrom");
+		
+		boolean startOnMinPlayers = section.getBoolean("startOnMinPlayers");
+		boolean useShovels = section.getBoolean("shovels");
+		
+		for (LoseZone loseZone : loseZones)
+			game.addLoseZone(loseZone);
+		
+		game.setWinPoint(winPoint);
+		game.setLosePoint(losePoint);
+		game.setPreGamePoint(preGamePoint);
+		game.setGameState(GameState.NOT_INGAME);
+		game.setJackpotToPay(money);
+		game.setReward(reward);
+		game.setCountdown(countdown);
+		game.setStartOnMinPlayers(startOnMinPlayers);
+		game.setShovels(useShovels);
+		game.setNeededPlayers(minPlayers);
+		
+		List<String> wereOfflineConfigList = section.getStringList("wereOfflineAtShutdown");
+		List<String> wereOffline = new ArrayList<String>();
+		if (wereOfflineConfigList != null) {
+			for (String offlinePlayer : wereOfflineConfigList) {
+				Player p = Bukkit.getPlayer(offlinePlayer);
+				if (p == null)
+					wereOffline.add(offlinePlayer);
+				else {
+					p.teleport(game.getLosePoint());
+					p.sendMessage(ChatColor.RED + "A reload of the server has stopped the game and you were teleported out of it!");
+				}
+			}
+		}
+		game.wereOffline.addAll(wereOffline);
+		section.set("wereOfflineAtShutdown", null);
+	}
+	
+	private void saveBasics(Game game, ConfigurationSection section) {
+		section.set("type", game.getType().name());
+		
+		List<String> loseZonesAsList = new ArrayList<String>();
+		List<String> wereOffline = game.players;
+		
+		for (LoseZone c : game.getLoseZones())
+			loseZonesAsList.add(convertLoseZoneToString(c));
+		
+		section.set("losezones", loseZonesAsList);
+		section.set("wereOfflineAtShutdown", wereOffline);
+		section.set("money", game.getJackpotToPay());
+		section.set("reward", game.getReward());
+		section.set("minPlayers", game.getNeededPlayers());
+		section.set("countdown", game.getCountdown());
+		section.set("startOnMinPlayers", game.startsOnMinPlayers());
+		section.set("shovels", game.isShovels());
+		
+		if (game.getWinPoint() != null)
+			section.set("winPoint", convertLocationtoString(game.getWinPoint()));
+		
+		if (game.getLosePoint() != null)
+			section.set("losePoint", convertLocationtoString(game.getLosePoint()));
+		
+		if (game.getPreGamePoint() != null)
+			section.set("preGamePoint", convertLocationtoString(game.getPreGamePoint()));
 	}
 
 	private void savePlayerStates() {
@@ -274,7 +344,7 @@ public class YamlDatabase {
 			section.set("gamemode", state.getGm().getValue());
 			
 			for (PotionEffect pe : state.getPotioneffects())
-				potionEffects.add(Parser.convertPotionEffectToString(pe));
+				potionEffects.add(convertPotionEffectToString(pe));
 			section.set("potioneffects", potionEffects);
 			
 		}
@@ -317,7 +387,7 @@ public class YamlDatabase {
 			
 			Collection<PotionEffect> pe = new ArrayList<PotionEffect>();
 			for (String peString : section.getStringList("potioneffects"))
-				pe.add(Parser.convertStringToPotionEffect(peString));
+				pe.add(convertStringToPotionEffect(peString));
 			
 			PlayerStateManager.states.put(key, new PlayerState(invContents, helmet, chestplate, leggings, boots, saturation, exhaustion, foodLevel, health, gm, pe, exp, level));
 			statsdb.set(key, null);
@@ -333,6 +403,15 @@ public class YamlDatabase {
 
 	public ConfigurationSection getConfigurationSection(String name) {
 		return db.getConfigurationSection(name);
+	}
+	
+	public void saveConfig() {
+		try {
+			db.save(databaseFile);
+		} catch (IOException e) {
+			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
+			e.printStackTrace();
+		}
 	}
 	
 }

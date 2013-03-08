@@ -22,7 +22,7 @@ package me.matzefratze123.heavyspleef.utility;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.matzefratze123.heavyspleef.core.Game;
+import me.matzefratze123.heavyspleef.core.GameCuboid;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -61,7 +61,7 @@ public class PlayerStateManager {
 	public static void restorePlayerState(Player p) {
 		PlayerState state = states.get(p.getName());
 		if (state == null) {
-			p.sendMessage(Game._("errorOnState"));
+			p.sendMessage(GameCuboid._("errorOnState"));
 			return;
 		}
 		
@@ -79,7 +79,7 @@ public class PlayerStateManager {
 		p.addPotionEffects(state.getPotioneffects());
 		p.setExhaustion(state.getExhaustion());
 		p.setSaturation(state.getSaturation());
-		p.sendMessage(Game._("stateRestored"));
+		p.sendMessage(GameCuboid._("stateRestored"));
 		p.updateInventory();
 		states.remove(p.getName());
 	}

@@ -19,10 +19,9 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
-import me.matzefratze123.heavyspleef.core.Cuboid;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.utility.LocationHelper;
+import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.block.Block;
@@ -48,8 +47,8 @@ public class CommandRemoveFloor extends HSCommand {
 			return;
 		}
 		for (Game game : GameManager.getGames()) {
-			for (Cuboid floor : game.getFloors()) {
-				if (LocationHelper.isInsideRegion(block, floor.getFirstCorner(), floor.getSecondCorner())) {
+			for (Floor floor : game.getFloors()) {
+				if (floor.contains(block)) {
 					if (game.isIngame() || game.isCounting()) {
 						player.sendMessage(_("cantRemoveFloorWhileRunning"));
 						return;

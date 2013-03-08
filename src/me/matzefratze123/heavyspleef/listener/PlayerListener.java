@@ -23,14 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.core.Cuboid;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
+import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.utility.LocationHelper;
 import me.matzefratze123.heavyspleef.utility.MaterialNameHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
+import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -83,9 +84,11 @@ public class PlayerListener implements Listener {
 		if (loseOnTouchWaterOrLava && (to.getBlock().getType() == Material.STATIONARY_WATER || to.getBlock().getType() == Material.STATIONARY_LAVA))
 			out(p, game);
 			
-		for (Cuboid loseZone : game.getLoseZones()) {
-			if (LocationHelper.isInsideRegion(to, loseZone.getFirstCorner(), loseZone.getSecondCorner()))
+		for (LoseZone loseZone : game.getLoseZones()) {
+			if (loseZone.contains(to)) {
 				out(p, game);
+				return;
+			}
 		}
 		
 	}
@@ -104,7 +107,7 @@ public class PlayerListener implements Listener {
 		}, 20L);
 	}
 	
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		Block block = e.getClickedBlock();
@@ -117,7 +120,7 @@ public class PlayerListener implements Listener {
 			return;
 		
 		Game game = GameManager.getGameFromPlayer(p);
-		if (!LocationHelper.isInsideRegion(block.getLocation(), game.getFirstInnerCorner(), game.getSecondInnerCorner()))
+		if (!game.containsInner(block.getLocation()))
 			return;
 		if (!game.isIngame())
 			return;
@@ -135,7 +138,7 @@ public class PlayerListener implements Listener {
 		
 		if (!GameManager.isInAnyGame(p)) {
 			for (Game game : GameManager.getGames()) {
-				if (LocationHelper.isInsideRegion(block, game.getFirstCorner(), game.getSecondCorner())) {
+				if (game.contains(block)) {
 					if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 						return;
 					if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena"))
@@ -165,9 +168,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (!LocationHelper.isInsideRegion(block, game.getFirstInnerCorner(), game.getSecondInnerCorner())) {
-			if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()))
-				return;
+		if (!game.containsInner(block.getLocation())) {
 			e.setCancelled(true);
 			fixBlockGlitch(p, block);
 			p.sendMessage(Game._("notAllowedToBuild"));
@@ -181,8 +182,8 @@ public class PlayerListener implements Listener {
 		Location bLoc = b.getLocation();
 		Location pLoc = p.getLocation();
 		
-		if (pLoc.getBlockX() == bLoc.getBlockX() && pLoc.getBlockZ() == bLoc.getBlockZ() && pLoc.getY() > bLoc.getY()) {
-			if (!GameManager.isSolid(b))
+		if (shouldFix(pLoc, bLoc)) {
+			if (!SimpleBlockData.isSolid(b))
 				return;
 			
 			bLoc.setY(bLoc.getY() + 1);
@@ -207,7 +208,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onEntitySpawn(CreatureSpawnEvent e) {
 		for (Game game : GameManager.getGames()) {
-			if (LocationHelper.isInsideRegion(e.getLocation(), game.getFirstCorner(), game.getSecondCorner())) {
+			if (game.contains(e.getLocation())) {
 				e.setCancelled(true);
 				return;
 			}
@@ -237,7 +238,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
 		for (Game game : GameManager.getGames()) {
-			if (!LocationHelper.isInsideRegion(e.getBlock().getLocation(), game.getFirstCorner(), game.getSecondCorner()))
+			if (!game.contains(e.getBlock()))
 				return;
 			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 				return;
@@ -272,7 +273,7 @@ public class PlayerListener implements Listener {
 		Game game = GameManager.getGameFromPlayer(e.getPlayer());
 		if (!game.isIngame() || !game.isCounting())
 			return;
-		if (LocationHelper.isInsideRegion(e.getTo(), game.getFirstCorner(), game.getSecondCorner()))
+		if (game.contains(e.getTo()))
 			return;
 		if (isSameBlockLocation(e.getTo(), game.getWinPoint()))
 			return;

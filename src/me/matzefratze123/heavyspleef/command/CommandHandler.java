@@ -40,7 +40,7 @@ public class CommandHandler implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "HeavySpleef" + ChatColor.RESET + "" + ChatColor.GOLD + " - made by matzefratze123 [v" + ChatColor.RED + HeavySpleef.instance.getDescription().getVersion() + ChatColor.GRAY + "]");
+			sender.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + HeavySpleef.PREFIX + ChatColor.RESET + "" + ChatColor.GOLD + " - made by matzefratze123 [v" + ChatColor.RED + HeavySpleef.instance.getDescription().getVersion() + ChatColor.GRAY + "]");
 			sender.sendMessage(ChatColor.GRAY + "Type " + ChatColor.GOLD + "/spleef help for help");
 			return true;
 		}
@@ -66,7 +66,7 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + LanguageHandler._("onlyIngame"));
 			return false;
 		}
-		if (!cmd.getPermission().equalsIgnoreCase("") && !sender.hasPermission(cmd.getPermission())) {
+		if (!cmd.getPermission().equalsIgnoreCase("") && !sender.hasPermission(cmd.getPermission()) && !sender.hasPermission("heavyspleef.*")) {
 			sender.sendMessage(ChatColor.RED + LanguageHandler._("noPermission"));
 			return false;
 		}
@@ -113,6 +113,7 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("setcountdown", new CommandSetCountdown());
 		addSubCommand("startonminplayers", new CommandStartOnReachMinimum());
 		addSubCommand("stats", new CommandStats());
+		addSubCommand("setchances", new CommandSetChances());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {
