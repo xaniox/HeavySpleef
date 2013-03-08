@@ -53,7 +53,7 @@ public class CommandRemoveFloor extends HSCommand {
 						player.sendMessage(_("cantRemoveFloorWhileRunning"));
 						return;
 					}
-					floor.remove();
+					
 					int id = floor.getId();
 					game.removeFloor(id);
 					player.sendMessage(_("floorRemoved"));
@@ -61,6 +61,8 @@ public class CommandRemoveFloor extends HSCommand {
 				}
 			}
 		}
+		
+		player.sendMessage(_("notLookingAtFloor"));
 	}
 
 }

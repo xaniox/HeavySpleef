@@ -65,7 +65,7 @@ public class GameCylinder extends Game {
 
 	@Override
 	public boolean contains(Location l) {
-		Region region = getCylinderRegion(minY, maxY - 1);//Need to subtract 1 because of false rounding
+		Region region = getCylinderRegion(minY, maxY);//Need to subtract 1 because of false rounding
 		return region.contains(BukkitUtil.toVector(l));
 	}
 	
@@ -149,25 +149,28 @@ public class GameCylinder extends Game {
 		floor.remove();
 		
 		//Get the wall block above the floor
-		Location center = getCenter();
-		center.setX(center.getBlockX() + getRadius());
-		center.setY(floor.getY() + 1);
+		Location c = getCenter().clone();
+		c.setX(center.getBlockX() + getRadius());
+		c.setY(floor.getY() + 1);
 		
 		//Save block datas into variables
-		int typeAbove = center.getBlock().getTypeId();
-		byte dataAbove = center.getBlock().getData();
+		int typeAbove = c.getBlock().getTypeId();
+		byte dataAbove = c.getBlock().getData();
 		
 		//Create a new editsession
-		EditSession eSession = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), 3000);
+		EditSession eSession = new EditSession(BukkitUtil.getLocalWorld(c.getWorld()), 3000);
 		
 		//Get the rounded coordinates of the center (this = from Object, not from the variable inside this method)
 		int x = this.center.getBlockX();
-		int y = this.center.getBlockY();
+		int y = floor.getY();
 		int z = this.center.getBlockZ();
+		
+		System.out.println("debugg 1");
 		
 		//Create a fix for removing the floor
 		try {
 			eSession.makeCylinder(new Vector(x, y, z), new SingleBlockPattern(new BaseBlock(typeAbove, dataAbove)), radius, 1, false);
+			System.out.println("debugg 2");
 		} catch (MaxChangedBlocksException e) {
 			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't clear floor...");
 		}

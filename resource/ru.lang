@@ -32,6 +32,7 @@ playerIsntInAnyGameToPlayer: &cВы не в игре!
 minimumToLow: &cМинимальное количество игроков не может быть ниже, чем 2!
 notANumber: &c%a не является числом
 notLookingAtABlock: &cВы не смотрите на блок!
+notLookingAtFloor: &cYou are not looking at a floor!
 cantRemoveFloorWhileRunning: &cНе удается удалить пол в то время как идет игра!
 loseZoneWithIDDoesntExists: &cLosezone с указанным ID не существует!
 cantRemoveLoseWhileRunning: &cНе удается удалить losezone в то время как идет игра!

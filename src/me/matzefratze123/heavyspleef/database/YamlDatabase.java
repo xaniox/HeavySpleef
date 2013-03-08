@@ -243,6 +243,7 @@ public class YamlDatabase {
 		int money = section.getInt("money");
 		int reward = section.getInt("reward");
 		int minPlayers = section.getInt("minPlayers");
+		int chances = section.getInt("chances");
 		int countdown = section.getInt("countdown");
 		if (countdown <= 0)
 			countdown = plugin.getConfig().getInt("general.countdownFrom");
@@ -263,6 +264,7 @@ public class YamlDatabase {
 		game.setStartOnMinPlayers(startOnMinPlayers);
 		game.setShovels(useShovels);
 		game.setNeededPlayers(minPlayers);
+		game.setChances(chances);
 		
 		List<String> wereOfflineConfigList = section.getStringList("wereOfflineAtShutdown");
 		List<String> wereOffline = new ArrayList<String>();
@@ -298,6 +300,7 @@ public class YamlDatabase {
 		section.set("countdown", game.getCountdown());
 		section.set("startOnMinPlayers", game.startsOnMinPlayers());
 		section.set("shovels", game.isShovels());
+		section.set("chances", game.getChances());
 		
 		if (game.getWinPoint() != null)
 			section.set("winPoint", convertLocationtoString(game.getWinPoint()));

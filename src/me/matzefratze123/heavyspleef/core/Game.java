@@ -387,7 +387,20 @@ public abstract class Game {
 	}
 	
 	private String getLoseMessage(LoseCause cause, Player player) {
-		return _("loseCause_" + cause.name().toLowerCase(), player.getName(), getKiller(player, true));
+		switch(cause) {
+		case QUIT:
+			return _("loseCause_" + cause.name().toLowerCase(), player.getName());
+		case KICK:
+			return _("loseCause_" + cause.name().toLowerCase(), player.getName());
+		case LEAVE:
+			return _("loseCause_" + cause.name().toLowerCase(), player.getName(), getName());
+		case LOSE:
+			return _("loseCause_" + cause.name().toLowerCase(), player.getName(), getKiller(player, true));
+		case UNKNOWN:
+			return _("loseCause_" + cause.name().toLowerCase(), player.getName());
+		default:
+			return "null...";
+		}
 	}
 	
 	/**
@@ -762,7 +775,7 @@ public abstract class Game {
 	 * @return True if the game is ready to play, otherwise false
 	 */
 	public boolean isFinal() {
-		return winPoint != null && losePoint != null && preLobbyPoint != null;
+		return winPoint != null && losePoint != null && preLobbyPoint != null && floors.size() > 0;
 	}
 
 	/**

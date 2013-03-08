@@ -145,9 +145,12 @@ public class CommandAddFloor extends HSCommand {
 			player.sendMessage(_("floorCreated"));
 			return;
 		}
-		
-		if (blockID > 0)
+		System.out.println(blockID);
+		if (blockID > 0) {
 			g.addFloor(blockID, data, false, false, loc1, loc2);
+			player.sendMessage(_("floorCreated"));
+			return;
+		}
 		g.addFloor(35, (byte)0, true, false, loc1, loc2);
 		player.sendMessage(_("floorCreated"));
 	}

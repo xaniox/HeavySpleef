@@ -32,6 +32,7 @@ playerIsntInAnyGameToPlayer: &cYou are not in any game!
 minimumToLow: &cMinimum player count can't be lower than 2!
 notANumber: &c%a isn't a number
 notLookingAtABlock: &cYou are not looking at a block!
+notLookingAtFloor: &cYou are not looking at a floor!
 cantRemoveFloorWhileRunning: &cCan't remove floor while game is running!
 loseZoneWithIDDoesntExists: &cA losezone with this id doesn't exists!
 cantRemoveLoseWhileRunning: &cCan't remove losezone while game is running!

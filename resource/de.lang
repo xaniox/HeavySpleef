@@ -32,6 +32,7 @@ playerIsntInAnyGameToPlayer: &cDu bist in keinem Spiel!
 minimumToLow: &cDer Minimalwert kann nicht kleiner als 2 sein!
 notANumber: &c%a ist keine Zahl!
 notLookingAtABlock: &cDu schaust auf keinen Block...
+notLookingAtFloor: &cDu schaust auf keinen Floor...
 cantRemoveFloorWhileRunning: &cDu kannst keine Spleefebene entfernen während das Spiel läuft!
 loseZoneWithIDDoesntExists: &cEine Verlierzone mit dieser ID exestiert nicht!
 cantRemoveLoseWhileRunning: &cDu kannst keine Verlierzone entfernen während das Spiel läuft!

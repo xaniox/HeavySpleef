@@ -154,7 +154,7 @@ public class PlayerListener implements Listener {
 		
 		
 		Game game = GameManager.getGameFromPlayer(p);
-		if (game.isCounting()) {
+		if (game.isCounting() || game.isPreLobby()) {
 			e.setCancelled(true);
 			fixBlockGlitch(p, block);
 			p.sendMessage(Game._("notAllowedToBuild"));
