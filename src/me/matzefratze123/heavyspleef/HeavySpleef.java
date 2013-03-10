@@ -28,6 +28,7 @@ import me.matzefratze123.heavyspleef.database.YamlDatabase;
 import me.matzefratze123.heavyspleef.database.statistic.IStatisticDatabase;
 import me.matzefratze123.heavyspleef.database.statistic.MySQLStatisticDatabase;
 import me.matzefratze123.heavyspleef.database.statistic.YamlStatisticDatabase;
+import me.matzefratze123.heavyspleef.hooks.HookManager;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
 import me.matzefratze123.heavyspleef.listener.SignListener;
 import me.matzefratze123.heavyspleef.selection.SelectionListener;
@@ -37,10 +38,7 @@ import me.matzefratze123.heavyspleef.utility.Metrics;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.UpdateChecker;
 
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HeavySpleef extends JavaPlugin {
@@ -50,16 +48,16 @@ public class HeavySpleef extends JavaPlugin {
 	
 	public static FileConfig config;
 	public static HeavySpleef instance;
-	public static boolean hasVault;
-	public static Economy econ;
 	
 	public static String PREFIX = "[Spleef]"; 
+	public static HookManager hooks;
 
 	public YamlDatabase database;
 	public IStatisticDatabase statisticDatabase;
 	
 	@Override
 	public void onEnable() {
+		hooks = new HookManager();
 		sel = new SelectionManager();
 		instance = this;
 		config = new FileConfig(this);
@@ -81,14 +79,6 @@ public class HeavySpleef extends JavaPlugin {
 		if (getConfig().getBoolean("general.saveInIntervall"))
 			this.startSaveTask();
 		
-		if (!this.setupEconomy()) {
-			this.getLogger().info("Vault wasn't found! Starting plugin without vault...");
-			hasVault = false;
-		} else {
-			this.getLogger().info("Hooked into Vault! Using it for economy...");
-			hasVault = true;
-		}
-		
 		CommandHandler.initCommands();
 		CommandHandler.setPluginInstance(this);
 		CommandHandler.setConfigInstance(this);
@@ -103,18 +93,6 @@ public class HeavySpleef extends JavaPlugin {
 		this.database.save(true);
 		this.statisticDatabase.save();
 		this.getLogger().info("HeavySpleef deactivated!");
-	}
-	
-	private boolean setupEconomy() {
-	       if (getServer().getPluginManager().getPlugin("Vault") == null) {
-	           return false;
-	       }
-	       RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-	       if (rsp == null) {
-	           return false;
-	       }
-	       econ = rsp.getProvider();
-	       return econ != null;
 	}
 	
 	private void setupStatisticDatabase() {

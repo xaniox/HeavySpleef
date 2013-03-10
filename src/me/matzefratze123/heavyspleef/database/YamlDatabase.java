@@ -158,6 +158,8 @@ public class YamlDatabase {
 			if (f.isGivenFloor())
 				FloorLoader.saveFloor(f, game);
 		}
+		
+		section.set("floors", floorsAsList);
 	}
 	
 	
@@ -217,6 +219,8 @@ public class YamlDatabase {
 		int maxY = section.getInt("maxY");
 		
 		Game game = GameManager.createCylinderGame(name, center, radius, minY, maxY);
+		if (game == null)//Just in case if no WorldEdit is installed
+			return;
 		
 		List<String> floorsAsStrings = section.getStringList("floors");
 		if (floorsAsStrings != null) {

@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Bukkit;
@@ -56,10 +57,14 @@ public class CommandJoin extends HSCommand {
 			player.sendMessage(_("isntReadyToPlay"));
 			return;
 		}
+		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.hasWorldEdit()) {
+			player.sendMessage(_("noWorldEdit"));
+			return;
+		}
 		
 		if (args.length == 1) {
-			if (HeavySpleef.hasVault) {
-				if (HeavySpleef.econ.getBalance(player.getName()) < game.getJackpotToPay()) {
+			if (HeavySpleef.hooks.hasVault()) {
+				if (HeavySpleef.hooks.getVaultEconomy().getBalance(player.getName()) < game.getJackpotToPay()) {
 					player.sendMessage(_("notEnoughMoneyToJoin"));
 					return;
 				}
@@ -72,8 +77,8 @@ public class CommandJoin extends HSCommand {
 				player.sendMessage(_("playerNotOnline"));
 				return;
 			}
-			if (HeavySpleef.hasVault) {
-				if (HeavySpleef.econ.getBalance(target.getName()) < game.getJackpotToPay()) {
+			if (HeavySpleef.hooks.hasVault()) {
+				if (HeavySpleef.hooks.getVaultEconomy().getBalance(target.getName()) < game.getJackpotToPay()) {
 					player.sendMessage(_("targetHasntEnoughMoney"));
 					return;
 				}

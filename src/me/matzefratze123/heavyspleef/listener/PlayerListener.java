@@ -49,6 +49,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -96,7 +97,6 @@ public class PlayerListener implements Listener {
 	private void out(final Player p, Game game) {
 		if (isCheckOut.contains(p.getName()))
 			return;
-		p.sendMessage(Game._("outOfGame"));
 		game.removePlayer(p, LoseCause.LOSE);
 		isCheckOut.add(p.getName());
 		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
@@ -318,6 +318,14 @@ public class PlayerListener implements Listener {
 		
 		Game game = GameManager.getGameFromPlayer(p);
 		game.removePlayer(p, LoseCause.UNKNOWN);
+	}
+	
+	@EventHandler
+	public void onItemDrop(PlayerDropItemEvent e) {
+		if (!GameManager.isInAnyGame(e.getPlayer()))
+			return;
+		
+		e.setCancelled(true);
 	}
 	
 	private void handleQuit(PlayerEvent e) {

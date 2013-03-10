@@ -49,6 +49,9 @@ loginAfterServerShutdown: &cDu wurdest zum Verlierpunkt teleportiert da der Serv
 notAllowedToCreateSpleefSigns: &cDir ist es nicht erlaubt Spleef-Schilder zu erstellen!
 
 errorOnState: &cEin Fehler trat auf während dein Inventar geladen wurde... :(
+noGameRunning: &cIn dieser Arena findet gerade kein Spiel statt!
+
+noWorldEdit: &cDiese Funktion kann nicht genutzt werden! WorldEdit wurde nicht gefunden!
 
 # Erfolgsnachrichten
 

@@ -19,8 +19,10 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
+import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.command.CommandSender;
@@ -47,6 +49,10 @@ public class CommandStart extends HSCommand {
 		
 		if (game.isDisabled()) {
 			player.sendMessage(_("gameIsDisabled"));
+			return;
+		}
+		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.hasWorldEdit()) {
+			player.sendMessage(_("noWorldEdit"));
 			return;
 		}
 		if (game.isCounting() || game.isIngame()) {

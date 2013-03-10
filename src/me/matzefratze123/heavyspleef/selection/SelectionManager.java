@@ -21,6 +21,8 @@ package me.matzefratze123.heavyspleef.selection;
 
 import java.util.HashMap;
 
+import me.matzefratze123.heavyspleef.HeavySpleef;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -64,6 +66,8 @@ public class SelectionManager {
 	 * @return The lower point of the selection
 	 */
 	public Location getSecondSelection(Player player) {
+		if (HeavySpleef.hooks.hasWorldEdit())
+			return HeavySpleef.hooks.getWorldEdit().getSelection(player).getMaximumPoint();
 		return selections.get(player.getName()).getSecondSel();
 	}
 	
@@ -74,6 +78,8 @@ public class SelectionManager {
 	 * @return The upper point of the selection
 	 */
 	public Location getFirstSelection(Player player) {
+		if (HeavySpleef.hooks.hasWorldEdit())
+			return HeavySpleef.hooks.getWorldEdit().getSelection(player).getMinimumPoint();
 		return selections.get(player.getName()).getFirstSel();
 	}
 	
@@ -105,6 +111,8 @@ public class SelectionManager {
 	 * @return True if the player has a selection, otherwise false
 	 */
 	public boolean hasSelection(Player player) {
+		if (HeavySpleef.hooks.hasWorldEdit())
+			return HeavySpleef.hooks.getWorldEdit().getSelection(player).getMaximumPoint() != null && HeavySpleef.hooks.getWorldEdit().getSelection(player).getMinimumPoint() != null;
 		return selections.containsKey(player.getName());
 	}
 	
@@ -115,6 +123,10 @@ public class SelectionManager {
 	 * @return true if the selection is trough worlds
 	 */
 	public boolean isTroughWorlds(Player player) {
+		if (HeavySpleef.hooks.hasWorldEdit()) {
+			com.sk89q.worldedit.bukkit.selections.Selection selection = HeavySpleef.hooks.getWorldEdit().getSelection(player);
+			return selection.getMaximumPoint().getWorld() != selection.getMinimumPoint().getWorld();
+		}
 		return getFirstSelection(player).getWorld() != getSecondSelection(player).getWorld();
 	}
 	

@@ -40,7 +40,7 @@ public class CommandSetJackpot extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		if (!HeavySpleef.hasVault) {
+		if (!HeavySpleef.hooks.hasVault()) {
 			player.sendMessage(_("noVault"));
 			return;
 		}

@@ -165,12 +165,11 @@ public class GameCylinder extends Game {
 		int y = floor.getY();
 		int z = this.center.getBlockZ();
 		
-		System.out.println("debugg 1");
+		floors.remove(id);
 		
 		//Create a fix for removing the floor
 		try {
 			eSession.makeCylinder(new Vector(x, y, z), new SingleBlockPattern(new BaseBlock(typeAbove, dataAbove)), radius, 1, false);
-			System.out.println("debugg 2");
 		} catch (MaxChangedBlocksException e) {
 			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't clear floor...");
 		}

@@ -25,9 +25,7 @@ import java.util.Map;
 import me.matzefratze123.heavyspleef.core.GameCuboid;
 
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -41,7 +39,7 @@ public class PlayerStateManager {
 				  p.getInventory().getLeggings(), p.getInventory().getBoots(),p.getExhaustion(), p.getSaturation(),
 				  p.getFoodLevel(), p.getHealth(),p.getGameMode(), p.getActivePotionEffects(), p.getExp(), p.getLevel()));
 
-		clearInventorySavely(p.getInventory());
+		p.getInventory().clear();
 		p.getInventory().setArmorContents(new ItemStack[] {null, null, null, null});
 		p.setLevel(0);
 		p.setExp(0);
@@ -49,6 +47,7 @@ public class PlayerStateManager {
 		p.setFireTicks(0);
 		p.setHealth(20);
 		p.setFoodLevel(20);
+		p.setAllowFlight(false);
 		
 		for (PotionEffect effect : p.getActivePotionEffects()) {
 			p.removePotionEffect(effect.getType());
@@ -65,7 +64,7 @@ public class PlayerStateManager {
 			return;
 		}
 		
-		p.getInventory().clear(Material.DIAMOND_SPADE.getId(), (byte)0);
+		p.getInventory().clear();
 		p.getInventory().setContents(state.getContents());
 		p.getInventory().setHelmet(state.getHelmet());
 		p.getInventory().setChestplate(state.getChestplate());
@@ -86,12 +85,6 @@ public class PlayerStateManager {
 	
 	public static Map<String, PlayerState> getPlayerStates() {
 		return states;
-	}
-	
-	public static void clearInventorySavely(Inventory inv) {
-		//Call clear() method two times because of mistakes...
-		inv.clear();
-		inv.clear();
 	}
 
 }

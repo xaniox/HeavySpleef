@@ -55,7 +55,7 @@ public class CommandAddFloor extends HSCommand {
 		if (args.length == 1 && args[0].equalsIgnoreCase("given"))
 			blockID = -1;
 		
-		if (blockID == -1) {
+		if (blockID == -1 && HeavySpleef.hooks.hasWorldEdit()) {
 			for (Game game : GameManager.getGames()) {
 				if (!game.contains(block))
 					continue;
@@ -100,6 +100,8 @@ public class CommandAddFloor extends HSCommand {
 		}
 		
 		for (Game game : GameManager.getGames()) {
+			if (!HeavySpleef.hooks.hasWorldEdit())
+				break;
 			if (game.contains(player.getLocation()) && game.getType() == Type.CYLINDER) {
 				boolean given = blockID == -1;
 				boolean wool = args.length < 1;

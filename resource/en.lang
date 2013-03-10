@@ -51,6 +51,8 @@ notAllowedToCreateSpleefSigns: &cYou are not allowed to create spleef signs!
 errorOnState: &cAn error occurred while loading your old inventory. Sorry :(
 noGameRunning: &cThere is no game running on this arena!
 
+noWorldEdit: &cCan't use this function! WorldEdit wasn't found on this server!
+
 # Sucess messages
 
 floorCreated: &aThe floor has been created!

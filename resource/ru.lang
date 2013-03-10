@@ -51,6 +51,8 @@ notAllowedToCreateSpleefSigns: &cВы не можете создать spleef т
 errorOnState: &cПроизошла ошибка при загрузке старого инвентаря. Простите... :(
 noGameRunning: &cНет игр запущенных на этой арене!
 
+noGameRunning: &cThere is no game running on this arena!
+
 # Сообщения об успешном выполнении
 
 floorCreated: &aПол был создан!

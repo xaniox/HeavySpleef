@@ -50,16 +50,19 @@ public class SelectionListener implements Listener {
 			return;
 		if (!player.hasPermission(Permissions.SELECTION.getPerm()))
 			return;
+		if (HeavySpleef.hooks.hasWorldEdit())
+			return;
 		if (is == null || is.getTypeId() != HeavySpleef.instance.getConfig().getInt("general.wandItem")) //TODO Add variable marker item (config)
 			return;
 		
-		e.setCancelled(true);
 		switch(e.getAction()) {
 		case LEFT_CLICK_BLOCK:
 			addFirstSelection(block.getLocation(), player);
+			e.setCancelled(true);
 			break;
 		case RIGHT_CLICK_BLOCK:
 			addSecondSelection(block.getLocation(), player);
+			e.setCancelled(true);
 			break;
 		default:
 			break;

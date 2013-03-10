@@ -46,15 +46,13 @@ public class GameManager {
 	
 	public static Game createCuboidGame(String id, Location firstCorner, Location secondCorner) {
 		games.put(id, new GameCuboid(firstCorner, secondCorner, id));
-		if (HeavySpleef.instance.getConfig().getBoolean("general.generateArena"))
-			getGame(id).generate();
 		return getGame(id);
 	}
 	
 	public static Game createCylinderGame(String id, Location center, int radius, int minY, int maxY) {
+		if (!HeavySpleef.hooks.hasWorldEdit())
+			return null;
 		games.put(id, new GameCylinder(id, center, radius, minY, maxY));
-		if (HeavySpleef.instance.getConfig().getBoolean("general.generateArena"))
-			getGame(id).generate();
 		return getGame(id);
 	}
 	

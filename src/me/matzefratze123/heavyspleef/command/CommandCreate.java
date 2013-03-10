@@ -50,6 +50,10 @@ public class CommandCreate extends HSCommand {
 		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
 			//Create a new cylinder game
 			//TODO WorldEdit check
+			if (!HeavySpleef.hooks.hasWorldEdit()) {
+				player.sendMessage(_("noWorldEdit"));
+				return;
+			}
 			if (args.length < 4) {
 				player.sendMessage(getUsage());
 				return;
