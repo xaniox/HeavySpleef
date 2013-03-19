@@ -22,7 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.selection.SelectionManager;
+import me.matzefratze123.heavyspleef.selection.Selection;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Location;
@@ -81,24 +81,24 @@ public class CommandCreate extends HSCommand {
 			
 		} else if (args[1].equalsIgnoreCase("cuboid") || args[1].equalsIgnoreCase("cub")) {
 			//Create a new cuboid game
-			SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
-			if (!selManager.hasSelection(player) || selManager.getFirstSelection(player) == null || selManager.getSecondSelection(player) == null) {
+			Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
+			if (!s.has()) {
 				player.sendMessage(_("needSelection"));
 				return;
 			}
-			if (selManager.isTroughWorlds(player)) {
+			if (s.isTroughWorlds()) {
 				player.sendMessage(_("selectionCantTroughWorlds"));
 				return;
 			}
 			
 			for (Game game : GameManager.getGames()) {
-				if (game.contains(selManager.getFirstSelection(player)) || game.contains(selManager.getSecondSelection(player))) {
+				if (game.contains(s.getFirst()) || game.contains(s.getSecond())) {
 					player.sendMessage(_("arenaCantBeInsideAnother"));
 					return;
 				}
 			}
 			
-			GameManager.createCuboidGame(args[0].toLowerCase(), selManager.getFirstSelection(player), selManager.getSecondSelection(player));
+			GameManager.createCuboidGame(args[0].toLowerCase(), s.getFirst(), s.getSecond());
 		}
 		player.sendMessage(_("gameCreated"));
 	}

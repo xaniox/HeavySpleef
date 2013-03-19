@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
+import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Bukkit;
@@ -60,7 +61,10 @@ public class CommandKick extends HSCommand {
 		
 		Game game = GameManager.getGameFromPlayer(target);
 		game.removePlayer(target, LoseCause.KICK);
-		target.teleport(game.getLosePoint());
+		if (game.getLosePoint() == null)
+			target.teleport(LocationSaver.load(player));
+		else
+			target.teleport(game.getLosePoint());
 		target.sendMessage(_("kickedOfToPlayer", player.getName(), reasonMessage));
 		player.sendMessage(_("kickedOfToKicker", target.getName(), game.getName(), reasonMessage));
 	}

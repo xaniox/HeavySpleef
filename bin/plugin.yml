@@ -1,10 +1,10 @@
 name: HeavySpleef
-description: Powerful spleef plugin for Bukkit
+description: Easy to use spleef plugin for bukkit
 
-version: DEV 0.5
+version: 1.0
 author: matzefratze123
 
-softdepend: [Vault]
+softdepend: [Vault, WorldEdit]
 website: http://dev.bukkit.org/server-mods/heavyspleef/
 
 main: me.matzefratze123.heavyspleef.HeavySpleef

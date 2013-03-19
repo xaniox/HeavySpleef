@@ -27,8 +27,8 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.LocationHelper;
-import me.matzefratze123.heavyspleef.utility.MaterialNameHelper;
+import me.matzefratze123.heavyspleef.utility.LocationSaver;
+import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
@@ -57,7 +57,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerListener implements Listener {
 
@@ -67,7 +66,7 @@ public class PlayerListener implements Listener {
 	
 	public PlayerListener() {
 		cantBreak = HeavySpleef.instance.getConfig().getIntegerList("blocks.cantBreak");
-		loseOnTouchWaterOrLava = HeavySpleef.instance.getConfig().getBoolean("blocks.loseOnTouchWaterOrLava");
+		loseOnTouchWaterOrLava = HeavySpleef.instance.getConfig().getBoolean("blocks.loseOnTouchWaterOrLava", true);
 	}
 	
 	@EventHandler
@@ -82,7 +81,11 @@ public class PlayerListener implements Listener {
 		if (!game.isCounting() && !game.isIngame())
 			return;
 		
-		if (loseOnTouchWaterOrLava && (to.getBlock().getType() == Material.STATIONARY_WATER || to.getBlock().getType() == Material.STATIONARY_LAVA))
+		if (loseOnTouchWaterOrLava && 
+				  (to.getBlock().getType() == Material.WATER 
+				|| to.getBlock().getType() == Material.LAVA 
+				|| to.getBlock().getType() == Material.STATIONARY_WATER 
+				|| to.getBlock().getType() == Material.STATIONARY_LAVA))
 			out(p, game);
 			
 		for (LoseZone loseZone : game.getLoseZones()) {
@@ -120,9 +123,7 @@ public class PlayerListener implements Listener {
 			return;
 		
 		Game game = GameManager.getGameFromPlayer(p);
-		if (!game.containsInner(block.getLocation()))
-			return;
-		if (!game.isIngame())
+		if (!game.canSpleef(block, p))
 			return;
 		if (game.isShovels())
 			return;
@@ -141,7 +142,7 @@ public class PlayerListener implements Listener {
 				if (game.contains(block)) {
 					if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 						return;
-					if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena"))
+					if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena", true))
 						return;
 					e.setCancelled(true);
 					fixBlockGlitch(p, block);
@@ -154,28 +155,24 @@ public class PlayerListener implements Listener {
 		
 		
 		Game game = GameManager.getGameFromPlayer(p);
-		if (game.isCounting() || game.isPreLobby()) {
-			e.setCancelled(true);
-			fixBlockGlitch(p, block);
-			p.sendMessage(Game._("notAllowedToBuild"));
-			return;
-		}
 		
 		if (cantBreak.contains(block.getTypeId())) {
 			e.setCancelled(true);
 			fixBlockGlitch(p, block);
-			p.sendMessage(Game._("notAllowedToBreakSpecified", MaterialNameHelper.getName(block.getType().name())));
+			p.sendMessage(Game._("notAllowedToBreakSpecified", MaterialHelper.getName(block.getType().name())));
 			return;
 		}
 		
-		if (!game.containsInner(block.getLocation())) {
+		if (!game.canSpleef(block, p)) {
 			e.setCancelled(true);
 			fixBlockGlitch(p, block);
 			p.sendMessage(Game._("notAllowedToBuild"));
-		} else {
-			e.getBlock().setTypeId(0);
-			game.addBrokenBlock(p, block);
+			return;
 		}
+		
+		e.getBlock().setTypeId(0);
+		game.addBrokenBlock(p, block);
+		
 	}
 	
 	private void fixBlockGlitch(Player p, Block b) {
@@ -183,7 +180,7 @@ public class PlayerListener implements Listener {
 		Location pLoc = p.getLocation();
 		
 		if (shouldFix(pLoc, bLoc)) {
-			if (!SimpleBlockData.isSolid(b))
+			if (!SimpleBlockData.isSolid(b.getTypeId()))
 				return;
 			
 			bLoc.setY(bLoc.getY() + 1);
@@ -242,7 +239,7 @@ public class PlayerListener implements Listener {
 				return;
 			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 				return;
-			if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena"))
+			if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena", true))
 				return;
 			e.setCancelled(true);
 			e.getPlayer().sendMessage(Game._("notAllowedToBuild"));
@@ -266,26 +263,6 @@ public class PlayerListener implements Listener {
 		e.getPlayer().sendMessage(Game._("cantUseCommands"));
 	}
 	
-	@EventHandler
-	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		if (!GameManager.isInAnyGame(e.getPlayer()))
-			return;
-		Game game = GameManager.getGameFromPlayer(e.getPlayer());
-		if (!game.isIngame() || !game.isCounting())
-			return;
-		if (game.contains(e.getTo()))
-			return;
-		if (isSameBlockLocation(e.getTo(), game.getWinPoint()))
-			return;
-		if (isSameBlockLocation(e.getTo(), game.getLosePoint()))
-			return;
-		if (shouldFix(e.getTo(), e.getFrom()))
-			return;
-		if (LocationHelper.getDistance3D(e.getTo(), e.getFrom()) < 4.0D)
-			return;
-		e.setCancelled(true);
-	}
-	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		handleQuit(e);
@@ -301,7 +278,10 @@ public class PlayerListener implements Listener {
 		Player p = e.getPlayer();
 		for (Game game : GameManager.getGames()) {
 			if (game.wereOffline.contains(p.getName())) {
-				p.teleport(game.getLosePoint());
+				if (game.getLosePoint() == null)
+					p.teleport(LocationSaver.load(p));
+				else
+					p.teleport(game.getLosePoint());
 				p.sendMessage(Game._("loginAfterServerShutdown", game.getName()));
 				PlayerStateManager.restorePlayerState(p);
 				return;
@@ -333,11 +313,10 @@ public class PlayerListener implements Listener {
 			return;
 		Game game = GameManager.getGameFromPlayer(e.getPlayer());
 		game.removePlayer(e.getPlayer(), LoseCause.QUIT);
-		e.getPlayer().teleport(game.getLosePoint());
-	}
-	
-	private boolean isSameBlockLocation(Location loc1, Location loc2) {
-		return loc1.getBlockX() == loc2.getBlockX() && loc1.getBlockY() == loc2.getBlockY() && loc1.getBlockZ() == loc2.getBlockZ();
+		if (game.getLosePoint() == null)
+			e.getPlayer().teleport(LocationSaver.load(e.getPlayer()));
+		else
+			e.getPlayer().teleport(game.getLosePoint());
 	}
 	
 	private boolean shouldFix(Location pLoc, Location bLoc) {

@@ -29,6 +29,7 @@ public enum Permissions {
 	// Command
 	KICK("heavyspleef.kick"),
 	SET_MIN_PLAYERS("heavyspleef.setminplayers"),
+	SET_MAX_PLAYERS("heavyspleef.setmaxplayers"),
 	DISABLE("heavyspleef.disable"),
 	ENABLE("heavyspleef.enable"),
 	HELP_ADMIN("heavyspleef.help.admin"),
@@ -50,11 +51,16 @@ public enum Permissions {
 	SET_CHANCES("heavyspleef.setchances"),
 	SAVE("heavyspleef.save"),
 	STOP("heavyspleef.stop"),
-	STARTONMINPLAYERS("heavyspleef.startonminplayers"),
+	SET_AUTOSTART("heavyspleef.setautostart"),
 	SET_COUNTDOWN("heavyspleef.setcountdown"),
 	SET_SHOVEL("heavyspleef.setshovel"),
 	STATS("heavyspleef.statistic"),
 	STATS_OTHERS("heavyspleef.statistic.others"),
+	SET_1VS1("heavyspleef.set1vs1"),
+	SET_ROUNDS("heavyspleef.setrounds"),
+	ADD_SCOREBOARD("heavyspleef.addscoreboard"),
+	REMOVE_SCOREBOARD("heavyspleef.removescoreboard"),
+	UPDATE_SCOREBOARD("heavyspleef.updatescoreboard"),
 	
 	// Bypass
 	BUILD_BYPASS("heavyspleef.build.bypass"),

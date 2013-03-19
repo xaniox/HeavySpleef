@@ -24,11 +24,12 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
-import me.matzefratze123.heavyspleef.selection.SelectionManager;
+import me.matzefratze123.heavyspleef.selection.Selection;
+import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,10 +38,10 @@ public class CommandAddFloor extends HSCommand {
 
 	public CommandAddFloor() {
 		setMaxArgs(1);
-		setMinArgs(0);
+		setMinArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_FLOOR.getPerm());
-		setUsage("/spleef addfloor [Block-ID[:DATA]|given]");
+		setUsage("/spleef addfloor <randomwool|given|block[:subdata]>]");
 	}
 	
 	@Override
@@ -48,113 +49,174 @@ public class CommandAddFloor extends HSCommand {
 		Player player = (Player)sender;
 		Block block = player.getTargetBlock(null, 100);
 		
+		Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
+		Location loc1 = s.getFirst();
+		Location loc2 = s.getSecond();
 		
-		int blockID = 0;
-		byte data = 0;
-		
-		if (args.length == 1 && args[0].equalsIgnoreCase("given"))
-			blockID = -1;
-		
-		if (blockID == -1 && HeavySpleef.hooks.hasWorldEdit()) {
-			for (Game game : GameManager.getGames()) {
-				if (!game.contains(block))
-					continue;
-				if (game.getType() != Type.CYLINDER)
-					continue;
-				GameCylinder cylGame = (GameCylinder) game;
-				Location center = cylGame.getCenter();
-				
-				game.addFloor(blockID, data, false, true, new Location(center.getWorld(), center.getBlockX(), block.getLocation().getBlockY(), center.getBlockZ()));
-				player.sendMessage(_("floorCreated"));
-				return;
-			}
-		}
-		//First check if the arguments are longer then one and get the blockID and data...
-		else if (args.length == 1) {
-			
-			try {
-				String[] split = args[0].split(":"); 
-				
-				blockID = Integer.parseInt(split[0]);
-				if (blockID == 0) {
-					player.sendMessage(_("cantConsistOfAir"));
-					return;
-				}
-				Material mat = Material.getMaterial(blockID);
-				if (mat == null) {
-					player.sendMessage(_("invalidBlockID"));
-					return;
-				}
-				
-				if (split.length > 1) {
-					data = Byte.parseByte(split[1]);
-					if (data > Byte.MAX_VALUE || data < Byte.MIN_VALUE) {
-						player.sendMessage(_("toBigData"));
+		if (args[0].equalsIgnoreCase("randomwool")) { //Wool floor
+			if (HeavySpleef.hooks.hasWorldEdit()) {
+				for (Game game : GameManager.getGames()) {
+					if (game.contains(player.getLocation()) && game.getType() == Type.CYLINDER) {
+						GameCylinder gameC = (GameCylinder)game; //Cast the game to a GameCylinder because we can be sure that it is one...
+						
+						Location center = gameC.getCenter();
+							
+						addWoolFloor(game, player, new Location(center.getWorld(), center.getBlockX(), player.getLocation().getBlockY(), center.getBlockZ()));
 						return;
 					}
 				}
-			} catch (NumberFormatException e) {
-				player.sendMessage(_("blockIDIsntNumber"));
+			}
+			if (!s.has()) {
+				player.sendMessage(_("needSelection"));
 				return;
 			}
-		}
-		
-		for (Game game : GameManager.getGames()) {
-			if (!HeavySpleef.hooks.hasWorldEdit())
-				break;
-			if (game.contains(player.getLocation()) && game.getType() == Type.CYLINDER) {
-				boolean given = blockID == -1;
-				boolean wool = args.length < 1;
-				
-				if ((given && wool)) //A floor can't be wool and given. That would interrupt the floor...
+			if (s.isTroughWorlds()) {
+				player.sendMessage(_("selectionCantTroughWorlds"));
+				return;
+			}
+			Game game = getFromLocation(loc1, loc2);
+			if (game == null) {
+				player.sendMessage(_("notInsideArena"));
+				return;
+			}
+			if (!isOneLayer(loc1, loc2)) {
+				player.sendMessage(_("onlyOneLayer"));
+				return;
+			}
+			
+			addWoolFloor(game, player, loc1, loc2);
+			return;
+			
+		} else if (args[0].equalsIgnoreCase("given")) { //Given floor
+			if (HeavySpleef.hooks.hasWorldEdit()) {
+				for (Game game : GameManager.getGames()) {
+					if (!game.contains(block))
+						continue;
+					if (game.getType() != Type.CYLINDER)
+						continue;
+					GameCylinder cylGame = (GameCylinder) game;
+					Location center = cylGame.getCenter();
+					
+					addGivenFloor(game, player, new Location(center.getWorld(), center.getBlockX(), block.getLocation().getBlockY(), center.getBlockZ()));
 					return;
-				GameCylinder gameC = (GameCylinder)game; //Cast the game to a GameCylinder because we can be sure that it is one...
-				
-				Location center = gameC.getCenter();
-						
-				game.addFloor(blockID, data, wool, given, new Location(center.getWorld(), center.getBlockX(), player.getLocation().getBlockY(), center.getBlockZ()));
-				player.sendMessage(_("floorCreated"));
+				}
+			} 
+			
+			if (!s.has()) {
+				player.sendMessage(_("needSelection"));
 				return;
 			}
-		}
-		//If the player does not stand inside a cylinder game, we are going to check for cuboid regions...
-		
-		SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
-		if (!selManager.hasSelection(player) || selManager.getFirstSelection(player) == null || selManager.getSecondSelection(player) == null) {
-			player.sendMessage(_("needSelection"));
+			if (s.isTroughWorlds()) {
+				player.sendMessage(_("selectionCantTroughWorlds"));
+				return;
+			}
+			Game game = getFromLocation(loc1, loc2);
+			if (game == null) {
+				player.sendMessage(_("notInsideArena"));
+				return;
+			}
+			if (!isOneLayer(loc1, loc2)) {
+				player.sendMessage(_("onlyOneLayer"));
+				return;
+			}
+			
+			addGivenFloor(game, player, loc1, loc2);
 			return;
-		}
-		if (selManager.isTroughWorlds(player)) {
-			player.sendMessage(_("selectionCantTroughWorlds"));
+		} else {//Specified floor!
+			SimpleBlockData data = MaterialHelper.fromString(args[0]);
+			if (data == null) {
+				player.sendMessage(_("invalidBlock"));
+				return;
+			}
+			
+			if (HeavySpleef.hooks.hasWorldEdit()) {
+				for (Game game : GameManager.getGames()) {
+					if (!game.contains(player.getLocation()))
+						continue;
+					if (game.getType() != Type.CYLINDER)
+						continue;
+					GameCylinder cylGame = (GameCylinder) game;
+					Location center = cylGame.getCenter();
+					
+					addSpecifiedFloor(game, player, data, new Location(center.getWorld(), center.getBlockX(), player.getLocation().getBlockY(), center.getBlockZ()));
+					return;
+				}
+			}
+			if (!s.has()) {
+				player.sendMessage(_("needSelection"));
+				return;
+			}
+			if (s.isTroughWorlds()) {
+				player.sendMessage(_("selectionCantTroughWorlds"));
+				return;
+			}
+			Game game = getFromLocation(loc1, loc2);
+			if (game == null) {
+				player.sendMessage(_("notInsideArena"));
+				return;
+			}
+			if (!isOneLayer(loc1, loc2)) {
+				player.sendMessage(_("onlyOneLayer"));
+				return;
+			}
+			
+			addSpecifiedFloor(game, player, data, loc1, loc2);
 			return;
+			
 		}
-		Game g = null;
-		Location loc1 = selManager.getFirstSelection(player);
-		Location loc2 = selManager.getSecondSelection(player);
-		
-		
-		for (Game game : GameManager.getGames()) {
-			if (game.contains(loc1) && game.contains(loc2))
-				g = game;
-		}
-		if (g == null) {
-			player.sendMessage(_("notInsideArena"));
-			return;
-		}
-		
-		if (blockID == -1) {
-			g.addFloor(0, (byte)0, false, true, loc1, loc2);
-			player.sendMessage(_("floorCreated"));
-			return;
-		}
-		System.out.println(blockID);
-		if (blockID > 0) {
-			g.addFloor(blockID, data, false, false, loc1, loc2);
-			player.sendMessage(_("floorCreated"));
-			return;
-		}
-		g.addFloor(35, (byte)0, true, false, loc1, loc2);
-		player.sendMessage(_("floorCreated"));
 	}
-
-}
+	
+	private void addWoolFloor(Game game, Player p, Location... locations) {
+		game.addFloor(35, (byte)0, true, false, locations);
+		p.sendMessage(_("floorCreated"));
+	}
+	
+	private void addSpecifiedFloor(Game game, Player p, SimpleBlockData data, Location... locations) {
+		game.addFloor(data.getMaterial().getId(), data.getData(), false, false, locations);
+		p.sendMessage(_("floorCreated"));
+	}
+	
+	private void addGivenFloor(Game game, Player p, Location... locations) {
+		game.addFloor(0, (byte)0, false, true, locations);
+		p.sendMessage(_("floorCreated"));
+	}
+	
+	private Game getFromLocation(Location... locations) {
+		Game g = null;
+		for (Game game : GameManager.getGames()) {
+			boolean is = true;
+			for (Location l : locations) {
+				if (!game.contains(l))
+					is = false;
+			}
+			
+			if (is) {
+				g = game;
+				break;
+			}
+		}
+		
+		return g;
+	}
+	
+	private boolean isOneLayer(Location... locations) {
+		boolean oneLayer = true;
+		Location lastLocation = null;
+		
+		for (Location loc : locations) {
+			if (lastLocation == null) {
+				lastLocation = loc;
+				continue;
+			}
+			
+			if (loc.getBlockY() != lastLocation.getBlockY()) {
+				oneLayer = false;
+				break;
+			}	
+			
+			lastLocation = loc;
+		}
+		
+		return oneLayer;
+	}
+} 

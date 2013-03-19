@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.utility;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCuboid;
 
 import org.bukkit.GameMode;
@@ -37,7 +38,7 @@ public class PlayerStateManager {
 	public static void savePlayerState(Player p) {
 		states.put(p.getName(), new PlayerState(p.getInventory().getContents(), p.getInventory().getHelmet(), p.getInventory().getChestplate(),
 				  p.getInventory().getLeggings(), p.getInventory().getBoots(),p.getExhaustion(), p.getSaturation(),
-				  p.getFoodLevel(), p.getHealth(),p.getGameMode(), p.getActivePotionEffects(), p.getExp(), p.getLevel()));
+				  p.getFoodLevel(), p.getHealth(),p.getGameMode(), p.getActivePotionEffects(), p.getExp(), p.getLevel(), p.getAllowFlight()));
 
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(new ItemStack[] {null, null, null, null});
@@ -53,6 +54,7 @@ public class PlayerStateManager {
 			p.removePotionEffect(effect.getType());
 		}
 		
+		p.sendMessage(Game._("stateSaved"));
 		p.updateInventory();
 	}
 	
@@ -70,9 +72,10 @@ public class PlayerStateManager {
 		p.getInventory().setChestplate(state.getChestplate());
 		p.getInventory().setLeggings(state.getLeggings());
 		p.getInventory().setBoots(state.getBoots());
+		p.setGameMode(state.getGm());
+		p.setAllowFlight(state.isFly());
 		p.setLevel(state.getLevel());
 		p.setExp(state.getExp());
-		p.setGameMode(state.getGm());
 		p.setHealth(state.getHealth());
 		p.setFoodLevel(state.getFoodLevel());
 		p.addPotionEffects(state.getPotioneffects());

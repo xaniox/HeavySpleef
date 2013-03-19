@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import me.matzefratze123.heavyspleef.command.CommandHandler;
-import me.matzefratze123.heavyspleef.core.AntiCampingTask;
+import me.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import me.matzefratze123.heavyspleef.database.YamlDatabase;
 import me.matzefratze123.heavyspleef.database.statistic.IStatisticDatabase;
 import me.matzefratze123.heavyspleef.database.statistic.MySQLStatisticDatabase;
@@ -38,6 +38,7 @@ import me.matzefratze123.heavyspleef.utility.Metrics;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.UpdateChecker;
 
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -49,21 +50,25 @@ public class HeavySpleef extends JavaPlugin {
 	public static FileConfig config;
 	public static HeavySpleef instance;
 	
-	public static String PREFIX = "[Spleef]"; 
+	public static String PREFIX = ChatColor.RED + "[" + ChatColor.GOLD + "Spleef" + ChatColor.RED + "]"; 
 	public static HookManager hooks;
 
 	public YamlDatabase database;
 	public IStatisticDatabase statisticDatabase;
 	
+	public static String[] commands = new String[] {"/spleef", "/hs", "/hspleef"};
+	
 	@Override
 	public void onEnable() {
-		hooks = new HookManager();
-		sel = new SelectionManager();
+		//Set the instance FIRST!
 		instance = this;
 		config = new FileConfig(this);
+		
+		hooks = new HookManager();
+		sel = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
-		PREFIX = getConfig().getString("general.spleef-prefix");
+		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", ChatColor.RED + "[" + ChatColor.GOLD + "Spleef" + ChatColor.RED + "]"));
 		
 		LanguageHandler.loadLanguageFiles();
 		UpdateChecker.check();
@@ -118,6 +123,7 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new SignListener(), this);
 		pm.registerEvents(new SelectionListener(this), this);
 		pm.registerEvents(new PlayerListener(), this);
+		pm.registerEvents(new UpdateChecker(), this);
 	}
 	
 	private void startMetrics() {

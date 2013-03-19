@@ -20,6 +20,7 @@
 package me.matzefratze123.heavyspleef.selection;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.selection.SelectionManager.WandType;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
@@ -35,6 +36,7 @@ public class SelectionListener implements Listener {
 
 	private SelectionManager selManager;
 	private HeavySpleef plugin;
+	
 	public SelectionListener(HeavySpleef instance) {
 		this.plugin = instance;
 		this.selManager = plugin.getSelectionManager();
@@ -50,9 +52,9 @@ public class SelectionListener implements Listener {
 			return;
 		if (!player.hasPermission(Permissions.SELECTION.getPerm()))
 			return;
-		if (HeavySpleef.hooks.hasWorldEdit())
+		if (selManager.getWandType() == WandType.WORLDEDIT)
 			return;
-		if (is == null || is.getTypeId() != HeavySpleef.instance.getConfig().getInt("general.wandItem")) //TODO Add variable marker item (config)
+		if (is == null || is.getTypeId() != HeavySpleef.instance.getConfig().getInt("general.wandItem", 280))
 			return;
 		
 		switch(e.getAction()) {
@@ -70,20 +72,12 @@ public class SelectionListener implements Listener {
 	}
 	
 	public void addFirstSelection(Location loc, Player player) {
-		if (!selManager.hasSelection(player)) {
-			selManager.addSelection(player, new Location[] {loc, null});
-		} else {
-			selManager.setFirstSelection(player, loc);
-		}
+		selManager.getSelection(player).setFirst(loc);
 		player.sendMessage(ChatColor.DARK_BLUE + "First point set (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")");
 	}
 	
 	public void addSecondSelection(Location loc, Player player) {
-		if (!selManager.hasSelection(player)) {
-			selManager.addSelection(player, new Location[] {null, loc});
-		} else {
-			selManager.setSecondSelection(player, loc);
-		}
+		selManager.getSelection(player).setSecond(loc);
 		player.sendMessage(ChatColor.DARK_BLUE + "Second point set (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")");
 	}
 	

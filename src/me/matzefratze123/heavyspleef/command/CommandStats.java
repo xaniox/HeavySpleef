@@ -27,7 +27,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.statistic.Statistic;
+import me.matzefratze123.heavyspleef.utility.statistic.StatisticModule;
 import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 
 import org.bukkit.Bukkit;
@@ -61,15 +61,15 @@ public class CommandStats extends HSCommand {
 				return;
 			}
 			
-			Statistic stat = StatisticManager.getStatistic(p.getName(), false);
+			StatisticModule stat = StatisticManager.getStatistic(p.getName(), false);
 			printStatistics(stat, p);
 		} else if (args.length >= 1 && args[0].equalsIgnoreCase("top")) {
 			
-			SortedMap<Integer, Statistic> map = new TreeMap<Integer, Statistic>();
+			SortedMap<Integer, StatisticModule> map = new TreeMap<Integer, StatisticModule>();
 			List<Integer> bestScores = new ArrayList<Integer>();
-			Collection<Statistic> stats = StatisticManager.getStatistics();
+			Collection<StatisticModule> stats = StatisticManager.getStatistics();
 			
-			for (Statistic stat : stats) {
+			for (StatisticModule stat : stats) {
 				int decreaser = 0;
 				while (map.containsKey(stat.getScore() - decreaser))
 					decreaser++;
@@ -95,7 +95,7 @@ public class CommandStats extends HSCommand {
 					p.sendMessage(RED + "Error: No more listings!");
 					return;
 				}
-				Statistic stat = map.get(bestScores.get(bestScores.size() - 1 - i));
+				StatisticModule stat = map.get(bestScores.get(bestScores.size() - 1 - i));
 				p.sendMessage(GOLD + "" + (i + 1) + ". " + GREEN + stat.getName() + GOLD + ": Wins: " + stat.getWins() + " Loses: " + stat.getLoses() + " Knockouts: " + stat.getKnockouts() + " Games: " + stat.getGamesPlayed() + " Score: " + stat.getScore());
 			}
 			
@@ -117,12 +117,12 @@ public class CommandStats extends HSCommand {
 				return;
 			}
 			
-			Statistic stat = StatisticManager.getStatistic(target.getName(), false);
+			StatisticModule stat = StatisticManager.getStatistic(target.getName(), false);
 			printStatistics(stat, p);
 		}
 	}
 	
-	private void printStatistics(Statistic stat, Player p) {
+	private void printStatistics(StatisticModule stat, Player p) {
 		double winsPerGame = 0.0;
 		if (stat.getWins() > 0 && stat.getGamesPlayed() > 0)
 			winsPerGame = stat.getWins() / stat.getGamesPlayed();

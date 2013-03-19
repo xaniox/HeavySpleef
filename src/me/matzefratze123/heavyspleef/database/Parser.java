@@ -74,6 +74,15 @@ public class Parser {
 		return new Location(world, x, y, z);
 	}
 	
+	public static Location roundLocation(Location location) {
+		World world = location.getWorld();
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
+		
+		return new Location(world, x, y, z);
+	}
+	
 	public static LoseZone convertStringToLosezone(String s) {
 		String[] split = s.split(";");
 		

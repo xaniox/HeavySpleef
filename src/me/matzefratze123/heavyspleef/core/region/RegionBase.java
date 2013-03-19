@@ -44,4 +44,25 @@ public abstract class RegionBase {
 		this.id = id;
 	}
 	
+	public static boolean contains(Location loc1, Location loc2, Location toCheck) {
+		int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
+		int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
+		
+		int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
+		int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
+		
+		int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
+		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
+		
+		if (!toCheck.getWorld().getName().equalsIgnoreCase(loc1.getWorld().getName()))
+			return false;
+		if (toCheck.getBlockX() > maxX || toCheck.getBlockX() < minX)
+			return false;
+		if (toCheck.getBlockY() > maxY || toCheck.getBlockY() < minY)
+			return false;
+		if (toCheck.getBlockZ() > maxZ || toCheck.getBlockZ() < minZ)
+			return false;
+		return true;
+	}
+	
 }

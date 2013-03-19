@@ -40,7 +40,7 @@ public class FileConfig {
 		if (!configFile.exists()) {
 			this.t.getLogger().log(Level.INFO, "Could not find a config file! Creating a new...");
 			this.createDefaultConfigFile(configFile);
-			this.t.getConfig().setDefaults(YamlConfiguration.loadConfiguration(HeavySpleef.class.getResourceAsStream("/defaultconfig.yml")));
+			this.t.getConfig().setDefaults(YamlConfiguration.loadConfiguration(HeavySpleef.class.getResourceAsStream("/default/defaultconfig.yml")));
 		}
 	}
 
@@ -48,7 +48,7 @@ public class FileConfig {
 		 try {
 	            configFile.createNewFile();
 	            
-	            final InputStream configIn = HeavySpleef.class.getResourceAsStream("/defaultconfig.yml");
+	            final InputStream configIn = HeavySpleef.class.getResourceAsStream("/default/defaultconfig.yml");
 	            final FileOutputStream configOut = new FileOutputStream(configFile);
 	            final byte[] buffer = new byte[1024];
 	            int read;

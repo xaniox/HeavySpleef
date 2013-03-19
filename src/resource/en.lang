@@ -1,0 +1,145 @@
+# Error messages
+
+noPermission: &cYou don't have permission!
+onlyIngame: &cThis command can be only used ingame!
+unknownCommand: &cUnknown HeavySpleef Command! Type &6/spleef help [page] &cfor help!
+
+selectionCantTroughWorlds: &cYour selection can't be trough worlds!
+needSelection: &cPlease make a selection first!
+notInsideArena: &cYour selection isn't in any arena! Can't add this cuboid...
+invalidBlock: &cThis blockdata is not valid!
+
+arenaAlreadyExists: &cThis arena already exists!
+arenaDoesntExists: &cThis arena doesn't exists!
+arenaCantBeInsideAnother: &cA game can't be inside another game!
+cantDeleteGameWhileIngame: &cCan't delete game while it is ingame!
+gameIsAlreadyDisabled: &cThis game is already disabled!
+gameIsAlreadyEnabled: &cThis game is already enabled!
+
+pageDoesntExists: &cThis page doesn't exists!
+gameIsDisabled: &cThis game is disabled!
+isntReadyToPlay: &cThis arena isn't ready to play, yet!
+notEnoughMoneyToJoin: &cYou don't have enough money to join this game!
+playerNotOnline: &cCan't find player...
+targetHasntEnoughMoney: &cThis player doesn't has enough money to join this game!
+gameAlreadyRunning: &cThere is a game already running on this arena!
+cantJoinMultipleGames: &cCan't join multiple games!
+playerIsntInAnyGame: &cThis player isn't in any game!
+playerIsntInAnyGameToPlayer: &cYou are not in any game!
+minimumToLow: &cMinimum player count can't be lower than 2!
+notANumber: &c%a isn't a number
+notLookingAtABlock: &cYou are not looking at a block!
+notLookingAtFloor: &cYou are not looking at a floor!
+cantRemoveFloorWhileRunning: &cCan't remove floor while game is running!
+loseZoneWithIDDoesntExists: &cA losezone with this id doesn't exists!
+cantRemoveLoseWhileRunning: &cCan't remove losezone while game is running!
+noVault: &cVault isn't installed on this server or doesn't work correctly!
+cantStartGameWhileRunning: &cCan't start game while it's already running!
+notEnoughPlayers: &cNot enough players! Need at least %a
+
+notAllowedLeaveArena: &cYou are not allowed to leave the arena!
+notAllowedToBuild: &cYou are not allowed to build here!
+notAllowedToBreakSpecified: &cYou are not allowed to break %a!
+cantChangeGamemode: &cCan't change gamemode while ingame!
+cantUseCommands: &cYou are not allowed to use this command while spleefing!
+loginAfterServerShutdown: &cYou have been teleported to the losepoint from the game %a because the server shutdowns at the same time as the game was running.
+notAllowedToCreateSpleefSigns: &cYou are not allowed to create spleef signs!
+
+errorOnState: &cAn error occurred while loading your old inventory. Sorry :(
+noGameRunning: &cThere is no game running on this arena!
+
+noWorldEdit: &cCan't use this function! WorldEdit wasn't found on this server!
+
+not1vs1: &cThis is not a 1vs1 game! Type /spleef set1vs1 %a true to make it to an 1vs1 game 
+onlyOneLayer: &cThe size of a floor in the y-coordinate can only be one layer!
+onlyOverTwoAndZero: &cThe AutoStart value has to be over 2 or 0 to deactivate it!
+maxPlayersReached: &cThe maximum count of players in this arena is reached!
+toLow: &cThis value is to low! It has to be 2 or 0 to deactivate this feature...
+
+# Sucess messages
+
+floorCreated: &7The floor has been created!
+loseZoneCreated: &7The losezone for the game has been added! (ID: %a)\nIf you want to remove this losezone, simply type /spleef removelosezone %a %a)
+gameCreated: &7Game successfully added!
+gameDeleted: &7Spleefarena successfully deleted!
+gameDisabledToPlayer: &7You've disabled the game %a
+gameEnabledToPlayer: &7You've enabled the game %a
+targetHasJoined: &7The player %a has joined the game %a !
+targetAddedToQueue: &7Added the player %a to the queue!
+playerJoinedToPlayer: &7You joined the game %a
+kickedOfToPlayer: &7You were kicked of by %a%a
+kickedOfToKicker: &7You kicked of %a from the game %a%a
+left: &cYou left the game...
+setMinimumPlayers: &7Successfully binded the minimum count of %a players to the game %a
+floorRemoved: &7The floor has been removed!
+loseZoneRemoved: &7The losezone with the id %a has been removed!
+gamesSaved: &7All games have been saved to the database!
+lobbyPointSet: &7The lobbypoint for the game %a has been set!
+winPointSet: &7The winpoint for the game %a has been set!
+losePointSet: &7The losepoint for the game %a has been set!
+moneySet: &7Money successfully binded to game!
+gameStarted: &7Game started!
+win: &6You won the game!
+jackpotReceived: &7You received %a jackpot for winning this game!
+rewardReceived: &7You received %a reward for winning this game!
+
+antiCampWarn: &4AntiCamping&c: You still have &4%a &cseconds until you are ported down!
+antiCampTeleport: &4AntiCamping&c: You have been teleported one floor down for being to long on one point!
+
+paidIntoJackpot: &7You paid %a into the jackpot of this game!
+yourKnockOuts: &aYour knockouts: %a
+
+noLongerInQueue: &7You are not longer in queue!
+leftQueue: &7You left the queue for the game %a
+addedToQueue: &7You are now in queue for the game %a
+notInQueue: &7You are not in a queue!
+
+outOfGame: &cYou are out of the game...
+spleefSignCreated: &7Spleef sign successfully created!
+stateSaved: &7Your inventory has been saved!
+stateRestored: &7Your inventory has been restored!
+gameStopped: &cThe game has been stopped!
+
+startOnMinPlayersTrue: &7The game will now start when the minimum count of players are reached!
+startOnMinPlayersFalse: &7The game will no longer start when the minimum count of players are reached!
+countdownSet: &7Countdown set to %a!
+
+shovelToggled: Game with shovels was set to %a.
+info: &7Current value: %a
+
+chancesSet: &7The chance amount of %a was binded to the game!
+chancesLeft: &cYou have %a chances left!
+chancesLeftBroadcast: &c%a has %a chances left!
+
+1vs1Toggled: &71vs1 game was set to %a!
+roundsSet: &7Rounds set!
+autoStartSet: &7AutoStart value was set to %a!
+setMaximumPlayers: &7The maximum amount of %a players has been binded to the game %a!
+setMinimumPlayers: &7The minimum amount of %a players has been binded to the game %a!
+
+# Broadcast Messages
+
+gameDisabled: &cThe game &6%a &chas been disabled by %a
+gameEnabled: &aThe game &6%a &ahas been enabled by %a
+gameHasStarted: &1The game has started! Good luck...
+gameOnArenaHasStarted: &6The game on arena %a has started!
+startedGameWith: &6Started game with %a players!
+gameIsStarting: &1Game is starting in %a seconds...
+gameStopped: &cThe game has been stopped!
+playerJoinedGame: &a%a has joined the game!
+
+wonRound: &a%a &chas won round &6%a &cof &6%a&c!
+roundsRemaining: &1%a rounds remaining!
+wonThe1vs1: &a%a has won the game against %a!
+endedDraw: &aThe game in arena %a has ended in a draw...
+
+roundStarted: &aRound &6%a &aof &6%a &ahas started!
+roundStartsIn: &1Round starts in %a seconds...
+
+loseCause_kick: &6%a &chas been kicked out of the game!
+loseCause_leave: &6%a &chas left the game on arena %a!
+loseCause_lose: &6%a &cwas knocked out by &4%a&c!
+loseCause_quit: &6%a &chas quit while the game was running!
+loseCause_unknown: &6%a &chas left the arena because of an unknown cause...
+
+hasWon: &a%a &1has won the game on arena &6%a&1!

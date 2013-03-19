@@ -25,9 +25,9 @@ import java.util.Map;
 
 public class StatisticManager {
 
-	private static Map<String, Statistic> statistics = new HashMap<String, Statistic>();
+	private static Map<String, StatisticModule> statistics = new HashMap<String, StatisticModule>();
 	
-	public static Statistic getStatistic(String owner, boolean add) {
+	public static StatisticModule getStatistic(String owner, boolean add) {
 		if (add && !hasStatistic(owner))
 			addNewStatistic(owner);
 		return statistics.get(owner);
@@ -36,11 +36,11 @@ public class StatisticManager {
 	public static boolean addNewStatistic(String owner) {
 		if (statistics.containsKey(owner))
 			return false;
-		statistics.put(owner, new Statistic(owner));
+		statistics.put(owner, new StatisticModule(owner));
 		return true;
 	}
 	
-	public static boolean addExistingStatistic(Statistic stat) {
+	public static boolean addExistingStatistic(StatisticModule stat) {
 		if (statistics.containsKey(stat.getName()))
 			return false;
 		statistics.put(stat.getName(), stat);
@@ -51,11 +51,11 @@ public class StatisticManager {
 		return statistics.containsKey(owner);
 	}
 	
-	public static Collection<Statistic> getStatistics() {
+	public static Collection<StatisticModule> getStatistics() {
 		return statistics.values();
 	}
 	
-	public static Map<String, Statistic> getMap() {
+	public static Map<String, StatisticModule> getMap() {
 		return statistics;
 	}
 	

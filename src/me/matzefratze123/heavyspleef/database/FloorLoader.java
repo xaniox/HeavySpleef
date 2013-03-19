@@ -19,25 +19,34 @@
  */
 package me.matzefratze123.heavyspleef.database;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Set;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
-
-import org.bukkit.Location;
 
 public class FloorLoader {
 
 	public static void saveFloor(Floor f, Game game) {
 		File file = new File("plugins/HeavySpleef/games/floor_" + game.getName() + "_" + f.getId() + ".floor");
 		try {
+			OutputStream oS = new FileOutputStream(file);
+			ObjectOutputStream o = new ObjectOutputStream(oS);
+			
+			ArrayList<SimpleBlockData> list = f.givenFloorList;
+			
+			o.writeObject(list);
+			o.flush();
+			o.close();
+			/*
 			if (!file.exists())
 				file.createNewFile();
 			
@@ -49,7 +58,7 @@ public class FloorLoader {
 				writer.write(info.toString() + "\n");
 			}
 			
-			writer.close();
+			writer.close();*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -58,6 +67,22 @@ public class FloorLoader {
 	public static void loadFloor(Floor floor, String gameName) {
 		File file = new File("plugins/HeavySpleef/games/floor_" + gameName + "_" + floor.getId() + ".floor");
 		try {
+			InputStream is = new FileInputStream(file);
+			ObjectInputStream o = new ObjectInputStream(is);
+			
+			Object object = o.readObject();
+			if (!(object instanceof ArrayList<?>)) {
+				System.out.println("=(");
+				o.close();
+				return;
+			}
+			
+			@SuppressWarnings("unchecked")
+			ArrayList<SimpleBlockData> list = (ArrayList<SimpleBlockData>) object;
+			
+			floor.givenFloorList = list;
+			o.close();
+			/*
 			if (!file.exists())
 				return;
 			
@@ -74,7 +99,10 @@ public class FloorLoader {
 			}
 			
 			reader.close();
+			*/
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}

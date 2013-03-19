@@ -59,12 +59,12 @@ public class CommandStart extends HSCommand {
 			player.sendMessage(_("cantStartGameWhileRunning"));
 			return;
 		}
-		if (game.getPlayers().length < game.getNeededPlayers() || game.getNeededPlayers() < 2) {
-			player.sendMessage(_("notEnoughPlayers", String.valueOf(game.getNeededPlayers())));
+		if (game.getPlayers().length < game.getMinPlayers() || game.getMinPlayers() < 2) {
+			player.sendMessage(_("notEnoughPlayers", String.valueOf(game.getMinPlayers())));
 			return;
 		}
-		game.setupFloors();
-		game.start();
+		
+		game.countdown();
 		player.sendMessage(_("gameStarted"));
 	}
 

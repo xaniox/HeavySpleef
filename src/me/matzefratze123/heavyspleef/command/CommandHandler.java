@@ -86,6 +86,7 @@ public class CommandHandler implements CommandExecutor {
 	}
 	
 	public static void initCommands() {
+		//Adds all commands
 		addSubCommand("create", new CommandCreate());
 		addSubCommand("delete", new CommandDelete());
 		addSubCommand("join", new CommandJoin());
@@ -99,9 +100,11 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("addlose", new CommandAddLose());
 		addSubCommand("setwin", new CommandSetWin());
 		addSubCommand("setlobby", new CommandSetLobby());
+		addSubCommand("setspawn", new CommandSetLobby());
 		addSubCommand("removelose", new CommandRemoveLose());
 		addSubCommand("help", new CommandHelp());
-		addSubCommand("setminplayers", new CommandMinPlayers());
+		addSubCommand("setminplayers", new CommandSetMinPlayers());
+		addSubCommand("setmaxplayers", new CommandSetMaxPlayers());
 		addSubCommand("kick", new CommandKick());
 		addSubCommand("setjackpot", new CommandSetJackpot());
 		addSubCommand("setreward", new CommandSetReward());
@@ -111,9 +114,11 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("stop", new CommandStop());
 		addSubCommand("setshovel", new CommandSetShovel());
 		addSubCommand("setcountdown", new CommandSetCountdown());
-		addSubCommand("startonminplayers", new CommandStartOnReachMinimum());
+		addSubCommand("autostart", new CommandAutoStart());
 		addSubCommand("stats", new CommandStats());
 		addSubCommand("setchances", new CommandSetChances());
+		addSubCommand("set1vs1", new CommandSet1vs1());
+		addSubCommand("setrounds", new CommandSetRounds());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

@@ -29,7 +29,12 @@ import java.util.Map;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
+import me.matzefratze123.heavyspleef.core.task.StartCountdownTask;
+import me.matzefratze123.heavyspleef.core.task.RoundsCountdownTask;
+import me.matzefratze123.heavyspleef.event.SpleefFinishEvent;
+import me.matzefratze123.heavyspleef.event.SpleefStartEvent;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
+import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -40,6 +45,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -50,9 +56,10 @@ public abstract class Game {
 	protected Map<Integer, Floor> floors = new HashMap<Integer, Floor>();
 	protected Map<Integer, LoseZone> loseZones = new HashMap<Integer, LoseZone>();
 	protected Map<String, Integer> knockouts = new HashMap<String, Integer>();
-	protected Map<String, Integer> chancesLeft = new HashMap<String, Integer>();
+	protected Map<String, Integer> chancesUsed = new HashMap<String, Integer>();
+	protected Map<Integer, ScoreBoard> scoreboards = new HashMap<Integer, ScoreBoard>();
 	
-	public  Map<String, List<Block>> brokenBlocks = new HashMap<String, List<Block>>();
+	public    Map<String, List<Block>> brokenBlocks = new HashMap<String, List<Block>>();
 	
 	protected GameState state;
 	
@@ -60,15 +67,24 @@ public abstract class Game {
 	protected Location losePoint;
 	protected Location preLobbyPoint;
 	
+	public int tid = -1;
+	public int roundTid = -1;
+	
 	protected int reward;
 	protected int jackpot = 0;
 	protected int jackpotToPay;
-	protected int neededPlayers;
+	protected int minPlayers;
+	protected int maxPlayers = 0;
+	protected int autoStartAt = 0;
 	protected int countdown;
-	protected int chances = 1;
+	protected int chances = 0;
 	
 	protected boolean startOnMinPlayers = false;
 	protected boolean shovels = false;
+	
+	protected boolean oneVsOne = false;
+	protected int rounds = 2;
+	protected int roundsPlayed = rounds;
 	
 	protected ConfigurationSection gameSection;
 	
@@ -76,6 +92,7 @@ public abstract class Game {
 	
 	public List<String> players = new ArrayList<String>();
 	public List<String> wereOffline = new ArrayList<String>();
+	public ArrayList<Game.Win> wins = new ArrayList<Game.Win>();
 	
 	/**
 	 * Constructs a new game with the given name
@@ -87,10 +104,10 @@ public abstract class Game {
 		
 		this.state = GameState.NOT_INGAME;
 		this.gameSection = HeavySpleef.instance.database.getConfigurationSection(name);
-		this.neededPlayers = HeavySpleef.instance.getConfig().getInt("general.neededPlayers");
-		this.jackpotToPay = HeavySpleef.instance.getConfig().getInt("general.defaultToPay");
-		this.reward = HeavySpleef.instance.getConfig().getInt("general.defaultReward");
-		this.setCountdown(HeavySpleef.instance.getConfig().getInt("general.countdownFrom"));
+		this.minPlayers = HeavySpleef.instance.getConfig().getInt("general.neededPlayers", 2);
+		this.jackpotToPay = HeavySpleef.instance.getConfig().getInt("general.defaultToPay", 5);
+		this.reward = HeavySpleef.instance.getConfig().getInt("general.defaultReward", 0);
+		this.setCountdown(HeavySpleef.instance.getConfig().getInt("general.countdownFrom", 15));
 	}
 	
 	/**
@@ -169,58 +186,83 @@ public abstract class Game {
 	
 
 	/**
-	 * Starts the game (without countdown)
+	 * Countdowns the game
 	 */
-	@SuppressWarnings("deprecation")
+	public void countdown() {
+		prepareGame();//Prepare the game
+		Bukkit.getPluginManager().callEvent(new SpleefStartEvent(this)); //Call our spleef start event
+		this.tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new StartCountdownTask(countdown, this), 20L, 20L);//Let the countdown begin
+		for (Player p : getPlayers())
+			p.teleport(getRandomLocation()); // Teleport every player to a random location inside the arena at the start of the game
+		
+		setGameState(GameState.COUNTING);//Set our gamestate to counting
+		updateScoreBoards();//Update scoreboards... (buggy...)
+	}
+	
+	/**
+	 * Starts the game
+	 */
 	public void start() {
-		this.jackpot = 0;
-		if (HeavySpleef.hooks.hasVault()) {
-			if (getJackpotToPay() > 0) {
-				for (Player p : getPlayers()) {
-					HeavySpleef.hooks.getVaultEconomy().withdrawPlayer(p.getName(), getJackpotToPay());
-					p.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getVaultEconomy().format(getJackpotToPay())));
-					this.jackpot += getJackpotToPay();
-				}
-			}
-		}
-		int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new CountingTask(countdown, this.name), 20L, 20L);
-		GameManager.tasks.put(this.name, taskID);
-		if (isShovels()) {
+		updateScoreBoards();
+		tellAll(_("gameHasStarted"));
+		broadcast(_("gameOnArenaHasStarted", getName()));
+		broadcast(_("startedGameWith", String.valueOf(players.size())));
+		setGameState(GameState.INGAME);
+		for (Player p : getPlayers())
+			StatisticManager.getStatistic(p.getName(), true).addGame();
+		
+		//Withdraw jackpot money
+		if (HeavySpleef.hooks.hasVault() && getJackpotToPay() > 0) {
 			for (Player p : getPlayers()) {
-				p.getInventory().addItem(getSpleefShovel());
-				p.updateInventory();
+				HeavySpleef.hooks.getVaultEconomy().withdrawPlayer(p.getName(), getJackpotToPay());
+				p.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getVaultEconomy().format(getJackpotToPay())));
+				this.jackpot += getJackpotToPay();
 			}
 		}
+		
+		cancelSTTask();
 	}
 	
 	/**
 	 * Stops this game
 	 */
 	public void stop() {
-		if (GameManager.tasks.containsKey(getName()))
-			Bukkit.getScheduler().cancelTask(GameManager.tasks.get(getName()));
-		for (String playerName : players) {
-			Player player = Bukkit.getPlayer(playerName);
-			if (player == null)
-				continue;
-			player.teleport(getLosePoint());
-			if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
-				PlayerStateManager.restorePlayerState(player);
+		cancelTasks();
+		for (Player p : getPlayers()) {
+			
+			if (getLosePoint() == null) p.teleport(LocationSaver.load(p));
+			else p.teleport(getLosePoint());
+			
+			if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
+				PlayerStateManager.restorePlayerState(p);
 		}
+		
+		Bukkit.getPluginManager().callEvent(new SpleefFinishEvent(this, StopCause.STOP));
 		broadcast(_("gameStopped"));
 		setGameState(GameState.NOT_INGAME);
 		GameManager.removeAllPlayersFromGameQueue(this.name);
+		
+		regen();
+		clearAll();
+	}
+	
+	protected void clearAll() {
+		roundsPlayed = rounds;
+		knockouts.clear();
+		wins.clear();
 		players.clear();
-		chancesLeft.clear();
+		chancesUsed.clear();
 	}
 	
 	/**
 	 * Disables this game
 	 * 
-	 * @param disabler The disabler of this game (can be also null) 
+	 * @param disabler The disabler of this game (can be null) 
 	 */
 	public void disable(String disabler) {
-		if (isCounting() || isPreLobby() || isIngame())
+		if (isDisabled())
+			return;
+		if (hasActivity())
 			stop();
 		setGameState(GameState.DISABLED);
 		if (disabler != null)
@@ -231,6 +273,8 @@ public abstract class Game {
 	 * Enables this game
 	 */
 	public void enable() {
+		if (!isDisabled())
+			return;
 		setGameState(GameState.NOT_INGAME);
 	}
 	
@@ -241,37 +285,38 @@ public abstract class Game {
 	 */
 	@SuppressWarnings("deprecation")
 	public void addPlayer(Player player) {
+		if (isDisabled())
+			return;
+		if (is1vs1() && players.size() >= 2)
+			return;
 		players.add(player.getName());
 		
-		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
+		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
 			PlayerStateManager.savePlayerState(player);
 		
-		if (HeavySpleef.instance.getConfig().getBoolean("sounds.plingSound")) {
+		if (HeavySpleef.instance.getConfig().getBoolean("sounds.plingSound", true)) {
 			for (Player p : getPlayers())
 				p.playSound(p.getLocation(), Sound.NOTE_PLING, 4.0F, p.getLocation().getPitch());
 		}
 		
-		if (isWaiting() && !isCounting() && !isIngame())
+		if (isWaiting()) //Activate the lobby mode
 			setGameState(GameState.PRE_LOBBY);
 		
 		tellAll(_("playerJoinedGame", player.getName()));
-		if (HeavySpleef.hooks.hasVault() && getJackpotToPay() > 0 && isCounting()) {
-			HeavySpleef.hooks.getVaultEconomy().withdrawPlayer(player.getName(), getJackpotToPay());
-			player.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getVaultEconomy().format(getJackpotToPay())));
-			this.jackpot += getJackpotToPay();
-		}
+		player.setAllowFlight(false);
+		player.setFireTicks(0);
 		
 		if (isCounting() && this.shovels) {
 			player.getInventory().addItem(getSpleefShovel());
 			player.updateInventory();
 		}
 		
-		if (startsOnMinPlayers() && players.size() >= getNeededPlayers() && isPreLobby())
-			start();
+		if ((getAutoStart() > 1 && players.size() >= getAutoStart() && isPreLobby()) || (is1vs1() && players.size() >= 2 && isPreLobby()))
+			countdown();
 	}
 	
 	/**
-	 * Removes a player from this game with the given cause
+	 * <b>Trys</b> to remove a player from this game with the given cause
 	 * 
 	 * @param player Player to remove
 	 * @param cause Cause of lose
@@ -280,51 +325,161 @@ public abstract class Game {
 		if (player == null)
 			return;
 		if (cause == null)
+			cause = LoseCause.UNKNOWN;
+		
+		if (!players.contains(player.getName())) //Player can't be removed if they are not playing
 			return;
 		
-		if (!players.contains(player.getName()))
-			return;
 		if (cause == LoseCause.LOSE) {
-			StatisticManager.getStatistic(player.getName(), true).addLose();
-			if (!chancesLeft.containsKey(player.getName()))
-				chancesLeft.put(player.getName(), 1);
+			if (is1vs1()) {
+				nextRound(player);
+				return;
+			}
+			
+			//Chances stuff start
+			//And put the chances that the player has left into the Map
+			if (!chancesUsed.containsKey(player.getName()))
+				chancesUsed.put(player.getName(), 1);
 			else
-				chancesLeft.put(player.getName(), chancesLeft.get(player.getName()) + 1);
+				chancesUsed.put(player.getName(), chancesUsed.get(player.getName()) + 1);
 		
-			if (chancesLeft.get(player.getName()) < this.chances) {
+			if (chancesUsed.get(player.getName()) < this.chances) {
 				player.teleport(getNewRandomLocation(player));
-				int livesLeft = chances - chancesLeft.get(player.getName()) - 1;
+				player.setFireTicks(0);
+				int livesLeft = chances - chancesUsed.get(player.getName());
 				
 				player.sendMessage(_("chancesLeft", String.valueOf(livesLeft)));
 				broadcast(_("chancesLeftBroadcast", player.getName(), String.valueOf(livesLeft)));
 				return;
 			}
-			player.sendMessage(Game._("outOfGame"));	
+			//Chances stuff end
+			player.sendMessage(Game._("outOfGame"));
+			StatisticManager.getStatistic(player.getName(), true).addLose();
 		}
 		
 		players.remove(player.getName());
 		if (!isPreLobby())
 			player.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(player))));
 		broadcast(getLoseMessage(cause, player));
-		player.teleport(getLosePoint());
+		if (getLosePoint() == null)
+			player.teleport(LocationSaver.load(player));
+		else
+			player.teleport(getLosePoint());
+		
 		player.setFireTicks(0);
 		
-		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
+		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
 			PlayerStateManager.restorePlayerState(player);
 		if (players.size() <= 0)
 			setGameState(GameState.NOT_INGAME);
 		if (state == GameState.INGAME || state == GameState.COUNTING) {
 			if (players.size() != 1)
 				return;
-			if (GameManager.tasks.containsKey(this.getName()))
-				Bukkit.getScheduler().cancelTask(GameManager.getTaskID(getName()));
+			
+			cancelTasks();
+			
 			for (int i = 0; i < players.size(); i++) {
 				Player winner = Bukkit.getPlayer(players.get(i));
-				this.win(winner);
+				win(winner);
 			}
 		}
 	}
 	
+	public void nextRound(Player loserr) {
+		if (!isIngame())
+			return;
+		if (is1vs1()) {
+			roundsPlayed++;//One round higher
+			for (Player p : getPlayers()) {
+				if (p.getName().equalsIgnoreCase(loserr.getName()))//If p is the same as the loser: continue;
+					continue;
+				
+				add1vs1Win(p);//Add the win
+				broadcast(_("wonRound", p.getName(), String.valueOf(roundsPlayed), String.valueOf(rounds)));//Broadcast the winner of the round
+			}
+			if (roundsPlayed < rounds) {//Next round?
+				regen();//Regenerate floors
+				
+				for (Player p : getPlayers()) {
+					p.teleport(getRandomLocation());//Teleport player to a random location
+					p.setFireTicks(0);
+				}
+				
+				broadcast(_("roundsRemaining", String.valueOf(rounds - roundsPlayed)));//Broadcast how many rounds remaining
+				updateScoreBoards();//Update the scoreboards (Buggy...)
+				if (HeavySpleef.instance.getConfig().getBoolean("general.countdownBetweenRound", true)) {//Do a countdown if it was so defined
+					int start = HeavySpleef.instance.getConfig().getInt("general.countdownBetweenRoundLength", 5);
+					this.roundTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new RoundsCountdownTask(start, this), 0L, 20L);
+				}
+				
+				return;
+			} else if (roundsPlayed >= rounds) {//If not then end the game
+				Win win = getHighestWin(); //Get the highest win
+				updateScoreBoards();
+				if (win == null) { //If it is null there is a draw
+					endInDraw();
+					return;
+				}
+				
+				String loser = "null";
+				for (Player p : getPlayers()) {
+					if (p.getName().equalsIgnoreCase(win.getOwner()))//Compare player with the owner of the win
+						continue;
+					
+					loser = p.getName();
+				}
+				
+				win(Bukkit.getPlayer(win.getOwner()));//Win, broadcast and end the game!
+				broadcast(_("wonThe1vs1", win.getOwner(), loser));
+				return;
+			}
+		}
+	}
+	
+	private Win getHighestWin() {
+		//Returns null if there is a draw
+		for (int i = 0; i < wins.size(); i++) {//First check if there is a same value in the wins list
+			for (int a = 0; a < wins.size(); a++) {
+				if (wins.get(i).equals(wins.get(a)))
+					continue;
+				if (wins.get(i).getWins() == wins.get(a).getWins()) {
+					return null;//And return null if there is...
+				}
+			}
+		}
+		
+		//If not we look for the highest win
+		Win lastHighestWin = new Win(null, 0);
+		
+		for (Win w : wins) {//Loop around every win
+			if (w.getWins() > lastHighestWin.getWins())//And check if it is higher as the lastHighestWin
+				lastHighestWin = w; //We got the next higher win as before
+		}
+		
+		//Finally we got the highestWin
+		//And return it
+		return lastHighestWin;
+	}
+	
+	private void add1vs1Win(Player p) {
+		Win win = null;
+		
+		for (Win w : wins) {//Indicate which win is owned by the player
+			if (w.getOwner().equalsIgnoreCase(p.getName())) {
+				win = w;
+				break;
+			}
+		}
+		
+		if (win == null) {//Add a new win if there is no win...
+			wins.add(new Win(p.getName()));
+			return;
+		}
+		
+		win.addWin();//Finally add the winpoint
+	}
+	
+	//Returns a random location in the game where the floor is != Material.AIR
 	private Location getNewRandomLocation(Player player) {
 		Location loc = null;
 		int count = 0;
@@ -342,6 +497,7 @@ public abstract class Game {
 		return loc;
 	}
 	
+	//Just a method for a specified spleef shovel with a name
 	private ItemStack getSpleefShovel() {
 		ItemStack shovel = new ItemStack(Material.DIAMOND_SPADE, 1);
 		ItemMeta meta = shovel.getItemMeta();
@@ -362,27 +518,42 @@ public abstract class Game {
 		if (p == null) //No NPEs
 			return;
 		
-		p.teleport(getWinPoint());
+		if (getWinPoint() == null)
+			p.teleport(LocationSaver.load(p));
+		else
+			p.teleport(getWinPoint());
 		setGameState(GameState.NOT_INGAME);
-		setupFloors();
+		regen();
 		players.remove(p.getName());
+		
 		for (String pl : players) {
 			players.remove(Bukkit.getPlayer(pl));
-			Bukkit.getPlayer(pl).teleport(getLosePoint());
+			Player player = Bukkit.getPlayer(pl);
+			
+			if (getLosePoint() == null) Bukkit.getPlayer(pl).teleport(LocationSaver.load(p));
+			else Bukkit.getPlayer(pl).teleport(getLosePoint());
+			
+			if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
+				PlayerStateManager.restorePlayerState(player);
+			
+			player.setFireTicks(0);
+			player.setFallDistance(0);
+			StatisticManager.getStatistic(pl, true).addLose();
 		}
-		players.clear();
-		chancesLeft.clear();
+		
 		StatisticManager.getStatistic(p.getName(), true).addWin();
 		
-		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState"))
+		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
 			PlayerStateManager.restorePlayerState(p);
 		
 		broadcast(_("hasWon", p.getName(), this.getName()));
 		p.sendMessage(_("win"));
 		p.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(p))));
-		this.brokenBlocks.clear();
-		this.knockouts.clear();
-		if (HeavySpleef.instance.getConfig().getBoolean("sounds.levelUp"))
+		clearAll();
+		
+		Bukkit.getPluginManager().callEvent(new SpleefFinishEvent(this, StopCause.WIN));
+		
+		if (HeavySpleef.instance.getConfig().getBoolean("sounds.levelUp", true))
 			p.playSound(p.getLocation(), Sound.LEVEL_UP, 4.0F, p.getLocation().getPitch());
 		addPlayersFromQueue();
 		if (HeavySpleef.hooks.hasVault()) {
@@ -396,6 +567,29 @@ public abstract class Game {
 				p.sendMessage(_("rewardReceived", HeavySpleef.hooks.getVaultEconomy().format(r.amount)));
 			}
 		}
+	}
+	
+	protected void endInDraw() {
+		setGameState(GameState.NOT_INGAME);
+		cancelTasks();
+		regen();
+		
+		Bukkit.getPluginManager().callEvent(new SpleefFinishEvent(this, StopCause.DRAW));
+		addPlayersFromQueue();
+		
+		for (Player p : getPlayers()) {
+			if (getWinPoint() == null)
+				p.teleport(LocationSaver.load(p));
+			else
+				p.teleport(getWinPoint());
+			
+			players.remove(p.getName());
+			
+			if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
+				PlayerStateManager.restorePlayerState(p);
+		}
+		clearAll();
+		broadcast(_("endedDraw", getName()));
 	}
 	
 	private String getLoseMessage(LoseCause cause, Player player) {
@@ -528,6 +722,10 @@ public abstract class Game {
 		return state == GameState.DISABLED;
 	}
 	
+	public boolean hasActivity() {
+		return isCounting() || isIngame() || isPreLobby();
+	}
+	
 	/**
 	 * Gets the winpoint of this game
 	 * @return The location of the winpoint
@@ -656,7 +854,7 @@ public abstract class Game {
 	 * Tells a message to all ingame players
 	 * @param msg The message to send
 	 */
-	protected void tellAll(String msg) {
+	public void tellAll(String msg) {
 		for (Player p : getPlayers()) {
 			p.sendMessage(msg);
 		}
@@ -701,20 +899,31 @@ public abstract class Game {
 	 */
 	private void addPlayersFromQueue() {
 		Collection<String> keySet = GameManager.queues.keySet();
+		String[] keySetAsArray = keySet.toArray(new String[keySet.size()]);
+		int addedPlayers = 0;
 		
 		//Can't use foreach loop, will cause a ConcurrentModificationException...
-		//A foreach loop looks good, but will often cause problems.
-		for (int i = 0; i < keySet.size(); i++) {
-			if (GameManager.queues.get(name).equalsIgnoreCase(getName())) {
-				Player currentPlayer = Bukkit.getPlayer(name);
+		//A foreach loop looks good, but will often cause problems if you modify the
+		//Map / List while iterating over it.
+		for (int i = 0; i < keySetAsArray.length; i++) {
+			System.out.println(keySetAsArray[i]);
+			
+			if (GameManager.queues.get(keySetAsArray[i]).equalsIgnoreCase(getName())) {
+				Player currentPlayer = Bukkit.getPlayer(keySetAsArray[i]);
 				if (currentPlayer == null) {
-					GameManager.queues.remove(name);
+					GameManager.queues.remove(keySetAsArray[i]);
 					continue;
 				}
+				if (is1vs1() && addedPlayers >= 2)
+					return;
+				if (getMaxPlayers() > 1 && addedPlayers >= getMaxPlayers())
+					return;
+				LocationSaver.save(currentPlayer);
 				currentPlayer.teleport(getPreGamePoint());
 				addPlayer(currentPlayer);
 				currentPlayer.sendMessage(_("noLongerInQueue"));
 				GameManager.queues.remove(currentPlayer.getName());
+				addedPlayers++;
 			}
 		}
 	}
@@ -726,7 +935,7 @@ public abstract class Game {
 	 * @return The messagevalue with a HeavySpleef prefix
 	 */
 	public static String _(String... key) {
-		return ChatColor.RED + "[" + ChatColor.GOLD + HeavySpleef.PREFIX + ChatColor.RED + "] " + ChatColor.RESET + LanguageHandler._(key);
+		return HeavySpleef.PREFIX + ChatColor.RESET + " " + LanguageHandler._(key);
 	}
 	
 	/**
@@ -735,6 +944,7 @@ public abstract class Game {
 	 * @param key The key of this message
 	 * @return The messagevalue of the given key
 	 */
+	
 	public static String __(String... key) {
 		return LanguageHandler._(key);
 	}
@@ -742,7 +952,7 @@ public abstract class Game {
 	/**
 	 * Gets all players of this game
 	 * 
-	 * @return An array containing all players of this game
+	 * @return An array containing all online players of this game
 	 */
 	public Player[] getPlayers() {
 		String[] playersAsString = players.toArray(new String[players.size()]);
@@ -775,10 +985,37 @@ public abstract class Game {
 	/**
 	 * Setup the floors of this game and creates all of this floors
 	 */
-	public void setupFloors() {
-		for (Floor floor : floors.values()) {
-			floor.create();
+	@SuppressWarnings("deprecation")
+	public void prepareGame() {
+		regen();
+		this.jackpot = 0;
+		this.roundsPlayed = 0;
+
+		for (Player p : getPlayers()) {
+			
+			//Give players the shovels...
+			if (isShovels()) {
+				p.getInventory().addItem(getSpleefShovel());
+				p.updateInventory();
+			}
+			
+			
 		}
+	}
+	
+	public void regen() {
+		for (Floor floor : getFloors()) {
+			if (!regen(floor.getId()))
+				HeavySpleef.instance.getLogger().warning(getName() + ": Could not regenerate floor " + floor.getId() + "!");
+		}
+	}
+	
+	public boolean regen(int id) {
+		if (!floors.containsKey(id))
+			return false;
+		
+		floors.get(id).create();
+		return true;
 	}
 
 	/**
@@ -787,7 +1024,7 @@ public abstract class Game {
 	 * @return True if the game is ready to play, otherwise false
 	 */
 	public boolean isFinal() {
-		return winPoint != null && losePoint != null && preLobbyPoint != null && floors.size() > 0;
+		return preLobbyPoint != null && floors.size() > 0;
 	}
 
 	/**
@@ -811,18 +1048,25 @@ public abstract class Game {
 	 * Gets the count of players that are needed to start this game
 	 * @return The count of players
 	 */
-	public int getNeededPlayers() {
-		return neededPlayers;
+	public int getMinPlayers() {
+		return minPlayers;
 	}
 
 	/**
 	 * Sets the count of the players that are needed to start the game
 	 * @param neededPlayers The count of needed players
 	 */
-	public void setNeededPlayers(int neededPlayers) {
-		this.neededPlayers = neededPlayers;
+	public void setMinPlayers(int minPlayers) {
+		this.minPlayers = minPlayers;
 	}
-
+	
+	public int getMaxPlayers() {
+		return this.maxPlayers;
+	}
+	
+	public void setMaxPlayers(int maxPlayers) {
+		this.maxPlayers = maxPlayers;
+	}
 	/**
 	 * Get's the money that every player has to pay
 	 * into the jackpot at the beginning of the game
@@ -876,16 +1120,6 @@ public abstract class Game {
 	}
 
 	/**
-	 * Set's the value if the game should start </br>
-	 * when the minimum count of players are reached.
-	 * 
-	 * @param startOnMinPlayers The value
-	 */
-	public void setStartOnMinPlayers(boolean startOnMinPlayers) {
-		this.startOnMinPlayers = startOnMinPlayers;
-	}
-
-	/**
 	 * Set's the countdown to the specified value
 	 * 
 	 * @param countdown The countdown to set
@@ -901,16 +1135,6 @@ public abstract class Game {
 	 */
 	public int getCountdown() {
 		return this.countdown;
-	}
-	
-	/**
-	 * Checks wether the game starts when the </br>
-	 * minimum count of players are reached...
-	 * 
-	 * @return True if the game starts on min players, otherwise false
-	 */
-	public boolean startsOnMinPlayers() {
-		return this.startOnMinPlayers;
 	}
 
 	/**
@@ -947,6 +1171,177 @@ public abstract class Game {
 	 */
 	public int getChances() {
 		return this.chances;
+	}
+	
+	public void setRounds(int rounds) {
+		this.rounds = rounds;
+	}
+	
+	public int getRounds() {
+		return this.rounds;
+	}
+	
+	public void setAutoStart(int players) {
+		this.autoStartAt = players;
+	}
+	
+	public int getAutoStart() {
+		return this.autoStartAt;
+	}
+	
+	public void set1vs1(boolean oneVsOne) {
+		this.oneVsOne = oneVsOne;
+	}
+	
+	public boolean is1vs1() {
+		return this.oneVsOne;
+	}
+	
+	public int getCurrentRound() {
+		return this.roundsPlayed + 1;//Add one
+	}
+	
+	public int[] getWins() {
+		int[] wins = new int[2];
+		
+		for (int i = 0; i < 2; i++) {
+			if (i >= this.wins.size()) {
+				wins[i] = 0;
+				continue;
+			}
+			Win w = this.wins.get(i);
+			wins[i] = w.getWins();
+		}
+		
+		return wins;
+	}
+	
+	public void addScoreBoard(Location loc, BlockFace face) {
+		int id = 0;
+		while (scoreboards.containsKey(id))
+			id++;
+		
+		ScoreBoard board = new ScoreBoard(loc, id, this, face);
+		scoreboards.put(id, board);
+		
+		board.draw();
+	}
+	
+	public void addScoreBoard(ScoreBoard board) {
+		scoreboards.put(board.getId(), board);
+		board.draw();
+	}
+	
+	public boolean removeScoreBoard(int id) {
+		if (!scoreboards.containsKey(id))
+			return false;
+		
+		scoreboards.remove(id);
+		return true;
+	}
+	
+	public boolean canSpleef(Location location, Player p) {
+		if (!players.contains(p.getName()))
+			return false;
+		if (!isIngame())
+			return false;
+		if (!containsInner(location))
+			return false;
+		
+		for (Floor floor : getFloors()) {
+			if (!floor.contains(location))
+				continue;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean canSpleef(Block block, Player p) {
+		return canSpleef(block.getLocation(), p);
+	}
+	
+	public ScoreBoard getScoreBoard(int id) {
+		return scoreboards.get(id);
+	}
+	
+	public ScoreBoard[] getScoreBoards() {
+		return scoreboards.values().toArray(new ScoreBoard[scoreboards.size()]);
+	}
+	
+	public void updateScoreBoards() {
+		for (ScoreBoard board : getScoreBoards()) {
+			board.draw();
+		}
+	}
+	
+	private void cancelTasks() {
+		cancelSTTask();
+		cancelRCTask();
+	}
+	
+	private void cancelRCTask() {
+		if (Bukkit.getScheduler().isQueued(this.roundTid) && roundTid != -1) {
+			Bukkit.getScheduler().cancelTask(this.roundTid);
+			this.roundTid = -1;
+		}
+	}
+	
+	private void cancelSTTask() {
+		if (Bukkit.getScheduler().isQueued(this.tid) && tid != -1) {
+			Bukkit.getScheduler().cancelTask(this.tid);
+			this.tid = -1;
+		}
+	}
+	
+	//Just a simple class to save a 1vs1 win
+	public class Win implements Cloneable {
+		
+		String owner;
+		int wins = 1;
+		
+		public Win(String owner) {
+			this.owner = owner;
+		}
+		
+		public Win(String owner, int wins) {
+			this.owner = owner;
+			this.wins = wins;
+		}
+		
+		public int getWins() {
+			return this.wins;
+		}
+		
+		public void addWin() {
+			this.wins++;
+		}
+		
+		public String getOwner() {
+			return this.owner;
+		}
+		
+		@Override
+		public Win clone() {
+			return new Win(this.owner, this.wins);
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o == null)
+				return false;
+			if (!(o instanceof Win))
+				return false;
+			Win win = (Win)o;
+			
+			if (!win.getOwner().equalsIgnoreCase(getOwner()))
+				return false;
+			if (win.getWins() != getWins())
+				return false;
+			
+			return true;
+		}
+		
 	}
 	
 	

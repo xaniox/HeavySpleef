@@ -22,7 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.selection.SelectionManager;
+import me.matzefratze123.heavyspleef.selection.Selection;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Location;
@@ -47,20 +47,20 @@ public class CommandAddLose extends HSCommand {
 			return;
 		}
 		
-		SelectionManager selManager = HeavySpleef.instance.getSelectionManager();
+		Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
 		
-		if (!selManager.hasSelection(player) || selManager.getFirstSelection(player) == null || selManager.getSecondSelection(player) == null) {
+		if (!s.has()) {
 			player.sendMessage(_("needSelection"));
 			return;
 		}
-		if (selManager.isTroughWorlds(player)) {
+		if (s.isTroughWorlds()) {
 			player.sendMessage(_("selectionCantTroughWorlds"));
 			return;
 		}
 		
 		Game g = GameManager.getGame(args[0]);
-		Location loc1 = selManager.getFirstSelection(player);
-		Location loc2 = selManager.getSecondSelection(player);
+		Location loc1 = s.getFirst();
+		Location loc2 = s.getSecond();
 	
 		int id = g.addLoseZone(loc1, loc2);
 		player.sendMessage(_("loseZoneCreated", String.valueOf(id), g.getName(), String.valueOf(id)));

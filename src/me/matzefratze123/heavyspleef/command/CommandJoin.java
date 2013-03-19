@@ -23,6 +23,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Bukkit;
@@ -102,17 +103,24 @@ public class CommandJoin extends HSCommand {
 			player.sendMessage(_("cantJoinMultipleGames"));
 			return false;
 		}
-		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown")) {
+		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown") && !game.is1vs1()) {
+			LocationSaver.save(player);
 			player.teleport(game.getRandomLocation());
 			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
 			game.addPlayer(player);
 			return true;
-		} else if (game.isCounting() && !plugin.getConfig().getBoolean("general.joinAtCountdown")){
+		} else if (game.isCounting()){
 			player.sendMessage(_("gameAlreadyRunning"));
 			GameManager.addQueue(player, game.getName());
 			return false;
 		}
+		if (game.getMaxPlayers() != 0 && game.getPlayers().length >= game.getMaxPlayers()) {
+			player.sendMessage(_("maxPlayersReached"));
+			GameManager.addQueue(player, game.getName());
+			return false;
+		}
 		
+		LocationSaver.save(player);
 		player.teleport(game.getPreGamePoint());
 		player.sendMessage(_("playerJoinedToPlayer", game.getName()));
 		game.addPlayer(player);

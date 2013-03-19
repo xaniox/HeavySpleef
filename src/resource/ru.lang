@@ -1,0 +1,145 @@
+# Сообщения об ошибках
+
+noPermission: &cУ вас нет разрешения!
+onlyIngame: &cЭта команда может быть использована только в игре!
+unknownCommand: &cНеизвестная команда HeavySpleef! Наберите &6/spleef help [№ страницы] &cдля получения помощи!
+
+selectionCantTroughWorlds: &cYour selection can't be trough worlds!
+needSelection: &cПожалуйста, сделайте выбор первым!
+notInsideArena: &cВыш выбор не в границах какой-либо арены! Невозможно добавить область...
+invalidBlock: &cThis blockdata is not valid!
+
+arenaAlreadyExists: &cЭта арена уже существует!
+arenaDoesntExists: &cЭта арена не существует!
+arenaCantBeInsideAnother: &cИгра не может быть в другой игре!
+cantDeleteGameWhileIngame: &cНе удается удалить игру, пока вы или кто-то находится в игре!
+gameIsAlreadyDisabled: &cЭта игра уже отключена!
+gameIsAlreadyEnabled: &cЭта игра уже включена!
+
+pageDoesntExists: &cЭта страница не существует!
+gameIsDisabled: &cЭта игра отключена!
+isntReadyToPlay: &cАрена все еще не готова к игре!
+notEnoughMoneyToJoin: &cВы не имеете достаточно денег, чтобы присоединиться к этой игре!
+playerNotOnline: &cЭтот игрок не в сети!
+targetHasntEnoughMoney: &cЭтот игрок не имеет достаточно денег, чтобы присоединиться к этой игре!
+gameAlreadyRunning: &cИгра запущена на этой арене!
+cantJoinMultipleGames: &cНе могу объединить несколько игр!
+playerIsntInAnyGame: &cЭтот игрок не в игре!
+playerIsntInAnyGameToPlayer: &cВы не в игре!
+minimumToLow: &cМинимальное количество игроков не может быть ниже, чем 2!
+notANumber: &c%a не является числом
+notLookingAtABlock: &cВы не смотрите на блок!
+notLookingAtFloor: &cYou are not looking at a floor!
+cantRemoveFloorWhileRunning: &cНе удается удалить пол в то время как идет игра!
+loseZoneWithIDDoesntExists: &cLosezone с указанным ID не существует!
+cantRemoveLoseWhileRunning: &cНе удается удалить losezone в то время как идет игра!
+noVault: &cVault не установлен на этом сервере или не работает правильно!
+cantStartGameWhileRunning: &cНе удается запустить игру в то время как она уже запущена!
+notEnoughPlayers: &cНе хватает игроков! Вам нужно по крайней мере, %a
+
+notAllowedLeaveArena: &cВам не разрешено покидать арену!
+notAllowedToBuild: &cВы не можете строить здесь!
+notAllowedToBreakSpecified: &cВы не можете разрушать %a!
+cantChangeGamemode: &cНевозможно изменить игровой режим во время игры!
+cantUseCommands: &cВы не можете использовать эту команду пока вы участник игры!
+loginAfterServerShutdown: &cВы были телепортированы из игры %a на спавн проигравших, так как во время игры сервер был остановлен.
+notAllowedToCreateSpleefSigns: &cВы не можете создать spleef таблички!
+
+errorOnState: &cПроизошла ошибка при загрузке старого инвентаря. Простите... :(
+noGameRunning: &cНет игр запущенных на этой арене!
+
+noWorldEdit: &cCan't use this function! WorldEdit wasn't found on this server!
+
+not1vs1: &cThis is not a 1vs1 game! Type /spleef set1vs1 %a true to make it to an 1vs1 game 
+onlyOneLayer: &cThe size of a floor in the y-coordinate can only be one layer!
+onlyOverTwoAndZero: &cThe AutoStart value has to be over 2 or 0 to deactivate it!
+maxPlayersReached: &cThe maximum count of players in this arena is reached!
+toLow: &cThis value is to low! It has to be 2 or 0 to deactivate this feature...
+
+# Сообщения об успешном выполнении
+
+floorCreated: &7Пол был создан!
+loseZoneCreated: &7Losezone для игры была добавлена! (ID: %a)\n Если вы хотите удалить эту losezone, просто наберите /spleef removelosezone %a %a)
+gameCreated: &7Игра успешно добавлена!
+gameDeleted: &7Spleefarena успешно удалена!
+gameDisabledToPlayer: &7Вы отключили игру %a
+gameEnabledToPlayer: &7Вы включили игру %a
+targetHasJoined: &7Игрок %a присоединился к игре %a !
+targetAddedToQueue: &7Игрок %a добавлен в очередь!
+playerJoinedToPlayer: &7Вы присоединились к игре %a
+kickedOfToPlayer: &7Вы были изгнаны из %a%a
+kickedOfToKicker: &7Вас изгнал %a из игры %a%a
+left: &cВы вышли из игры...
+setMinimumPlayers: &7Успешно установленно минимальное кол-во игроков - %a для игры %a
+floorRemoved: &7Пол был удален!
+loseZoneRemoved: &7Losezone с ID %a была удалена!
+gamesSaved: &7Все игры были сохранены в базе данных!
+lobbyPointSet: &Точка лобби для игры %a установлена!
+winPointSet: &7Точка спавна победителя, для игры %a, установлена!
+losePointSet: &7Точка спавна проигравших, для игры %a, установлена!
+moneySet: &7Деньги успешно привязаны к игре!
+gameStarted: &7Начало игры!
+win: &6Вы выиграли игру!
+jackpotReceived: &7Вы получили джекпот %a за победу в этой игре!
+rewardReceived: &7You received %a reward for winning this game!
+
+antiCampWarn: &4AntiCamping&c: У вас осталось &4%a &cдо того как вы упадете вниз!
+antiCampTeleport: &4AntiCamping&c: Вы упали вниз из-за того, что долго стояли на одном месте!
+
+paidIntoJackpot: &7Вы внесли %a в джекпот игры!
+yourKnockOuts: &aВы победили: %a
+
+noLongerInQueue: &7Вас нет больше в очереди!
+leftQueue: &7Вы покинули очередь на игру %a
+addedToQueue: &7Вы находитесь в очереди на игру %a
+notInQueue: &7You are not in a queue!
+
+outOfGame: &cВы вышли из игры...
+spleefSignCreated: &7Spleef табличка успешно создана!
+stateSaved: &7Ваши состояние и инвентарь были сохранены!
+stateRestored: &7Ваше состояние было восстановленно!
+gameStopped: &cИгра была остановлена!
+
+startOnMinPlayersTrue: &7The game will now start when the minimum count of players are reached!
+startOnMinPlayersFalse: &7The game will no longer start when the minimum count of players are reached!
+countdownSet: &7Countdown set to %a!
+
+shovelToggled: Game with shovels was set to %a.
+info: Current value: %a
+
+chancesSet: &7The chance amount of %a was binded to the game!
+chancesLeft: &cYou have %a chances left!
+chancesLeftBroadcast: &c%a has %a chances left!
+
+1vs1Toggled: &71vs1 game was set to %a!
+roundsSet: &7Rounds set!
+autoStartSet: &7AutoStart value was set to %a!
+setMaximumPlayers: &7The maximum amount of %a players has been binded to the game %a!
+setMinimumPlayers: &7The minimum amount of %a players has been binded to the game %a!
+
+# Публичные сообщения
+
+gameDisabled: &cИгру &6%a &cотключил %a
+gameEnabled: &aИгру &6%a &aвключил %a
+gameHasStarted: &1Игра началась! Удачи...
+gameOnArenaHasStarted: &6Игра на арене %a началась!
+startedGameWith: &6Началась игра с %a игроками!
+gameIsStarting: &1Игра начнется через %a секунд...
+gameStopped: &cИгра была остановлена!
+playerJoinedGame: &a%a присоединился к игре!
+
+wonRound: &a%a &chas won round &6%a &cof &6%a&c!
+roundsRemaining: &1%a rounds remaining!
+wonThe1vs1: &a%a has won the game against %a!
+endedDraw: &aThe game in arena %a has ended in a draw...
+
+roundStarted: &aRound &6%a &aof &6%a &ahas started!
+roundStartsIn: &1Round starts in %a seconds...
+
+loseCause_kick: &6%a &cбыл изгнан из игры!
+loseCause_leave: &6%a &cвышел из игры на арене %a!
+loseCause_lose: &6%a &cпотерпел поражение от &4%a&c!
+loseCause_quit: &6%a &cвышел во время игры!
+loseCause_unknown: &6%a &cпокинул арену по неизвестной причине...
+
+hasWon: &a%a &1выиграл игру на арене &6%a&1!

@@ -66,7 +66,7 @@ public class LanguageHandler {
 		acceptedLanguages.add("es");
 		acceptedLanguages.add("pt");
 		
-		String language = HeavySpleef.instance.getConfig().getString("general.language");
+		String language = HeavySpleef.instance.getConfig().getString("general.language", "en");
 		if (!acceptedLanguages.contains(language)) {
 			HeavySpleef.instance.getLogger().log(Level.WARNING, "Invalid language! Setting to English...");
 			setLanguage("en");
@@ -151,13 +151,15 @@ public class LanguageHandler {
 		}
 	}
 	
-	public static String _(String... s) {
-		if (s.length == 0) return null;
-		String message = messages.get(s[0]);
-		for (int i = 1; i < s.length; i++) {
-			if (s[i].contains("$"))
-				s[i] = s[i].replace("$", "\\$");
-			message = message.replaceFirst("%a", s[i]);
+	public static String _(String... parts) {
+		
+		if (parts.length == 0) return null;
+		String message = messages.get(parts[0]);
+		
+		for (int i = 1; i < parts.length; i++) {
+			if (parts[i].contains("$"))
+				parts[i] = parts[i].replace("$", "\\$");
+			message = message.replaceFirst("%a", parts[i]);
 		}
 		return message;
 	}

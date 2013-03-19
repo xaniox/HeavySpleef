@@ -90,12 +90,15 @@ public class FloorCylinder extends Floor {
 		}
 		
 		if (givenFloor) {
-			for (Location l : givenFloorMap.keySet()) {
-				Block block = l.getWorld().getBlockAt(l);
-				SimpleBlockData blockData = givenFloorMap.get(l);
+			for (SimpleBlockData sData : givenFloorList) {
+				if (sData== null)
+					continue;
+				Block block = sData.getWorld().getBlockAt(sData.getLocation());
 				
-				id = blockData.getMaterial().getId();
-				data = blockData.getData();
+				if (block.getType() == sData.getMaterial() && block.getData() == sData.getData())
+					continue;
+				id = sData.getMaterial().getId();
+				data = sData.getData();
 				
 				block.setTypeId(id);
 				block.setData(data);
@@ -146,7 +149,7 @@ public class FloorCylinder extends Floor {
 				if (!region.contains(new Vector(currentLocation.getBlockX(), currentLocation.getBlockY(), currentLocation.getBlockZ())))
 					continue;
 				
-				givenFloorMap.put(currentLocation, new SimpleBlockData(mat, data, x, y, z, w.getName()));
+				givenFloorList.add(new SimpleBlockData(mat, data, x, y, z, w.getName()));
 			}
 		}
 		

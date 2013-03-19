@@ -19,14 +19,14 @@
  */
 package me.matzefratze123.heavyspleef.core.region;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Random;
 
-import me.matzefratze123.heavyspleef.core.Type;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
-
 import org.bukkit.Location;
+
+import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.database.Parser;
+import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 public abstract class Floor extends RegionBase {
 
@@ -38,7 +38,7 @@ public abstract class Floor extends RegionBase {
 	
 	protected Random random = new Random();
 	
-	public Map<Location, SimpleBlockData> givenFloorMap = new HashMap<Location, SimpleBlockData>();
+	public ArrayList<SimpleBlockData> givenFloorList = new ArrayList<SimpleBlockData>();
 	
 	public Floor(int id, int m, byte data, boolean wool, boolean givenFloor, int y) {
 		super(id);
@@ -83,6 +83,16 @@ public abstract class Floor extends RegionBase {
 	
 	public void setGiven(boolean given) {
 		this.givenFloor = given;
+	}
+	
+	public SimpleBlockData getSimpleBlockData(Location loc) {
+		loc = Parser.roundLocation(loc);
+		for (SimpleBlockData data : givenFloorList) {
+			if (data.getLocation().equals(loc))
+				return data;
+		}
+		
+		return null;
 	}
 
 }

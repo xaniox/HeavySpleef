@@ -55,7 +55,7 @@ public class GameCylinder extends Game {
 		this.center = center;
 		this.radius = radius;
 		this.minY = minY;
-		this.maxY = maxY;
+		this.maxY = maxY - 1;//Need to subtract 1 because of false rounding
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class GameCylinder extends Game {
 
 	@Override
 	public boolean contains(Location l) {
-		Region region = getCylinderRegion(minY, maxY);//Need to subtract 1 because of false rounding
+		Region region = getCylinderRegion(minY, maxY);
 		return region.contains(BukkitUtil.toVector(l));
 	}
 	
@@ -80,10 +80,10 @@ public class GameCylinder extends Game {
 
 	@Override
 	public void broadcast(String msg) {
-		if (HeavySpleef.instance.getConfig().getBoolean("general.globalBroadcast")) {
+		if (HeavySpleef.instance.getConfig().getBoolean("general.globalBroadcast", false)) {
 			Bukkit.broadcastMessage(msg);
 		} else {
-			int radius = HeavySpleef.instance.getConfig().getInt("general.broadcast-radius");
+			int radius = HeavySpleef.instance.getConfig().getInt("general.broadcast-radius", 50);
 			int radiusSqared = radius * radius;
 			
 			for (Player p : Bukkit.getOnlinePlayers()) {

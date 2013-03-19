@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.statistic.Statistic;
+import me.matzefratze123.heavyspleef.utility.statistic.StatisticModule;
 import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 
 import org.bukkit.Bukkit;
@@ -99,6 +99,25 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		Statement statement = conn.createStatement();
 		statement.executeUpdate(sql);
 	}
+	
+	public boolean hasColumn(String columnName) throws SQLException {
+		conn = getInstance();
+		
+		DatabaseMetaData meta = conn.getMetaData();
+		ResultSet set = meta.getColumns(null, null, this.tableName, columnName);
+		
+		return set.next();
+	}
+	
+	public void checkColumns() throws SQLException {
+		String[] columns = new String[] {"owner", "wins", "loses", "knockouts", "games", "score"};
+		
+		for (String col : columns) {
+			if (!hasColumn(col))
+				executeUpdate("ALTER TABLE " + this.tableName + " ADD score INT");
+		}
+	}
+
 
 	@Override
 	public void save() {
@@ -106,13 +125,15 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		
 		try {
 			executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner TEXT, wins INT, loses INT, knockouts INT, games INT, score INT)");
-			for (Statistic stat : StatisticManager.getStatistics()) {
+			checkColumns();
+			
+			for (StatisticModule stat : StatisticManager.getStatistics()) {
 				
 				int wins = stat.getWins();
 				int loses = stat.getLoses();
 				int knockouts = stat.getKnockouts();
 				int games = stat.getGamesPlayed();
-				int score = stat.getScore();	
+				int score = stat.getScore();
 				
 				String owner = stat.getName();
 				
@@ -153,12 +174,12 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 			while (stats.next()) {
 				String owner = stats.getString("owner");
 				
-				int wins = stats.getInt("names");
+				int wins = stats.getInt("wins");
 				int loses = stats.getInt("loses");
 				int knockouts = stats.getInt("knockouts");
 				int games = stats.getInt("games");
 				
-				Statistic s = new Statistic(owner, loses, wins, knockouts, games);
+				StatisticModule s = new StatisticModule(owner, loses, wins, knockouts, games);
 				StatisticManager.addExistingStatistic(s);
 				c++;
 			}

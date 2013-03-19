@@ -113,10 +113,10 @@ public class GameCuboid extends Game {
 	 */
 	@Override
 	public void broadcast(String msg) {
-		if (HeavySpleef.instance.getConfig().getBoolean("general.globalBroadcast")) {
+		if (HeavySpleef.instance.getConfig().getBoolean("general.globalBroadcast", false)) {
 			Bukkit.broadcastMessage(msg);
 		} else {
-			int radius = HeavySpleef.instance.getConfig().getInt("general.broadcast-radius");
+			int radius = HeavySpleef.instance.getConfig().getInt("general.broadcast-radius", 50);
 			int radiusSqared = radius * radius;
 			Location[] corners = get4Points();
 			
@@ -156,7 +156,7 @@ public class GameCuboid extends Game {
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				currentBlock = world.getBlockAt(x, minY, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock))
+				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
 					currentBlock.setType(Material.OBSIDIAN);
 			}
 		}
@@ -164,7 +164,7 @@ public class GameCuboid extends Game {
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				currentBlock = world.getBlockAt(x, maxY, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock))
+				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
 					currentBlock.setType(Material.GLOWSTONE);
 			}
 		}
@@ -172,7 +172,7 @@ public class GameCuboid extends Game {
 		for (int y = minY; y <= maxY; y++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				currentBlock = world.getBlockAt(minX, y, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock))
+				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
 					currentBlock.setTypeId(20);
 			}
 		}
@@ -180,7 +180,7 @@ public class GameCuboid extends Game {
 		for (int y = minY; y <= maxY; y++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				currentBlock = world.getBlockAt(maxX, y, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock))
+				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
 					currentBlock.setTypeId(20);
 			}
 		}
@@ -188,7 +188,7 @@ public class GameCuboid extends Game {
 		for (int y = minY; y <= maxY; y++) {
 			for (int x = minX; x <= maxX; x++) {
 				currentBlock = world.getBlockAt(x, y, minZ);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock))
+				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
 					currentBlock.setTypeId(20);
 			}
 		}
@@ -196,7 +196,7 @@ public class GameCuboid extends Game {
 		for (int y = minY; y <= maxY; y++) {
 			for (int x = minX; x <= maxX; x++) {
 				currentBlock = world.getBlockAt(x, y, maxZ);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock))
+				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
 					currentBlock.setTypeId(20);
 				
 			}

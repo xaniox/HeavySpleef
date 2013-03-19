@@ -21,31 +21,28 @@ package me.matzefratze123.heavyspleef.selection;
 
 import org.bukkit.Location;
 
-public class Selection {
-
-	private Location firstSel;
-	private Location secondSel;
+public abstract class Selection {	
 	
-	public Selection(Location firstSelection, Location secondSelection) {
-		setFirstSel(firstSelection);
-		setSecondSel(secondSelection);
-	}
-
-	public Location getSecondSel() {
-		return secondSel;
-	}
-
-	public void setSecondSel(Location minSel) {
-		this.secondSel = minSel;
-	}
-
-	public Location getFirstSel() {
-		return firstSel;
-	}
-
-	public void setFirstSel(Location firstSel) {
-		this.firstSel = firstSel;
+	protected String owner;
+	
+	public Selection(String owner) {
+		this.owner = owner;
 	}
 	
+	public abstract Location getFirst();
+	
+	public abstract Location getSecond();
+	
+	public abstract boolean has();
+	
+	public abstract boolean isTroughWorlds();
+	
+	public void setFirst(Location location) {};
+	
+	public void setSecond(Location location) {};
+	
+	public String getOwner() {
+		return this.owner;
+	}
 	
 }

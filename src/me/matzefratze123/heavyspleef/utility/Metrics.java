@@ -1,6 +1,6 @@
 /*
  * Metrics class submitts stats to mcstats.org
- * All credits to this class going to Hidendra (Tyler Blair)
+ * All credits to this class going to Hidendra
  */
 package me.matzefratze123.heavyspleef.utility;
 

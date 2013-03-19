@@ -1,0 +1,144 @@
+# Fehler Nachrichten
+
+noPermission: &cDu besitzt nicht genug Rechte!
+onlyIngame: &cDieser Befehl kann nur Ingame genutzt werden!
+unknownCommand: &cUnbekannter HeavySpleef Befehl! Gib &6/spleef help [Seite] &cfür Hilfe ein...
+
+selectionCantTroughWorlds: &cDeine Auswahl kann nicht über zwei Welten sein!
+needSelection: &cBitte mache erst eine Auswahl...
+notInsideArena: &cDeine Auswahl ist in keiner Arena!
+invalidBlock: &cDiese Blockdaten sind nicht gültig!
+
+arenaAlreadyExists: &cDiese Arena exestiert bereits!
+arenaDoesntExists: &cDiese Arena exestiert nicht...
+arenaCantBeInsideAnother: &cEine Spleefarena kann keine andere überlappen!
+cantDeleteGameWhileIngame: &cEin Spiel kann nicht gelöscht werden während es läuft!
+gameIsAlreadyDisabled: &cDiese Arena ist bereits deaktiviert!
+gameIsAlreadyEnabled: &cDiese Arena ist bereits aktiviert!
+
+pageDoesntExists: &cDiese Seite exestiert nicht!
+gameIsDisabled: &cDiese Arena ist deaktiviert!
+isntReadyToPlay: &cDiese Arena ist noch nicht fertig!
+notEnoughMoneyToJoin: &cDu hast nicht genügend Geld diesem Spiel beizutreten!
+playerNotOnline: &cKann Spieler nicht finden...
+targetHasntEnoughMoney: &cDieser Spieler hat nicht genügend Geld um dem Spiel beizutreten!
+gameAlreadyRunning: &cIn dieser Arena findet bereits ein Spiel statt!
+cantJoinMultipleGames: &cDu kannst nicht mehreren Arenen gleichzeitig beitreten!
+playerIsntInAnyGame: &cDieser Spieler ist nicht in irgendeinem Spiel!
+playerIsntInAnyGameToPlayer: &cDu bist in keinem Spiel!
+minimumToLow: &cDer Minimalwert kann nicht kleiner als 2 sein!
+notANumber: &c%a ist keine Zahl!
+notLookingAtABlock: &cDu schaust auf keinen Block...
+notLookingAtFloor: &cDu schaust auf keinen Floor...
+cantRemoveFloorWhileRunning: &cDu kannst keine Spleefebene entfernen während das Spiel läuft!
+loseZoneWithIDDoesntExists: &cEine Verlierzone mit dieser ID exestiert nicht!
+cantRemoveLoseWhileRunning: &cDu kannst keine Verlierzone entfernen während das Spiel läuft!
+noVault: &cVault ist nicht auf diesem Server installiert oder funktoniert nicht richtig!
+cantStartGameWhileRunning: &cDu kannst kein Spiel starten während es schon läuft!
+notEnoughPlayers: &cNicht genug Spieler! Es werden mindestens %a Spieler benötigt!
+
+notAllowedLeaveArena: &cDir ist es nicht erlaubt die Arena zu verlassen!
+notAllowedToBuild: &cDir ist es nicht erlaubt hier zu bauen!
+notAllowedToBreakSpecified: &cDir ist es nicht erlaubt %a abzubauen!
+cantChangeGamemode: &cDein Spielmodus kann während dem Spiel nicht geändert werden!
+cantUseCommands: &cDir ist es nicht erlaubt diesen Befehl zu nutzen!
+loginAfterServerShutdown: &cDu wurdest zum Verlierpunkt teleportiert da der Server zu diesem Zeitpunkt gestoppt wurde.
+notAllowedToCreateSpleefSigns: &cDir ist es nicht erlaubt Spleef-Schilder zu erstellen!
+
+errorOnState: &cEin Fehler trat auf während dein Inventar geladen wurde... :(
+noGameRunning: &cIn dieser Arena findet gerade kein Spiel statt!
+
+noWorldEdit: &cDiese Funktion kann nicht genutzt werden! WorldEdit wurde nicht gefunden!
+
+not1vs1: &cDies ist keine 1vs1 Arena! Um sie zur 1vs1 Arena zu machen tipp folgendes ein: /spleef set1vs1 %a true
+onlyOneLayer: &cEin Floor kann nur einen Block dick sein!
+onlyOverTwoAndZero: &cDie AutoStart Anzahl muss größer als 2 sein oder 0 sein um sie zu deaktivieren!
+maxPlayersReached: &cDie maximale Spieleranzahl in dieser Arena ist erreicht!
+toLow: &cDieser Wert ist zu niedrig! Er muss mindestens 2 oder 0 betragen um ihn zu deaktivieren!
+
+# Erfolgsnachrichten
+
+floorCreated: &7Die Spleefebene wurde hinzugefügt!
+loseZoneCreated: &7Die Verlierzone wurde hinzugefügt! (ID: %a)\nWenn du diese Verlierzone entfernen willst dann tipp ein: /spleef removelose %a %a
+gameCreated: &7Arena hinzugefügt!
+gameDeleted: &7Arena gelöscht!
+gameDisabledToPlayer: &7Du hast das Spiel %a deaktiviert!
+gameEnabledToPlayer: &7Du hast das Spiel %a aktiviert!
+targetHasJoined: &7Der Spieler %a ist dem Spiel %a beigetreten!
+targetAddedToQueue: &7Der Spieler %a wurde zur Warteliste hinzugefügt!
+playerJoinedToPlayer: &7Du bist dem Spiel %a beigetreten
+kickedOfToPlayer: &7Du wurdest von %a gekickt%a
+kickedOfToKicker: &7Du hast %a von Spiel %a gekickt%a
+left: &cDu hast das Spiel verlassen...
+setMinimumPlayers: &7Das Minimum von %a Spielern wurde dem Spiel %a hinzugefügt
+floorRemoved: &7Die Spleefebene wurde entfernt!
+loseZoneRemoved: &7Die Verliererzone mit der ID %a wurde entfernt!
+gamesSaved: &7Alle Spiele wurden in der Datenbank gesichert!
+lobbyPointSet: &7Der Lobbypunkt für das Spiel %a wurde gesetzt!
+winPointSet: &7Der Gewinnpunkt für das Spiel %a wurde gesetzt!
+losePointSet: &7Der Verlierpunkt für das Spiel %a wurde gesetzt!
+moneySet: &7Das Geld wurde dem Spiel hinzugefügt!
+gameStarted: &aSpiel gestartet!
+win: &6Du hast das Spiel gewonnen!
+jackpotReceived: &7Du hast %a Jackpot bekommen!
+rewardReceived: &7Du hast %a Belohnung bekommen!
+
+antiCampWarn: &4AntiCamping&c: Du hast noch &4%a &cSekunden bevor du eine Ebene nach unten teleportiert wirst!
+antiCampTeleport: &4AntiCamping&c: Du wurdest eine Ebene nach unten teleportiert weil du zulange an einem Punkt standest!
+
+paidIntoJackpot: &7Du hast %a in Jackpot dieses Spiels gezahlt!
+yourKnockOuts: &7Deine Knockouts: %a
+
+noLongerInQueue: &7Du bist nicht länger in der Warteschlange!
+leftQueue: &7Du hast das die Warteschlange für das Spiel %a verlassen!
+addedToQueue: &7Du bist nun in der Warteschlange für das Spiel %a
+notInQueue: &7Du bist in keiner Warteschlange!
+
+outOfGame: &cDu hast verloren!
+spleefSignCreated: &7Spleef Schild erfolgreich erstellt!
+stateRestored: &7Dein Inventar wurde wiederhergestellt!
+stateSaved: &7Dein Inventar wurde gespeichert!
+gameStopped: &cDas Spiel wurde gestoppt!
+
+autoStartSet: &7AutoStart wurde zu %a Spielern gesetzt!
+countdownSet: &7Der Countdown wurde zu %a gesetzt!
+
+info: Derzeitiger Wert: %a
+shovelToggled: Spiel mit Schaufeln auf %a gesetzt.
+
+chancesSet: &7Chancenanzahl von %a wurde an das Spiel gebunden!
+chancesLeft: &cDir verbleiben noch %a Chancen!
+chancesLeftBroadcast: &c%a hat noch %a Chancen!
+
+1vs1Toggled: &71vs1 Spiel wurde zu %a gesetzt!
+roundsSet: &7Rundenanzahl gesetzt!
+autoStartSet: &7AutoStart wurde auf %a Spieler gesetzt!
+setMaximumPlayers: &7Die maximale Spieleranzahl von %a für das Spiel %a wurde gesetzt...
+setMinimumPlayers: &7Die minimale Spieleranzahl von %a für das Spiel %a wurde gesetzt... 
+
+# Broadcast nachrichten
+
+gameDisabled: &cDas Spiel &6%a &cwurde von %a deaktiviert!
+gameEnabled: &aDas Spiel &6%a &awurde von %a aktiviert!
+gameHasStarted: &1Spiel gestartet! Viel Glück...
+gameOnArenaHasStarted: &6Das Spiel in Arena %a hat gestartet!
+startedGameWith: &6Das Spiel wurde mit %a Spielern gestartet!
+gameIsStarting: &1Spiel startet in %a Sekunden...
+gameStopped: &cDas Spiel wurde gestoppt!
+playerJoinedGame: &a%a ist dem Spiel beigetreten!
+
+wonRound: &a%a &chat die Runde &6%a &cvon &6%a &cgewonnen!
+roundsRemaining: &1%a Runden verbleiben!
+wonThe1vs1: &a%a hat das Spiel gegen %a gewonnen! Glückwunsch!
+endedDraw: &aDas Spiel in Arena %a ist unentschieden ausgegangen...
+
+roundStarted: &aRunde &6%a &avon &6%a &agestartet!
+roundStartsIn: &1Round starts in %a seconds...
+
+loseCause_kick: &6%a &cwurde aus dem Spiel gekickt!
+loseCause_leave: &6%a &chat das Spiel %a verlassen!
+loseCause_lose: &6%a &cwurde von &4%a &causgeknockt!
+loseCause_quit: &6%a &chat den Server verlassen während das Spiel lief...
+loseCause_unknown: &6%a &chat das Spiel aus einem unbekannten Grund verlassen
+
+hasWon: &a%a &1hat das Spiel in Arena %a gewonnen!

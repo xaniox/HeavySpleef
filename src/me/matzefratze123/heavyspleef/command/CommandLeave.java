@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
+import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.command.CommandSender;
@@ -52,7 +53,10 @@ public class CommandLeave extends HSCommand {
 		Game game = GameManager.getGameFromPlayer(player);
 		
 		game.removePlayer(player, LoseCause.LEAVE);
-		player.teleport(game.getLosePoint());
+		if (game.getLosePoint() == null)
+			player.teleport(LocationSaver.load(player));
+		else
+			player.teleport(game.getLosePoint());
 		player.sendMessage(_("left"));
 	}
 

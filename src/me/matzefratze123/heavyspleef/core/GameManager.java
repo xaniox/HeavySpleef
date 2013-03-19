@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -57,6 +56,7 @@ public class GameManager {
 	}
 	
 	public static void deleteGame(String id) {
+		id = id.toLowerCase();
 		games.remove(id);
 	}
 	

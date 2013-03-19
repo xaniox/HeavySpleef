@@ -19,27 +19,33 @@
  */
 package me.matzefratze123.heavyspleef.utility;
 
+import java.io.Serializable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 
 /**
  * Simple storing class for blockdata
  * 
  * @author matzefratze123
  */
-public class SimpleBlockData {
+public class SimpleBlockData implements Serializable {
+	
+	/**
+	 * Serial version UID
+	 */
+	private static final long serialVersionUID = -3686717330346290113L;
 	
 	private Material mat;
 	private byte data;
 	
-	private int x;
-	private int y;
-	private int z;
+	private int x = 0;
+	private int y = 0;
+	private int z = 0;
 	
-	private String worldName;
+	private String worldName = "";
 	
 	public SimpleBlockData(Material mat, byte data, int x, int y, int z, String worldname) {
 		this.mat = mat;
@@ -48,6 +54,11 @@ public class SimpleBlockData {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	public SimpleBlockData(Material mat, byte data) {
+		this.mat = mat;
+		this.data = data;
 	}
 	
 	public SimpleBlockData(String fromString) {
@@ -93,8 +104,8 @@ public class SimpleBlockData {
 		return mat.getId() + "," + data + "," + x + "," + y + "," + z + "," + worldName;
 	}
 	
-	public static boolean isSolid(Block block) {
-		int[] solidIDs = new int[] {1,2,3,4,5,7,12,13,14,15,16,17,18,19,
+	public static boolean isSolid(int id) {
+		int[] solidIDs = new int[] {1,2,3,4,5,7,12,13,14,15,16,17,18,19,22,
 									29,33,35,41,42,43,44,45,46,477,48,49,
 									52,53,54,56,57,58,61,6267,68,69,73,74,
 									79,80,82,84,86,87,88,89,91,95,97,98,
@@ -102,7 +113,7 @@ public class SimpleBlockData {
 									120,121,123,124,125,128,129,130,133,
 									134,135,136,137,138,152,153,155,158};
 		for (int s : solidIDs)
-			if (s == block.getTypeId())
+			if (s == id)
 				return true;
 		return false;
 	}

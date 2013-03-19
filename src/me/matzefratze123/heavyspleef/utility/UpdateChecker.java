@@ -28,18 +28,30 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+
 import me.matzefratze123.heavyspleef.HeavySpleef;
 
-public class UpdateChecker {
+public class UpdateChecker implements Listener {
 	
 	public static String checkURL = "https://dl.dropbox.com/s/50ada21795qq4q8/UpdateCheck.txt";
 	
+	public static boolean updateAvaible = false;
+	public static String newVersion = "";
+	public static String downloadUrl = "";
+	
 	public static void check() {
-		if (!HeavySpleef.instance.getConfig().getBoolean("updateCheck"))
+		if (!HeavySpleef.instance.getConfig().getBoolean("updateCheck", true))
 			return;
 		String[] updateAvaible = updateAvaible();
 		if (updateAvaible.length == 1 && updateAvaible[0].isEmpty())
 			return;
+		
+		UpdateChecker.updateAvaible = true;
 		for (String updatePart : updateAvaible)
 			HeavySpleef.instance.getLogger().info(updatePart);
 	}
@@ -62,19 +74,32 @@ public class UpdateChecker {
 				String value = split[1];
 				
 				if (key.equalsIgnoreCase("version")) {
-					double newVersion = Double.parseDouble(value);
-					double thisVersion = Double.parseDouble(HeavySpleef.instance.getDescription().getVersion());
+					boolean added = false;
+					String[] thisVersion = HeavySpleef.instance.getDescription().getVersion().split("\\.");
+					String[] newVersion = value.split("\\.");
 					
-					if (newVersion <= thisVersion)
-						return new String[] {""};
-					updateOutput.add("An update is avaible: v" + newVersion);
-					updateOutput.add("Changes and Updates:");
+					if (thisVersion.length < newVersion.length) {
+						updateOutput.add("An update is avaible: v" + value);
+						updateOutput.add("Changes and Updates:");
+						UpdateChecker.newVersion = value;
+						added = true;
+					}
+					
+					for (int i = 0; i < newVersion.length || i < thisVersion.length; i++) {
+						if (!added && Integer.parseInt(newVersion[i]) > Integer.parseInt(thisVersion[i])) {
+							updateOutput.add("An update is avaible: v" + value);
+							updateOutput.add("Changes and Updates:");
+							UpdateChecker.newVersion = value;
+							added = true;
+						}
+					}
 				} else if (key.equalsIgnoreCase("description")) {
 					String[] updates = value.split("~");
 					for (String update : updates)
 						updateOutput.add("- " + update);
 				} else if (key.equalsIgnoreCase("download")) {
 					updateOutput.add("Download: " + value);
+					UpdateChecker.downloadUrl = value;
 				}
 			}
 			
@@ -85,7 +110,22 @@ public class UpdateChecker {
 			return new String[] {"Couldn't check updates! IOException?!"};
 		} catch (NumberFormatException e) {
 			return new String[] {""};
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return new String[] {""};
 		}
+	}
+	
+	@EventHandler
+	public void onJoin(PlayerJoinEvent e) {
+		Player player = e.getPlayer();
+		
+		if (!updateAvaible)
+			return;
+		if (!player.hasPermission(Permissions.CREATE_GAME.getPerm()))
+			return;
+		
+		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Your version outdated! This version: " + HeavySpleef.instance.getDescription().getVersion() + 
+				           " | Latest: " + newVersion + "\nDownload: " + downloadUrl);
 	}
 	
 }

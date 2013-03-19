@@ -81,7 +81,7 @@ public class FloorCuboid extends Floor {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
 					b = getFirstCorner().getWorld().getBlockAt(x, y, z);
-					givenFloorMap.put(b.getLocation(), new SimpleBlockData(b.getType(), b.getData(), x, y, z, getFirstCorner().getWorld().getName()));
+					givenFloorList.add(new SimpleBlockData(b.getType(), b.getData(), x, y, z, getFirstCorner().getWorld().getName()));
 				}
 			}
 		}
@@ -98,6 +98,25 @@ public class FloorCuboid extends Floor {
 		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
 		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
 		
+		if (givenFloor) {
+			for (SimpleBlockData sData : givenFloorList) {
+				if (sData == null)
+					continue;
+				Block block = sData.getWorld().getBlockAt(sData.getLocation());
+				
+				if (block.getType() == sData.getMaterial() && block.getData() == sData.getData())
+					continue;
+				
+				int id = sData.getMaterial().getId();
+				byte data = sData.getData();
+				
+				block.setTypeId(id);
+				block.setData(data);
+			}
+			
+			return;
+		}
+		
 		Block currentBlock;
 		byte data = 0;
 		
@@ -112,15 +131,13 @@ public class FloorCuboid extends Floor {
 					currentBlock = getFirstCorner().getWorld().getBlockAt(x, y, z);
 					
 					if (wool) {
+						if (currentBlock.getType() == Material.WOOL && currentBlock.getData() == data)
+							continue;
 						currentBlock.setType(Material.WOOL);
 						currentBlock.setData(data);
-					} else if (givenFloor) {
-						SimpleBlockData b = givenFloorMap.get(currentBlock.getLocation());
-						if (b == null)
-							continue;
-						currentBlock.setType(b.getMaterial());
-						currentBlock.setData(b.getData());
 					} else {
+						if (currentBlock.getTypeId() == getBlockID() && currentBlock.getData() == getData())
+							continue;
 						currentBlock.setTypeId(getBlockID());
 						currentBlock.setData(getData());
 					}

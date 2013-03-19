@@ -19,11 +19,11 @@
  */
 package me.matzefratze123.heavyspleef.selection;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
@@ -34,101 +34,74 @@ import org.bukkit.entity.Player;
  */
 public class SelectionManager {
 	
-	public SelectionManager() {}
+	/** The ArrayList containing all locations and selections of players **/
+	private List<Selection> selections = new ArrayList<Selection>();
+	private WandType type;
 	
-	/** The HashMap containing all locations and selections of players **/
-	private HashMap<String, Selection> selections = new HashMap<String, Selection>(); 		
-	
-	/**
-	 * Set's the lower point of a selection of a player
-	 * 
-	 * @param player Player's selection
-	 * @param sel Location that should be insert
-	 */
-	public void setSecondSelection(Player player, Location sel) {
-		selections.get(player.getName()).setSecondSel(sel);
+	public SelectionManager() {
+		setup();
 	}
 	
-	/**
-	 * Set's the upper point of a selection of a player
-	 * 
-	 * @param player Player's selection
-	 * @param sel Location that should be insert
-	 */
-	public void setFirstSelection(Player player, Location sel) {
-		selections.get(player.getName()).setFirstSel(sel);
-	}
 	
-	/**
-	 * Get's the lower point of a selection
-	 * 
-	 * @param player Selection of player
-	 * @return The lower point of the selection
-	 */
-	public Location getSecondSelection(Player player) {
-		if (HeavySpleef.hooks.hasWorldEdit())
-			return HeavySpleef.hooks.getWorldEdit().getSelection(player).getMaximumPoint();
-		return selections.get(player.getName()).getSecondSel();
-	}
 	
-	/**
-	 * Get's the upper point of a selection
-	 * 
-	 * @param player Selection of player
-	 * @return The upper point of the selection
-	 */
-	public Location getFirstSelection(Player player) {
-		if (HeavySpleef.hooks.hasWorldEdit())
-			return HeavySpleef.hooks.getWorldEdit().getSelection(player).getMinimumPoint();
-		return selections.get(player.getName()).getFirstSel();
-	}
-	
-	/**
-	 * Add's a selection
-	 * 
-	 * @param player Selection of player
-	 * @param locs Selectionlocations
-	 */
-	public void addSelection(Player player, Location... locs) {
-		if (locs.length < 2)
+	public void setup() {
+		String wandType = HeavySpleef.instance.getConfig().getString("general.wandType");
+		
+		if (wandType == null || (!wandType.equalsIgnoreCase("HeavySpleef") && !wandType.equalsIgnoreCase("WorldEdit"))) {
+			HeavySpleef.instance.getLogger().info("Invalid wand type found! " + wandType + " is not permitted! Setting to HeavySpleef selection...");
+			this.type = WandType.HEAVYSPLEEF;
 			return;
-		selections.put(player.getName(), new Selection(locs[0], locs[1]));
-	}
-	
-	/**
-	 * Removes a selection
-	 * 
-	 * @param player Selection of player
-	 */
-	protected void removeSelection(Player player) {
-		selections.remove(player.getName());
-	}
-	
-	/**
-	 * Checks wether the player has a selection
-	 * 
-	 * @param player The Player to check
-	 * @return True if the player has a selection, otherwise false
-	 */
-	public boolean hasSelection(Player player) {
-		if (HeavySpleef.hooks.hasWorldEdit())
-			return HeavySpleef.hooks.getWorldEdit().getSelection(player).getMaximumPoint() != null && HeavySpleef.hooks.getWorldEdit().getSelection(player).getMinimumPoint() != null;
-		return selections.containsKey(player.getName());
-	}
-	
-	/**
-	 * Indicates wether the selection is trough worlds
-	 * 
-	 * @param player The player to check
-	 * @return true if the selection is trough worlds
-	 */
-	public boolean isTroughWorlds(Player player) {
-		if (HeavySpleef.hooks.hasWorldEdit()) {
-			com.sk89q.worldedit.bukkit.selections.Selection selection = HeavySpleef.hooks.getWorldEdit().getSelection(player);
-			return selection.getMaximumPoint().getWorld() != selection.getMinimumPoint().getWorld();
 		}
-		return getFirstSelection(player).getWorld() != getSecondSelection(player).getWorld();
+		
+		if (wandType.equalsIgnoreCase("WorldEdit")) {
+			if (!HeavySpleef.hooks.hasWorldEdit()) {
+				HeavySpleef.instance.getLogger().info("WorldEdit wand in the config was found, but no WorldEdit?! Setting to HeavySpleef...");
+				this.type = WandType.HEAVYSPLEEF;
+				return;
+			}
+			
+			type = WandType.WORLDEDIT;
+		}
 	}
 	
+	public Selection getSelection(Player player) {
+		Selection s = getRawSelection(player);
+		
+		if (s == null && HeavySpleef.hooks.hasWorldEdit() && getWandType() == WandType.WORLDEDIT)
+			s = new SelectionWorldEdit(player.getName());
+		
+		if (s == null) {
+			addHSSelection(player);
+			s = getRawSelection(player);
+		}
+		
+		return s;
+	}
+	
+	private Selection getRawSelection(Player player) {
+		for (Selection s : selections) {
+			if (s.getOwner().equalsIgnoreCase(player.getName()))
+				return s;
+		}
+		
+		return null;
+	}
+	
+	protected void addHSSelection(Player player) {
+		if (selections.contains(player.getName()))
+			return;
+		selections.add(new SelectionHeavySpleef(player.getName()));
+	}
+	
+	public WandType getWandType() {
+		return this.type;
+	}
+	
+	public static enum WandType {
+		
+		HEAVYSPLEEF,
+		WORLDEDIT;
+		
+	}
 
 }

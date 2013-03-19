@@ -27,7 +27,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.statistic.Statistic;
+import me.matzefratze123.heavyspleef.utility.statistic.StatisticModule;
 import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 
 public class YamlStatisticDatabase implements IStatisticDatabase {
@@ -52,7 +52,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	
 	@Override
 	public void save() {
-		for (Statistic stat : StatisticManager.getStatistics()) {
+		for (StatisticModule stat : StatisticManager.getStatistics()) {
 			ConfigurationSection section = null;
 			
 			if (!db.contains(stat.getName()))
@@ -84,7 +84,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 			int knockouts = section.getInt("knockouts");
 			int games = section.getInt("games");
 			
-			Statistic stat = new Statistic(owner, loses, wins, knockouts, games);
+			StatisticModule stat = new StatisticModule(owner, loses, wins, knockouts, games);
 			StatisticManager.addExistingStatistic(stat);
 		}
 	}
