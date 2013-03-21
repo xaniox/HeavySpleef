@@ -19,6 +19,7 @@
  */
 package me.matzefratze123.heavyspleef;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -31,12 +32,13 @@ import me.matzefratze123.heavyspleef.database.statistic.YamlStatisticDatabase;
 import me.matzefratze123.heavyspleef.hooks.HookManager;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
 import me.matzefratze123.heavyspleef.listener.SignListener;
+import me.matzefratze123.heavyspleef.listener.UpdateListener;
 import me.matzefratze123.heavyspleef.selection.SelectionListener;
 import me.matzefratze123.heavyspleef.selection.SelectionManager;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.Metrics;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
-import me.matzefratze123.heavyspleef.utility.UpdateChecker;
+import me.matzefratze123.heavyspleef.utility.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
@@ -58,6 +60,13 @@ public class HeavySpleef extends JavaPlugin {
 	
 	public static String[] commands = new String[] {"/spleef", "/hs", "/hspleef"};
 	
+	/* Updater stuff start */
+	public static boolean updateAvaible = false;
+	public static String updateName = "";
+	public static long updateSize = 0L;
+	public static File pluginFile = null;
+	/* Updater stuff end */
+	
 	@Override
 	public void onEnable() {
 		//Set the instance FIRST!
@@ -68,14 +77,15 @@ public class HeavySpleef extends JavaPlugin {
 		sel = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
+		pluginFile = this.getFile();
 		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", ChatColor.RED + "[" + ChatColor.GOLD + "Spleef" + ChatColor.RED + "]"));
 		
 		LanguageHandler.loadLanguageFiles();
-		UpdateChecker.check();
 		
 		this.setupStatisticDatabase();
 		this.statisticDatabase.load();
 		this.startMetrics();
+		this.initUpdate();
 		this.registerEvents();
 		this.getCommand("spleef").setExecutor(new CommandHandler());
 		
@@ -123,7 +133,7 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new SignListener(), this);
 		pm.registerEvents(new SelectionListener(this), this);
 		pm.registerEvents(new PlayerListener(), this);
-		pm.registerEvents(new UpdateChecker(), this);
+		pm.registerEvents(new UpdateListener(), this);
 	}
 	
 	private void startMetrics() {
@@ -134,6 +144,17 @@ public class HeavySpleef extends JavaPlugin {
 		} catch (IOException e) {
 			this.getLogger().info("An error occured on submitting stats to metrics...");
 		}
+	}
+	
+	private void initUpdate() {
+		if (!getConfig().getBoolean("auto-update"))
+			return;
+		
+		Updater updater = new Updater(this, "heavyspleef", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+		
+		updateAvaible = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
+		updateName = updater.getLatestVersionString();
+		updateSize = updater.getFileSize();
 	}
 	
 	public void startAntiCampingTask() {

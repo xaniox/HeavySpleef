@@ -119,6 +119,7 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("setchances", new CommandSetChances());
 		addSubCommand("set1vs1", new CommandSet1vs1());
 		addSubCommand("setrounds", new CommandSetRounds());
+		addSubCommand("update", new CommandUpdate());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

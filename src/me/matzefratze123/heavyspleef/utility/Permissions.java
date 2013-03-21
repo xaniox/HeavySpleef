@@ -61,6 +61,7 @@ public enum Permissions {
 	ADD_SCOREBOARD("heavyspleef.addscoreboard"),
 	REMOVE_SCOREBOARD("heavyspleef.removescoreboard"),
 	UPDATE_SCOREBOARD("heavyspleef.updatescoreboard"),
+	UPDATE_PLUGIN("heavyspleef.updateplugin"),
 	
 	// Bypass
 	BUILD_BYPASS("heavyspleef.build.bypass"),

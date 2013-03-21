@@ -36,6 +36,7 @@ import me.matzefratze123.heavyspleef.event.SpleefStartEvent;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
+import me.matzefratze123.heavyspleef.utility.StringUtil;
 import me.matzefratze123.heavyspleef.utility.statistic.StatisticManager;
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -266,7 +267,7 @@ public abstract class Game {
 			stop();
 		setGameState(GameState.DISABLED);
 		if (disabler != null)
-			broadcast(_("gameDisabled", getName(), disabler));
+			broadcast(_("gameDisabled", getName(), StringUtil.colorName(disabler)));
 	}
 	
 	/**
@@ -302,7 +303,7 @@ public abstract class Game {
 		if (isWaiting()) //Activate the lobby mode
 			setGameState(GameState.PRE_LOBBY);
 		
-		tellAll(_("playerJoinedGame", player.getName()));
+		tellAll(_("playerJoinedGame", StringUtil.colorName(player.getName())));
 		player.setAllowFlight(false);
 		player.setFireTicks(0);
 		
@@ -349,7 +350,7 @@ public abstract class Game {
 				int livesLeft = chances - chancesUsed.get(player.getName());
 				
 				player.sendMessage(_("chancesLeft", String.valueOf(livesLeft)));
-				broadcast(_("chancesLeftBroadcast", player.getName(), String.valueOf(livesLeft)));
+				broadcast(_("chancesLeftBroadcast", StringUtil.colorName(player.getName()), String.valueOf(livesLeft)));
 				return;
 			}
 			//Chances stuff end
@@ -395,7 +396,7 @@ public abstract class Game {
 					continue;
 				
 				add1vs1Win(p);//Add the win
-				broadcast(_("wonRound", p.getName(), String.valueOf(roundsPlayed), String.valueOf(rounds)));//Broadcast the winner of the round
+				broadcast(_("wonRound", StringUtil.colorName(p.getName()), String.valueOf(roundsPlayed), String.valueOf(rounds)));//Broadcast the winner of the round
 			}
 			if (roundsPlayed < rounds) {//Next round?
 				regen();//Regenerate floors
@@ -430,7 +431,7 @@ public abstract class Game {
 				}
 				
 				win(Bukkit.getPlayer(win.getOwner()));//Win, broadcast and end the game!
-				broadcast(_("wonThe1vs1", win.getOwner(), loser));
+				broadcast(_("wonThe1vs1", StringUtil.colorName(win.getOwner()), loser));
 				return;
 			}
 		}
@@ -546,7 +547,7 @@ public abstract class Game {
 		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
 			PlayerStateManager.restorePlayerState(p);
 		
-		broadcast(_("hasWon", p.getName(), this.getName()));
+		broadcast(_("hasWon", StringUtil.colorName(p.getName()), this.getName()));
 		p.sendMessage(_("win"));
 		p.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(p))));
 		clearAll();
@@ -595,15 +596,15 @@ public abstract class Game {
 	private String getLoseMessage(LoseCause cause, Player player) {
 		switch(cause) {
 		case QUIT:
-			return _("loseCause_" + cause.name().toLowerCase(), player.getName());
+			return _("loseCause_" + cause.name().toLowerCase(), StringUtil.colorName(player.getName()));
 		case KICK:
-			return _("loseCause_" + cause.name().toLowerCase(), player.getName());
+			return _("loseCause_" + cause.name().toLowerCase(), StringUtil.colorName(player.getName()));
 		case LEAVE:
-			return _("loseCause_" + cause.name().toLowerCase(), player.getName(), getName());
+			return _("loseCause_" + cause.name().toLowerCase(), StringUtil.colorName(player.getName()), getName());
 		case LOSE:
-			return _("loseCause_" + cause.name().toLowerCase(), player.getName(), getKiller(player, true));
+			return _("loseCause_" + cause.name().toLowerCase(), StringUtil.colorName(player.getName()), getKiller(player, true));
 		case UNKNOWN:
-			return _("loseCause_" + cause.name().toLowerCase(), player.getName());
+			return _("loseCause_" + cause.name().toLowerCase(), StringUtil.colorName(player.getName()));
 		default:
 			return "null...";
 		}

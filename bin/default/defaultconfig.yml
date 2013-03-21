@@ -10,9 +10,11 @@
 # next time will be automatically teleported out of the
 # game. Use '/spleef save' to save all data of the spleef
 # games to the database...
-#
-# Should the plugin check for updates?
-updateCheck: true
+
+# Should the plugin automatically download the new version of
+# HeavySpleef.jar if there is an update avaible?
+# You'll find updates in the folder /plugins/Up 
+auto-update: true
 
 general:
   

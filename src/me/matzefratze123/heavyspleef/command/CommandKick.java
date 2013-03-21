@@ -24,6 +24,7 @@ import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
 import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.utility.StringUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -65,8 +66,8 @@ public class CommandKick extends HSCommand {
 			target.teleport(LocationSaver.load(player));
 		else
 			target.teleport(game.getLosePoint());
-		target.sendMessage(_("kickedOfToPlayer", player.getName(), reasonMessage));
-		player.sendMessage(_("kickedOfToKicker", target.getName(), game.getName(), reasonMessage));
+		target.sendMessage(_("kickedOfToPlayer", StringUtil.colorName(player.getName()), reasonMessage));
+		player.sendMessage(_("kickedOfToKicker", StringUtil.colorName(target.getName()), game.getName(), reasonMessage));
 	}
 
 }

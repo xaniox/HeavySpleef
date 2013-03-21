@@ -67,8 +67,8 @@ gameEnabledToPlayer: &7Du hast das Spiel %a aktiviert!
 targetHasJoined: &7Der Spieler %a ist dem Spiel %a beigetreten!
 targetAddedToQueue: &7Der Spieler %a wurde zur Warteliste hinzugefügt!
 playerJoinedToPlayer: &7Du bist dem Spiel %a beigetreten
-kickedOfToPlayer: &7Du wurdest von %a gekickt%a
-kickedOfToKicker: &7Du hast %a von Spiel %a gekickt%a
+kickedOfToPlayer: &7Du wurdest von %a &7gekickt%a
+kickedOfToKicker: &7Du hast %a &7von Spiel %a gekickt%a
 left: &cDu hast das Spiel verlassen...
 setMinimumPlayers: &7Das Minimum von %a Spielern wurde dem Spiel %a hinzugefügt
 floorRemoved: &7Die Spleefebene wurde entfernt!
@@ -118,27 +118,27 @@ setMinimumPlayers: &7Die minimale Spieleranzahl von %a für das Spiel %a wurde ge
 
 # Broadcast nachrichten
 
-gameDisabled: &cDas Spiel &6%a &cwurde von %a deaktiviert!
-gameEnabled: &aDas Spiel &6%a &awurde von %a aktiviert!
+gameDisabled: &cDas Spiel &6%a &cwurde von %a&c deaktiviert!
+gameEnabled: &aDas Spiel &6%a &awurde von %a&c aktiviert!
 gameHasStarted: &1Spiel gestartet! Viel Glück...
 gameOnArenaHasStarted: &6Das Spiel in Arena %a hat gestartet!
 startedGameWith: &6Das Spiel wurde mit %a Spielern gestartet!
 gameIsStarting: &1Spiel startet in %a Sekunden...
 gameStopped: &cDas Spiel wurde gestoppt!
-playerJoinedGame: &a%a ist dem Spiel beigetreten!
+playerJoinedGame: &a%a&a ist dem Spiel beigetreten!
 
-wonRound: &a%a &chat die Runde &6%a &cvon &6%a &cgewonnen!
+wonRound: &a%a &chat Runde &6%a &cvon &6%a &cgewonnen!
 roundsRemaining: &1%a Runden verbleiben!
-wonThe1vs1: &a%a hat das Spiel gegen %a gewonnen! Glückwunsch!
+wonThe1vs1: &a%a &ahat das Spiel gegen %a gewonnen! Glückwunsch!
 endedDraw: &aDas Spiel in Arena %a ist unentschieden ausgegangen...
 
 roundStarted: &aRunde &6%a &avon &6%a &agestartet!
 roundStartsIn: &1Round starts in %a seconds...
 
-loseCause_kick: &6%a &cwurde aus dem Spiel gekickt!
-loseCause_leave: &6%a &chat das Spiel %a verlassen!
-loseCause_lose: &6%a &cwurde von &4%a &causgeknockt!
-loseCause_quit: &6%a &chat den Server verlassen während das Spiel lief...
-loseCause_unknown: &6%a &chat das Spiel aus einem unbekannten Grund verlassen
+loseCause_kick: &6%a&6 &cwurde aus dem Spiel gekickt!
+loseCause_leave: &6%a&6 &chat das Spiel %a verlassen!
+loseCause_lose: &6%a&6 &cwurde von &4%a &causgeknockt!
+loseCause_quit: &6%a&6 &chat den Server verlassen während das Spiel lief...
+loseCause_unknown: &6%a&6 &chat das Spiel aus einem unbekannten Grund verlassen
 
-hasWon: &a%a &1hat das Spiel in Arena %a gewonnen!
+hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!

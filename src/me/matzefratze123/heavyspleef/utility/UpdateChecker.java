@@ -51,7 +51,6 @@ public class UpdateChecker implements Listener {
 		if (updateAvaible.length == 1 && updateAvaible[0].isEmpty())
 			return;
 		
-		UpdateChecker.updateAvaible = true;
 		for (String updatePart : updateAvaible)
 			HeavySpleef.instance.getLogger().info(updatePart);
 	}
@@ -73,8 +72,9 @@ public class UpdateChecker implements Listener {
 				String key = split[0];
 				String value = split[1];
 				
+				boolean added = false;
+				
 				if (key.equalsIgnoreCase("version")) {
-					boolean added = false;
 					String[] thisVersion = HeavySpleef.instance.getDescription().getVersion().split("\\.");
 					String[] newVersion = value.split("\\.");
 					
@@ -82,7 +82,9 @@ public class UpdateChecker implements Listener {
 						updateOutput.add("An update is avaible: v" + value);
 						updateOutput.add("Changes and Updates:");
 						UpdateChecker.newVersion = value;
+						updateAvaible = true;
 						added = true;
+						continue;
 					}
 					
 					for (int i = 0; i < newVersion.length || i < thisVersion.length; i++) {
@@ -90,14 +92,19 @@ public class UpdateChecker implements Listener {
 							updateOutput.add("An update is avaible: v" + value);
 							updateOutput.add("Changes and Updates:");
 							UpdateChecker.newVersion = value;
+							updateAvaible = true;
 							added = true;
 						}
 					}
 				} else if (key.equalsIgnoreCase("description")) {
+					if (!added)
+						continue;
 					String[] updates = value.split("~");
 					for (String update : updates)
 						updateOutput.add("- " + update);
 				} else if (key.equalsIgnoreCase("download")) {
+					if (!added)
+						continue;
 					updateOutput.add("Download: " + value);
 					UpdateChecker.downloadUrl = value;
 				}
@@ -122,6 +129,8 @@ public class UpdateChecker implements Listener {
 		if (!updateAvaible)
 			return;
 		if (!player.hasPermission(Permissions.CREATE_GAME.getPerm()))
+			return;
+		if (UpdateChecker.newVersion.isEmpty())
 			return;
 		
 		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Your version outdated! This version: " + HeavySpleef.instance.getDescription().getVersion() + 
