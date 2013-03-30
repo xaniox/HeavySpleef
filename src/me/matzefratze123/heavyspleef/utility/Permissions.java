@@ -39,6 +39,7 @@ public enum Permissions {
 	SET_LOSEPOINT("heavyspleef.setlose"),
 	SET_WINPOINT("heavyspleef.setwin"),
 	SET_PREGAMEPOINT("heavyspleef.setlobby"),
+	SET_TIMEOUT("heavyspleef.settimeout"),
 	ADD_LOSEZONE("heavyspleef.addlose"),
 	REMOVE_LOSEZONE("heavyspleef.removelose"),
 	JOIN_GAME("heavyspleef.join"),
@@ -49,6 +50,8 @@ public enum Permissions {
 	SET_JACKPOT("heavyspleef.setjackpot"),
 	SET_MONEY("heavyspleef.setmoney"),
 	SET_CHANCES("heavyspleef.setchances"),
+	SET_QUEUE_LOBBY("heavyspleef.setqueuelobby"),
+	REMOVE_QUEUE_LOBBY("heavyspleef.removequeuelobby"),
 	SAVE("heavyspleef.save"),
 	STOP("heavyspleef.stop"),
 	SET_AUTOSTART("heavyspleef.setautostart"),
@@ -62,6 +65,11 @@ public enum Permissions {
 	REMOVE_SCOREBOARD("heavyspleef.removescoreboard"),
 	UPDATE_SCOREBOARD("heavyspleef.updatescoreboard"),
 	UPDATE_PLUGIN("heavyspleef.updateplugin"),
+	ADD_WALL("heavyspleef.addwall"),
+	REMOVE_WALL("heavyspleef.removewall"),
+	LIST("heavyspleef.list"),
+	RELOAD("heavyspleef.reload"),
+	INFO("heavyspleef.info"),
 	
 	// Bypass
 	BUILD_BYPASS("heavyspleef.build.bypass"),

@@ -33,13 +33,14 @@ public class CommandAddScoreBoard extends HSCommand {
 		setMinArgs(2);
 		setMaxArgs(2);
 		setOnlyIngame(true);
-		setPermission(Permissions.ADD_SCOREBOARD.getPerm());
+		setPermission(Permissions.ADD_SCOREBOARD);
 		setUsage("/spleef addscoreboard <name> <EAST|WEST|SOUTH|NORTH>");
 	}
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player p = (Player)sender;
+		args[1] = args[1].toUpperCase();
 		
 		if (!GameManager.hasGame(args[0])) {
 			sender.sendMessage(_("arenaDoesntExists"));

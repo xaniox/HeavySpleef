@@ -23,6 +23,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,7 @@ public class CommandStart extends HSCommand {
 		setMaxArgs(1);
 		setMinArgs(1);
 		setOnlyIngame(true);
-		setPermission(Permissions.START_GAME.getPerm());
+		setPermission(Permissions.START_GAME);
 		setUsage("/spleef start <Name>");
 	}
 	
@@ -59,8 +60,11 @@ public class CommandStart extends HSCommand {
 			player.sendMessage(_("cantStartGameWhileRunning"));
 			return;
 		}
-		if (game.getPlayers().length < game.getMinPlayers() || game.getMinPlayers() < 2) {
-			player.sendMessage(_("notEnoughPlayers", String.valueOf(game.getMinPlayers())));
+		
+		int minplayers = game.getFlag(FlagType.MINPLAYERS) == null ? HeavySpleef.instance.getConfig().getInt("general.neededPlayers") : game.getFlag(FlagType.MINPLAYERS);
+		
+		if (game.getPlayers().length < minplayers || game.getPlayers().length < 2) {
+			player.sendMessage(_("notEnoughPlayers", String.valueOf(minplayers)));
 			return;
 		}
 		

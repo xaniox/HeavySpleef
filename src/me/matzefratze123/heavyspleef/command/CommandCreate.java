@@ -35,7 +35,7 @@ public class CommandCreate extends HSCommand {
 		setMaxArgs(4);
 		setMinArgs(2);
 		setOnlyIngame(true);
-		setPermission(Permissions.CREATE_GAME.getPerm());
+		setPermission(Permissions.CREATE_GAME);
 		setUsage("/spleef create <name> <cuboid|cylinder <radius> <height>>");
 	}
 	
@@ -101,6 +101,7 @@ public class CommandCreate extends HSCommand {
 			GameManager.createCuboidGame(args[0].toLowerCase(), s.getFirst(), s.getSecond());
 		}
 		player.sendMessage(_("gameCreated"));
+		HeavySpleef.instance.refreshInventory();
 	}
 
 }

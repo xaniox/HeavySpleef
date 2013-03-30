@@ -31,7 +31,7 @@ public class CommandDisable extends HSCommand {
 	public CommandDisable() {
 		setMaxArgs(1);
 		setMinArgs(1);
-		setPermission(Permissions.DISABLE.getPerm());
+		setPermission(Permissions.DISABLE);
 		setUsage("/spleef disable <Name>");
 		setOnlyIngame(true);
 	}

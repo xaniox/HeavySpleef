@@ -23,7 +23,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.GameState;
 import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.StringUtil;
+import me.matzefratze123.heavyspleef.utility.ViPManager;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class CommandEnable extends HSCommand {
 		setMaxArgs(1);
 		setMinArgs(1);
 		setOnlyIngame(true);
-		setPermission(Permissions.ENABLE.getPerm());
+		setPermission(Permissions.ENABLE);
 		setUsage("/spleef enable <Name>");
 	}
 
@@ -51,8 +51,8 @@ public class CommandEnable extends HSCommand {
 			player.sendMessage(_("gameIsAlreadyEnabled"));
 			return;
 		}
-		game.broadcast(_("gameEnabled", game.getName(), StringUtil.colorName(player.getName())));
-		game.setGameState(GameState.NOT_INGAME);
+		game.broadcast(_("gameEnabled", game.getName(), ViPManager.colorName(player.getName())));
+		game.setGameState(GameState.JOINABLE);
 		player.sendMessage(_("gameEnabledToPlayer", game.getName()));
 	}
 

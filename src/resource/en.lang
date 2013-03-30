@@ -35,9 +35,8 @@ loseZoneWithIDDoesntExists: &cA losezone with this id doesn't exists!
 cantRemoveLoseWhileRunning: &cCan't remove losezone while game is running!
 noVault: &cVault isn't installed on this server or doesn't work correctly!
 cantStartGameWhileRunning: &cCan't start game while it's already running!
-notEnoughPlayers: &cNot enough players! Need at least %a
+notEnoughPlayers: &cNot enough players! Need at least %a!
 
-notAllowedLeaveArena: &cYou are not allowed to leave the arena!
 notAllowedToBuild: &cYou are not allowed to build here!
 notAllowedToBreakSpecified: &cYou are not allowed to break %a!
 cantChangeGamemode: &cCan't change gamemode while ingame!
@@ -52,9 +51,22 @@ noWorldEdit: &cCan't use this function! WorldEdit wasn't found on this server!
 
 not1vs1: &cThis is not a 1vs1 game! Type /spleef set1vs1 %a true to make it to an 1vs1 game 
 onlyOneLayer: &cThe size of a floor in the y-coordinate can only be one layer!
-onlyOverTwoAndZero: &cThe AutoStart value has to be over 2 or 0 to deactivate it!
 maxPlayersReached: &cThe maximum count of players in this arena is reached!
-toLow: &cThis value is to low! It has to be 2 or 0 to deactivate this feature...
+
+invalidBlockFace: &cThis direction is invalid!
+notLookingAtScoreBoard: &cYou are not looking at a scoreboard!
+
+didntSelectWall: &cYou didn't select a wall!
+yMustBeSame: &cThe y-coordinate must be the same!
+notLookingAtWall: &cYou aren't looking at a wall!
+cannotDestroyWallAdmin: &cYou cannot destroy this sign! To remove the wall look on it and type: /spleef removewall
+cannotDestroyWallUser: &cYou cannot destroy this sign!
+lengthMustBeOver1: &cThe length of the wall must be at least 2 blocks!
+
+noCommandsInQueue: &cYou can't use commands while in queue!
+
+invalidFlag: &cInvalid flag!
+invalidFlagFormat: &cInvalid flag-format!
 
 # Sucess messages
 
@@ -70,21 +82,16 @@ playerJoinedToPlayer: &7You joined the game %a
 kickedOfToPlayer: &7You were kicked of by %a&7%a
 kickedOfToKicker: &7You kicked of %a&7 from the game %a%a
 left: &cYou left the game...
-setMinimumPlayers: &7Successfully binded the minimum count of %a players to the game %a
 floorRemoved: &7The floor has been removed!
 loseZoneRemoved: &7The losezone with the id %a has been removed!
 gamesSaved: &7All games have been saved to the database!
-lobbyPointSet: &7The lobbypoint for the game %a has been set!
-winPointSet: &7The winpoint for the game %a has been set!
-losePointSet: &7The losepoint for the game %a has been set!
-moneySet: &7Money successfully binded to game!
 gameStarted: &7Game started!
 win: &6You won the game!
 jackpotReceived: &7You received %a jackpot for winning this game!
 rewardReceived: &7You received %a reward for winning this game!
 
-antiCampWarn: &4AntiCamping&c: You still have &4%a &cseconds until you are ported down!
-antiCampTeleport: &4AntiCamping&c: You have been teleported one floor down for being to long on one point!
+antiCampWarn: &4AntiCamping&c: You have &4%a &cseconds to move...
+antiCampTeleport: &4AntiCamping&c: You have been teleported for camping!
 
 paidIntoJackpot: &7You paid %a into the jackpot of this game!
 yourKnockOuts: &aYour knockouts: %a
@@ -100,22 +107,21 @@ stateSaved: &7Your inventory has been saved!
 stateRestored: &7Your inventory has been restored!
 gameStopped: &cThe game has been stopped!
 
-startOnMinPlayersTrue: &7The game will now start when the minimum count of players are reached!
-startOnMinPlayersFalse: &7The game will no longer start when the minimum count of players are reached!
-countdownSet: &7Countdown set to %a!
-
-shovelToggled: Game with shovels was set to %a.
-info: &7Current value: %a
-
-chancesSet: &7The chance amount of %a was binded to the game!
 chancesLeft: &cYou have %a chances left!
 chancesLeftBroadcast: &c%a has %a chances left!
 
-1vs1Toggled: &71vs1 game was set to %a!
-roundsSet: &7Rounds set!
-autoStartSet: &7AutoStart value was set to %a!
-setMaximumPlayers: &7The maximum amount of %a players has been binded to the game %a!
-setMinimumPlayers: &7The minimum amount of %a players has been binded to the game %a!
+scoreBoardAdded: &7The scoreboard has been added!
+scoreBoardRemoved: &7The scoreboard has been removed!
+
+wallRemoved: &7The wall has been removed!
+signWallAdded: &7The wall was added!
+
+inventory: &6&lChoose a game...
+
+flagCleared: &7Flag named %a cleared!
+flagSet: &7Flag %a set!
+
+pluginReloaded: &7HeavySpleef version %a reloaded! Took %ams
 
 # Broadcast Messages
 
@@ -127,6 +133,7 @@ startedGameWith: &6Started game with %a players!
 gameIsStarting: &1Game is starting in %a seconds...
 gameStopped: &cThe game has been stopped!
 playerJoinedGame: &a%a&a has joined the game!
+hasWon: &a%a &1has won the game on arena &6%a&1!
 
 wonRound: &a%a &chas won round &6%a &cof &6%a&c!
 roundsRemaining: &1%a rounds remaining!
@@ -136,10 +143,12 @@ endedDraw: &aThe game in arena %a has ended in a draw...
 roundStarted: &aRound &6%a &aof &6%a &ahas started!
 roundStartsIn: &1Round starts in %a seconds...
 
+timeLeftSeconds: &1%a seconds left until the game ends!
+timeLeftMinutes: &1%a minutes and %a seconds left until the game ends!
+timeoutReached: &1Reached timeout! Finish the game...
+
 loseCause_kick: &6%a&6 &chas been kicked out of the game!
 loseCause_leave: &6%a&6 &chas left the game on arena %a!
 loseCause_lose: &6%a&6 &cwas knocked out by &4%a&c!
 loseCause_quit: &6%a&6 &chas quit while the game was running!
 loseCause_unknown: &6%a&6 &chas left the arena because of an unknown cause...
-
-hasWon: &a%a &1has won the game on arena &6%a&1!

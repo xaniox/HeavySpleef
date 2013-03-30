@@ -19,54 +19,76 @@
  */
 package me.matzefratze123.heavyspleef.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.core.flag.FlagType;
+import me.matzefratze123.heavyspleef.utility.LocationSaver;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class GameManager {
-
-	protected static Map<String, Integer> tasks = new HashMap<String, Integer>();
+	
+	//Main core list that contains ALL games!
+	public static List<Game> games = new ArrayList<Game>();
 	
 	public static Map<String, Integer> antiCamping = new HashMap<String, Integer>();
-	public static Map<String, Game> games = new HashMap<String, Game>();
 	public static Map<String, String> queues = new HashMap<String, String>();
 	
 	public static Game getGame(String id) {
 		id = id.toLowerCase();
-		return games.get(id);
+		for (Game game : getGames()) {
+			if (id.equalsIgnoreCase(game.getName()))
+				return game;
+		}
+		
+		return null;
 	}
 	
 	public static Game[] getGames() {
-		return games.values().toArray(new Game[games.size()]);
+		return games.toArray(new Game[games.size()]);
+	}
+	
+	public static String[] getGamesAsString() {
+		String[] array = new String[getGames().length];
+		
+		for (int i = 0; i < games.size(); i++) {
+			array[i] = games.get(i).getName();
+		}
+		
+		return array;
 	}
 	
 	public static Game createCuboidGame(String id, Location firstCorner, Location secondCorner) {
-		games.put(id, new GameCuboid(firstCorner, secondCorner, id));
+		games.add(new GameCuboid(firstCorner, secondCorner, id));
 		return getGame(id);
 	}
 	
 	public static Game createCylinderGame(String id, Location center, int radius, int minY, int maxY) {
 		if (!HeavySpleef.hooks.hasWorldEdit())
 			return null;
-		games.put(id, new GameCylinder(id, center, radius, minY, maxY));
+		games.add(new GameCylinder(id, center, radius, minY, maxY));
 		return getGame(id);
 	}
 	
 	public static void deleteGame(String id) {
 		id = id.toLowerCase();
-		games.remove(id);
+		games.remove(getGame(id));
 	}
 	
 	public static boolean hasGame(String id) {
 		id = id.toLowerCase();
-		return games.containsKey(id);
-	}
-	
-	protected static int getTaskID(String id) {
-		return tasks.get(id);
+		boolean has = false;
+		for (Game game : getGames()) {
+			if (game.getName().equalsIgnoreCase(id))
+				has = true;
+		}
+		
+		return has;
 	}
 	
 	public static boolean isInAnyGame(Player p) {
@@ -80,7 +102,7 @@ public class GameManager {
 		return false;
 	}
 	
-	public static Game getGameFromPlayer(Player p) {
+	public static Game fromPlayer(Player p) {
 		for (Game game : getGames()) {
 			Player[] players = game.getPlayers();
 			for (Player pl : players) {
@@ -95,13 +117,24 @@ public class GameManager {
 		gameName = gameName.toLowerCase();
 		if (queues.containsKey(p.getName()))
 			p.sendMessage(Game._("leftQueue", queues.get(p.getName())));
+		if (getGame(gameName).getFlag(FlagType.QUEUELOBBY) != null) {
+			LocationSaver.save(p);
+			p.teleport(getGame(gameName).getFlag(FlagType.QUEUELOBBY));
+		}
+		
 		p.sendMessage(Game._("addedToQueue", gameName));
 		queues.put(p.getName(), gameName);
 	}
 	
 	public static void removeFromQueue(Player player) {
-		queues.remove(player.getName());
 		player.sendMessage(Game._("noLongerInQueue"));
+		if (!isInAnyGame(player)) {
+			if (LocationSaver.has(player))
+				player.teleport(LocationSaver.load(player));
+			else
+				player.teleport(getQueue(player).getFlag(FlagType.LOSE));
+		}
+		queues.remove(player.getName());
 	}
 	
 	public static boolean isInQueue(Player p) {

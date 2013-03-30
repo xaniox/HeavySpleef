@@ -19,11 +19,13 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.JACKPOTAMOUNT;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
-import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Bukkit;
@@ -34,15 +36,20 @@ public class CommandJoin extends HSCommand {
 
 	public CommandJoin() {
 		setMaxArgs(2);
-		setMinArgs(1);
+		setMinArgs(0);
 		setOnlyIngame(true);
-		setPermission(Permissions.JOIN_GAME.getPerm());
+		setPermission(Permissions.JOIN_GAME);
 		setUsage("/spleef join <Arena>");
 	}
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
+		
+		if (args.length == 0) {
+			HeavySpleef.selector.open(player);
+			return;
+		}
 		
 		if (!GameManager.hasGame(args[0].toLowerCase())) {
 			player.sendMessage(_("arenaDoesntExists"));
@@ -62,10 +69,11 @@ public class CommandJoin extends HSCommand {
 			player.sendMessage(_("noWorldEdit"));
 			return;
 		}
+		int jackpotToPay = game.getFlag(JACKPOTAMOUNT) == null ? HeavySpleef.instance.getConfig().getInt("general.defaultToPay", 5) : game.getFlag(JACKPOTAMOUNT);
 		
 		if (args.length == 1) {
 			if (HeavySpleef.hooks.hasVault()) {
-				if (HeavySpleef.hooks.getVaultEconomy().getBalance(player.getName()) < game.getJackpotToPay()) {
+				if (HeavySpleef.hooks.getVaultEconomy().getBalance(player.getName()) < jackpotToPay) {
 					player.sendMessage(_("notEnoughMoneyToJoin"));
 					return;
 				}
@@ -79,7 +87,7 @@ public class CommandJoin extends HSCommand {
 				return;
 			}
 			if (HeavySpleef.hooks.hasVault()) {
-				if (HeavySpleef.hooks.getVaultEconomy().getBalance(target.getName()) < game.getJackpotToPay()) {
+				if (HeavySpleef.hooks.getVaultEconomy().getBalance(target.getName()) < jackpotToPay) {
 					player.sendMessage(_("targetHasntEnoughMoney"));
 					return;
 				}
@@ -94,34 +102,37 @@ public class CommandJoin extends HSCommand {
 	}
 	
 	private boolean join(Player player, Game game) {
-		if (game.isIngame()) {
-			player.sendMessage(_("gameAlreadyRunning"));
-			GameManager.addQueue(player, game.getName());
-			return false;
-		}
 		if (GameManager.isInAnyGame(player)) {
 			player.sendMessage(_("cantJoinMultipleGames"));
 			return false;
 		}
-		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown") && !game.is1vs1()) {
-			LocationSaver.save(player);
-			player.teleport(game.getRandomLocation());
+		if (game.isIngame()) {
+			player.sendMessage(_("gameAlreadyRunning"));
+			if (HeavySpleef.instance.getConfig().getBoolean("queues.useQueues"))
+				GameManager.addQueue(player, game.getName());
+			return false;
+		}
+		
+		boolean is1vs1 = game.getFlag(ONEVSONE) == null ? false : game.getFlag(ONEVSONE);
+		int maxplayers = game.getFlag(MAXPLAYERS) == null ? -1 : game.getFlag(MAXPLAYERS);
+		
+		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown") && !is1vs1) {
 			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
 			game.addPlayer(player);
 			return true;
 		} else if (game.isCounting()){
 			player.sendMessage(_("gameAlreadyRunning"));
-			GameManager.addQueue(player, game.getName());
+			if (HeavySpleef.instance.getConfig().getBoolean("queues.useQueues"))
+				GameManager.addQueue(player, game.getName());
 			return false;
 		}
-		if (game.getMaxPlayers() != 0 && game.getPlayers().length >= game.getMaxPlayers()) {
+		if (maxplayers > 0 && game.getPlayers().length >= maxplayers) {
 			player.sendMessage(_("maxPlayersReached"));
-			GameManager.addQueue(player, game.getName());
+			if (HeavySpleef.instance.getConfig().getBoolean("queues.useQueues"))
+				GameManager.addQueue(player, game.getName());
 			return false;
 		}
 		
-		LocationSaver.save(player);
-		player.teleport(game.getPreGamePoint());
 		player.sendMessage(_("playerJoinedToPlayer", game.getName()));
 		game.addPlayer(player);
 		if (GameManager.queues.containsKey(player.getName()))

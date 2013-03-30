@@ -34,7 +34,7 @@ public class CommandAddLose extends HSCommand {
 	public CommandAddLose() {
 		setMaxArgs(1);
 		setMinArgs(1);
-		setPermission(Permissions.ADD_LOSEZONE.getPerm());
+		setPermission(Permissions.ADD_LOSEZONE);
 		setOnlyIngame(true);
 		setUsage("/spleef addlose <name>");
 	}

@@ -113,18 +113,6 @@ public class GameCylinder extends Game {
 	}
 
 	@Override
-	protected void generate() {
-		EditSession e = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), 10000);
-		try {
-			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(20)), radius, maxY - minY, false);
-			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(49)), radius, minY, true);
-			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(89)), radius, maxY, true);
-		} catch (MaxChangedBlocksException e1) {
-			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't create cylinder arena...");
-		}
-	}
-
-	@Override
 	public int addFloor(int blockID, byte data, boolean wool,
 			boolean givenFloor, Location... locations) {
 		//Location should be the center here...

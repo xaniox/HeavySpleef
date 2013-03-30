@@ -22,9 +22,8 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
-import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.StringUtil;
+import me.matzefratze123.heavyspleef.utility.ViPManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -35,7 +34,7 @@ public class CommandKick extends HSCommand {
 	public CommandKick() {
 		setMinArgs(1);
 		setOnlyIngame(true);
-		setPermission(Permissions.KICK.getPerm());
+		setPermission(Permissions.KICK);
 		setUsage("/spleef kick <Player> [Reason]");
 	}
 	
@@ -60,14 +59,10 @@ public class CommandKick extends HSCommand {
 			reasonBuilder.append(args[i]).append(" ");
 		reasonMessage += reasonBuilder.toString();
 		
-		Game game = GameManager.getGameFromPlayer(target);
+		Game game = GameManager.fromPlayer(target);
 		game.removePlayer(target, LoseCause.KICK);
-		if (game.getLosePoint() == null)
-			target.teleport(LocationSaver.load(player));
-		else
-			target.teleport(game.getLosePoint());
-		target.sendMessage(_("kickedOfToPlayer", StringUtil.colorName(player.getName()), reasonMessage));
-		player.sendMessage(_("kickedOfToKicker", StringUtil.colorName(target.getName()), game.getName(), reasonMessage));
+		target.sendMessage(_("kickedOfToPlayer", ViPManager.colorName(player.getName()), reasonMessage));
+		player.sendMessage(_("kickedOfToKicker", ViPManager.colorName(target.getName()), game.getName(), reasonMessage));
 	}
 
 }

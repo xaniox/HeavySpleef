@@ -32,7 +32,7 @@ public class CommandRemoveLose extends HSCommand {
 		setMinArgs(2);
 		setMaxArgs(2);
 		setOnlyIngame(true);
-		setPermission(Permissions.REMOVE_LOSEZONE.getPerm());
+		setPermission(Permissions.REMOVE_LOSEZONE);
 		setUsage("/spleef removelose <Name> <ID>");
 	}
 	

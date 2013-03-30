@@ -19,6 +19,11 @@
  */
 package me.matzefratze123.heavyspleef.core;
 
+/**
+ * An enum containing stop causes for a game
+ * 
+ * @author matzefratze123
+ */
 public enum StopCause {
 
 	STOP,

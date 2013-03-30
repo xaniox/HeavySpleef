@@ -23,24 +23,35 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import me.matzefratze123.heavyspleef.api.GameAPI;
 import me.matzefratze123.heavyspleef.command.CommandHandler;
+import me.matzefratze123.heavyspleef.core.Game;
+import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import me.matzefratze123.heavyspleef.database.YamlDatabase;
-import me.matzefratze123.heavyspleef.database.statistic.IStatisticDatabase;
-import me.matzefratze123.heavyspleef.database.statistic.MySQLStatisticDatabase;
-import me.matzefratze123.heavyspleef.database.statistic.YamlStatisticDatabase;
 import me.matzefratze123.heavyspleef.hooks.HookManager;
+import me.matzefratze123.heavyspleef.listener.InventoryListener;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
+import me.matzefratze123.heavyspleef.listener.QueuesListener;
 import me.matzefratze123.heavyspleef.listener.SignListener;
+import me.matzefratze123.heavyspleef.listener.SignWallListener;
 import me.matzefratze123.heavyspleef.listener.UpdateListener;
 import me.matzefratze123.heavyspleef.selection.SelectionListener;
 import me.matzefratze123.heavyspleef.selection.SelectionManager;
+import me.matzefratze123.heavyspleef.stats.IStatisticDatabase;
+import me.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
+import me.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
+import me.matzefratze123.heavyspleef.utility.InventorySelector;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.Metrics;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.Updater;
+import me.matzefratze123.heavyspleef.utility.ViPManager;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -59,6 +70,10 @@ public class HeavySpleef extends JavaPlugin {
 	public IStatisticDatabase statisticDatabase;
 	
 	public static String[] commands = new String[] {"/spleef", "/hs", "/hspleef"};
+	public static InventorySelector selector = null;
+	
+	public int saverTid = -1;
+	public int antiCampTid = -1;
 	
 	/* Updater stuff start */
 	public static boolean updateAvaible = false;
@@ -81,6 +96,8 @@ public class HeavySpleef extends JavaPlugin {
 		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", ChatColor.RED + "[" + ChatColor.GOLD + "Spleef" + ChatColor.RED + "]"));
 		
 		LanguageHandler.loadLanguageFiles();
+		ViPManager.initVips();
+		setupInventory();
 		
 		this.setupStatisticDatabase();
 		this.statisticDatabase.load();
@@ -89,10 +106,8 @@ public class HeavySpleef extends JavaPlugin {
 		this.registerEvents();
 		this.getCommand("spleef").setExecutor(new CommandHandler());
 		
-		if (getConfig().getBoolean("anticamping.enabled"))
-			this.startAntiCampingTask();
-		if (getConfig().getBoolean("general.saveInIntervall"))
-			this.startSaveTask();
+		this.startAntiCampingTask();
+		this.startSaveTask();
 		
 		CommandHandler.initCommands();
 		CommandHandler.setPluginInstance(this);
@@ -110,6 +125,37 @@ public class HeavySpleef extends JavaPlugin {
 		this.getLogger().info("HeavySpleef deactivated!");
 	}
 	
+	private void setupInventory() {
+		InventorySelector.registerListener(new InventoryListener());
+		selector = new InventorySelector(this, LanguageHandler._("inventory"), GameManager.getGames().length);
+		Game[] games = GameManager.getGames();
+		
+		for (int i = 0; i < games.length && i < InventorySelector.roundToSlot(games.length); i++) {
+			selector.addItemStack(getInventoryShovel(games[i]), i);
+		}
+	}
+	
+	public void refreshInventory() {
+		Game[] games = GameManager.getGames();
+		selector.setSize(games.length);
+		selector.clear();
+		
+		for (int i = 0; i < games.length && i < InventorySelector.roundToSlot(games.length); i++) {
+			selector.addItemStack(getInventoryShovel(games[i]), i);
+		}
+	}
+	
+	private ItemStack getInventoryShovel(Game game) {
+		ItemStack stack = new ItemStack(Material.DIAMOND_SPADE);
+		ItemMeta meta = stack.getItemMeta();
+		
+		meta.setDisplayName(ChatColor.GRAY + "Join " + ChatColor.GOLD + game.getName());
+		
+		stack.setItemMeta(meta);
+		
+		return stack;
+	}
+	
 	private void setupStatisticDatabase() {
 		String type = this.getConfig().getString("statistic.dbType");
 		
@@ -123,6 +169,10 @@ public class HeavySpleef extends JavaPlugin {
 		}
 	}
 	
+	public static GameAPI getAPI() {
+		return GameAPI.getInstance();
+	}
+	
 	public SelectionManager getSelectionManager() {
 		return sel;
 	}
@@ -134,6 +184,8 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new SelectionListener(this), this);
 		pm.registerEvents(new PlayerListener(), this);
 		pm.registerEvents(new UpdateListener(), this);
+		pm.registerEvents(new SignWallListener(), this);
+		pm.registerEvents(new QueuesListener(), this);
 	}
 	
 	private void startMetrics() {
@@ -142,7 +194,7 @@ public class HeavySpleef extends JavaPlugin {
 			m.start();
 			this.getLogger().info("Metrics started...");
 		} catch (IOException e) {
-			this.getLogger().info("An error occured on submitting stats to metrics...");
+			this.getLogger().info("An error occured while submitting stats to metrics...");
 		}
 	}
 	
@@ -158,15 +210,19 @@ public class HeavySpleef extends JavaPlugin {
 	}
 	
 	public void startAntiCampingTask() {
+		if (!getConfig().getBoolean("anticamping.enabled"))
+			return;
 		boolean warn = getConfig().getBoolean("anticamping.campWarn");
 		int warnAt = getConfig().getInt("anticamping.warnAt");
 		int teleportAt = getConfig().getInt("anticamping.teleportAt");
 		
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AntiCampingTask(warn, warnAt, teleportAt), 0L, 20L);
+		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AntiCampingTask(warn, warnAt, teleportAt), 0L, 20L);
 	}
 	
 	public void startSaveTask() {
-		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+		if (!getConfig().getBoolean("general.saveInIntervall"))
+			return;
+		this.saverTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			@Override
 			public void run() {
 				database.save(false);

@@ -29,7 +29,7 @@ public class CommandSave extends HSCommand {
 	public CommandSave() {
 		setMinArgs(0);
 		setMaxArgs(0);
-		setPermission(Permissions.SAVE.getPerm());
+		setPermission(Permissions.SAVE);
 		setUsage("/spleef save");
 	}
 	

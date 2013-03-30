@@ -19,6 +19,24 @@
  */
 package me.matzefratze123.heavyspleef.database;
 
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.AUTOSTART;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.CHANCES;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.COUNTDOWN;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.JACKPOTAMOUNT;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.LOBBY;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.LOSE;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.MINPLAYERS;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.QUEUELOBBY;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.REWARD;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.SHOVELS;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.SPAWNPOINT1;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.SPAWNPOINT2;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.TIMEOUT;
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.WIN;
+
 import static me.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
 import static me.matzefratze123.heavyspleef.database.Parser.convertLoseZoneToString;
 import static me.matzefratze123.heavyspleef.database.Parser.convertPotionEffectToString;
@@ -41,8 +59,8 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCuboid;
 import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.core.GameState;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
+import me.matzefratze123.heavyspleef.core.SignWall;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
@@ -73,6 +91,8 @@ public class YamlDatabase {
 	private FileConfiguration db;
 	private FileConfiguration statsdb;
 	private FileConfiguration locationsdb;
+	
+	private List<String> addedPaths = new ArrayList<String>();
 	
 	public YamlDatabase() {
 		this.plugin = HeavySpleef.instance;
@@ -139,6 +159,7 @@ public class YamlDatabase {
 	}
 
 	public void save(boolean savePlayerStates) {
+		
 		for (Game game : GameManager.getGames()) {
 			ConfigurationSection section = db.createSection(game.getName());
 			
@@ -147,6 +168,14 @@ public class YamlDatabase {
 				saveCuboid((GameCuboid) game, section);
 			else if (game.getType() == Type.CYLINDER)
 				saveCylinder((GameCylinder) game, section);
+			
+			for (String key : section.getKeys(false)) {
+				if (!addedPaths.contains(key)) {
+					section.set(key, null);
+				}
+			}
+			
+			addedPaths.clear();
 		}
 		
 		if (savePlayerStates)
@@ -176,6 +205,10 @@ public class YamlDatabase {
 		}
 		
 		section.set("floors", floorsAsList);
+		
+		addedPaths.add("floors");
+		addedPaths.add("firstCorner");
+		addedPaths.add("secondCorner");
 	}
 	
 	
@@ -202,6 +235,12 @@ public class YamlDatabase {
 		}
 		
 		section.set("floors", floorsAsList);
+		
+		addedPaths.add("center");
+		addedPaths.add("radius");
+		addedPaths.add("minY");
+		addedPaths.add("maxY");
+		addedPaths.add("floors");
 	}
 	
 	private void loadCuboid(ConfigurationSection section) {
@@ -228,6 +267,7 @@ public class YamlDatabase {
 	
 	private void loadCylinder(ConfigurationSection section) {
 		String name = section.getName();
+		System.out.println(name);
 		
 		Location center = convertStringtoLocation(section.getString("center"));
 		int radius = section.getInt("radius");
@@ -256,41 +296,54 @@ public class YamlDatabase {
 				loseZones.add(convertStringToLosezone(loseZone));
 		}
 		
+		List<String> wallsAsList = section.getStringList("walls");
+		List<SignWall> walls = new ArrayList<SignWall>();
+		if (wallsAsList != null) {
+			for (String wall : wallsAsList)
+				walls.add(SignWall.fromString(wall, game));
+		}
+		
 		if (section.getString("winPoint") != null)
-			game.setWinPoint(convertStringtoLocation(section.getString("winPoint")));
+			game.setFlag(WIN, convertStringtoLocation(section.getString("winPoint")));
 		if (section.getString("losePoint") != null)
-			game.setLosePoint(convertStringtoLocation(section.getString("losePoint")));
+			game.setFlag(LOSE, convertStringtoLocation(section.getString("losePoint")));
 		if (section.getString("preGamePoint") != null)
-			game.setPreGamePoint(convertStringtoLocation(section.getString("preGamePoint")));
+			game.setFlag(LOBBY, convertStringtoLocation(section.getString("preGamePoint")));
+		if (section.getString("spawnPoint1") != null)
+			game.setFlag(SPAWNPOINT1, convertStringtoLocation(section.getString("spawnPoint1")));
+		if (section.getString("spawnPoint2") != null)
+			game.setFlag(SPAWNPOINT2, convertStringtoLocation(section.getString("spawnPoint2")));
+		if (section.getString("queuesPoint") != null)
+			game.setFlag(QUEUELOBBY, convertStringtoLocation(section.getString("queuesPoint")));
 		
-		int money = section.getInt("money", 0);
-		int reward = section.getInt("reward", 0);
-		int minPlayers = section.getInt("minPlayers", 2);
-		int maxPlayers = section.getInt("maxPlayers", 0);
-		int chances = section.getInt("chances");
-		int autoStart = section.getInt("autostart", 0);
-		int countdown = section.getInt("countdown", 10);
-		int rounds = section.getInt("rounds", 2);
-		if (countdown <= 0)
-			countdown = plugin.getConfig().getInt("general.countdownFrom");
-		
-		boolean useShovels = section.getBoolean("shovels");
-		boolean oneVsOne = section.getBoolean("1vs1");
+		if (section.contains("money"))
+			game.setFlag(JACKPOTAMOUNT, section.getInt("money"));
+		if (section.contains("reward"))
+			game.setFlag(REWARD, section.getInt("reward"));
+		if (section.contains("minPlayers"))
+			game.setFlag(MINPLAYERS, section.getInt("minPlayers"));
+		if (section.contains("maxPlayers"))
+			game.setFlag(MAXPLAYERS, section.getInt("maxPlayers"));
+		if (section.contains("chances"))
+			game.setFlag(CHANCES, section.getInt("chances"));
+		if (section.contains("autostart"))
+			game.setFlag(AUTOSTART, section.getInt("autostart"));
+		if (section.contains("countdown"))
+			game.setFlag(COUNTDOWN, section.getInt("countdown"));
+		if (section.contains("rounds"))
+			game.setFlag(ROUNDS, section.getInt("rounds"));
+		if (section.contains("timeout"))
+			game.setFlag(MINPLAYERS, section.getInt("timeout"));
+		if (section.contains("shovels"))
+			game.setFlag(SHOVELS, section.getBoolean("shovels"));
+		if (section.contains("1vs1"))
+			game.setFlag(ONEVSONE, section.getBoolean("1vs1"));
 		
 		for (LoseZone loseZone : loseZones)
 			game.addLoseZone(loseZone);
 		
-		game.setGameState(GameState.NOT_INGAME);
-		game.setJackpotToPay(money);
-		game.setReward(reward);
-		game.setCountdown(countdown);
-		game.setShovels(useShovels);
-		game.setMinPlayers(minPlayers);
-		game.setMaxPlayers(maxPlayers);
-		game.setChances(chances);
-		game.set1vs1(oneVsOne);
-		game.setRounds(rounds);
-		game.setAutoStart(autoStart);
+		for (SignWall wall : walls)
+			game.addWall(wall);
 		
 		List<String> wereOfflineConfigList = section.getStringList("wereOfflineAtShutdown");
 		List<String> wereOffline = new ArrayList<String>();
@@ -300,10 +353,10 @@ public class YamlDatabase {
 				if (p == null)
 					wereOffline.add(offlinePlayer);
 				else {
-					if (game.getLosePoint() == null)
+					if (game.getFlag(LOSE) == null)
 						p.teleport(LocationSaver.load(p));
 					else
-						p.teleport(game.getLosePoint());
+						p.teleport(game.getFlag(LOSE));
 					p.sendMessage(ChatColor.RED + "A reload of the server has stopped the game and you were teleported out of it!");
 				}
 			}
@@ -321,6 +374,12 @@ public class YamlDatabase {
 	}
 	
 	private void saveBasics(Game game, ConfigurationSection section) {
+		addedPaths.add("losezones");
+		addedPaths.add("wereOfflineAtShutdown");
+		addedPaths.add("scoreboards");
+		addedPaths.add("walls");
+		addedPaths.add("type");
+		
 		section.set("type", game.getType().name());
 		
 		List<String> loseZonesAsList = new ArrayList<String>();
@@ -329,27 +388,87 @@ public class YamlDatabase {
 		for (LoseZone c : game.getLoseZones())
 			loseZonesAsList.add(convertLoseZoneToString(c));
 		
+		List<String> wallsAsList = new ArrayList<String>();
+		for (SignWall wall : game.getWalls())
+			wallsAsList.add(wall.toString());
+		
+		section.set("walls", wallsAsList);
 		section.set("losezones", loseZonesAsList);
 		section.set("wereOfflineAtShutdown", wereOffline);
-		section.set("money", game.getJackpotToPay());
-		section.set("reward", game.getReward());
-		section.set("minPlayers", game.getMinPlayers());
-		section.set("maxPlayers", game.getMaxPlayers());
-		section.set("countdown", game.getCountdown());
-		section.set("shovels", game.isShovels());
-		section.set("chances", game.getChances());
-		section.set("autostart", game.getAutoStart());
-		section.set("1vs1", game.is1vs1());
-		section.set("rounds", game.getRounds());
+		if (game.getFlag(JACKPOTAMOUNT) != null) {
+			section.set("money", game.getFlag(JACKPOTAMOUNT));
+			addedPaths.add("money");
+		}
+		if (game.getFlag(REWARD) != null) {
+			section.set("reward", game.getFlag(REWARD));
+			addedPaths.add("reward");
+		}
+		if (game.getFlag(MINPLAYERS) != null) {
+			section.set("minPlayers", game.getFlag(MINPLAYERS));
+			addedPaths.add("minPlayers");
+		}
+		if (game.getFlag(MAXPLAYERS) != null) {
+			section.set("maxPlayers", game.getFlag(MAXPLAYERS));
+			addedPaths.add("maxPlayers");
+		}
+		if (game.getFlag(COUNTDOWN) != null) {
+			section.set("countdown", game.getFlag(COUNTDOWN));
+			addedPaths.add("countdown");
+		}
+		if (game.getFlag(SHOVELS) != null) {
+			section.set("shovels", game.getFlag(SHOVELS));
+			addedPaths.add("shovels");
+		}
+		if (game.getFlag(CHANCES) != null) {
+			section.set("chances", game.getFlag(CHANCES));
+			addedPaths.add("chances");
+		}
+		if (game.getFlag(AUTOSTART) != null) {
+			section.set("autostart", game.getFlag(AUTOSTART));
+			addedPaths.add("autostart");
+		}
+		if (game.getFlag(ONEVSONE) != null) {
+			section.set("1vs1", game.getFlag(ONEVSONE));
+			addedPaths.add("1vs1");
+		}
+		if (game.getFlag(ROUNDS) != null) {
+			section.set("rounds", game.getFlag(ROUNDS));
+			addedPaths.add("rounds");
+		}
+		if (game.getFlag(TIMEOUT) != null) {
+			section.set("timeout", game.getFlag(TIMEOUT));
+			addedPaths.add("timeout");
+		}
 		
-		if (game.getWinPoint() != null)
-			section.set("winPoint", convertLocationtoString(game.getWinPoint()));
+		if (game.getFlag(WIN) != null) {
+			section.set("winPoint", convertLocationtoString(game.getFlag(WIN)));
+			addedPaths.add("winPoint");
+		}
 		
-		if (game.getLosePoint() != null)
-			section.set("losePoint", convertLocationtoString(game.getLosePoint()));
+		if (game.getFlag(LOSE) != null) {
+			section.set("losePoint", convertLocationtoString(game.getFlag(LOSE)));
+			addedPaths.add("losePoint");
+		}
 		
-		if (game.getPreGamePoint() != null)
-			section.set("preGamePoint", convertLocationtoString(game.getPreGamePoint()));
+		if (game.getFlag(LOBBY) != null) {
+			section.set("preGamePoint", convertLocationtoString(game.getFlag(LOBBY)));
+			addedPaths.add("preGamePoint");
+		}
+		
+		if (game.getFlag(SPAWNPOINT1) != null) {
+			section.set("spawnPoint1", convertLocationtoString(game.getFlag(SPAWNPOINT1)));
+			addedPaths.add("spawnPoint1");
+		}
+		
+		if (game.getFlag(SPAWNPOINT2) != null) {
+			section.set("spawnPoint2", convertLocationtoString(game.getFlag(SPAWNPOINT2)));
+			addedPaths.add("spawnPoint2");
+		}
+		
+		if (game.getFlag(QUEUELOBBY) != null) {
+			section.set("queuesPoint", convertLocationtoString(game.getFlag(QUEUELOBBY)));
+			addedPaths.add("queuesPoint");
+		}
 		
 		List<String> scoreBoardsAsList = new ArrayList<String>();
 		for (ScoreBoard board : game.getScoreBoards()) {

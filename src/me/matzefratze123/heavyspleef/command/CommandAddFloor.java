@@ -40,7 +40,7 @@ public class CommandAddFloor extends HSCommand {
 		setMaxArgs(1);
 		setMinArgs(1);
 		setOnlyIngame(true);
-		setPermission(Permissions.ADD_FLOOR.getPerm());
+		setPermission(Permissions.ADD_FLOOR);
 		setUsage("/spleef addfloor <randomwool|given|block[:subdata]>]");
 	}
 	

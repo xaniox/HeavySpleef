@@ -22,9 +22,12 @@ package me.matzefratze123.heavyspleef.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.region.RegionBase;
 import me.matzefratze123.heavyspleef.database.Parser;
 import me.matzefratze123.heavyspleef.utility.ArrayHelper;
+import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -32,7 +35,6 @@ import org.bukkit.block.BlockFace;
 
 /**
  * Represents a scoreboard for a game
- * This is still buggy and shouldn't be used...
  * 
  * @author matzefratze123
  */
@@ -41,11 +43,11 @@ public class ScoreBoard {
 	private Location firstCorner;
 	private Location secondCorner;
 	
-	private int numberID = 35;
-	private byte numberData = 14;
+	private static int numberID = 35;
+	private static byte numberData = 14;
 	
-	private int otherID = 35;
-	private byte otherData = 15;
+	private static int otherID = 35;
+	private static byte otherData = 15;
 	
 	private Location firstNumberPoint;
 	private Location secondNumberPoint;
@@ -55,89 +57,84 @@ public class ScoreBoard {
 	private int id = -1;
 	
 	public ScoreBoard(Location loc, int id, Game game, BlockFace face) {
-		this.face = face;
+		this.face = RotatedBlockFace.byBlockFace(face).getTechnicalBlockFace();
 		this.game = game;
 		this.id = id;
 		
-		Block xOrZ = loc.getBlock().getRelative(face, 19);
-		Block xOrZAndY = xOrZ.getRelative(BlockFace.DOWN, 6);
+		Block xOrZ = getRelative(loc.getBlock(), this.face, 18);
+		Block xOrZAndY = getRelative(xOrZ, BlockFace.DOWN, 6);
 		
 		this.firstCorner = Parser.roundLocation(loc);
 		this.secondCorner = Parser.roundLocation(xOrZAndY.getLocation());
 		
-		calculateNumberPoints();
+		refreshData();
 		
-		System.out.println(Parser.convertLocationtoString(firstCorner));
-		System.out.println(Parser.convertLocationtoString(secondCorner));
+		calculateNumberPoints();
 	}
 	
 	public ScoreBoard(String fromString, Game game) {
 		String[] parts = fromString.split(";");
-		if (parts.length < 7)
+		if (parts.length < 3)
 			return;
 		
 		try {
 			int id = Integer.parseInt(parts[0]);
 			Location firstCorner = Parser.convertStringtoLocation(parts[1]);
 			BlockFace face = BlockFace.valueOf(parts[2].toUpperCase());
-			int numberID = Integer.parseInt(parts[3]);
-			byte numberData = Byte.parseByte(parts[4]);
-			int otherID = Integer.parseInt(parts[5]);
-			byte otherData = Byte.parseByte(parts[6]);
 			
 			this.id = id;
 			this.firstCorner = firstCorner;
 			this.face = face;
-			this.numberData = numberData;
-			this.numberID = numberID;
-			this.otherID = otherID;
-			this.otherData = otherData;
 			this.game = game;
 			
-			Block xOrZ = firstCorner.getBlock().getRelative(face, 19);
-			Block xOrZAndY = xOrZ.getRelative(BlockFace.DOWN, 6);
+			Block xOrZ = getRelative(firstCorner.getBlock(), face, 19);
+			Block xOrZAndY = getRelative(xOrZ, BlockFace.DOWN, 6);
 			
 			this.secondCorner = xOrZAndY.getLocation();
 			
 			calculateNumberPoints();
+			refreshData();
 		} catch (NumberFormatException e) {}
 	}
 	
 	private void calculateNumberPoints() {
-		Block b1_1 = firstCorner.getBlock().getRelative(BlockFace.DOWN, 1);
-		Block b1_2 = b1_1.getRelative(face, 1);
+		Block b1_1 = getRelative(firstCorner.getBlock(), BlockFace.DOWN, 1);
+		Block b1_2 = getRelative(b1_1, face, 1);
 		
 		this.firstNumberPoint = b1_2.getLocation();
-		this.secondNumberPoint = b1_2.getRelative(face, 10).getLocation();
+		this.secondNumberPoint = getRelative(b1_2, face, 10).getLocation();
 	}
 	
-	public int getNumberId() {
-		return this.numberID;
+	public static int getNumberId() {
+		return numberID;
 	}
 	
-	public byte getNumberData() {
-		return this.numberData;
+	public static byte getNumberData() {
+		return numberData;
 	}
 	
-	public int getOtherId() {
-		return this.otherID;
+	public static int getOtherId() {
+		return otherID;
 	}
 	
-	public byte getOtherData() {
-		return this.otherData;
+	public static byte getOtherData() {
+		return otherData;
+	}
+	
+	public static void refreshData() {
+		SimpleBlockData numberData = MaterialHelper.fromString(HeavySpleef.instance.getConfig().getString("scoreboards.numberID"));
+		SimpleBlockData otherData = MaterialHelper.fromString(HeavySpleef.instance.getConfig().getString("scoreboards.otherID"));
+		
+		ScoreBoard.numberID = numberData.getMaterial().getId();
+		ScoreBoard.otherID = otherData.getMaterial().getId();
+		
+		ScoreBoard.numberData = numberData.getData();
+		ScoreBoard.otherData = otherData.getData();
 	}
 	
 	public void draw() {
 		int[] wins = game.getWins();
 		NumberData data = new NumberData();
-		
-		if (wins.length < 2) {
-			int[] newWins = new int[2];
-			newWins[0] = 0;
-			newWins[1] = 0;
-			
-			wins = newWins;
-		}
 		
 		int minX = Math.min(firstCorner.getBlockX(), secondCorner.getBlockX());
 		int maxX = Math.max(firstCorner.getBlockX(), secondCorner.getBlockX());
@@ -150,7 +147,7 @@ public class ScoreBoard {
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
-				for (int z = minZ; z < maxZ; z++) {
+				for (int z = minZ; z <= maxZ; z++) {
 					Block b = firstCorner.getWorld().getBlockAt(x, y, z);
 					
 					b.setTypeId(otherID);
@@ -164,10 +161,11 @@ public class ScoreBoard {
 		
 		ArrayList<Location> allLocation = ArrayHelper.mergeArrays(loc1, loc2);
 		
-		Location firstColon_1 = firstCorner.getBlock().getRelative(BlockFace.DOWN, 2).getLocation();
-		Location firstColon_2 = firstColon_1.getBlock().getRelative(face, 9).getLocation();
+		Location firstColon_1 = getRelative(firstCorner.getBlock(), BlockFace.DOWN, 2).getLocation();
+		Location firstColon_2 = getRelative(firstColon_1.getBlock(), face, 9).getLocation();
 		
-		Location secondColon_2 = firstColon_2.getBlock().getRelative(BlockFace.DOWN, 2).getLocation();
+		Location secondColon_2 = getRelative(firstColon_2.getBlock(), BlockFace.DOWN, 2).getLocation();
+		
 		allLocation.add(secondColon_2);
 		allLocation.add(firstColon_2);
 		
@@ -189,7 +187,7 @@ public class ScoreBoard {
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
-				for (int z = minZ; z < maxZ; z++) {
+				for (int z = minZ; z <= maxZ; z++) {
 					Block b = firstCorner.getWorld().getBlockAt(x, y, z);
 					
 					b.setTypeId(0);
@@ -204,11 +202,54 @@ public class ScoreBoard {
 	
 	@Override
 	public String toString() {
-		return id + ";" + Parser.convertLocationtoString(firstCorner) + ";" + face.name() + ";" + numberID + ";" + numberData + ";" + otherID + ";" + otherData;
+		return id + ";" + Parser.convertLocationtoString(firstCorner) + ";" + face.name();
 	}
 	
 	public int getId() {
 		return this.id;
+	}
+	
+	private Block getRelative(Block b, BlockFace face, int length) {
+		Block block = null;
+		
+		for (int i = 0; i < length; i++) {
+			if (block == null) {
+				block = b.getRelative(face);
+				continue;
+			}
+			
+			block = block.getRelative(face);
+		}
+		
+		return block;
+	}
+	
+	private enum RotatedBlockFace {
+	
+		SOUTH(BlockFace.EAST),
+		NORTH(BlockFace.WEST),
+		WEST(BlockFace.SOUTH),
+		EAST(BlockFace.NORTH);
+		
+		private BlockFace technicalBlockFace;
+		
+		private RotatedBlockFace(BlockFace technicalBlockFace) {
+			this.technicalBlockFace = technicalBlockFace;
+		}
+		
+		public BlockFace getTechnicalBlockFace() {
+			return this.technicalBlockFace;
+		}
+		
+		public static RotatedBlockFace byBlockFace(BlockFace face) {
+			for (RotatedBlockFace rFace : RotatedBlockFace.values()) {
+				if (face.name().equalsIgnoreCase(rFace.name()))
+					return RotatedBlockFace.valueOf(face.name());
+			}
+			
+			return null;
+		}
+		
 	}
 	
 	/**

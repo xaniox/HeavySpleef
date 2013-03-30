@@ -36,7 +36,7 @@ public class CommandRemoveFloor extends HSCommand {
 		setMaxArgs(0);
 		setMinArgs(0);
 		setOnlyIngame(true);
-		setPermission(Permissions.REMOVE_FLOOR.getPerm());
+		setPermission(Permissions.REMOVE_FLOOR);
 		setUsage("/spleef removefloor");
 	}
 	

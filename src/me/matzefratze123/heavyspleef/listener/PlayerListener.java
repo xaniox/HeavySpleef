@@ -19,6 +19,8 @@
  */
 package me.matzefratze123.heavyspleef.listener;
 
+import static me.matzefratze123.heavyspleef.core.flag.FlagType.SHOVELS;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
+import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.MaterialHelper;
@@ -61,8 +64,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class PlayerListener implements Listener {
 
 	private ArrayList<String> isCheckOut = new ArrayList<String>();
-	private static List<Integer> cantBreak;
-	private static boolean loseOnTouchWaterOrLava;
+	public static List<Integer> cantBreak;
+	public static boolean loseOnTouchWaterOrLava;
 	
 	public PlayerListener() {
 		cantBreak = HeavySpleef.instance.getConfig().getIntegerList("blocks.cantBreak");
@@ -77,7 +80,7 @@ public class PlayerListener implements Listener {
 		
 		if (!GameManager.isInAnyGame(p))
 			return;
-		Game game = GameManager.getGameFromPlayer(p);
+		Game game = GameManager.fromPlayer(p);
 		if (!game.isCounting() && !game.isIngame())
 			return;
 		
@@ -122,10 +125,12 @@ public class PlayerListener implements Listener {
 		if (!GameManager.isInAnyGame(p))
 			return;
 		
-		Game game = GameManager.getGameFromPlayer(p);
+		Game game = GameManager.fromPlayer(p);
 		if (!game.canSpleef(block, p))
 			return;
-		if (game.isShovels())
+		
+		boolean shovels = game.getFlag(SHOVELS) == null ? false : game.getFlag(SHOVELS);
+		if (shovels)
 			return;
 		
 		game.addBrokenBlock(p, block);
@@ -154,7 +159,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		
-		Game game = GameManager.getGameFromPlayer(p);
+		Game game = GameManager.fromPlayer(p);
 		
 		if (cantBreak.contains(block.getTypeId())) {
 			e.setCancelled(true);
@@ -278,10 +283,10 @@ public class PlayerListener implements Listener {
 		Player p = e.getPlayer();
 		for (Game game : GameManager.getGames()) {
 			if (game.wereOffline.contains(p.getName())) {
-				if (game.getLosePoint() == null)
+				if (game.getFlag(FlagType.LOSE) == null)
 					p.teleport(LocationSaver.load(p));
 				else
-					p.teleport(game.getLosePoint());
+					p.teleport(game.getFlag(FlagType.LOSE));
 				p.sendMessage(Game._("loginAfterServerShutdown", game.getName()));
 				PlayerStateManager.restorePlayerState(p);
 				return;
@@ -296,7 +301,7 @@ public class PlayerListener implements Listener {
 		if (!GameManager.isInAnyGame(p))
 			return;
 		
-		Game game = GameManager.getGameFromPlayer(p);
+		Game game = GameManager.fromPlayer(p);
 		game.removePlayer(p, LoseCause.UNKNOWN);
 	}
 	
@@ -311,12 +316,12 @@ public class PlayerListener implements Listener {
 	private void handleQuit(PlayerEvent e) {
 		if (!GameManager.isInAnyGame(e.getPlayer()))
 			return;
-		Game game = GameManager.getGameFromPlayer(e.getPlayer());
+		Game game = GameManager.fromPlayer(e.getPlayer());
 		game.removePlayer(e.getPlayer(), LoseCause.QUIT);
-		if (game.getLosePoint() == null)
+		if (game.getFlag(FlagType.LOSE) == null)
 			e.getPlayer().teleport(LocationSaver.load(e.getPlayer()));
 		else
-			e.getPlayer().teleport(game.getLosePoint());
+			e.getPlayer().teleport(game.getFlag(FlagType.LOSE));
 	}
 	
 	private boolean shouldFix(Location pLoc, Location bLoc) {

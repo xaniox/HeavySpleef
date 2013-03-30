@@ -20,6 +20,10 @@
 package me.matzefratze123.heavyspleef.utility;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ArrayHelper {
 	
@@ -31,6 +35,39 @@ public class ArrayHelper {
 			for (T t : array) {
 				list.add(t);
 			}
+		}
+		
+		return list;
+	}
+	
+	public static <T> Set<T> asSet(T[] array) {
+		Set<T> set = new HashSet<T>();
+		
+		for (T value : array) {
+			set.add(value);
+		}
+		
+		return set;
+	}
+	
+	public static <T> Set<String> enumAsSet(T[] array, boolean lowerCase) {
+		Set<String> set = new HashSet<String>();
+		
+		for (T enumeration : array) {
+			String add = enumeration.toString();
+			if (lowerCase)
+				add = add.toLowerCase();
+			set.add(add);
+		}
+		
+		return set;
+	}
+	
+	public static <T> List<T> collectionToList(Collection<T> coll) {
+		List<T> list = new ArrayList<T>();
+		
+		for (T part : coll) {
+			list.add(part);
 		}
 		
 		return list;

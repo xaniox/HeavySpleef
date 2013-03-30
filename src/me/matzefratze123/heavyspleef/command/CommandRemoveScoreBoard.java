@@ -34,7 +34,7 @@ public class CommandRemoveScoreBoard extends HSCommand {
 		setMaxArgs(0);
 		setMinArgs(0);
 		setOnlyIngame(true);
-		setPermission(Permissions.REMOVE_SCOREBOARD.getPerm());
+		setPermission(Permissions.REMOVE_SCOREBOARD);
 		setUsage("/spleef removescoreboard");
 	}
 
@@ -57,6 +57,8 @@ public class CommandRemoveScoreBoard extends HSCommand {
 				}
 			}
 		}
+		
+		p.sendMessage(_("notLookingAtScoreBoard"));
 		
 	} 
 	

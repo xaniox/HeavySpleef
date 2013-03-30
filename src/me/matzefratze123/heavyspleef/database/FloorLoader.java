@@ -72,7 +72,6 @@ public class FloorLoader {
 			
 			Object object = o.readObject();
 			if (!(object instanceof ArrayList<?>)) {
-				System.out.println("=(");
 				o.close();
 				return;
 			}

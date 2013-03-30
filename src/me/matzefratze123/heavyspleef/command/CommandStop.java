@@ -31,7 +31,7 @@ public class CommandStop extends HSCommand {
 	public CommandStop() {
 		setMinArgs(1);
 		setMaxArgs(1);
-		setPermission(Permissions.STOP.getPerm());
+		setPermission(Permissions.STOP);
 		setUsage("/spleef stop <Name>");
 		setOnlyIngame(true);
 	}

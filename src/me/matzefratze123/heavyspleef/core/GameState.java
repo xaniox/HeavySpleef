@@ -23,8 +23,8 @@ public enum GameState {
 
 	INGAME,
 	COUNTING,
-	NOT_INGAME,
-	PRE_LOBBY,
+	JOINABLE,
+	LOBBY,
 	DISABLED;
 	
 }

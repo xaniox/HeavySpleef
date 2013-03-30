@@ -42,6 +42,7 @@ public class StartCountdownTask extends Countdown {
 	
 	@Override
 	public void onCount() {
+		game.setCurrentCount(getTimeRemaining());
 		if (getTimeRemaining() <= 5){//Do improved countdown
 			if (HeavySpleef.instance.getConfig().getBoolean("sounds.plingSound", true)) {
 				for (Player p : game.getPlayers())

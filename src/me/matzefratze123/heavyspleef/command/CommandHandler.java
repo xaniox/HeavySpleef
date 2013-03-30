@@ -51,8 +51,7 @@ public class CommandHandler implements CommandExecutor {
 			return true;
 		}
 		
-		Vector<String> cutArgs = new Vector<String>();
-		cutArgs.addAll(Arrays.asList(args));
+		Vector<String> cutArgs = new Vector<String>(Arrays.asList(args));
 		cutArgs.remove(0);
 		
 		if (!isValidSubCommand(sender, command, cutArgs.toArray(new String[cutArgs.size()])))
@@ -66,7 +65,7 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + LanguageHandler._("onlyIngame"));
 			return false;
 		}
-		if (!cmd.getPermission().equalsIgnoreCase("") && !sender.hasPermission(cmd.getPermission()) && !sender.hasPermission("heavyspleef.*")) {
+		if (cmd.getPermission() != null && !sender.hasPermission(cmd.getPermission().getPerm()) && !sender.hasPermission("heavyspleef.*")) {
 			sender.sendMessage(ChatColor.RED + LanguageHandler._("noPermission"));
 			return false;
 		}
@@ -86,7 +85,8 @@ public class CommandHandler implements CommandExecutor {
 	}
 	
 	public static void initCommands() {
-		//Adds all commands
+		//Add all commands
+		addSubCommand("flag", new CommandFlag());
 		addSubCommand("create", new CommandCreate());
 		addSubCommand("delete", new CommandDelete());
 		addSubCommand("join", new CommandJoin());
@@ -96,30 +96,23 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("addlayer", new CommandAddFloor());
 		addSubCommand("removefloor", new CommandRemoveFloor());
 		addSubCommand("removelayer", new CommandRemoveFloor());
-		addSubCommand("setlose", new CommandSetLose());
 		addSubCommand("addlose", new CommandAddLose());
-		addSubCommand("setwin", new CommandSetWin());
-		addSubCommand("setlobby", new CommandSetLobby());
-		addSubCommand("setspawn", new CommandSetLobby());
 		addSubCommand("removelose", new CommandRemoveLose());
 		addSubCommand("help", new CommandHelp());
-		addSubCommand("setminplayers", new CommandSetMinPlayers());
-		addSubCommand("setmaxplayers", new CommandSetMaxPlayers());
 		addSubCommand("kick", new CommandKick());
-		addSubCommand("setjackpot", new CommandSetJackpot());
-		addSubCommand("setreward", new CommandSetReward());
 		addSubCommand("disable", new CommandDisable());
 		addSubCommand("enable", new CommandEnable());
 		addSubCommand("save", new CommandSave());
 		addSubCommand("stop", new CommandStop());
-		addSubCommand("setshovel", new CommandSetShovel());
-		addSubCommand("setcountdown", new CommandSetCountdown());
-		addSubCommand("autostart", new CommandAutoStart());
 		addSubCommand("stats", new CommandStats());
-		addSubCommand("setchances", new CommandSetChances());
-		addSubCommand("set1vs1", new CommandSet1vs1());
-		addSubCommand("setrounds", new CommandSetRounds());
 		addSubCommand("update", new CommandUpdate());
+		addSubCommand("addscoreboard", new CommandAddScoreBoard());
+		addSubCommand("removescoreboard", new CommandRemoveScoreBoard());
+		addSubCommand("addwall", new CommandAddWall());
+		addSubCommand("removewall", new CommandRemoveWall());
+		addSubCommand("reload", new CommandReload());
+		addSubCommand("info", new CommandInfo());
+		addSubCommand("list", new CommandList());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

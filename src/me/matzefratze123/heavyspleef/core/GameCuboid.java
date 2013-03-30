@@ -26,13 +26,9 @@ import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.utility.LocationHelper;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class GameCuboid extends Game {
@@ -130,100 +126,6 @@ public class GameCuboid extends Game {
 						LocationHelper.getDistance2D(corners[3], playerLocation) <= radiusSqared ||
 						this.players.contains(p.getName()))) {
 					p.sendMessage(msg);
-				}
-			}
-		}
-	}
-
-	@Override
-	protected void generate() {
-		
-		Location loc1 = getFirstCorner();
-		Location loc2 = getSecondCorner();
-		
-		int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
-		int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
-		
-		int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
-		int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
-		
-		int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
-		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
-		
-		World world = loc1.getWorld();
-		Block currentBlock;
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(x, minY, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
-					currentBlock.setType(Material.OBSIDIAN);
-			}
-		}
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(x, maxY, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
-					currentBlock.setType(Material.GLOWSTONE);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(minX, y, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
-					currentBlock.setTypeId(20);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int z = minZ; z <= maxZ; z++) {
-				currentBlock = world.getBlockAt(maxX, y, z);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
-					currentBlock.setTypeId(20);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int x = minX; x <= maxX; x++) {
-				currentBlock = world.getBlockAt(x, y, minZ);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
-					currentBlock.setTypeId(20);
-			}
-		}
-		
-		for (int y = minY; y <= maxY; y++) {
-			for (int x = minX; x <= maxX; x++) {
-				currentBlock = world.getBlockAt(x, y, maxZ);
-				if (currentBlock.getType() == Material.AIR || !SimpleBlockData.isSolid(currentBlock.getTypeId()))
-					currentBlock.setTypeId(20);
-				
-			}
-		}
-		
-		emptyInnerArena();
-	}
-	
-	private void emptyInnerArena() {
-		Location loc1 = getFirstInnerCorner();
-		Location loc2 = getSecondInnerCorner();
-		
-		World world = loc1.getWorld();
-		
-		int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
-		int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
-		
-		int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
-		int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
-		
-		int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
-		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int y = minY; y <= maxY; y++) {
-				for (int z = minZ; z <= maxZ; z++) {
-					world.getBlockAt(x, y, z).setType(Material.AIR);
 				}
 			}
 		}

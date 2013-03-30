@@ -21,6 +21,7 @@ package me.matzefratze123.heavyspleef.command;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
+import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public abstract class HSCommand {
 
-	private String permission = "";
+	private Permissions permission = null;
 	private int minArgs = 0;
 	private int maxArgs = -1;
 	private boolean onlyIngame = false;
@@ -54,11 +55,11 @@ public abstract class HSCommand {
 		return minArgs;
 	}
 	
-	void setPermission(String perm) {
+	void setPermission(Permissions perm) {
 		this.permission = perm;
 	}
 	
-	String getPermission() {
+	Permissions getPermission() {
 		return permission;
 	}
 	
@@ -84,6 +85,10 @@ public abstract class HSCommand {
 	
 	public static String _(String... key) {
 		return HeavySpleef.PREFIX + ChatColor.RESET + " " + LanguageHandler._(key);
+	}
+	
+	public static String __(String str) {
+		return HeavySpleef.PREFIX + " " + str;
 	}
 	
 	static void setPluginInstance(HeavySpleef instance) {

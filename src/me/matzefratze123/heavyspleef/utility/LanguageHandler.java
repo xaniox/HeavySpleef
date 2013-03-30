@@ -54,7 +54,9 @@ public class LanguageHandler {
 	 * Loads the language file from the given language in the config.yml
 	 */
 	public static void loadLanguageFiles() {
-		copyLanguageFiles();
+		boolean fromFile = HeavySpleef.instance.getConfig().getBoolean("language.editable");
+		if (fromFile)
+			copyLanguageFiles();
 		File languageFolder = new File(HeavySpleef.instance.getDataFolder().getPath() + "/language");
 		languageFolder.mkdirs();
 		List<String> acceptedLanguages = new ArrayList<String>();
@@ -66,29 +68,38 @@ public class LanguageHandler {
 		acceptedLanguages.add("es");
 		acceptedLanguages.add("pt");
 		
-		String language = HeavySpleef.instance.getConfig().getString("general.language", "en");
+		String language = HeavySpleef.instance.getConfig().getString("language.language", "en");
 		if (!acceptedLanguages.contains(language)) {
 			HeavySpleef.instance.getLogger().log(Level.WARNING, "Invalid language! Setting to English...");
-			setLanguage("en");
+			setLanguage("en", fromFile);
 			return;
 		}
-		setLanguage(language);
+		setLanguage(language, fromFile);
 	}
 	
-	private static void setLanguage(String lang) {
-		File langFile = new File(HeavySpleef.instance.getDataFolder() + "/language/" + lang + ".lang");
-		if (!langFile.exists())
-			langFile = null;
+	private static void setLanguage(String lang, boolean fromFile) {
+		File langFile = null;
+		
+		if (!fromFile) {
+			langFile = new File(HeavySpleef.instance.getDataFolder() + "/language/" + lang + ".lang");
+			if (!langFile.exists())
+				langFile = null;
+		}
 		
 		try {
 			InputStream stream;
-			if (langFile == null)
-				stream = HeavySpleef.class.getResourceAsStream("/resource/en.lang");
+			if (langFile == null || !fromFile)
+				stream = HeavySpleef.class.getResourceAsStream("/resource/" + lang + ".lang");
 			else
 				stream = new FileInputStream(langFile);
+			
+			if (stream == null)
+				stream = HeavySpleef.class.getResourceAsStream("/resource/en.lang");
+			
 			InputStreamReader streamReader = new InputStreamReader(stream, Charset.forName("UTF-8"));
 			BufferedReader reader = new BufferedReader(streamReader);
-			String read;
+			String read = "";
+			
 			while ((read = reader.readLine()) != null) {
 				read = read.trim();
 				if (read.isEmpty())
@@ -98,19 +109,21 @@ public class LanguageHandler {
 				String[] split = read.split(": ", 2);
 				if (split.length != 2)
 					continue;
-				split[1] = ChatColor.translateAlternateColorCodes('&', split[1]);
 				
-				split[1] = split[1].replace("ä", "\u00E4");
-				split[1] = split[1].replace("ö", "\u00F6");
-				split[1] = split[1].replace("ü", "\u00FC");
+				split[1] = ChatColor.translateAlternateColorCodes('&', split[1]);
 				
 				split[1] = split[1].replace("\\n", "\n");
 				
-				split[1] = new String(split[1].getBytes(Charset.forName("UTF-8")), "UTF-8");
+				split[1] = split[1].replace("\\u00E4", "ä");
+				split[1] = split[1].replace("\\u00F6", "ö");
+				split[1] = split[1].replace("\\u00FC", "ü");
+				
+				split[1] = new String(split[1].getBytes(Charset.forName("UTF-16")), "UTF-16");
 						
 				messages.put(split[0], split[1]);
 			}
 			reader.close();
+			streamReader.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -143,6 +156,7 @@ public class LanguageHandler {
 				while((read = inStream.read(buffer)) > 0)
 					outStream.write(buffer, 0, read);
 				
+				outStream.flush();
 				inStream.close();
 				outStream.close();
 			} catch (IOException e) {

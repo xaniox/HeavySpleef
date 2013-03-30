@@ -50,11 +50,23 @@ noGameRunning: &cНет игр запущенных на этой арене!
 
 noWorldEdit: &cCan't use this function! WorldEdit wasn't found on this server!
 
-not1vs1: &cThis is not a 1vs1 game! Type /spleef set1vs1 %a true to make it to an 1vs1 game 
 onlyOneLayer: &cThe size of a floor in the y-coordinate can only be one layer!
-onlyOverTwoAndZero: &cThe AutoStart value has to be over 2 or 0 to deactivate it!
 maxPlayersReached: &cThe maximum count of players in this arena is reached!
-toLow: &cThis value is to low! It has to be 2 or 0 to deactivate this feature...
+
+invalidBlockFace: &cThis direction is invalid!
+notLookingAtScoreBoard: &cYou are not looking at a scoreboard!
+
+didntSelectWall: &cYou didn't select a wall!
+yMustBeSame: &cThe y-coordinate must be the same!
+notLookingAtWall: &cYou aren't looking at a wall!
+cannotDestroyWallAdmin: &cYou cannot destroy this sign! To remove the wall look on it and type: /spleef removewall
+cannotDestroyWallUser: &cYou cannot destroy this sign!
+lengthMustBeOver1: &cThe length of the wall must be at least 2 blocks!
+
+noCommandsInQueue: &cYou can't use commands while in queue!
+
+invalidFlag: &cInvalid flag!
+invalidFlagFormat: &cInvalid flag-format!
 
 # Сообщения об успешном выполнении
 
@@ -70,14 +82,9 @@ playerJoinedToPlayer: &7Вы присоединились к игре %a
 kickedOfToPlayer: &7Вы были изгнаны из %a%a
 kickedOfToKicker: &7Вас изгнал %a из игры %a%a
 left: &cВы вышли из игры...
-setMinimumPlayers: &7Успешно установленно минимальное кол-во игроков - %a для игры %a
 floorRemoved: &7Пол был удален!
 loseZoneRemoved: &7Losezone с ID %a была удалена!
 gamesSaved: &7Все игры были сохранены в базе данных!
-lobbyPointSet: &Точка лобби для игры %a установлена!
-winPointSet: &7Точка спавна победителя, для игры %a, установлена!
-losePointSet: &7Точка спавна проигравших, для игры %a, установлена!
-moneySet: &7Деньги успешно привязаны к игре!
 gameStarted: &7Начало игры!
 win: &6Вы выиграли игру!
 jackpotReceived: &7Вы получили джекпот %a за победу в этой игре!
@@ -100,22 +107,21 @@ stateSaved: &7Ваши состояние и инвентарь были сох�
 stateRestored: &7Ваше состояние было восстановленно!
 gameStopped: &cИгра была остановлена!
 
-startOnMinPlayersTrue: &7The game will now start when the minimum count of players are reached!
-startOnMinPlayersFalse: &7The game will no longer start when the minimum count of players are reached!
-countdownSet: &7Countdown set to %a!
-
-shovelToggled: Game with shovels was set to %a.
-info: Current value: %a
-
-chancesSet: &7The chance amount of %a was binded to the game!
 chancesLeft: &cYou have %a chances left!
 chancesLeftBroadcast: &c%a has %a chances left!
 
-1vs1Toggled: &71vs1 game was set to %a!
-roundsSet: &7Rounds set!
-autoStartSet: &7AutoStart value was set to %a!
-setMaximumPlayers: &7The maximum amount of %a players has been binded to the game %a!
-setMinimumPlayers: &7The minimum amount of %a players has been binded to the game %a!
+scoreBoardAdded: &7The scoreboard has been added!
+scoreBoardRemoved: &7The scoreboard has been removed!
+
+wallRemoved: &7The wall has been removed!
+signWallAdded: &7The wall was added!
+
+inventory: &6&lвыбрать игру...
+
+flagCleared: &7Flag named %a cleared!
+flagSet: &7Flag %a set!
+
+pluginReloaded: &7HeavySpleef version %a reloaded! Took %ams
 
 # Публичные сообщения
 
@@ -127,6 +133,7 @@ startedGameWith: &6Началась игра с %a игроками!
 gameIsStarting: &1Игра начнется через %a секунд...
 gameStopped: &cИгра была остановлена!
 playerJoinedGame: &a%a присоединился к игре!
+hasWon: &a%a &1выиграл игру на арене &6%a&1!
 
 wonRound: &a%a &chas won round &6%a &cof &6%a&c!
 roundsRemaining: &1%a rounds remaining!
@@ -136,10 +143,12 @@ endedDraw: &aThe game in arena %a has ended in a draw...
 roundStarted: &aRound &6%a &aof &6%a &ahas started!
 roundStartsIn: &1Round starts in %a seconds...
 
+timeLeftSeconds: &1%a seconds left until the game ends!
+timeLeftMinutes: &1%a minutes and %a seconds left until the game ends!
+timeoutReached: &1Reached timeout! Finish the game...
+
 loseCause_kick: &6%a &cбыл изгнан из игры!
 loseCause_leave: &6%a &cвышел из игры на арене %a!
 loseCause_lose: &6%a &cпотерпел поражение от &4%a&c!
 loseCause_quit: &6%a &cвышел во время игры!
 loseCause_unknown: &6%a &cпокинул арену по неизвестной причине...
-
-hasWon: &a%a &1выиграл игру на арене &6%a&1!
