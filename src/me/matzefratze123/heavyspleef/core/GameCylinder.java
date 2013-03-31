@@ -19,11 +19,13 @@
  */
 package me.matzefratze123.heavyspleef.core;
 
+import java.io.File;
 import java.util.Random;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
+import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.utility.LocationHelper;
 
@@ -113,8 +115,7 @@ public class GameCylinder extends Game {
 	}
 
 	@Override
-	public int addFloor(int blockID, byte data, boolean wool,
-			boolean givenFloor, Location... locations) {
+	public int addFloor(int blockID, byte data, FloorType type, Location... locations) {
 		//Location should be the center here...
 		int id = 0;
 		while(floors.containsKey(id))
@@ -122,7 +123,7 @@ public class GameCylinder extends Game {
 		if (locations.length < 1)
 			return -1;
 		
-		Floor floor = new FloorCylinder(id, locations[0].getBlockY(), radius, locations[0], blockID, data, wool, givenFloor);
+		Floor floor = new FloorCylinder(id, locations[0].getBlockY(), radius, locations[0], blockID, data, type);
 		floor.create();
 		floors.put(floor.getId(), floor);
 		return floor.getId();
@@ -146,16 +147,20 @@ public class GameCylinder extends Game {
 		byte dataAbove = c.getBlock().getData();
 		
 		//Create a new editsession
-		EditSession eSession = new EditSession(BukkitUtil.getLocalWorld(c.getWorld()), 3000);
+		EditSession eSession = new EditSession(BukkitUtil.getLocalWorld(c.getWorld()), 5000);
 		
 		//Get the rounded coordinates of the center (this = from Object, not from the variable inside this method)
 		int x = this.center.getBlockX();
 		int y = floor.getY();
 		int z = this.center.getBlockZ();
 		
+		if (floor.isGivenFloor()) {
+			File file = new File("plugins/HeavySpleef/games/floor_" + getName() + "_" + floor.getId());
+			if (file.exists()) file.delete();
+		}
 		floors.remove(id);
 		
-		//Create a fix for removing the floor
+		//Create a fix for the removed floor
 		try {
 			eSession.makeCylinder(new Vector(x, y, z), new SingleBlockPattern(new BaseBlock(typeAbove, dataAbove)), radius, 1, false);
 		} catch (MaxChangedBlocksException e) {

@@ -169,6 +169,7 @@ public class YamlDatabase {
 			else if (game.getType() == Type.CYLINDER)
 				saveCylinder((GameCylinder) game, section);
 			
+			addedPaths.add("type");
 			for (String key : section.getKeys(false)) {
 				if (!addedPaths.contains(key)) {
 					section.set(key, null);
@@ -378,7 +379,7 @@ public class YamlDatabase {
 		addedPaths.add("wereOfflineAtShutdown");
 		addedPaths.add("scoreboards");
 		addedPaths.add("walls");
-		addedPaths.add("type");
+		
 		
 		section.set("type", game.getType().name());
 		

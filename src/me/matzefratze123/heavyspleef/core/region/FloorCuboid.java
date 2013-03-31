@@ -33,13 +33,13 @@ public class FloorCuboid extends Floor {
 	private Location firstCorner;
 	private Location secondCorner;
 	
-	public FloorCuboid(int id, int y, Location corner1, Location corner2, int blockID, byte data, boolean wool, boolean givenFloor) {
-		super(id, blockID, data, wool, givenFloor, y);
+	public FloorCuboid(int id, int y, Location corner1, Location corner2, int blockID, byte data, FloorType type) {
+		super(id, blockID, data, type, y);
 		
 		this.setFirstCorner(corner1);
 		this.setSecondCorner(corner2);
 		
-		if (givenFloor)
+		if (isGivenFloor())
 			initFloor();
 	}
 	
@@ -54,14 +54,19 @@ public class FloorCuboid extends Floor {
 		byte data = Byte.parseByte(split[4]);
 		int y = firstCorner.getBlockY();
 		
-		if (blockID == 0)
-			return new FloorCuboid(id, y, firstCorner, secondCorner, 35, data, true, false);
-		else if (blockID == -1) {
-			FloorCuboid floor =  new FloorCuboid(id, y, firstCorner, secondCorner, -1, data, false, true);
-			FloorLoader.loadFloor(floor, gameName);
-			return floor;
+		if (split.length < 6) {//Just for converting old floors...
+			if (blockID == 0)
+				return new FloorCuboid(id, y, firstCorner, secondCorner, 35, data, FloorType.RANDOMWOOL);
+			else if (blockID == -1) {
+				FloorCuboid floor =  new FloorCuboid(id, y, firstCorner, secondCorner, -1, data, FloorType.GIVENFLOOR);
+				FloorLoader.loadFloor(floor, gameName);
+				return floor;
+			}
+			return new FloorCuboid(id, y, firstCorner, secondCorner, blockID, data, FloorType.SPECIFIEDID);
 		}
-		return new FloorCuboid(id, y, firstCorner, secondCorner, blockID, data, false, false);
+		
+		FloorType type = FloorType.valueOf(split[5]);
+		return new FloorCuboid(id, y, firstCorner, secondCorner, blockID, data, type);
 	}
 	
 	@Override
@@ -98,7 +103,7 @@ public class FloorCuboid extends Floor {
 		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
 		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
 		
-		if (givenFloor) {
+		if (isGivenFloor()) {
 			for (SimpleBlockData sData : givenFloorList) {
 				if (sData == null)
 					continue;
@@ -120,7 +125,7 @@ public class FloorCuboid extends Floor {
 		Block currentBlock;
 		byte data = 0;
 		
-		if (wool)
+		if (isWoolFloor())
 			data = (byte)(random.nextInt(17) - 1);
 		else if (getData() > 0)
 			data = getData();
@@ -130,7 +135,7 @@ public class FloorCuboid extends Floor {
 				for (int z = minZ; z <= maxZ; z++) {
 					currentBlock = getFirstCorner().getWorld().getBlockAt(x, y, z);
 					
-					if (wool) {
+					if (isWoolFloor()) {
 						if (currentBlock.getType() == Material.WOOL && currentBlock.getData() == data)
 							continue;
 						currentBlock.setType(Material.WOOL);
@@ -195,12 +200,7 @@ public class FloorCuboid extends Floor {
 	public String toString() {
 		int id = getId();
 		String base = id + ";" + Parser.convertLocationtoString(getFirstCorner()) + ";" + Parser.convertLocationtoString(getSecondCorner());
-		
-		if (isWoolFloor())
-			return base + ";0;0"; 
-		if (isGivenFloor())
-			return base + ";-1;0";
-		return base + ";" + getBlockID() + ";" + getData();
+		return base + ";" + getBlockID() + ";" + getData() + ";" + getFloorType().name();
 	}
 
 	@Override

@@ -43,6 +43,8 @@ public enum Permissions {
 	ADD_LOSEZONE("heavyspleef.addlose"),
 	REMOVE_LOSEZONE("heavyspleef.removelose"),
 	JOIN_GAME("heavyspleef.join"),
+	JOIN_GAME_OTHERS("heavyspleef.join.target"),
+	JOIN_GAME_INV("heavyspleef.join.inventory"),
 	LEAVE_GAME("heavyspleef.leave"),
 	START_GAME("heavyspleef.start"),
 	CREATE_GAME("heavyspleef.create"),

@@ -19,11 +19,13 @@
  */
 package me.matzefratze123.heavyspleef.core;
 
+import java.io.File;
 import java.util.Random;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
+import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.utility.LocationHelper;
 
@@ -203,8 +205,7 @@ public class GameCuboid extends Game {
 	}
 
 	@Override
-	public int addFloor(int blockID, byte data, boolean wool,
-			boolean givenFloor, Location... locations) {
+	public int addFloor(int blockID, byte data, FloorType type, Location... locations) {
 		//Location should be two points (Selection points)
 		int id = 0;
 		while (floors.containsKey(id))
@@ -213,7 +214,7 @@ public class GameCuboid extends Game {
 		if (locations.length < 2)
 			return -1;
 		
-		Floor floor = new FloorCuboid(id, locations[0].getBlockY(), locations[0], locations[1], blockID, data, wool, givenFloor);
+		Floor floor = new FloorCuboid(id, locations[0].getBlockY(), locations[0], locations[1], blockID, data, type);
 		
 		floors.put(id, floor);
 		floor.create();
@@ -226,6 +227,10 @@ public class GameCuboid extends Game {
 			return;
 		Floor floor = floors.get(id);
 		
+		if (floor.isGivenFloor()) {
+			File file = new File("plugins/HeavySpleef/games/floor_" + getName() + "_" + floor.getId());
+			if (file.exists()) file.delete();
+		}
 		floor.remove();
 		floors.remove(id);
 	}

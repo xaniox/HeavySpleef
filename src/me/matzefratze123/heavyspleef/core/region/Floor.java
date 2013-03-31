@@ -32,21 +32,19 @@ public abstract class Floor extends RegionBase {
 
 	protected int m;
 	protected byte data;
-	protected boolean wool;
-	protected boolean givenFloor;
+	protected FloorType type;
 	protected int y;
 	
 	protected Random random = new Random();
 	
 	public ArrayList<SimpleBlockData> givenFloorList = new ArrayList<SimpleBlockData>();
 	
-	public Floor(int id, int m, byte data, boolean wool, boolean givenFloor, int y) {
+	public Floor(int id, int m, byte data, FloorType type, int y) {
 		super(id);
 		
 		this.m = m;
 		this.data = data;
-		this.wool = wool;
-		this.givenFloor = givenFloor;
+		this.type = type;
 		this.y = y;
 	}
 	
@@ -57,6 +55,10 @@ public abstract class Floor extends RegionBase {
 	public abstract void remove();
 	
 	public abstract Type getType();
+	
+	public FloorType getFloorType() {
+		return type;
+	}
 	
 	@Override
 	public abstract String toString();
@@ -70,19 +72,23 @@ public abstract class Floor extends RegionBase {
 	}
 	
 	public boolean isWoolFloor() {
-		return this.wool;
+		return type == FloorType.RANDOMWOOL;
 	}
 	
 	public boolean isGivenFloor() {
-		return this.givenFloor;
+		return type == FloorType.GIVENFLOOR;
+	}
+	
+	public boolean isSpecifiedId() {
+		return type == FloorType.SPECIFIEDID;
 	}
 	
 	public int getY() {
 		return this.y;
 	}
 	
-	public void setGiven(boolean given) {
-		this.givenFloor = given;
+	public void setFloorType(FloorType type) {
+		this.type = type;
 	}
 	
 	public SimpleBlockData getSimpleBlockData(Location loc) {

@@ -24,6 +24,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.selection.Selection;
 import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
@@ -167,17 +168,17 @@ public class CommandAddFloor extends HSCommand {
 	}
 	
 	private void addWoolFloor(Game game, Player p, Location... locations) {
-		game.addFloor(35, (byte)0, true, false, locations);
+		game.addFloor(35, (byte)0, FloorType.RANDOMWOOL, locations);
 		p.sendMessage(_("floorCreated"));
 	}
 	
 	private void addSpecifiedFloor(Game game, Player p, SimpleBlockData data, Location... locations) {
-		game.addFloor(data.getMaterial().getId(), data.getData(), false, false, locations);
+		game.addFloor(data.getMaterial().getId(), data.getData(), FloorType.SPECIFIEDID, locations);
 		p.sendMessage(_("floorCreated"));
 	}
 	
 	private void addGivenFloor(Game game, Player p, Location... locations) {
-		game.addFloor(0, (byte)0, false, true, locations);
+		game.addFloor(0, (byte)0, FloorType.GIVENFLOOR, locations);
 		p.sendMessage(_("floorCreated"));
 	}
 	

@@ -45,13 +45,13 @@ public class FloorCylinder extends Floor {
 	private Location center;
 	private int radius;
 	
-	public FloorCylinder(int id, int y, int radius, Location center, int blockID, byte data, boolean wool, boolean givenFloor) {
-		super(id, blockID, data, wool, givenFloor, y);
+	public FloorCylinder(int id, int y, int radius, Location center, int blockID, byte data, FloorType type) {
+		super(id, blockID, data, type, y);
 		
 		this.radius = radius;
 		this.center = center;
 		
-		if (givenFloor)
+		if (isGivenFloor())
 			initFloor();
 	}
 	
@@ -65,15 +65,20 @@ public class FloorCylinder extends Floor {
 		int m = Integer.parseInt(parts[3]);
 		byte data = Byte.parseByte(parts[4]);
 		
-		if (m == 0)
-			return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, true, false);
-		if (m == -1) {
-			FloorCylinder floor = new FloorCylinder(id, center.getBlockY(), radius, center, m, data, false, true);
-			FloorLoader.loadFloor(floor, gameName);
-			return floor;
+		if (parts.length < 6) {//Just for converting old floors
+			if (m == 0)
+				return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, FloorType.RANDOMWOOL);
+			if (m == -1) {
+				FloorCylinder floor = new FloorCylinder(id, center.getBlockY(), radius, center, m, data, FloorType.GIVENFLOOR);
+				FloorLoader.loadFloor(floor, gameName);
+				return floor;
+			}	
+			return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, FloorType.SPECIFIEDID);
 		}
-			
-		return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, false, false);
+		
+		FloorType type = FloorType.valueOf(parts[5].toUpperCase());
+		
+		return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, type);
 	}
 
 	@Override
@@ -81,7 +86,7 @@ public class FloorCylinder extends Floor {
 		byte data = 0;
 		int id;
 		
-		if (wool) {
+		if (isWoolFloor()) {
 			data = (byte)(random.nextInt(17) - 1);
 			id = 35;
 		} else { 
@@ -89,7 +94,7 @@ public class FloorCylinder extends Floor {
 			id = getBlockID();
 		}
 		
-		if (givenFloor) {
+		if (isGivenFloor()) {
 			for (SimpleBlockData sData : givenFloorList) {
 				if (sData== null)
 					continue;
@@ -172,12 +177,7 @@ public class FloorCylinder extends Floor {
 	public String toString() {
 		int id = getId();
 		String base = id + ";" + Parser.convertLocationtoString(getCenter()) + ";" + getRadius();
-		
-		if (isWoolFloor())
-			return base + ";0;0";
-		if (isGivenFloor())
-			return base + ";-1;0";
-		return base + ";" + getBlockID() + ";" + getData(); 
+		return base + ";" + getBlockID() + ";" + getData() + ";" + getFloorType().name(); 
 	}
 	
 	@Override

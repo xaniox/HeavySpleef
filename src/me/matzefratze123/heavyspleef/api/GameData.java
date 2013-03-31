@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - The simple spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package me.matzefratze123.heavyspleef.api;
 
 import java.util.Map;
@@ -14,6 +33,7 @@ import me.matzefratze123.heavyspleef.core.LoseCause;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.region.Floor;
+import me.matzefratze123.heavyspleef.core.region.FloorType;
 
 /**
  * Represents a game with the specified data
@@ -109,7 +129,7 @@ public class GameData {
 		if (locations.length < 1 || (getType() == Type.CYLINDER && locations.length < 2))
 			return null;
 		
-		return game.getFloor(game.addFloor(0, (byte)0, true, false, locations));
+		return game.getFloor(game.addFloor(0, (byte)0, FloorType.RANDOMWOOL, locations));
 	}
 	
 	/**
@@ -127,7 +147,7 @@ public class GameData {
 		if (locations.length < 1 || (getType() == Type.CYLINDER && locations.length < 2))
 			return null;
 		
-		return game.getFloor(game.addFloor(material.getId(), data, false, false, locations));
+		return game.getFloor(game.addFloor(material.getId(), data, FloorType.SPECIFIEDID, locations));
 	}
 	
 	/**
@@ -145,7 +165,7 @@ public class GameData {
 		if (locations.length < 1 || (getType() == Type.CYLINDER && locations.length < 2))
 			return null;
 		
-		return game.getFloor(game.addFloor(0, (byte)0, false, true, locations));
+		return game.getFloor(game.addFloor(0, (byte)0, FloorType.GIVENFLOOR, locations));
 	}
 	
 	/**

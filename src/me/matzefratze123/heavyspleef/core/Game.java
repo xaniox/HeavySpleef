@@ -52,6 +52,7 @@ import me.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.Floor;
+import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.core.task.RoundsCountdownTask;
 import me.matzefratze123.heavyspleef.core.task.StartCountdownTask;
@@ -181,11 +182,10 @@ public abstract class Game {
 	 * 
 	 * @param m The material of the floor
 	 * @param data The data of the floor
-	 * @param wool True if the floor should change wool colors
-	 * @param givenFloor True if the floor was manually builded
+	 * @param type The floortype of the floor
 	 * @param locations The locations that this floor should contain (Center at a cylindergame, Two Corners at a cuboidgame)
 	 */
-	public abstract int addFloor(int blockID, byte data, boolean wool, boolean givenFloor, Location... locations);
+	public abstract int addFloor(int blockID, byte data, FloorType type, Location... locations);
 	
 	/**
 	 * Removes a floor from this game
