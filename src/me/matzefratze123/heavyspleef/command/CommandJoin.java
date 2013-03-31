@@ -26,6 +26,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.Bukkit;
@@ -38,7 +39,6 @@ public class CommandJoin extends HSCommand {
 		setMaxArgs(2);
 		setMinArgs(0);
 		setOnlyIngame(true);
-		setPermission(Permissions.JOIN_GAME);
 		setUsage("/spleef join <Arena>");
 	}
 
@@ -47,10 +47,18 @@ public class CommandJoin extends HSCommand {
 		Player player = (Player)sender;
 		
 		if (args.length == 0) {
+			if (!player.hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
+				player.sendMessage(getUsage());
+				return;
+			}
 			HeavySpleef.selector.open(player);
 			return;
 		}
 		
+		if (!player.hasPermission(Permissions.JOIN_GAME.getPerm())) {
+			player.sendMessage(LanguageHandler._("noPermission"));
+			return;
+		}
 		if (!GameManager.hasGame(args[0].toLowerCase())) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
@@ -81,6 +89,10 @@ public class CommandJoin extends HSCommand {
 			
 			join(player, game);
 		} else if (args.length == 2) {
+			if (!player.hasPermission(Permissions.JOIN_GAME_OTHERS.getPerm())) {
+				player.sendMessage(LanguageHandler._("noPermission"));
+				return;
+			}
 			Player target = Bukkit.getPlayer(args[1]);
 			if (target == null) {
 				player.sendMessage(_("playerNotOnline"));
