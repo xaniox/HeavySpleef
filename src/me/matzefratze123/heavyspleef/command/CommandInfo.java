@@ -29,7 +29,6 @@ import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -63,10 +62,7 @@ public class CommandInfo extends HSCommand {
 		Set<String> set = new HashSet<String>();
 		
 		for (Flag<?> flag : flags.keySet()) {
-			String flagValue = flags.get(flag).toString();
-			if (flags.get(flag) instanceof Location)
-				flagValue = "LOCATION";
-			set.add(flag.getName() + ": " + flagValue);
+			set.add(flag.toInfo(flags.get(flag)));
 		}
 		
 		return set;

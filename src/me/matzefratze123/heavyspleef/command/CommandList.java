@@ -19,6 +19,7 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import me.matzefratze123.heavyspleef.core.Game;
@@ -68,8 +69,16 @@ public class CommandList extends HSCommand {
 		Set<Player> active = ArrayHelper.asSet(game.getPlayers());
 		Set<Player> out = ArrayHelper.asSet(game.getOutPlayers());
 		
-		player.sendMessage(ChatColor.AQUA + "Active: " + active.toString());
-		player.sendMessage(ChatColor.RED + "Out: " + out.toString());
+		Set<String> activeString = new HashSet<String>();
+		Set<String> outString = new HashSet<String>();
+		
+		for (Player activePlayer : active)
+			activeString.add(activePlayer.getName());
+		for (Player outPlayer : out)
+			outString.add(outPlayer.getName());
+		
+		player.sendMessage(ChatColor.AQUA + "Active: " + activeString.toString());
+		player.sendMessage(ChatColor.RED + "Out: " + outString.toString());
 	}
 	
 }
