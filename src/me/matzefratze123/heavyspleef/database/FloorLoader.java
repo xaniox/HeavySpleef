@@ -46,19 +46,6 @@ public class FloorLoader {
 			o.writeObject(list);
 			o.flush();
 			o.close();
-			/*
-			if (!file.exists())
-				file.createNewFile();
-			
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			Set<Location> keySet = f.givenFloorMap.keySet();
-			
-			for (Location loc : keySet) {
-				SimpleBlockData info = f.givenFloorMap.get(loc);
-				writer.write(info.toString() + "\n");
-			}
-			
-			writer.close();*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,24 +68,6 @@ public class FloorLoader {
 			
 			floor.givenFloorList = list;
 			o.close();
-			/*
-			if (!file.exists())
-				return;
-			
-			floor.setGiven(true);
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			
-			String line;
-			
-			while ((line = reader.readLine()) != null) {
-				SimpleBlockData info = new SimpleBlockData(line);
-				Location loc = info.getLocation();
-				
-				floor.givenFloorMap.put(loc, info);
-			}
-			
-			reader.close();
-			*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

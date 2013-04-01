@@ -51,5 +51,29 @@ public class BooleanFlag extends Flag<Boolean> {
 	public String getHelp() {
 		return HeavySpleef.PREFIX + ChatColor.RED + " /spleef flag <name> " + getName() + " <true|false>";
 	}
+
+	@Override
+	public String serialize(Object value) {
+		boolean bool = (Boolean)value;
+		
+		return getName() + ":" + bool;
+	}
+
+	@Override
+	public Boolean deserialize(String str) {
+		String[] parts = str.split(":");
+		
+		if (parts.length < 2)
+			return false;
+		
+		this.name = parts[0];
+		return Boolean.parseBoolean(parts[1]);
+	}
+
+	@Override
+	public String toInfo(Object value) {
+		boolean bool = (Boolean)value;
+		return getName() + ": " + bool;
+	}
 	
 }

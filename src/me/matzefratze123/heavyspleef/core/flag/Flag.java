@@ -21,9 +21,9 @@ package me.matzefratze123.heavyspleef.core.flag;
 
 import org.bukkit.entity.Player;
 
-public abstract class Flag<T> {
+public abstract class Flag<T> implements DatabaseSerializeable<T> {
 
-	private String name;
+	protected String name;
 	
 	public Flag(String name) {
 		this.name = name;
@@ -34,6 +34,8 @@ public abstract class Flag<T> {
 	}
 	
 	public abstract T parse(Player player, String input);
+	
+	public abstract String toInfo(Object value);
 	
 	public abstract String getHelp();
 	

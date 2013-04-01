@@ -55,4 +55,18 @@ public class FlagType {
 	public static List<Flag<?>> getFlagList() {
 		return Arrays.asList(flagList);
 	}
+	
+	public static Flag<?> byName(String name) {
+		for (Flag<?> flag : getFlagList()) {
+			if (flag.getName().equalsIgnoreCase(name))
+				return flag;
+		}
+		
+		return null;
+	}
+	
+	public static Flag<?> byDatabaseName(String dbString) {
+		String[] parts = dbString.split(":");
+		return byName(parts[0]);
+	}
 }

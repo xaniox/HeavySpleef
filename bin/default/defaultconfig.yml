@@ -13,7 +13,7 @@
 
 # Should the plugin  download the new version of
 # HeavySpleef.jar if there is an update avaible? (/spleef update)
-# You'll find updates in the folder /plugins/update normally
+# You'll find updates in the folder /plugins/update
 # The plugin will be auto installed by bukkit at the next
 # server reload / restart...
 auto-update: true

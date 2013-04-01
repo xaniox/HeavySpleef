@@ -98,7 +98,6 @@ public class CommandFlag extends HSCommand {
 				}
 				
 				setFlag(game, flag, player, buildArgs.toString());
-				System.out.println(buildArgs.toString());
 			} catch (Exception e) {
 				player.sendMessage(_("invalidFlagFormat"));
 				player.sendMessage(flag.getHelp());

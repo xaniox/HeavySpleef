@@ -28,12 +28,9 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
-import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Bukkit;
@@ -56,7 +53,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -278,23 +274,8 @@ public class PlayerListener implements Listener {
 		handleQuit(e);
 	}
 	
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		for (Game game : GameManager.getGames()) {
-			if (game.wereOffline.contains(p.getName())) {
-				if (game.getFlag(FlagType.LOSE) == null)
-					p.teleport(LocationSaver.load(p));
-				else
-					p.teleport(game.getFlag(FlagType.LOSE));
-				p.sendMessage(Game._("loginAfterServerShutdown", game.getName()));
-				PlayerStateManager.restorePlayerState(p);
-				return;
-			}
-		}
-	}
-	
-	//This event shouldn't be fired because player is in god mode, but save is save
+	//This event shouldn't be fired because player is in god mode
+	//But we don't know if someone types /kill player while he's playing spleef...
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		Player p = e.getEntity();
@@ -318,10 +299,6 @@ public class PlayerListener implements Listener {
 			return;
 		Game game = GameManager.fromPlayer(e.getPlayer());
 		game.removePlayer(e.getPlayer(), LoseCause.QUIT);
-		if (game.getFlag(FlagType.LOSE) == null)
-			e.getPlayer().teleport(LocationSaver.load(e.getPlayer()));
-		else
-			e.getPlayer().teleport(game.getFlag(FlagType.LOSE));
 	}
 	
 	private boolean shouldFix(Location pLoc, Location bLoc) {

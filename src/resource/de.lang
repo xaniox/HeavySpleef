@@ -148,6 +148,8 @@ gameStopped: &cDas Spiel wurde gestoppt!
 playerJoinedGame: &a%a&a ist dem Spiel beigetreten!
 hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!
 
+remaining: &1%a Spieler verbleiben!
+
 wonRound: &a%a &chat Runde &6%a &cvon &6%a &cgewonnen!
 roundsRemaining: &1%a Runden verbleiben!
 wonThe1vs1: &a%a &ahat das Spiel gegen %a gewonnen! Gl\u00FCckwunsch!

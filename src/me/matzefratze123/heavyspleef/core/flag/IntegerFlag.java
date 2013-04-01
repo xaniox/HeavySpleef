@@ -47,4 +47,27 @@ public class IntegerFlag extends Flag<Integer> {
 		return HeavySpleef.PREFIX + " /spleef flag <name> " + getName() + " [number]";
 	}
 
+	@Override
+	public String serialize(Object value) {
+		int i = (Integer)value;
+		return getName() + ":" + i;
+	}
+
+	@Override
+	public Integer deserialize(String str) {
+		String[] parts = str.split(":");
+		
+		if (parts.length < 2)
+			return 0;
+		
+		this.name = parts[0];
+		return Integer.parseInt(parts[1]);
+	}
+
+	@Override
+	public String toInfo(Object value) {
+		Integer i = (Integer)value;
+		return getName() + ": " + i;
+	}
+
 }

@@ -20,6 +20,7 @@
 package me.matzefratze123.heavyspleef.core.flag;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.database.Parser;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -42,6 +43,29 @@ public class LocationFlag extends Flag<Location> {
 	@Override
 	public String getHelp() {
 		return HeavySpleef.PREFIX + ChatColor.RED + " /spleef flag <name> " + getName();
+	}
+
+	@Override
+	public String serialize(Object value) {
+		Location location = (Location)value;
+		
+		return getName() + ":" + Parser.convertLocationtoString(location);
+	}
+
+	@Override
+	public Location deserialize(String str) {
+		String[] parts = str.split(":");
+		
+		if (parts.length < 2)
+			return null;
+		
+		this.name = parts[0];
+		return Parser.convertStringtoLocation(parts[1]);
+	}
+
+	@Override
+	public String toInfo(Object value) {
+		return getName() + ": LOCATION";
 	}
 
 }

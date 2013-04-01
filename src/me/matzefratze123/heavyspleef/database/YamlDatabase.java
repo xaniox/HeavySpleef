@@ -36,7 +36,6 @@ import static me.matzefratze123.heavyspleef.core.flag.FlagType.SPAWNPOINT1;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.SPAWNPOINT2;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.TIMEOUT;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.WIN;
-
 import static me.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
 import static me.matzefratze123.heavyspleef.database.Parser.convertLoseZoneToString;
 import static me.matzefratze123.heavyspleef.database.Parser.convertPotionEffectToString;
@@ -62,6 +61,8 @@ import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
 import me.matzefratze123.heavyspleef.core.SignWall;
 import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.flag.Flag;
+import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
@@ -71,13 +72,11 @@ import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -91,8 +90,6 @@ public class YamlDatabase {
 	private FileConfiguration db;
 	private FileConfiguration statsdb;
 	private FileConfiguration locationsdb;
-	
-	private List<String> addedPaths = new ArrayList<String>();
 	
 	public YamlDatabase() {
 		this.plugin = HeavySpleef.instance;
@@ -168,15 +165,6 @@ public class YamlDatabase {
 				saveCuboid((GameCuboid) game, section);
 			else if (game.getType() == Type.CYLINDER)
 				saveCylinder((GameCylinder) game, section);
-			
-			addedPaths.add("type");
-			for (String key : section.getKeys(false)) {
-				if (!addedPaths.contains(key)) {
-					section.set(key, null);
-				}
-			}
-			
-			addedPaths.clear();
 		}
 		
 		if (savePlayerStates)
@@ -206,10 +194,6 @@ public class YamlDatabase {
 		}
 		
 		section.set("floors", floorsAsList);
-		
-		addedPaths.add("floors");
-		addedPaths.add("firstCorner");
-		addedPaths.add("secondCorner");
 	}
 	
 	
@@ -236,12 +220,6 @@ public class YamlDatabase {
 		}
 		
 		section.set("floors", floorsAsList);
-		
-		addedPaths.add("center");
-		addedPaths.add("radius");
-		addedPaths.add("minY");
-		addedPaths.add("maxY");
-		addedPaths.add("floors");
 	}
 	
 	private void loadCuboid(ConfigurationSection section) {
@@ -268,7 +246,6 @@ public class YamlDatabase {
 	
 	private void loadCylinder(ConfigurationSection section) {
 		String name = section.getName();
-		System.out.println(name);
 		
 		Location center = convertStringtoLocation(section.getString("center"));
 		int radius = section.getInt("radius");
@@ -304,6 +281,7 @@ public class YamlDatabase {
 				walls.add(SignWall.fromString(wall, game));
 		}
 		
+		//Old flag system
 		if (section.getString("winPoint") != null)
 			game.setFlag(WIN, convertStringtoLocation(section.getString("winPoint")));
 		if (section.getString("losePoint") != null)
@@ -339,6 +317,11 @@ public class YamlDatabase {
 			game.setFlag(SHOVELS, section.getBoolean("shovels"));
 		if (section.contains("1vs1"))
 			game.setFlag(ONEVSONE, section.getBoolean("1vs1"));
+		if (section.contains("timeout"))
+			game.setFlag(TIMEOUT, section.getInt("timeout"));
+		//Old flag system end
+		
+		loadFlags(game, section);
 		
 		for (LoseZone loseZone : loseZones)
 			game.addLoseZone(loseZone);
@@ -346,45 +329,19 @@ public class YamlDatabase {
 		for (SignWall wall : walls)
 			game.addWall(wall);
 		
-		List<String> wereOfflineConfigList = section.getStringList("wereOfflineAtShutdown");
-		List<String> wereOffline = new ArrayList<String>();
-		if (wereOfflineConfigList != null) {
-			for (String offlinePlayer : wereOfflineConfigList) {
-				Player p = Bukkit.getPlayer(offlinePlayer);
-				if (p == null)
-					wereOffline.add(offlinePlayer);
-				else {
-					if (game.getFlag(LOSE) == null)
-						p.teleport(LocationSaver.load(p));
-					else
-						p.teleport(game.getFlag(LOSE));
-					p.sendMessage(ChatColor.RED + "A reload of the server has stopped the game and you were teleported out of it!");
-				}
-			}
-		}
-		
 		if (section.contains("scoreboards")) {
 			for (String board : section.getStringList("scoreboards")) {
 				ScoreBoard scoreBoard = new ScoreBoard(board, game);
 				game.addScoreBoard(scoreBoard);
 			}
 		}
-		
-		game.wereOffline.addAll(wereOffline);
-		section.set("wereOfflineAtShutdown", null);
 	}
 	
 	private void saveBasics(Game game, ConfigurationSection section) {
-		addedPaths.add("losezones");
-		addedPaths.add("wereOfflineAtShutdown");
-		addedPaths.add("scoreboards");
-		addedPaths.add("walls");
-		
-		
+		game.stop();
 		section.set("type", game.getType().name());
 		
 		List<String> loseZonesAsList = new ArrayList<String>();
-		List<String> wereOffline = game.players;
 		
 		for (LoseZone c : game.getLoseZones())
 			loseZonesAsList.add(convertLoseZoneToString(c));
@@ -395,81 +352,8 @@ public class YamlDatabase {
 		
 		section.set("walls", wallsAsList);
 		section.set("losezones", loseZonesAsList);
-		section.set("wereOfflineAtShutdown", wereOffline);
-		if (game.getFlag(JACKPOTAMOUNT) != null) {
-			section.set("money", game.getFlag(JACKPOTAMOUNT));
-			addedPaths.add("money");
-		}
-		if (game.getFlag(REWARD) != null) {
-			section.set("reward", game.getFlag(REWARD));
-			addedPaths.add("reward");
-		}
-		if (game.getFlag(MINPLAYERS) != null) {
-			section.set("minPlayers", game.getFlag(MINPLAYERS));
-			addedPaths.add("minPlayers");
-		}
-		if (game.getFlag(MAXPLAYERS) != null) {
-			section.set("maxPlayers", game.getFlag(MAXPLAYERS));
-			addedPaths.add("maxPlayers");
-		}
-		if (game.getFlag(COUNTDOWN) != null) {
-			section.set("countdown", game.getFlag(COUNTDOWN));
-			addedPaths.add("countdown");
-		}
-		if (game.getFlag(SHOVELS) != null) {
-			section.set("shovels", game.getFlag(SHOVELS));
-			addedPaths.add("shovels");
-		}
-		if (game.getFlag(CHANCES) != null) {
-			section.set("chances", game.getFlag(CHANCES));
-			addedPaths.add("chances");
-		}
-		if (game.getFlag(AUTOSTART) != null) {
-			section.set("autostart", game.getFlag(AUTOSTART));
-			addedPaths.add("autostart");
-		}
-		if (game.getFlag(ONEVSONE) != null) {
-			section.set("1vs1", game.getFlag(ONEVSONE));
-			addedPaths.add("1vs1");
-		}
-		if (game.getFlag(ROUNDS) != null) {
-			section.set("rounds", game.getFlag(ROUNDS));
-			addedPaths.add("rounds");
-		}
-		if (game.getFlag(TIMEOUT) != null) {
-			section.set("timeout", game.getFlag(TIMEOUT));
-			addedPaths.add("timeout");
-		}
 		
-		if (game.getFlag(WIN) != null) {
-			section.set("winPoint", convertLocationtoString(game.getFlag(WIN)));
-			addedPaths.add("winPoint");
-		}
-		
-		if (game.getFlag(LOSE) != null) {
-			section.set("losePoint", convertLocationtoString(game.getFlag(LOSE)));
-			addedPaths.add("losePoint");
-		}
-		
-		if (game.getFlag(LOBBY) != null) {
-			section.set("preGamePoint", convertLocationtoString(game.getFlag(LOBBY)));
-			addedPaths.add("preGamePoint");
-		}
-		
-		if (game.getFlag(SPAWNPOINT1) != null) {
-			section.set("spawnPoint1", convertLocationtoString(game.getFlag(SPAWNPOINT1)));
-			addedPaths.add("spawnPoint1");
-		}
-		
-		if (game.getFlag(SPAWNPOINT2) != null) {
-			section.set("spawnPoint2", convertLocationtoString(game.getFlag(SPAWNPOINT2)));
-			addedPaths.add("spawnPoint2");
-		}
-		
-		if (game.getFlag(QUEUELOBBY) != null) {
-			section.set("queuesPoint", convertLocationtoString(game.getFlag(QUEUELOBBY)));
-			addedPaths.add("queuesPoint");
-		}
+		saveFlags(game, section);
 		
 		List<String> scoreBoardsAsList = new ArrayList<String>();
 		for (ScoreBoard board : game.getScoreBoards()) {
@@ -614,6 +498,38 @@ public class YamlDatabase {
 			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
 			e.printStackTrace();
 		}
+	}
+	
+	private void saveFlags(Game game, ConfigurationSection section) {
+		Map<Flag<?>, Object> flags = game.getFlags();
+		List<String> flagsAsString = new ArrayList<String>();
+		
+		for (Flag<?> flag : flags.keySet()) {
+			String serialized = flag.serialize(flags.get(flag));
+			flagsAsString.add(serialized);
+		}
+		
+		section.set("flags", flagsAsString);
+	}
+	
+	private void loadFlags(Game game, ConfigurationSection section) {
+		List<String> flagsAsString = section.getStringList("flags");
+		if (flagsAsString == null)
+			return;
+		
+		Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
+		
+		for (String str : flagsAsString) {
+			Flag<?> flag = FlagType.byDatabaseName(str);
+			if (flag == null)
+				continue;
+			
+			Object deserialized = flag.deserialize(str);
+			flags.put(flag, deserialized);
+		}
+		
+		if (flags.size() > 0)
+			game.setFlags(flags);
 	}
 	
 }

@@ -147,6 +147,7 @@ wonRound: &a%a &chas won round &6%a &cof &6%a&c!
 roundsRemaining: &1%a rounds remaining!
 wonThe1vs1: &a%a&a has won the game against %a! Congratulation!
 endedDraw: &aThe game in arena %a has ended in a draw...
+remaining: &1%a players remaining!
 
 roundStarted: &aRound &6%a &aof &6%a &ahas started!
 roundStartsIn: &1Round starts in %a seconds...
