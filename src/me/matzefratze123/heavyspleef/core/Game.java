@@ -49,6 +49,7 @@ import me.matzefratze123.heavyspleef.api.event.SpleefFinishEvent;
 import me.matzefratze123.heavyspleef.api.event.SpleefJoinEvent;
 import me.matzefratze123.heavyspleef.api.event.SpleefLoseEvent;
 import me.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
+import me.matzefratze123.heavyspleef.command.HSCommand;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.Floor;
@@ -60,6 +61,7 @@ import me.matzefratze123.heavyspleef.core.task.TimeoutTask;
 import me.matzefratze123.heavyspleef.stats.StatisticManager;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.LocationSaver;
+import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 import me.matzefratze123.heavyspleef.utility.ViPManager;
 
@@ -86,6 +88,8 @@ public abstract class Game {
 	protected Map<Integer, ScoreBoard> scoreboards = new HashMap<Integer, ScoreBoard>();
 	protected Map<Integer, SignWall> walls = new HashMap<Integer, SignWall>();
 	protected Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
+	protected Map<String, Integer> multiKnockoutTaskIds = new HashMap<String, Integer>();
+	protected Map<String, Integer> multiKnockouts = new HashMap<String, Integer>();
 	
 	public    Map<String, List<Block>> brokenBlocks = new HashMap<String, List<Block>>();
 	
@@ -103,6 +107,7 @@ public abstract class Game {
 	
 	protected String name;
 	
+	public List<String> voted = new ArrayList<String>();
 	public List<String> players = new ArrayList<String>();
 	public List<String> outPlayers = new ArrayList<String>();
 	public List<String> wereOffline = new ArrayList<String>();
@@ -291,6 +296,7 @@ public abstract class Game {
 	
 	protected void clearAll() {
 		roundsPlayed = 0;
+		voted.clear();
 		knockouts.clear();
 		wins.clear();
 		brokenBlocks.clear();
@@ -420,24 +426,37 @@ public abstract class Game {
 			//Chances stuff end
 			player.sendMessage(Game._("outOfGame"));
 			StatisticManager.getStatistic(player.getName(), true).addLose();
+			
+			losereward: {
+				if (getFlag(FlagType.LOSERREWARD) == null)
+					break losereward;
+				for (ItemStack stack : getFlag(FlagType.LOSERREWARD)) {
+					ItemStack newStack = stack.getData().toItemStack(stack.getAmount());
+					player.getInventory().addItem(newStack);
+					player.sendMessage(_("loserewardReceived"));
+				}
+			}
 		}
 		
 		players.remove(player.getName());
 		
-		if (isIngame() || isCounting()) {
+		if (isIngame()) {
 			outPlayers.add(player.getName());
+			broadcast(_("remaining", String.valueOf(players.size())));
 			Bukkit.getPluginManager().callEvent(new SpleefLoseEvent(new GameData(this), player, cause));
 		}
 		
 		if (!isPreLobby())
 			player.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(player))));
 		broadcast(getLoseMessage(cause, player));
+		
 		if (getFlag(LOSE) == null)
 			player.teleport(LocationSaver.load(player));
 		else
 			player.teleport(getFlag(LOSE));
 		
 		player.setFireTicks(0);
+		voted.remove(player.getName());
 		
 		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
 			PlayerStateManager.restorePlayerState(player);
@@ -648,6 +667,14 @@ public abstract class Game {
 		if (HeavySpleef.instance.getConfig().getBoolean("sounds.levelUp", true))
 			p.playSound(p.getLocation(), Sound.LEVEL_UP, 4.0F, p.getLocation().getPitch());
 		
+		if (getFlag(FlagType.ITEMREWARD) != null) {
+			for (ItemStack stack : getFlag(FlagType.ITEMREWARD)) {
+				ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
+				p.getInventory().addItem(newStack);
+				p.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), MaterialHelper.getName(stack.getType().name())));
+				System.out.println(stack.getData().getData());
+			}
+		}
 		if (HeavySpleef.hooks.hasVault()) {
 			if (this.jackpot > 0) {
 				EconomyResponse r = HeavySpleef.hooks.getVaultEconomy().depositPlayer(p.getName(), this.jackpot);
@@ -752,12 +779,41 @@ public abstract class Game {
 	 * 
 	 * @param player The playername to add
 	 */
-	public void addKnockout(String player) {
+	public void addKnockout(final String player) {
 		if (knockouts.containsKey(player))
 			knockouts.put(player, knockouts.get(player) + 1);
 		else
 			knockouts.put(player, 1);
 		StatisticManager.getStatistic(player, true).addKnockout();
+		
+		boolean previousTask = multiKnockoutTaskIds.containsKey(player);
+		int previousTaskId = previousTask ? multiKnockoutTaskIds.get(player) : -1;
+		
+		int task = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new MultiKnockoutTask(player), 100L);//Run a new task
+		if (previousTask)//Cancel our previous task
+			Bukkit.getScheduler().cancelTask(previousTaskId);
+		multiKnockoutTaskIds.put(player, task);//Add the task id to our map
+		
+		if (!multiKnockouts.containsKey(player))
+			multiKnockouts.put(player, 1);
+		else {
+			int newKnockouts = multiKnockouts.get(player) + 1;
+			multiKnockouts.put(player, newKnockouts);
+			switch(newKnockouts) {
+			case 2:
+				broadcast(HSCommand.__(ChatColor.GREEN + ViPManager.colorName(player) + ChatColor.GRAY + " got a Double Knockout!"));
+				break;
+			case 3:
+				broadcast(HSCommand.__(ChatColor.GREEN + ViPManager.colorName(player) + ChatColor.BLUE + " got a Triple Knockout!"));
+				break;
+			case 4:
+				broadcast(HSCommand.__(ChatColor.GREEN + ViPManager.colorName(player) + ChatColor.RED + " got a Super Knockout!"));
+				break;
+			case 5:
+				broadcast(HSCommand.__(ChatColor.GREEN + ViPManager.colorName(player) + ChatColor.DARK_RED + " got an " + ChatColor.RED + ChatColor.BOLD + "Unbelievable" + ChatColor.RESET + ChatColor.DARK_RED + " Knockout!"));
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -997,12 +1053,8 @@ public abstract class Game {
 					return;
 				if (maxplayers > 1 && addedPlayers >= maxplayers)
 					return;
-				LocationSaver.save(currentPlayer);
-				Location lobby = getFlag(LOBBY) == null ? getRandomLocation() : getFlag(LOBBY);
-				currentPlayer.teleport(lobby);
+				GameManager.removeFromQueue(currentPlayer);
 				addPlayer(currentPlayer);
-				currentPlayer.sendMessage(_("noLongerInQueue"));
-				GameManager.queues.remove(currentPlayer.getName());
 				addedPlayers++;
 			}
 		}
@@ -1316,6 +1368,22 @@ public abstract class Game {
 		updateWalls();
 	}
 	
+	public void addVote(String player) {
+		voted.add(player);
+	}
+	
+	public boolean canBegin() {
+		int procent = HeavySpleef.instance.getConfig().getInt("general.autostart-vote");
+		
+		double oneProcent = (double)players.size() / 100.0;
+		double neededProcent = oneProcent * procent;
+		
+		if (voted.size() >= neededProcent && players.size() > 1)
+			return true;
+		
+		return false;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T extends Flag<V>, V> V getFlag(T flag) {
 		Object o = flags.get(flag);
@@ -1396,6 +1464,21 @@ public abstract class Game {
 		@Override
 		public int compareTo(Win o) {
 			return ((Integer)getWins()).compareTo(o.getWins());
+		}
+		
+	}
+	
+	private class MultiKnockoutTask implements Runnable {
+
+		private String name;
+		public MultiKnockoutTask(String name) {
+			this.name = name;
+		}
+		
+		@Override
+		public void run() {
+			multiKnockoutTaskIds.remove(name);
+			multiKnockouts.remove(name);
 		}
 		
 	}

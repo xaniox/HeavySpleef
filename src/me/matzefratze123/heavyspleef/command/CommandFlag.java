@@ -77,6 +77,10 @@ public class CommandFlag extends HSCommand {
 			return;
 		}
 		
+		StringBuilder buildArgs = new StringBuilder();
+		for (int i = 2; i < args.length; i++)
+			buildArgs.append(args[i]).append(" ");
+		
 		if (args.length > 2) {
 			if (args[2].equalsIgnoreCase("clear")) {
 				game.setFlag(flag, null);
@@ -85,7 +89,7 @@ public class CommandFlag extends HSCommand {
 			}
 			
 			try {
-				Object value = flag.parse(player, args[2]);
+				Object value = flag.parse(player, buildArgs.toString());
 				
 				if (value == null) {
 					player.sendMessage(_("invalidFlagFormat"));
@@ -93,7 +97,8 @@ public class CommandFlag extends HSCommand {
 					return;
 				}
 				
-				setFlag(game, flag, player, args[2]);
+				setFlag(game, flag, player, buildArgs.toString());
+				System.out.println(buildArgs.toString());
 			} catch (Exception e) {
 				player.sendMessage(_("invalidFlagFormat"));
 				player.sendMessage(flag.getHelp());

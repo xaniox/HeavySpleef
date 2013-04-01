@@ -92,6 +92,16 @@ general:
   # Only works if countdownBetweenRounds is set to true!
   countdownBetweenRoundLength: 5
   
+  # Should the autostart-vote feature be enabled?
+  autostart-vote-enabled: true
+  
+  # Set how many procent of votes must be received
+  # to start the game. This means that x percent of
+  # players need to do /spleef vote or /spleef ready
+  # to autostart the game (Only if you don't want to
+  # use /spleef start)
+  autostart-vote: 70
+  
   # A list of vips on your server
   # Vip's will have a dark red name
   # in spleef broadcasts
@@ -99,6 +109,13 @@ general:
   - someone
   - anotherone
   
+leaderboard:
+  # Points for Spleef Games
+  win: 30
+  lose: -4
+  knockout: 3
+  gamePlayed: 3
+
 queues:
   
   # Should queues be enabled?

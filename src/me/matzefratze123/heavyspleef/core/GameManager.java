@@ -129,10 +129,14 @@ public class GameManager {
 	public static void removeFromQueue(Player player) {
 		player.sendMessage(Game._("noLongerInQueue"));
 		if (!isInAnyGame(player)) {
+			teleport: {
+			if (getQueue(player).getFlag(FlagType.QUEUELOBBY) == null)
+				break teleport;
 			if (LocationSaver.has(player))
 				player.teleport(LocationSaver.load(player));
 			else
 				player.teleport(getQueue(player).getFlag(FlagType.LOSE));
+			}
 		}
 		queues.remove(player.getName());
 	}

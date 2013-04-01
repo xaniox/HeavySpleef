@@ -31,8 +31,10 @@ public class IntegerFlag extends Flag<Integer> {
 
 	@Override
 	public Integer parse(Player player, String input) {
+		String[] parts = input.split(" ");
+		
 		try {
-			int i = Integer.parseInt(input);
+			int i = Integer.parseInt(parts[0]);
 			i = Math.abs(i);
 			return i;
 		} catch (NumberFormatException e) {

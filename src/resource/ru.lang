@@ -123,6 +123,8 @@ flagSet: &7Flag %a set!
 
 pluginReloaded: &7HeavySpleef version %a reloaded! Took %ams
 
+itemRewardReceived: &7You received %a %a as a prize!
+
 # Публичные сообщения
 
 gameDisabled: &cИгру &6%a &cотключил %a

@@ -19,6 +19,10 @@
  */
 package me.matzefratze123.heavyspleef.stats;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
+import me.matzefratze123.heavyspleef.HeavySpleef;
+
 /**
  * This class stores information about spleef statistics of a player
  * 
@@ -110,9 +114,14 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 * <b>formula: 1000 + wins * games - (loses * games / 3)<b>
 	 */
 	public int getScore() {
-		if (gamesPlayed == 0)
-			return 0;
-		return 1000 + (wins * gamesPlayed) - ((loses * gamesPlayed) / 3);
+		FileConfiguration config = HeavySpleef.instance.getConfig();
+		
+		int pointsWin = config.getInt("leaderboard.win");
+		int pointsLose = config.getInt("leaderboard.lose");
+		int pointsKnockout = config.getInt("leaderboard.knockout");
+		int pointsGamePlayed = config.getInt("leaderboard.gamePlayed");
+		
+		return (pointsWin * getWins()) + (pointsLose * getLoses()) + (pointsKnockout * getKnockouts()) + (pointsGamePlayed * getGamesPlayed());
 	}
 	
 	/**

@@ -44,9 +44,13 @@ public class FlagType {
 	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1");
 	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels");
 	
+	public static final ItemStackFlag ITEMREWARD = new ItemStackFlag("itemreward");
+	public static final ItemStackFlag LOSERREWARD = new ItemStackFlag("loserreward");
+	
 	public static final Flag<?>[] flagList = new Flag<?>[] {WIN, LOSE, LOBBY, QUEUELOBBY, SPAWNPOINT1, SPAWNPOINT2,
 															MINPLAYERS, MAXPLAYERS, AUTOSTART, COUNTDOWN, JACKPOTAMOUNT,
-															REWARD, CHANCES, TIMEOUT, ROUNDS, ONEVSONE, SHOVELS};
+															REWARD, CHANCES, TIMEOUT, ROUNDS, ONEVSONE, SHOVELS, ITEMREWARD,
+															LOSERREWARD};
 	
 	public static List<Flag<?>> getFlagList() {
 		return Arrays.asList(flagList);

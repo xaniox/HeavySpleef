@@ -87,6 +87,7 @@ public class CommandHandler implements CommandExecutor {
 	public static void initCommands() {
 		//Add all commands
 		addSubCommand("flag", new CommandFlag());
+		addSubCommand("f", new CommandFlag());
 		addSubCommand("create", new CommandCreate());
 		addSubCommand("delete", new CommandDelete());
 		addSubCommand("join", new CommandJoin());
@@ -113,6 +114,8 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("reload", new CommandReload());
 		addSubCommand("info", new CommandInfo());
 		addSubCommand("list", new CommandList());
+		addSubCommand("vote", new CommandVote());
+		addSubCommand("ready", new CommandVote());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

@@ -73,6 +73,8 @@ noCommandsInQueue: &cDu kannst keine Befehle in der Warteschlange nutzen!
 
 invalidFlag: &cDies ist keine g\u00FCltige Flag!
 invalidFlagFormat: &cUng\u00FCltiges Flag-Format!
+onlyLobby: &cDu kannst diesen Befehl nur w\u00E4hrend der Lobby benutzen!
+votesDisabled: &cVotes sind f\u00FCr diesen Server deaktiviert!
 
 # Erfolgsnachrichten
 
@@ -128,6 +130,11 @@ flagCleared: &7Flag %a gel\u00F6scht!
 flagSet: &7Flag %a gesetzt!
 
 pluginReloaded: &7HeavySpleef Version %a neu geladen! Dauerte %ams...
+
+itemRewardReceived: &7Du erh\u00E4lst %a %a!
+loserewardReceived: &7Du erh\u00E4lst %a %a als Trostpreis!
+
+successfullyVoted: &7Erfolgreich gevotet!
 
 # Broadcast nachrichten
 

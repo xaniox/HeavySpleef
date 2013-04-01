@@ -72,6 +72,7 @@ public enum Permissions {
 	LIST("heavyspleef.list"),
 	RELOAD("heavyspleef.reload"),
 	INFO("heavyspleef.info"),
+	VOTE("heavyspleef.vote"),
 	
 	// Bypass
 	BUILD_BYPASS("heavyspleef.build.bypass"),

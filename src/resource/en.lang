@@ -67,8 +67,11 @@ noCommandsInQueue: &cYou can't use commands while in queue!
 
 invalidFlag: &cInvalid flag!
 invalidFlagFormat: &cInvalid flag-format!
+onlyLobby: &cYou can use this command only during lobby!
 
-# Sucess messages
+votesDisabled: &cVotes are disabled for this server!
+
+# Success messages
 
 floorCreated: &7The floor has been created!
 loseZoneCreated: &7The losezone for the game has been added! (ID: %a)\nIf you want to remove this losezone, simply type /spleef removelosezone %a %a)
@@ -122,6 +125,11 @@ flagCleared: &7Flag named %a cleared!
 flagSet: &7Flag %a set!
 
 pluginReloaded: &7HeavySpleef version %a reloaded! Took %ams
+
+itemRewardReceived: &7You received %a %a as a prize!
+loserewardReceived: &7You received %a %a as a consolation prize!
+
+successfullyVoted: &7Successfully received vote!
 
 # Broadcast Messages
 

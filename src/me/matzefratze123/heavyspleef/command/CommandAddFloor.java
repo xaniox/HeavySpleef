@@ -124,7 +124,7 @@ public class CommandAddFloor extends HSCommand {
 			addGivenFloor(game, player, loc1, loc2);
 			return;
 		} else {//Specified floor!
-			SimpleBlockData data = MaterialHelper.fromString(args[0]);
+			SimpleBlockData data = MaterialHelper.fromString(args[0], true);
 			if (data == null) {
 				player.sendMessage(_("invalidBlock"));
 				return;

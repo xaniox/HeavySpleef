@@ -72,7 +72,7 @@ public class MaterialHelper {
 	 * @param str The string
 	 * @return A simpleblockdata objects that contains the material and data
 	 */
-	public static SimpleBlockData fromString(String str) {
+	public static SimpleBlockData fromString(String str, boolean onlySolid) {
 		if (str == null)
 			return null;
 		String[] parts = str.split(":");
@@ -82,7 +82,7 @@ public class MaterialHelper {
 		Material m = getFromName(parts[0]);
 		if (m == null)
 			return null;
-		if (!SimpleBlockData.isSolid(m.getId()))
+		if (!SimpleBlockData.isSolid(m.getId()) && onlySolid)
 			return null;
 		byte data = 0;
 		
