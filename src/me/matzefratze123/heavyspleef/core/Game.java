@@ -672,7 +672,6 @@ public abstract class Game {
 				ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
 				p.getInventory().addItem(newStack);
 				p.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), MaterialHelper.getName(stack.getType().name())));
-				System.out.println(stack.getData().getData());
 			}
 		}
 		if (HeavySpleef.hooks.hasVault()) {
