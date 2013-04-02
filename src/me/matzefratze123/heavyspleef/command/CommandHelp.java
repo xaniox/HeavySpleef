@@ -26,47 +26,47 @@ import org.bukkit.command.CommandSender;
 
 public class CommandHelp extends HSCommand {
 
-	private String[] firstPage = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 1/5  -----   ",
-											   ChatColor.GOLD + "/spleef create <name> <cuboid|cylinder <radius> <height>>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Creates a new spleefarena with the given selection or the given radius and height",
-			  								   ChatColor.GOLD + "/spleef delete <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Deletes a spleefarena with the given name",
+	private String[] firstPage = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 1/6  -----   ",
+											   ChatColor.GOLD + "/spleef create <arena> <cuboid|cylinder <radius> <height>>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Creates a new spleefarena with the given selection or the given radius and height",
+			  								   ChatColor.GOLD + "/spleef delete <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Deletes a spleefarena with the given name",
 			  								   ChatColor.GOLD + "/spleef addfloor <randomwool|given|block[:subdata]>]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Adds a floor to the arena where you are standing / your selection is",
 			  								   ChatColor.GOLD + "/spleef removefloor" + ChatColor.RED + " - " + ChatColor.YELLOW + "Removes the floor you are currently looking"};
 	
-	private String[] secondPage = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 2/5  -----   ",
-											    ChatColor.GOLD + "/spleef addlose <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Adds a losezone for the specified arena with the given selection",
-												ChatColor.GOLD + "/spleef removelose <name> <id>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Removes a losezone with the given id in the arena",
-												ChatColor.GOLD + "/spleef setlose <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the losepoint where a player should be teleported if he lose",
-												ChatColor.GOLD + "/spleef setwin <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the winpoint where the winner will be teleported at win"};
+	private String[] secondPage = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 2/6  -----   ",
+											    ChatColor.GOLD + "/spleef addlose <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Adds a losezone for the specified arena with the given selection",
+												ChatColor.GOLD + "/spleef removelose <arena> <id>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Removes a losezone with the given id in the arena",
+												ChatColor.GOLD + "/spleef flag <arena> <flag> <value>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets a flag for a game",
+												ChatColor.GOLD + "/spleef info <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Shows information about a game (name, type, flags etc.)"};
 	
-	private String[] thirdPage = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 3/5  -----   ",
-											   ChatColor.GOLD + "/spleef setlobby <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Set's the spawnpoint when a player join's a game",
-											   ChatColor.GOLD + "/spleef start <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Starts the game with the given name",
-											   ChatColor.GOLD + "/spleef join <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Joins a spleef game with the given name",
-											   ChatColor.GOLD + "/spleef leave" + ChatColor.RED + " - " + ChatColor.YELLOW + "Leaves a spleef game if you are active or leaves the queue."};
+	private String[] thirdPage = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 3/6  -----   ",
+											   ChatColor.GOLD + "/spleef start <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Starts the game with the given name",
+											   ChatColor.GOLD + "/spleef join <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Joins a spleef game with the given name",
+											   ChatColor.GOLD + "/spleef leave" + ChatColor.RED + " - " + ChatColor.YELLOW + "Leaves a spleef game if you are active or leaves the queue.",
+											   ChatColor.GOLD + "/spleef reload" + ChatColor.RED + " - " + ChatColor.YELLOW + "Reloads the plugin."};
 	
-	private String[] fourthPage = new String[]{ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 4/5  -----   ",
+	private String[] fourthPage = new String[]{ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 4/6  -----   ",
 			   								   ChatColor.GOLD + "/spleef kick <Player> [reason]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Kicks a player out of a game",
-			   								   ChatColor.GOLD + "/spleef disable <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Disabled a spleef game",
-			   								   ChatColor.GOLD + "/spleef enable <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Enables a disabled spleef game",
-			   								   ChatColor.GOLD + "/spleef setminplayers <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Set's the minimum amount of players needed to start the game",
-			   								   ChatColor.GOLD + "/spleef setmaxplayers <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Set's the maximum amount of players needed to start the game",
-			   								   ChatColor.GOLD + "/spleef setjackpot <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Set's the money that every player has to pay for the game (0 to disable)",
+			   								   ChatColor.GOLD + "/spleef disable <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Disabled a spleef game",
+			   								   ChatColor.GOLD + "/spleef enable <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Enables a disabled spleef game",
 			   								   ChatColor.GOLD + "/spleef save" + ChatColor.RED + " - " + ChatColor.GOLD + "Saves all games and statistics to the database"};
 	
-	private String[] fifthPage = new String[]{ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 5/5  -----   ",
-											  ChatColor.GOLD + "/spleef setcountdown <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the countdown for a game",
-											  ChatColor.GOLD + "/spleef setshovel <name> [true|false]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the game with shovels",
-											  ChatColor.GOLD + "/spleef autostart <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the autostart of a game if the amount of given players is reached",
+	private String[] fifthPage = new String[]{ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 5/6  -----   ",
 											  ChatColor.GOLD + "/spleef stats [player]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Shows the current spleef stats of themself or another player",
 											  ChatColor.GOLD + "/spleef stats top [page]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Shows the top spleef players!",
-											  ChatColor.GOLD + "/spleef setchances <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the value of chances that every player has.",
-											  ChatColor.GOLD + "/spleef set1vs1 <name> [true|false]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the value if this game should be a 1vs1 arena.",
-											  ChatColor.GOLD + "/spleef setrounds <name> <amount>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Sets the round for a 1vs1 game. Only works if the game is 1vs1!"};
+											  ChatColor.GOLD + "/spleef addwall <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Adds a signwall to the game",
+											  ChatColor.GOLD + "/spleef removewall <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Removes the wall where you currently looking."};
 	
+	private String[] sixthPage = new String[]{ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 6/6  -----   ",
+											  ChatColor.GOLD + "/spleef addscoreboard <arena> <direction>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Adds a scoreboard with the size of 19x7 blocks left-under you",
+											  ChatColor.GOLD + "/spleef removescoreboard" + ChatColor.RED + " - " + ChatColor.YELLOW + "Removes the scoreboard where you currently look",
+											  ChatColor.GOLD + "/spleef update" + ChatColor.RED + " - " + ChatColor.YELLOW + "Auto-updates the plugin if there is a new version avaible"};
+		
 	private String[] userHelp = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help   -----   ",
-											  ChatColor.GOLD + "/spleef start <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Starts the game with the given name",
-											  ChatColor.GOLD + "/spleef join <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Joins a spleef game with the given name",
-											  ChatColor.GOLD + "/spleef leave <name>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Leaves a spleef game",
+											  ChatColor.GOLD + "/spleef start <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Starts the game with the given name",
+											  ChatColor.GOLD + "/spleef vote" + ChatColor.RED + " - " + ChatColor.YELLOW + "Votes to start a game",
+											  ChatColor.GOLD + "/spleef join [arena]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Joins a spleef game with the given name",
+											  ChatColor.GOLD + "/spleef leave <arena>" + ChatColor.RED + " - " + ChatColor.YELLOW + "Leaves a spleef game",
+											  ChatColor.GOLD + "/spleef list" + ChatColor.RED + " - " + ChatColor.YELLOW + "Shows ingame players or the game list.",
 											  ChatColor.GOLD + "/spleef stats [player]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Shows the current spleef stats of themself or another player",
 											  ChatColor.GOLD + "/spleef stats top [page]" + ChatColor.RED + " - " + ChatColor.YELLOW + "Shows the top spleef players!"};
 	
@@ -105,6 +105,9 @@ public class CommandHelp extends HSCommand {
 				break;
 			case 5:
 				sender.sendMessage(fifthPage);
+				break;
+			case 6:
+				sender.sendMessage(sixthPage);
 				break;
 			default:
 				sender.sendMessage(_("pageDoesntExists"));

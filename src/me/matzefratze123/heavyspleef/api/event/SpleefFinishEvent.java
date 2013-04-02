@@ -23,18 +23,16 @@ import me.matzefratze123.heavyspleef.api.GameData;
 import me.matzefratze123.heavyspleef.core.StopCause;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class SpleefFinishEvent extends Event {
+public class SpleefFinishEvent extends SpleefEvent {
 
 	private static final HandlerList handlers = new HandlerList();
-	private GameData gameData;
 	private Player winner;
 	private StopCause cause;
 	
 	public SpleefFinishEvent(GameData game, StopCause cause, Player winner) {
-		this.gameData = game;
+		super(game);
 		this.cause = cause;
 		this.winner = winner;
 	}
@@ -46,15 +44,6 @@ public class SpleefFinishEvent extends Event {
 	
 	public HandlerList getHandlerList() {
 		return getHandlers();
-	}
-	
-	/**
-	 * Gets the game that is involved in this event
-	 * 
-	 * @return The gamedata of the game
-	 */
-	public GameData getGame() {
-		return this.gameData;
 	}
 	
 	/**

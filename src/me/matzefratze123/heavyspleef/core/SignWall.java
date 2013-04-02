@@ -259,9 +259,9 @@ public class SignWall extends RegionBase {
 		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
 		
 		if (minX == maxX)
-			return maxX - minX + 1;
-		if (minZ == maxZ)
 			return maxZ - minZ + 1;
+		if (minZ == maxZ)
+			return maxX - minX + 1;
 		
 		return -1;
 	}

@@ -22,6 +22,10 @@ package me.matzefratze123.heavyspleef.command;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.JACKPOTAMOUNT;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
@@ -35,6 +39,8 @@ import org.bukkit.entity.Player;
 
 public class CommandJoin extends HSCommand {
 
+	public static Map<String, Integer> pvpTimerTasks = new HashMap<String, Integer>();
+	
 	public CommandJoin() {
 		setMaxArgs(2);
 		setMinArgs(0);
@@ -65,55 +71,49 @@ public class CommandJoin extends HSCommand {
 		}
 		Game game = GameManager.getGame(args[0].toLowerCase());
 		
-		if (game.isDisabled()) {
-			player.sendMessage(_("gameIsDisabled"));
-			return;
-		}
-		if (!game.isFinal()) {
-			player.sendMessage(_("isntReadyToPlay"));
-			return;
-		}
-		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.hasWorldEdit()) {
-			player.sendMessage(_("noWorldEdit"));
-			return;
-		}
-		int jackpotToPay = game.getFlag(JACKPOTAMOUNT) == null ? HeavySpleef.instance.getConfig().getInt("general.defaultToPay", 5) : game.getFlag(JACKPOTAMOUNT);
-		
 		if (args.length == 1) {
-			if (HeavySpleef.hooks.hasVault()) {
-				if (HeavySpleef.hooks.getVaultEconomy().getBalance(player.getName()) < jackpotToPay) {
-					player.sendMessage(_("notEnoughMoneyToJoin"));
-					return;
-				}
-			}
-			
 			join(player, game);
 		} else if (args.length == 2) {
 			if (!player.hasPermission(Permissions.JOIN_GAME_OTHERS.getPerm())) {
 				player.sendMessage(LanguageHandler._("noPermission"));
 				return;
 			}
+			
 			Player target = Bukkit.getPlayer(args[1]);
 			if (target == null) {
 				player.sendMessage(_("playerNotOnline"));
 				return;
 			}
-			if (HeavySpleef.hooks.hasVault()) {
-				if (HeavySpleef.hooks.getVaultEconomy().getBalance(target.getName()) < jackpotToPay) {
-					player.sendMessage(_("targetHasntEnoughMoney"));
-					return;
-				}
-			}
 			
 			boolean join = join(target, game);
 			if (join)
 				player.sendMessage(_("targetHasJoined", target.getName(), game.getName()));
-			else
-				player.sendMessage(_("targetAddedToQueue", target.getName()));
 		}
 	}
 	
-	private boolean join(Player player, Game game) {
+	public static boolean join(Player player, Game game) {
+		int jackpotToPay = game.getFlag(JACKPOTAMOUNT) == null ? HeavySpleef.instance.getConfig().getInt("general.defaultToPay", 0) : game.getFlag(JACKPOTAMOUNT);
+		
+		if (game.isDisabled()) {
+			player.sendMessage(_("gameIsDisabled"));
+			return false;
+		}
+		if (!game.isFinal()) {
+			player.sendMessage(_("isntReadyToPlay"));
+			return false;
+		}
+		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.hasWorldEdit()) {
+			player.sendMessage(_("noWorldEdit"));
+			return false;
+		}
+		
+		if (HeavySpleef.hooks.hasVault()) {
+			if (HeavySpleef.hooks.getVaultEconomy().getBalance(player.getName()) < jackpotToPay) {
+				player.sendMessage(_("notEnoughMoneyToJoin"));
+				return false;
+			}
+		}
+		
 		if (GameManager.isInAnyGame(player)) {
 			player.sendMessage(_("cantJoinMultipleGames"));
 			return false;
@@ -129,8 +129,7 @@ public class CommandJoin extends HSCommand {
 		int maxplayers = game.getFlag(MAXPLAYERS) == null ? -1 : game.getFlag(MAXPLAYERS);
 		
 		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown") && !is1vs1) {
-			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
-			game.addPlayer(player);
+			joinGame(player, game);
 			return true;
 		} else if (game.isCounting()){
 			player.sendMessage(_("gameAlreadyRunning"));
@@ -145,10 +144,33 @@ public class CommandJoin extends HSCommand {
 			return false;
 		}
 		
-		player.sendMessage(_("playerJoinedToPlayer", game.getName()));
-		game.addPlayer(player);
-		if (GameManager.queues.containsKey(player.getName()))
-			GameManager.queues.remove(player.getName());
+		
+		return joinGame(player, game);
+	}
+	
+	private static boolean joinGame(final Player player, final Game game) {
+		int pvptimer = HeavySpleef.instance.getConfig().getInt("general.pvptimer");
+		
+		if (pvpTimerTasks.containsKey(player.getName()))
+			Bukkit.getScheduler().cancelTask(pvpTimerTasks.get(player.getName()));
+		
+		if (pvptimer > 0) {
+			player.sendMessage(_("teleportWillCommence", game.getName(), String.valueOf(pvptimer)));
+			player.sendMessage(_("dontMove"));
+		}
+		int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				player.sendMessage(_("playerJoinedToPlayer", game.getName()));
+				game.addPlayer(player);
+				if (GameManager.queues.containsKey(player.getName()))
+					GameManager.queues.remove(player.getName());
+				pvpTimerTasks.remove(player.getName());
+			}
+		}, Math.abs(pvptimer) * 20L);
+		
+		pvpTimerTasks.put(player.getName(), taskId);
 		return true;
 	}
 

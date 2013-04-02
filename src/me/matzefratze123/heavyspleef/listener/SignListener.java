@@ -19,6 +19,11 @@
  */
 package me.matzefratze123.heavyspleef.listener;
 
+import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.command.CommandJoin;
+import me.matzefratze123.heavyspleef.command.CommandLeave;
+import me.matzefratze123.heavyspleef.command.CommandStart;
+import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCuboid;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.utility.Permissions;
@@ -58,7 +63,7 @@ public class SignListener implements Listener {
 			return;
 		}
 		if (line2.equalsIgnoreCase("[Join]")) {
-			if (!GameManager.hasGame(line3.toLowerCase())) {
+			if (!line3.isEmpty() && !GameManager.hasGame(line3.toLowerCase())) {
 				p.sendMessage(GameCuboid._("arenaDoesntExists"));
 				block.breakNaturally();
 				return;
@@ -123,21 +128,38 @@ public class SignListener implements Listener {
 				return;
 			}
 			
-			p.performCommand("spleef join " + line3.toLowerCase());
+			if (line3.isEmpty()) {
+				if (!p.hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
+					p.sendMessage(Game._("noPermission"));
+					return;
+				}
+				HeavySpleef.selector.open(p);
+				return;
+			} else {
+				if (!GameManager.hasGame(line3)) {
+					p.sendMessage(GameCuboid._("arenaDoesntExists"));
+					return;
+				}
+				
+				CommandJoin.join(p, GameManager.getGame(line3));
+			}
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Start]")) {
 			if (!p.hasPermission(Permissions.SIGN_START.getPerm())) {
 				p.sendMessage(GameCuboid._("noPermission"));
 				return;
 			}
-			
-			p.performCommand("spleef start " + line3.toLowerCase());
+			if (!GameManager.hasGame(line3)) {
+				p.sendMessage(GameCuboid._("arenaDoesntExists"));
+				return;
+			}
+			CommandStart.start(p, GameManager.getGame(line3));
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Leave]")) {
 			if (!p.hasPermission(Permissions.SIGN_LEAVE.getPerm())) {
 				p.sendMessage(GameCuboid._("noPermission"));
 				return;
 			}
 			
-			p.performCommand("spleef leave");
+			CommandLeave.leave(p);
 		}
 		
 	}

@@ -31,6 +31,7 @@ import me.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import me.matzefratze123.heavyspleef.database.YamlDatabase;
 import me.matzefratze123.heavyspleef.hooks.HookManager;
 import me.matzefratze123.heavyspleef.listener.InventoryListener;
+import me.matzefratze123.heavyspleef.listener.PVPTimerListener;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
 import me.matzefratze123.heavyspleef.listener.QueuesListener;
 import me.matzefratze123.heavyspleef.listener.SignListener;
@@ -186,6 +187,7 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new UpdateListener(), this);
 		pm.registerEvents(new SignWallListener(), this);
 		pm.registerEvents(new QueuesListener(), this);
+		pm.registerEvents(new PVPTimerListener(), this);
 	}
 	
 	private void startMetrics() {

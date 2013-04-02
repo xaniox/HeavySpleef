@@ -69,7 +69,8 @@ invalidFlag: &cInvalid flag!
 invalidFlagFormat: &cInvalid flag-format!
 onlyLobby: &cYou can use this command only during lobby!
 
-votesDisabled: &cVotes are disabled for this server!
+votesDisabled: &6Votes are disabled for this server!
+alreadyVoted: &6You already voted!
 
 # Success messages
 
@@ -129,7 +130,11 @@ pluginReloaded: &7HeavySpleef version %a reloaded! Took %ams
 itemRewardReceived: &7You received %a %a as a prize!
 loserewardReceived: &7You received %a %a as a consolation prize!
 
-successfullyVoted: &7Successfully received vote!
+successfullyVoted: &6Successfully received vote!
+
+teleportWillCommence: &6Joining game %a. Teleport will commence in %a seconds...
+dontMove: &6Don't move!
+pvpTimerCancelled: &4Teleportation cancelled due to movement!
 
 # Broadcast Messages
 

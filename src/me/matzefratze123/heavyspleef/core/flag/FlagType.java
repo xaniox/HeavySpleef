@@ -45,12 +45,12 @@ public class FlagType {
 	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels");
 	
 	public static final ItemStackFlag ITEMREWARD = new ItemStackFlag("itemreward");
-	public static final ItemStackFlag LOSERREWARD = new ItemStackFlag("loserreward");
+	public static final ItemStackFlag LOSEREWARD = new ItemStackFlag("losereward");
 	
 	public static final Flag<?>[] flagList = new Flag<?>[] {WIN, LOSE, LOBBY, QUEUELOBBY, SPAWNPOINT1, SPAWNPOINT2,
 															MINPLAYERS, MAXPLAYERS, AUTOSTART, COUNTDOWN, JACKPOTAMOUNT,
 															REWARD, CHANCES, TIMEOUT, ROUNDS, ONEVSONE, SHOVELS, ITEMREWARD,
-															LOSERREWARD};
+															LOSEREWARD};
 	
 	public static List<Flag<?>> getFlagList() {
 		return Arrays.asList(flagList);

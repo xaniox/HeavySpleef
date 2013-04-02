@@ -40,6 +40,10 @@ public class CommandLeave extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
+		leave(player);
+	}
+	
+	public static void leave(Player player) {
 		if (!GameManager.isInAnyGame(player)) {
 			if (!GameManager.isInQueue(player)) {
 				player.sendMessage(_("notInQueue"));

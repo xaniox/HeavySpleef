@@ -109,6 +109,14 @@ general:
   - someone
   - anotherone
   
+  # PVP Timer:
+  # Some servers don't want that players can instantly
+  # teleport to a spleef game to escape from a battle.
+  # Here you can configure an amount of x seconds they have
+  # to wait until they can join a spleef game. 
+  # Set this to 0 to disable this function
+  pvptimer: 0
+  
 leaderboard:
   # Points for Spleef Games
   win: 30

@@ -426,16 +426,6 @@ public abstract class Game {
 			//Chances stuff end
 			player.sendMessage(Game._("outOfGame"));
 			StatisticManager.getStatistic(player.getName(), true).addLose();
-			
-			losereward: {
-				if (getFlag(FlagType.LOSERREWARD) == null)
-					break losereward;
-				for (ItemStack stack : getFlag(FlagType.LOSERREWARD)) {
-					ItemStack newStack = stack.getData().toItemStack(stack.getAmount());
-					player.getInventory().addItem(newStack);
-					player.sendMessage(_("loserewardReceived"));
-				}
-			}
 		}
 		
 		players.remove(player.getName());
@@ -460,6 +450,18 @@ public abstract class Game {
 		
 		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
 			PlayerStateManager.restorePlayerState(player);
+		if (cause == LoseCause.LOSE) {
+			losereward: {
+				if (getFlag(FlagType.LOSEREWARD) == null)
+					break losereward;
+				for (ItemStack stack : getFlag(FlagType.LOSEREWARD)) {
+					ItemStack newStack = stack.getData().toItemStack(stack.getAmount());
+					player.getInventory().addItem(newStack);
+					player.sendMessage(_("loserewardReceived", String.valueOf(newStack.getAmount()), MaterialHelper.getName(newStack.getType().name())));
+				}
+			}
+		}
+		
 		if (players.size() <= 0)
 			setGameState(GameState.JOINABLE);
 		updateWalls();
@@ -1367,8 +1369,12 @@ public abstract class Game {
 		updateWalls();
 	}
 	
-	public void addVote(String player) {
-		voted.add(player);
+	public void addVote(Player player) {
+		voted.add(player.getName());
+	}
+	
+	public boolean hasVote(Player player) {
+		return voted.contains(player.getName());
 	}
 	
 	public boolean canBegin() {

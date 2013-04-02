@@ -55,7 +55,6 @@ noGameRunning: &cIn dieser Arena findet gerade kein Spiel statt!
 
 noWorldEdit: &cDiese Funktion kann nicht genutzt werden! WorldEdit wurde nicht gefunden!
 
-not1vs1: &cDies ist keine 1vs1 Arena! Um sie zur 1vs1 Arena zu machen tipp folgendes ein: /spleef flag %a 1vs1 true
 onlyOneLayer: &cEin Floor kann nur einen Block dick sein!
 maxPlayersReached: &cDie maximale Spieleranzahl in dieser Arena ist erreicht!
 
@@ -74,7 +73,8 @@ noCommandsInQueue: &cDu kannst keine Befehle in der Warteschlange nutzen!
 invalidFlag: &cDies ist keine g\u00FCltige Flag!
 invalidFlagFormat: &cUng\u00FCltiges Flag-Format!
 onlyLobby: &cDu kannst diesen Befehl nur w\u00E4hrend der Lobby benutzen!
-votesDisabled: &cVotes sind f\u00FCr diesen Server deaktiviert!
+votesDisabled: &6Votes sind f\u00FCr diesen Server deaktiviert!
+alreadyVoted: &6Du hast bereits gevotet!
 
 # Erfolgsnachrichten
 
@@ -134,7 +134,11 @@ pluginReloaded: &7HeavySpleef Version %a neu geladen! Dauerte %ams...
 itemRewardReceived: &7Du erh\u00E4lst %a %a!
 loserewardReceived: &7Du erh\u00E4lst %a %a als Trostpreis!
 
-successfullyVoted: &7Erfolgreich gevotet!
+successfullyVoted: &6Erfolgreich gevotet!
+
+teleportWillCommence: &6Trete dem Spiel %a bei. Teleportierung in %a Sekunden...
+dontMove: &6Beweg dich nicht...
+pvpTimerCancelled: &4Teleportierung abgebrochen!
 
 # Broadcast nachrichten
 

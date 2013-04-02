@@ -47,7 +47,10 @@ public class CommandStart extends HSCommand {
 			return;
 		}
 		Game game = GameManager.getGame(args[0].toLowerCase());
-		
+		start(player, game);
+	}
+
+	public static void start(Player player, Game game) {
 		if (game.isDisabled()) {
 			player.sendMessage(_("gameIsDisabled"));
 			return;
@@ -71,5 +74,5 @@ public class CommandStart extends HSCommand {
 		game.countdown();
 		player.sendMessage(_("gameStarted"));
 	}
-
+	
 }

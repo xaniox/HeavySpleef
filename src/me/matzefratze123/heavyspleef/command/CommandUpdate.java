@@ -33,8 +33,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class CommandUpdate extends HSCommand {
 
 	public CommandUpdate() {
-		setMinArgs(0);
-		setMaxArgs(0);
 		setPermission(Permissions.UPDATE_PLUGIN);
 		setUsage("/spleef update");
 	}

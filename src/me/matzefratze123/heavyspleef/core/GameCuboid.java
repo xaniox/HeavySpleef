@@ -180,11 +180,13 @@ public class GameCuboid extends Game {
 	@Override
 	public Location getRandomLocation() {
 		Random random = new Random();
-		int minX = Math.min(getFirstInnerCorner().getBlockX(), getSecondInnerCorner().getBlockX()) + 1; // Add 1 because of walls from the arena
-		int minZ = Math.min(getFirstInnerCorner().getBlockZ(), getSecondInnerCorner().getBlockZ()) + 1;
+		FloorCuboid f = (FloorCuboid)getHighestFloor();
 		
-		int maxX = Math.max(getFirstInnerCorner().getBlockX(), getSecondInnerCorner().getBlockX()) - 1; // Subtract 1 because of walls from the arena
-		int maxZ = Math.max(getFirstInnerCorner().getBlockZ(), getSecondInnerCorner().getBlockZ()) - 1;
+		int minX = Math.min(f.getFirstCorner().getBlockX(), f.getSecondCorner().getBlockX()) + 1; // Add 1 because of walls from the arena
+		int minZ = Math.min(f.getFirstCorner().getBlockZ(), f.getSecondCorner().getBlockZ()) + 1;
+		
+		int maxX = Math.max(f.getFirstCorner().getBlockX(), f.getSecondCorner().getBlockX()) - 1; // Subtract 1 because of walls from the arena
+		int maxZ = Math.max(f.getFirstCorner().getBlockZ(), f.getSecondCorner().getBlockZ()) - 1;
 		
 		int differenceX, differenceZ;
 		

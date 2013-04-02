@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class CommandSave extends HSCommand {
@@ -35,9 +36,11 @@ public class CommandSave extends HSCommand {
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
+		long millis = System.currentTimeMillis();
 		HeavySpleef.instance.database.save(false);
 		HeavySpleef.instance.statisticDatabase.save();
 		sender.sendMessage(_("gamesSaved"));
+		sender.sendMessage(__(ChatColor.GRAY + "Took " + (System.currentTimeMillis() - millis) + "ms"));
 	}
 
 }

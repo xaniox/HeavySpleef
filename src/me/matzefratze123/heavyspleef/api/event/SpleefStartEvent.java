@@ -20,16 +20,14 @@
 package me.matzefratze123.heavyspleef.api.event;
 
 import me.matzefratze123.heavyspleef.api.GameData;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class SpleefStartEvent extends Event {
+public class SpleefStartEvent extends SpleefEvent {
 
 	private static final HandlerList handlers = new HandlerList();
-	private GameData gameData;
 	
 	public SpleefStartEvent(GameData game) {
-		this.gameData = game;
+		super(game);
 	}
 
 	@Override
@@ -41,13 +39,4 @@ public class SpleefStartEvent extends Event {
 		return getHandlers();
 	}
 	
-	/**
-	 * Gets the game that is involved in this event
-	 * 
-	 * @return The gamedata of the game
-	 */
-	public GameData getGame() {
-		return this.gameData;
-	}
-
 }

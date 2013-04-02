@@ -160,7 +160,7 @@ public class YamlDatabase {
 		for (Game game : GameManager.getGames()) {
 			ConfigurationSection section = db.createSection(game.getName());
 			
-			saveBasics(game, section);
+			saveBasics(game, section, savePlayerStates);
 			if (game.getType() == Type.CUBOID)
 				saveCuboid((GameCuboid) game, section);
 			else if (game.getType() == Type.CYLINDER)
@@ -337,8 +337,9 @@ public class YamlDatabase {
 		}
 	}
 	
-	private void saveBasics(Game game, ConfigurationSection section) {
-		game.stop();
+	private void saveBasics(Game game, ConfigurationSection section, boolean stop) {
+		if (stop)
+			game.stop();
 		section.set("type", game.getType().name());
 		
 		List<String> loseZonesAsList = new ArrayList<String>();

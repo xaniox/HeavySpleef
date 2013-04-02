@@ -125,7 +125,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	}
 	
 	/**
-	 * Gets the KD
+	 * Gets the KD of the statistic
 	 */
 	public double getKD() {
 		double winsPerGame = 0.0;

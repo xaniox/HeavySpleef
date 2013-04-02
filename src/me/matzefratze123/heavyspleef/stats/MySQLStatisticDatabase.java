@@ -109,12 +109,19 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		return set.next();
 	}
 	
+	public boolean hasRow(String owner) throws SQLException {
+		conn = getInstance();
+		
+		ResultSet set = executeQuery("SELECT * FROM " + tableName + " WHERE owner LIKE '" + owner + "'");
+		return set.next();
+	}
+	
 	public void checkColumns() throws SQLException {
 		String[] columns = new String[] {"owner", "wins", "loses", "knockouts", "games", "score"};
 		
 		for (String col : columns) {
 			if (!hasColumn(col))
-				executeUpdate("ALTER TABLE " + this.tableName + " ADD score INT");
+				executeUpdate("ALTER TABLE " + this.tableName + " ADD " + col + " INT");
 		}
 	}
 
@@ -140,6 +147,9 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 				
 				String owner = stat.getName();
 				
+				if (hasRow(owner))
+					executeUpdate("DELETE FROM " + tableName + " WHERE owner = '" + owner + "'");//We have to delete old values because of a bug in version 1.0...
+					//Will be replaced by: UPDATE tablename SET owner='owner', wins='wins', etc. WHERE owner LIKE owner 
 				executeUpdate("INSERT INTO " + tableName + " (owner, wins, loses, knockouts, games, score) VALUES ('" + owner + "', '" + wins + "', '" + loses + "', '" + knockouts + "', '" + games + "', '" + score + "')");
 			}
 			conn.close();
