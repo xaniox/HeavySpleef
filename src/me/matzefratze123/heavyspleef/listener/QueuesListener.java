@@ -21,7 +21,7 @@ package me.matzefratze123.heavyspleef.listener;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
-import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.core.QueuesManager;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,7 +34,7 @@ public class QueuesListener implements Listener {
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		Player p = e.getPlayer();
 		
-		if (!GameManager.isInQueue(p))
+		if (!QueuesManager.hasQueue(p))
 			return;
 		if (HeavySpleef.instance.getConfig().getBoolean("queues.commandsInQueue", false))
 			return;

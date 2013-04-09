@@ -32,6 +32,8 @@ public class ArrayHelper {
 		ArrayList<T> list = new ArrayList<T>();
 		
 		for (T[] array : arrays) {
+			if (array.length <= 0)
+				continue;
 			for (T t : array) {
 				list.add(t);
 			}

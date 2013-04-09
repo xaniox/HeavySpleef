@@ -69,6 +69,8 @@ public class InventorySelector implements Listener {
 	}
 	
 	public void addItemStack(ItemStack stack, int slot) {
+		if (inv == null)
+			return;
 		if (slot > size)
 			slot = size;
 		
@@ -76,6 +78,8 @@ public class InventorySelector implements Listener {
 	}
 	
 	public void removeItemStack(int slot) {
+		if (inv == null)
+			return;
 		if (slot > size)
 			slot = size;
 		
@@ -92,10 +96,14 @@ public class InventorySelector implements Listener {
 	}
 	
 	public void clear() {
+		if (inv == null)
+			return;
 		inv.clear();
 	}
 	
 	public void open(Player player) {
+		if (inv == null)
+			return;
 		player.openInventory(inv);
 	}
 	
@@ -114,16 +122,27 @@ public class InventorySelector implements Listener {
 	private Inventory copy(int newSize, String newTitle) {
 		if (newTitle == null)
 			newTitle = inventoryName;
+		if (newSize == 0)
+			return null;
 		Inventory newInv = Bukkit.createInventory(null, roundToSlot(newSize), newTitle);
-		newInv.setContents(inv.getContents());
+		if (inv != null) {
+			ItemStack[] contents = inv.getContents();
+			
+			for (int i = 0; i < inv.getSize() && i < newInv.getSize() && i < contents.length; i++) {
+				newInv.setItem(i, contents[i]);
+			}
+		}
 		
 		return newInv;
 	}
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
+		if (inv == null)
+			return;
 		if (!e.getInventory().getTitle().equalsIgnoreCase(inventoryName))
 			return;
+		e.setCancelled(true);
 		if (e.getSlotType() != SlotType.CONTAINER)
 			return;
 		if (e.getSlot() >= inv.getSize())

@@ -23,8 +23,8 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
-import me.matzefratze123.heavyspleef.core.flag.LocationFlag;
 import me.matzefratze123.heavyspleef.utility.ArrayHelper;
+import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -37,6 +37,7 @@ public class CommandFlag extends HSCommand {
 		setOnlyIngame(true);
 		setUsage("/spleef flag <name> <flag> [state]\n" +
 				__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.flagList, true)));
+		setPermission(Permissions.SET_FLAG);
 	}
 	
 	@Override
@@ -66,23 +67,12 @@ public class CommandFlag extends HSCommand {
 			return;
 		}
 		
-		if (args.length > 2 && args[2].equalsIgnoreCase("clear")) {
-			game.setFlag(flag, null);
-			player.sendMessage(_("flagCleared", flag.getName()));
-			return;
-		}
-		
-		if (flag instanceof LocationFlag) {
-			setFlag(game, flag, player, null);
-			return;
-		}
-		
 		StringBuilder buildArgs = new StringBuilder();
 		for (int i = 2; i < args.length; i++)
 			buildArgs.append(args[i]).append(" ");
 		
-		if (args.length > 2) {
-			if (args[2].equalsIgnoreCase("clear")) {
+		if (args.length > 1) {
+			if (args.length > 2 && args[2].equalsIgnoreCase("clear")) {
 				game.setFlag(flag, null);
 				player.sendMessage(_("flagCleared", flag.getName()));
 				return;

@@ -47,7 +47,7 @@ public class CommandDelete extends HSCommand {
 			return;
 		}
 		
-		GameManager.removeAllPlayersFromGameQueue(args[0].toLowerCase());
+		game.removeAllFromQueue();
 		GameManager.deleteGame(args[0].toLowerCase());
 		HeavySpleef.instance.refreshInventory();
 		sender.sendMessage(_("gameDeleted"));

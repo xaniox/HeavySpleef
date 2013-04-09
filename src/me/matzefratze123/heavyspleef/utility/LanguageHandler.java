@@ -80,17 +80,17 @@ public class LanguageHandler {
 	private static void setLanguage(String lang, boolean fromFile) {
 		File langFile = null;
 		
-		if (!fromFile) {
-			langFile = new File(HeavySpleef.instance.getDataFolder() + "/language/" + lang + ".lang");
+		if (fromFile) {
+			langFile = new File("plugins/HeavySpleef/language/" + lang + ".lang");
 			if (!langFile.exists())
 				langFile = null;
 		}
 		
 		try {
 			InputStream stream;
-			if (langFile == null || !fromFile)
+			if (langFile == null || !fromFile) {
 				stream = HeavySpleef.class.getResourceAsStream("/resource/" + lang + ".lang");
-			else
+			} else
 				stream = new FileInputStream(langFile);
 			
 			if (stream == null)
@@ -107,7 +107,7 @@ public class LanguageHandler {
 				if (read.startsWith("#"))
 					continue;
 				String[] split = read.split(": ", 2);
-				if (split.length != 2)
+				if (split.length < 2)
 					continue;
 				
 				split[1] = ChatColor.translateAlternateColorCodes('&', split[1]);

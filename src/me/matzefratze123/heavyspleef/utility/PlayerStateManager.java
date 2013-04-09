@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.utility;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCuboid;
 
@@ -36,6 +37,14 @@ public class PlayerStateManager {
 	
 	@SuppressWarnings("deprecation")
 	public static void savePlayerState(Player p) {
+		if (!HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true)) {
+			p.setGameMode(GameMode.SURVIVAL);//Set to survival
+			p.setFoodLevel(20);
+			p.setHealth(20);
+			p.setAllowFlight(false);//Disable fly mode (Essentials etc.)
+			p.setFireTicks(0);
+			return;
+		}
 		states.put(p.getName(), new PlayerState(p.getInventory().getContents(), p.getInventory().getHelmet(), p.getInventory().getChestplate(),
 				  p.getInventory().getLeggings(), p.getInventory().getBoots(),p.getExhaustion(), p.getSaturation(),
 				  p.getFoodLevel(), p.getHealth(),p.getGameMode(), p.getActivePotionEffects(), p.getExp(), p.getLevel(), p.getAllowFlight()));
@@ -60,6 +69,11 @@ public class PlayerStateManager {
 	
 	@SuppressWarnings("deprecation")
 	public static void restorePlayerState(Player p) {
+		if (!HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true)) {
+			p.setFireTicks(0);//We don't want that the player is burning...
+			return;
+		}
+		
 		PlayerState state = states.get(p.getName());
 		if (state == null) {
 			p.sendMessage(GameCuboid._("errorOnState"));

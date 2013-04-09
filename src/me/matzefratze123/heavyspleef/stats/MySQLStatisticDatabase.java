@@ -177,7 +177,7 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 			if (!tables.contains(tableName)) {
 				plugin.getLogger().warning("WARNING! Failed to load statistics!!! Could not find a MySQL TABLE!");
 				plugin.getLogger().info("Creating a new table instead...");
-				executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner, wins, loses, knockouts, games)");
+				executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner TEXT, wins INT, loses INT, knockouts INT, games INT)");
 				return;
 			}
 			

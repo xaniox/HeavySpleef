@@ -1,7 +1,6 @@
 package me.matzefratze123.heavyspleef.listener;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.command.CommandJoin;
 import me.matzefratze123.heavyspleef.core.Game;
 
 import org.bukkit.Bukkit;
@@ -23,15 +22,15 @@ public class PVPTimerListener implements Listener {
 		Location to = e.getTo();
 		Location from = e.getFrom();
 		
-		if (!CommandJoin.pvpTimerTasks.containsKey(p.getName()))
+		if (!Game.pvpTimerTasks.containsKey(p.getName()))
 			return;
 		if (to.getBlockX() == from.getBlockX() && to.getBlockY() == from.getBlockY() && to.getBlockZ() == from.getBlockZ())
 			return;
 		if (HeavySpleef.instance.getConfig().getInt("general.pvptimer") <= 0)
 			return;
 		
-		Bukkit.getScheduler().cancelTask(CommandJoin.pvpTimerTasks.get(p.getName()));
-		CommandJoin.pvpTimerTasks.remove(p.getName());
+		Bukkit.getScheduler().cancelTask(Game.pvpTimerTasks.get(p.getName()));
+		Game.pvpTimerTasks.remove(p.getName());
 		p.sendMessage(Game._("pvpTimerCancelled"));
 	}
 	
@@ -39,11 +38,11 @@ public class PVPTimerListener implements Listener {
 	public void onDeath(PlayerDeathEvent e) {
 		Player p = e.getEntity();
 		
-		if (!CommandJoin.pvpTimerTasks.containsKey(p.getName()))
+		if (!Game.pvpTimerTasks.containsKey(p.getName()))
 			return;
 		
-		Bukkit.getScheduler().cancelTask(CommandJoin.pvpTimerTasks.get(p.getName()));
-		CommandJoin.pvpTimerTasks.remove(p.getName());
+		Bukkit.getScheduler().cancelTask(Game.pvpTimerTasks.get(p.getName()));
+		Game.pvpTimerTasks.remove(p.getName());
 		p.sendMessage(Game._("pvpTimerCancelled"));
 	}
 	
@@ -60,11 +59,11 @@ public class PVPTimerListener implements Listener {
 	private void handleQuit(PlayerEvent e) {
 		Player p = e.getPlayer();
 		
-		if (!CommandJoin.pvpTimerTasks.containsKey(p.getName()))
+		if (!Game.pvpTimerTasks.containsKey(p.getName()))
 			return;
 		
-		Bukkit.getScheduler().cancelTask(CommandJoin.pvpTimerTasks.get(p.getName()));
-		CommandJoin.pvpTimerTasks.remove(p.getName());
+		Bukkit.getScheduler().cancelTask(Game.pvpTimerTasks.get(p.getName()));
+		Game.pvpTimerTasks.remove(p.getName());
 	}
 	
 }

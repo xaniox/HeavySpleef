@@ -24,6 +24,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.region.Floor;
+import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.block.Block;
@@ -49,7 +50,7 @@ public class CommandRemoveFloor extends HSCommand {
 			return;
 		}
 		for (Game game : GameManager.getGames()) {
-			if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.hasWorldEdit())
+			if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.getService(WorldEditHook.class).hasHook())
 				continue;
 			for (Floor floor : game.getFloors()) {
 				if (floor.contains(block)) {

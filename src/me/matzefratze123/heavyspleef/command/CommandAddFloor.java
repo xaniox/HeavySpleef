@@ -25,6 +25,7 @@ import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
+import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.selection.Selection;
 import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
@@ -55,7 +56,7 @@ public class CommandAddFloor extends HSCommand {
 		Location loc2 = s.getSecond();
 		
 		if (args[0].equalsIgnoreCase("randomwool")) { //Wool floor
-			if (HeavySpleef.hooks.hasWorldEdit()) {
+			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
 					if (game.contains(player.getLocation()) && game.getType() == Type.CYLINDER) {
 						GameCylinder gameC = (GameCylinder)game; //Cast the game to a GameCylinder because we can be sure that it is one...
@@ -89,12 +90,16 @@ public class CommandAddFloor extends HSCommand {
 			return;
 			
 		} else if (args[0].equalsIgnoreCase("given")) { //Given floor
-			if (HeavySpleef.hooks.hasWorldEdit()) {
+			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
-					if (!game.contains(block))
+					if (!game.contains(block)) {
+						System.out.println("game not contains, " + game.getName());
 						continue;
-					if (game.getType() != Type.CYLINDER)
+					}
+					if (game.getType() != Type.CYLINDER) {
+						System.out.println("no cylinder game?");
 						continue;
+					}
 					GameCylinder cylGame = (GameCylinder) game;
 					Location center = cylGame.getCenter();
 					
@@ -130,7 +135,7 @@ public class CommandAddFloor extends HSCommand {
 				return;
 			}
 			
-			if (HeavySpleef.hooks.hasWorldEdit()) {
+			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
 					if (!game.contains(player.getLocation()))
 						continue;
@@ -168,18 +173,18 @@ public class CommandAddFloor extends HSCommand {
 	}
 	
 	private void addWoolFloor(Game game, Player p, Location... locations) {
-		game.addFloor(35, (byte)0, FloorType.RANDOMWOOL, locations);
-		p.sendMessage(_("floorCreated"));
+		int id = game.addFloor(35, (byte)0, FloorType.RANDOMWOOL, locations);
+		p.sendMessage(_("floorCreated", String.valueOf(id)));
 	}
 	
 	private void addSpecifiedFloor(Game game, Player p, SimpleBlockData data, Location... locations) {
-		game.addFloor(data.getMaterial().getId(), data.getData(), FloorType.SPECIFIEDID, locations);
-		p.sendMessage(_("floorCreated"));
+		int id = game.addFloor(data.getMaterial().getId(), data.getData(), FloorType.SPECIFIEDID, locations);
+		p.sendMessage(_("floorCreated", String.valueOf(id)));
 	}
 	
 	private void addGivenFloor(Game game, Player p, Location... locations) {
-		game.addFloor(0, (byte)0, FloorType.GIVENFLOOR, locations);
-		p.sendMessage(_("floorCreated"));
+		int id = game.addFloor(0, (byte)0, FloorType.GIVENFLOOR, locations);
+		p.sendMessage(_("floorCreated", String.valueOf(id)));
 	}
 	
 	private Game getFromLocation(Location... locations) {

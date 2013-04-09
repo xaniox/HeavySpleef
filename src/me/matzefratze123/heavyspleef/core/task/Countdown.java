@@ -29,17 +29,21 @@ public abstract class Countdown implements Runnable {
 
 	@Override
 	public void run() {
-		if (remaining <= 0) {
+		if (remaining == 0) {
 			onFinish();
-		} else {//Do pre countdown
+		} else if (remaining > 0){//Do pre countdown
 			onCount();
 			remaining--;
+		} else if (remaining < 0) {//Call the interrupt method, something is going false...
+			onInterrupt();
 		}
 	}
 	
 	public void onFinish() {}
 	
 	public void onCount() {}
+	
+	public void onInterrupt() {}
 	
 	public int getTimeRemaining() {
 		return this.remaining;

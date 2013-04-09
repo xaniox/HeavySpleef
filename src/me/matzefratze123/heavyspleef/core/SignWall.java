@@ -266,6 +266,29 @@ public class SignWall extends RegionBase {
 		return -1;
 	}
 	
+	public static boolean isAllSign(Location loc1, Location loc2) {
+		int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
+		int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
+		
+		int minY = Math.min(loc1.getBlockY(), loc2.getBlockY());
+		int maxY = Math.max(loc1.getBlockY(), loc2.getBlockY());
+		
+		int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
+		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
+		
+		for (int x = minX; x <= maxX; x++) {
+			for (int y = minY; y <= maxY; y++) {
+				for (int z = minZ; z <= maxZ; z++) {
+					Block block = loc1.getWorld().getBlockAt(x, y, z);
+					if (block.getType() != Material.WALL_SIGN)
+						return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	public static Block getAttachedBlock(Sign sign) {
 		org.bukkit.material.Sign s = new org.bukkit.material.Sign(sign.getType(), sign.getData().getData());
 		BlockFace attachedFace = s.getAttachedFace();

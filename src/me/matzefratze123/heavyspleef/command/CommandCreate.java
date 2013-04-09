@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.selection.Selection;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
@@ -50,7 +51,7 @@ public class CommandCreate extends HSCommand {
 		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
 			//Create a new cylinder game
 			//TODO WorldEdit check
-			if (!HeavySpleef.hooks.hasWorldEdit()) {
+			if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 				player.sendMessage(_("noWorldEdit"));
 				return;
 			}
@@ -73,6 +74,7 @@ public class CommandCreate extends HSCommand {
 				int minY = center.getBlockY();
 				int maxY = center.getBlockY() + height;
 				
+				System.out.println("Creating game " + args[0]);
 				GameManager.createCylinderGame(args[0].toLowerCase(), center, radius, minY, maxY);
 			} catch (NumberFormatException e) {
 				player.sendMessage(_("notANumber", args[2]));

@@ -40,8 +40,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.api.GameData;
@@ -58,13 +60,17 @@ import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.core.task.RoundsCountdownTask;
 import me.matzefratze123.heavyspleef.core.task.StartCountdownTask;
 import me.matzefratze123.heavyspleef.core.task.TimeoutTask;
+import me.matzefratze123.heavyspleef.hooks.ScoreboardAPIHook;
+import me.matzefratze123.heavyspleef.hooks.VaultHook;
+import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.stats.StatisticManager;
+import me.matzefratze123.heavyspleef.utility.ArrayHelper;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 import me.matzefratze123.heavyspleef.utility.ViPManager;
-
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Bukkit;
@@ -79,6 +85,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import yt.codebukkit.scoreboardapi.Scoreboard;
+import yt.codebukkit.scoreboardapi.ScoreboardAPI;
+
 public abstract class Game {
 	
 	protected Map<Integer, Floor> floors = new HashMap<Integer, Floor>();
@@ -91,9 +100,14 @@ public abstract class Game {
 	protected Map<String, Integer> multiKnockoutTaskIds = new HashMap<String, Integer>();
 	protected Map<String, Integer> multiKnockouts = new HashMap<String, Integer>();
 	
+	public static Map<String, Integer> pvpTimerTasks = new HashMap<String, Integer>();
+	
 	public    Map<String, List<Block>> brokenBlocks = new HashMap<String, List<Block>>();
 	
 	protected GameState state;
+	
+	//The minecraft sidebar scoreboard
+	protected Scoreboard board = null;
 	
 	public int tid = -1;
 	public int roundTid = -1;
@@ -112,6 +126,9 @@ public abstract class Game {
 	public List<String> outPlayers = new ArrayList<String>();
 	public List<String> wereOffline = new ArrayList<String>();
 	public List<Block> modfiedBlocks = new ArrayList<Block>();
+	public List<Team> teams = new ArrayList<Team>();
+	public List<Queue> queues = new ArrayList<Queue>();
+	
 	public ArrayList<Game.Win> wins = new ArrayList<Game.Win>();
 	
 	/**
@@ -213,6 +230,14 @@ public abstract class Game {
 		Bukkit.getPluginManager().callEvent(new SpleefStartEvent(new GameData(this))); //Call our spleef start event
 		this.tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new StartCountdownTask(countdown, this), 20L, 20L);//Let the countdown begin
 		
+		//Scoreboard stuff
+		if (HeavySpleef.hooks.getService(ScoreboardAPIHook.class).hasHook() && HeavySpleef.instance.getConfig().getBoolean("general.showSidebarScoreboard")) {
+			ScoreboardAPI api = HeavySpleef.hooks.getService(ScoreboardAPIHook.class).getHook();
+			board = api.createScoreboard("spleefKnockouts", 10);
+			board.setType(Scoreboard.Type.SIDEBAR);
+			board.setScoreboardName(ChatColor.DARK_PURPLE + "Knockouts");
+		}
+		
 		int count = 1;
 		for (Player p : getPlayers()) {
 			if (count == 1 && (getFlag(ONEVSONE) != null && getFlag(ONEVSONE)) && getFlag(SPAWNPOINT1) != null) {
@@ -231,6 +256,7 @@ public abstract class Game {
 		setGameState(GameState.COUNTING);//Set our gamestate to counting
 		updateScoreBoards();
 		updateWalls();
+		updateSidebarScoreboard();
 	}
 	
 	/**
@@ -238,9 +264,6 @@ public abstract class Game {
 	 */
 	public void start() {
 		updateScoreBoards();
-		tellAll(_("gameHasStarted"));
-		broadcast(_("gameOnArenaHasStarted", getName()));
-		broadcast(_("startedGameWith", String.valueOf(players.size())));
 		setGameState(GameState.INGAME);
 		removeBoxes();
 		
@@ -255,14 +278,17 @@ public abstract class Game {
 			this.timeoutTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new TimeoutTask(timeout, this), 0L, 20L);
 		
 		//Withdraw jackpot money
-		if (HeavySpleef.hooks.hasVault() && jackpotToPay > 0) {
+		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook() && jackpotToPay > 0) {
 			for (Player p : getPlayers()) {
-				HeavySpleef.hooks.getVaultEconomy().withdrawPlayer(p.getName(), jackpotToPay);
-				p.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getVaultEconomy().format(jackpotToPay)));
+				HeavySpleef.hooks.getService(VaultHook.class).getHook().withdrawPlayer(p.getName(), jackpotToPay);
+				p.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getService(VaultHook.class).getHook().format(jackpotToPay)));
 				this.jackpot += jackpotToPay;
 			}
 		}
 		
+		tellAll(_("gameHasStarted"));
+		broadcast(_("gameOnArenaHasStarted", getName()));
+		broadcast(_("startedGameWith", String.valueOf(players.size())));
 		updateWalls();
 		cancelSTTask();
 	}
@@ -278,20 +304,21 @@ public abstract class Game {
 			if (getFlag(LOSE) == null) p.teleport(LocationSaver.load(p));
 			else p.teleport(getFlag(LOSE));
 			
-			if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
-				PlayerStateManager.restorePlayerState(p);
+			
+			PlayerStateManager.restorePlayerState(p);
 		}
 		
 		Bukkit.getPluginManager().callEvent(new SpleefFinishEvent(new GameData(this), StopCause.STOP, null));
 		broadcast(_("gameStopped"));
 		setGameState(GameState.JOINABLE);
-		GameManager.removeAllPlayersFromGameQueue(this.name);
+		removeAllFromQueue();
 		removeBoxes();
 		
 		regen();
 		clearAll();
 		updateScoreBoards();
 		updateWalls();
+		updateSidebarScoreboard();
 	}
 	
 	protected void clearAll() {
@@ -303,6 +330,7 @@ public abstract class Game {
 		players.clear();
 		outPlayers.clear();
 		chancesUsed.clear();
+		multiKnockouts.clear();
 	}
 	
 	/**
@@ -331,13 +359,105 @@ public abstract class Game {
 		updateWalls();
 	}
 	
+	//addPlayer() -> joinGame() -> join()
+	
 	/**
 	 * Adds a player to this game
 	 * 
 	 * @param player The player to add
 	 */
+	public void addPlayer(Player player, ChatColor teamColor) {
+		int jackpotToPay = getFlag(JACKPOTAMOUNT) == null ? HeavySpleef.instance.getConfig().getInt("general.defaultToPay", 0) : getFlag(JACKPOTAMOUNT);
+		
+		if (isDisabled()) {
+			player.sendMessage(_("gameIsDisabled"));
+			return;
+		}
+		if (!isFinal()) {
+			player.sendMessage(_("isntReadyToPlay"));
+			return;
+		}
+		if (getType() == Type.CYLINDER && !HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+			player.sendMessage(_("noWorldEdit"));
+			return;
+		}
+		
+		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook()) {
+			if (HeavySpleef.hooks.getService(VaultHook.class).getHook().getBalance(player.getName()) < jackpotToPay) {
+				player.sendMessage(_("notEnoughMoneyToJoin"));
+				return;
+			}
+		}
+		
+		if (GameManager.isInAnyGame(player)) {
+			player.sendMessage(_("cantJoinMultipleGames"));
+			return;
+		}
+		if (isIngame()) {
+			player.sendMessage(_("gameAlreadyRunning"));
+			addToQueue(player, teamColor);
+			return;
+		}
+		
+		Team team = getTeam(teamColor);
+		boolean is1vs1 = getFlag(ONEVSONE) == null ? false : getFlag(ONEVSONE);
+		
+		int maxplayers = getFlag(MAXPLAYERS) == null ? -1 : getFlag(MAXPLAYERS);
+		if (maxplayers > 0 && getPlayers().length >= maxplayers) {
+			player.sendMessage(_("maxPlayersReached"));
+			addToQueue(player, team.getColor());
+			return;
+		}
+		if (isCounting() && HeavySpleef.instance.getConfig().getBoolean("general.joinAtCountdown") && !is1vs1) {
+			joinGame(player, team);
+			return;
+		} else if (isCounting()){
+			player.sendMessage(_("gameAlreadyRunning"));
+			addToQueue(player, teamColor);
+			return;
+		}
+		
+		joinGame(player, team);	
+	}
+	
+	private void joinGame(final Player player, final Team team) {
+		int pvptimer = HeavySpleef.instance.getConfig().getInt("general.pvptimer");
+		
+		if (pvpTimerTasks.containsKey(player.getName()))
+			Bukkit.getScheduler().cancelTask(pvpTimerTasks.get(player.getName()));
+		
+		if (pvptimer > 0) {
+			player.sendMessage(_("teleportWillCommence", getName(), String.valueOf(pvptimer)));
+			player.sendMessage(_("dontMove"));
+		}
+		
+		int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				if (getFlag(FlagType.TEAM) != null && getFlag(FlagType.TEAM)) {
+					if (team != null) {
+						team.join(player);
+						System.out.println("Joining team " + team.getColor());
+					} else {
+						player.sendMessage(_("specifieTeam", getTeamColors().toString()));
+						return;
+					}
+				}
+				
+				join(player);
+				player.sendMessage(_("playerJoinedToPlayer", getName()));
+				
+				removeFromQueue(player);
+				pvpTimerTasks.remove(player.getName());
+			}
+		}, Math.abs(pvptimer) * 20L);
+		
+		pvpTimerTasks.put(player.getName(), taskId);
+	}
+	
 	@SuppressWarnings("deprecation")
-	public void addPlayer(Player player) {
+	private void join(Player player) {
 		if (isDisabled())
 			return;
 		
@@ -357,8 +477,7 @@ public abstract class Game {
 		else
 			player.teleport(lobby);
 		
-		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
-			PlayerStateManager.savePlayerState(player);
+		PlayerStateManager.savePlayerState(player);
 		
 		if (HeavySpleef.instance.getConfig().getBoolean("sounds.plingSound", true)) {
 			for (Player p : getPlayers())
@@ -429,6 +548,7 @@ public abstract class Game {
 		}
 		
 		players.remove(player.getName());
+		removePlayerFromTeam(player);
 		
 		if (isIngame()) {
 			outPlayers.add(player.getName());
@@ -447,9 +567,15 @@ public abstract class Game {
 		
 		player.setFireTicks(0);
 		voted.remove(player.getName());
+		updateSidebarScoreboard();
 		
-		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
-			PlayerStateManager.restorePlayerState(player);
+		for (Team team : teams) {
+			if (team.hasPlayer(player))
+				team.leave(player);
+		}
+		
+		
+		PlayerStateManager.restorePlayerState(player);
 		if (cause == LoseCause.LOSE) {
 			losereward: {
 				if (getFlag(FlagType.LOSEREWARD) == null)
@@ -466,16 +592,37 @@ public abstract class Game {
 			setGameState(GameState.JOINABLE);
 		updateWalls();
 		if (state == GameState.INGAME || state == GameState.COUNTING) {
+			if (getFlag(FlagType.TEAM) != null && getFlag(FlagType.TEAM)) {
+				int teamsLeft = 0;
+				
+				for (Team team : teams) {
+					if (team.hasPlayersLeft())
+						teamsLeft++;
+				}
+				
+				if (teamsLeft <= 1) {
+					teamWin(getWinnerTeam());
+				}
+			}
+			
 			if (players.size() != 1)
 				return;
 			
 			cancelTasks();
+			win(Bukkit.getPlayer(players.get(0)));
 			
-			for (int i = 0; i < players.size(); i++) {
-				Player winner = Bukkit.getPlayer(players.get(i));
-				win(winner);
-			}
 		}
+	}
+	
+	private Team getWinnerTeam() {
+		Team winnerTeam = null;
+		
+		for (Team team : teams) {
+			if (team.hasPlayersLeft())
+				winnerTeam = team;
+		}
+		
+		return winnerTeam;
 	}
 	
 	public void nextRound(Player loserr) {
@@ -630,34 +777,25 @@ public abstract class Game {
 		
 		regen();
 		players.remove(p.getName());
+		removePlayerFromTeam(p);
 		
-		List<String> wereOut = new ArrayList<String>();
-		
-		for (String player : players)
-			wereOut.add(player);
-		
-		for (int i = 0; i < players.size(); i++) {
-			Player player = Bukkit.getPlayer(players.get(i));
-			
+		for (Player player : getPlayers()) {
 			if (getFlag(LOSE) == null) player.teleport(LocationSaver.load(p));
 			else player.teleport(getFlag(LOSE));
 			
 			player.setFireTicks(0);
 			player.setFallDistance(0);
 			StatisticManager.getStatistic(player.getName(), true).addLose();
-		}
-		
-		players.clear();
-		for (String outPlayer : wereOut) {
-			if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
-				PlayerStateManager.restorePlayerState(Bukkit.getPlayer(outPlayer));
+			players.remove(player.getName());
+			removePlayerFromTeam(player);
+			
+			PlayerStateManager.restorePlayerState(player);
 		}
 		
 		StatisticManager.getStatistic(p.getName(), true).addWin();
 		
-		if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
-			PlayerStateManager.restorePlayerState(p);
-		
+		PlayerStateManager.restorePlayerState(p);
+	
 		broadcast(_("hasWon", ViPManager.colorName(p.getName()), this.getName()));
 		p.sendMessage(_("win"));
 		p.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(p))));
@@ -669,35 +807,69 @@ public abstract class Game {
 		if (HeavySpleef.instance.getConfig().getBoolean("sounds.levelUp", true))
 			p.playSound(p.getLocation(), Sound.LEVEL_UP, 4.0F, p.getLocation().getPitch());
 		
-		if (getFlag(FlagType.ITEMREWARD) != null) {
-			for (ItemStack stack : getFlag(FlagType.ITEMREWARD)) {
-				ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
-				p.getInventory().addItem(newStack);
-				p.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), MaterialHelper.getName(stack.getType().name())));
-			}
-		}
-		if (HeavySpleef.hooks.hasVault()) {
-			if (this.jackpot > 0) {
-				EconomyResponse r = HeavySpleef.hooks.getVaultEconomy().depositPlayer(p.getName(), this.jackpot);
-				p.sendMessage(_("jackpotReceived", HeavySpleef.hooks.getVaultEconomy().format(r.amount)));
-				this.jackpot = 0;
-			}
-			int reward = getFlag(REWARD) == null ? HeavySpleef.instance.getConfig().getInt("general.defaultReward", 0) : getFlag(REWARD);
-			
-			if (reward > 0) {
-				EconomyResponse r = HeavySpleef.hooks.getVaultEconomy().depositPlayer(p.getName(), reward);
-				p.sendMessage(_("rewardReceived", HeavySpleef.hooks.getVaultEconomy().format(r.amount)));
-			}
-		}
-		
+
+		giveRewards(p, true);
 		setGameState(GameState.JOINABLE);
 		updateScoreBoards();
+		updateSidebarScoreboard();
 		updateWalls();
 		addPlayersFromQueue();
 	}
 	
-	public void endInDraw() {
+	public void teamWin(Team team) {
+		if (team == null) {
+			stop();
+			return;
+		}
 		
+		regen();
+		
+		for (Player winner : team.getPlayers()) {
+			if (getFlag(WIN) == null)
+				winner.teleport(LocationSaver.load(winner));
+			else
+				winner.teleport(getFlag(WIN));
+			
+			players.remove(winner.getName());
+			winner.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(winner))));
+			
+			PlayerStateManager.restorePlayerState(winner);
+			
+			StatisticManager.getStatistic(winner.getName(), true).addWin();
+			giveRewards(winner, false);
+			
+			removePlayerFromTeam(winner);
+		}
+		
+		for (Player leftPlayer : getPlayers()) {
+			if (getFlag(LOSE) == null)
+				leftPlayer.teleport(LocationSaver.load(leftPlayer));
+			else
+				leftPlayer.teleport(getFlag(WIN));
+			
+			players.remove(leftPlayer.getName());
+			leftPlayer.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(leftPlayer))));
+			
+			PlayerStateManager.restorePlayerState(leftPlayer);
+			
+			StatisticManager.getStatistic(leftPlayer.getName(), true).addLose();
+			removePlayerFromTeam(leftPlayer);
+		}
+		
+		Bukkit.getPluginManager().callEvent(new SpleefFinishEvent(new GameData(this), StopCause.WIN, null));
+		clearJackpot();
+		clearAll();
+		removeBoxes();
+		broadcast(_("teamWin", MaterialHelper.getName(team.getColor().name()), getName()));
+		cancelTasks();
+		setGameState(GameState.JOINABLE);
+		updateScoreBoards();
+		updateWalls();
+		updateSidebarScoreboard();
+		addPlayersFromQueue();
+	}
+	
+	public void endInDraw() {
 		regen();
 		
 		Bukkit.getPluginManager().callEvent(new SpleefFinishEvent(new GameData(this), StopCause.DRAW, null));
@@ -709,9 +881,8 @@ public abstract class Game {
 				p.teleport(getFlag(WIN));
 			
 			players.remove(p.getName());
-			
-			if (HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true))
-				PlayerStateManager.restorePlayerState(p);
+			removePlayerFromTeam(p);
+			PlayerStateManager.restorePlayerState(p);
 		}
 		
 		
@@ -722,6 +893,7 @@ public abstract class Game {
 		setGameState(GameState.JOINABLE);
 		updateScoreBoards();
 		updateWalls();
+		updateSidebarScoreboard();
 		addPlayersFromQueue();
 	}
 	
@@ -734,7 +906,22 @@ public abstract class Game {
 		case LEAVE:
 			return _("loseCause_" + cause.name().toLowerCase(), ViPManager.colorName(player.getName()), getName());
 		case LOSE:
-			return _("loseCause_" + cause.name().toLowerCase(), ViPManager.colorName(player.getName()), getKiller(player, true));
+			Team team = getTeam(player);
+			if (team == null)
+				return _("loseCause_" + cause.name().toLowerCase(), ViPManager.colorName(player.getName()), getKiller(player, true));
+			
+			String killerName = "";
+			
+			Player killer = Bukkit.getPlayer(getKiller(player, true));
+			if (killer == null)
+				return _("loseCause_" + cause.name().toLowerCase(), team.getColor() + player.getName(), "");
+			
+			killerName = killer.getName();
+			Team killerTeam = getTeam(killer);
+			if (killerTeam == null)
+				return _("loseCause_" + cause.name().toLowerCase(), team.getColor() + player.getName(), ViPManager.colorName(killerName));
+			
+			return _("loseCause_" + cause.name().toLowerCase(), team.getColor() + player.getName(), killerTeam.getColor() + killerName);
 		case UNKNOWN:
 			return _("loseCause_" + cause.name().toLowerCase(), ViPManager.colorName(player.getName()));
 		default:
@@ -751,7 +938,7 @@ public abstract class Game {
 	 * @return The name of the killer
 	 */
 	public String getKiller(Player player, boolean addKnockout) {
-		Floor lowerMost = getLowermostFloor();
+		Floor lowerMost = getLowestFloor();
 		
 		for (String name : brokenBlocks.keySet()) {
 			List<Block> blocks = brokenBlocks.get(name);
@@ -861,7 +1048,7 @@ public abstract class Game {
 	}
 	
 	/**
-	 * Checks wether this game is waiting, or is not ingame
+	 * Checks wether this game is waiting
 	 * @return True if the game is waiting
 	 */
 	public boolean isWaiting() {
@@ -998,7 +1185,7 @@ public abstract class Game {
 	 * Gets the lowermost floor of this game
 	 * @return The lowermost floor
 	 */
-	public Floor getLowermostFloor() {
+	public Floor getLowestFloor() {
 		Map<Integer, Floor> floorsWithY = new HashMap<Integer, Floor>();
 		
 		for (Floor f : getFloors()) {
@@ -1026,39 +1213,6 @@ public abstract class Game {
 		Integer[] keySet = floorsWithY.keySet().toArray(new Integer[floorsWithY.size()]);
 		Arrays.sort(keySet);
 		return floorsWithY.get(keySet[keySet.length - 1]);
-	}
-
-	/**
-	 * Adds all players from the queue in this game
-	 */
-	private void addPlayersFromQueue() {
-		Collection<String> keySet = GameManager.queues.keySet();
-		String[] keySetAsArray = keySet.toArray(new String[keySet.size()]);
-		int addedPlayers = 0;
-		
-		//Can't use foreach loop, will cause a ConcurrentModificationException...
-		//A foreach loop looks good, but will often cause problems if you modify the
-		//Map / List while iterating over it.
-		for (int i = 0; i < keySetAsArray.length; i++) {
-			if (GameManager.queues.get(keySetAsArray[i]).equalsIgnoreCase(getName())) {
-				Player currentPlayer = Bukkit.getPlayer(keySetAsArray[i]);
-				if (currentPlayer == null) {
-					GameManager.queues.remove(keySetAsArray[i]);
-					continue;
-				}
-				
-				boolean is1vs1 = getFlag(ONEVSONE) == null ? false : getFlag(ONEVSONE);
-				int maxplayers = getFlag(MAXPLAYERS) == null ? -1 : getFlag(MAXPLAYERS); 
-				
-				if (is1vs1 && addedPlayers >= 2)
-					return;
-				if (maxplayers > 1 && addedPlayers >= maxplayers)
-					return;
-				GameManager.removeFromQueue(currentPlayer);
-				addPlayer(currentPlayer);
-				addedPlayers++;
-			}
-		}
 	}
 
 	/**
@@ -1264,28 +1418,28 @@ public abstract class Game {
 		}
 	}
 	
-	private void cancelTasks() {
+	protected void cancelTasks() {
 		cancelSTTask();
 		cancelRCTask();
 		cancelTOTask();
 	}
 	
-	private void cancelRCTask() {
-		if (Bukkit.getScheduler().isQueued(this.roundTid) && roundTid != -1) {
+	protected void cancelRCTask() {
+		if ((Bukkit.getScheduler().isQueued(this.roundTid) || Bukkit.getScheduler().isCurrentlyRunning(this.roundTid)) && roundTid != -1) {
 			Bukkit.getScheduler().cancelTask(this.roundTid);
 			this.roundTid = -1;
 		}
 	}
 	
-	private void cancelSTTask() {
-		if (Bukkit.getScheduler().isQueued(this.tid) && tid != -1) {
+	public void cancelSTTask() {
+		if ((Bukkit.getScheduler().isQueued(this.tid) || Bukkit.getScheduler().isCurrentlyRunning(this.tid)) && tid != -1) {
 			Bukkit.getScheduler().cancelTask(this.tid);
 			this.tid = -1;
 		}
 	}
 	
-	private void cancelTOTask() {
-		if (Bukkit.getScheduler().isQueued(this.timeoutTid) && timeoutTid != -1) {
+	protected void cancelTOTask() {
+		if ((Bukkit.getScheduler().isQueued(this.timeoutTid) || Bukkit.getScheduler().isCurrentlyRunning(this.timeoutTid)) && timeoutTid != -1) {
 			Bukkit.getScheduler().cancelTask(this.timeoutTid);
 			this.timeoutTid = -1;
 		}
@@ -1369,6 +1523,38 @@ public abstract class Game {
 		updateWalls();
 	}
 	
+	public void updateSidebarScoreboard() {
+		if (!HeavySpleef.hooks.getService(ScoreboardAPIHook.class).hasHook())
+			return;
+		if (board == null)
+			return;
+		
+		Player[] out = getOutPlayers();
+		Player[] in = getPlayers();
+		
+		List<Player> allPlayers = ArrayHelper.mergeArrays(in, out);
+		
+		if (isWaiting()) {
+			board.stopShowingAllPlayers();
+			HeavySpleef.hooks.getService(ScoreboardAPIHook.class).getHook().removeScoreboard(board);
+			board = null;
+			return;
+		}
+		for (Player player : allPlayers) {//Loop around all players
+			ChatColor prefix = players.contains(player.getName()) ? ChatColor.WHITE : ChatColor.DARK_GRAY;//We need our prefix...
+			
+			if (!players.contains(player.getName()))//If the player is out we remove the ingame item
+				board.removeItem(ChatColor.WHITE + player.getName());
+			
+			board.setItem(prefix + player.getName(), getKnockouts(player));//We set the new prefix
+			
+			if (players.contains(player.getName()))//Only show scoreboard if they are not out
+				board.showToPlayer(player);//And show the scoreboard to ingame players
+			else
+				board.showToPlayer(player, false);
+		}
+	}
+	
 	public void addVote(Player player) {
 		voted.add(player.getName());
 	}
@@ -1383,10 +1569,125 @@ public abstract class Game {
 		double oneProcent = (double)players.size() / 100.0;
 		double neededProcent = oneProcent * procent;
 		
+		int minplayers = getFlag(FlagType.MINPLAYERS) == null ? HeavySpleef.instance.getConfig().getInt("general.neededPlayers") : getFlag(FlagType.MINPLAYERS);
+		
+		if (voted.size() < minplayers)
+			return false;
 		if (voted.size() >= neededProcent && players.size() > 1)
 			return true;
 		
 		return false;
+	}
+	
+	public void addTeam(ChatColor color) {
+		for (Team team : teams) {
+			if (team.getColor() == color) {
+				teams.remove(team);
+				break;
+			}
+		}
+		
+		Team team = new Team(color, this);
+		teams.add(team);
+	}
+	
+	public void addTeam(Team team) {
+		addTeam(team.getColor());
+	}
+	
+	public Team getTeam(ChatColor color) {
+		for (Team team : teams) {
+			if (team.getColor() == color)
+				return team;
+		}
+		
+		return null;
+	}
+	
+	public Team getTeam(Player player) {
+		for (Team team : teams) {
+			for (Player p : team.getPlayers()) {
+				if (player.getName().equalsIgnoreCase(p.getName())) {
+					return team;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public boolean removeTeam(ChatColor color) {
+		for (Team team : teams) {
+			if (team.getColor() == color) {
+				teams.remove(team);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean removePlayerFromTeam(Player player) {
+		boolean removed = false;
+		
+		for (Team team : teams) {
+			if (team.hasPlayer(player)) {
+				team.leave(player);
+				removed = true;
+			}
+		}
+		
+		return removed;
+	}
+	
+	public void giveRewards(Player player, boolean clearJackpot) {
+		if (getFlag(FlagType.ITEMREWARD) != null) {
+			for (ItemStack stack : getFlag(FlagType.ITEMREWARD)) {
+				ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
+				player.getInventory().addItem(newStack);
+				player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), MaterialHelper.getName(stack.getType().name())));
+			}
+		}
+		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook()) {
+			Economy econ = HeavySpleef.hooks.getService(VaultHook.class).getHook();
+			if (this.jackpot > 0) {
+				EconomyResponse r = econ.depositPlayer(player.getName(), this.jackpot);
+				player.sendMessage(_("jackpotReceived", econ.format(r.amount)));
+				if (clearJackpot)
+					clearJackpot();
+			}
+			int reward = getFlag(REWARD) == null ? HeavySpleef.instance.getConfig().getInt("general.defaultReward", 0) : getFlag(REWARD);
+			
+			if (reward > 0) {
+				EconomyResponse r = econ.depositPlayer(player.getName(), reward);
+				player.sendMessage(_("rewardReceived", econ.format(r.amount)));
+			}
+		}
+	}
+	
+	private void clearJackpot() {
+		this.jackpot = 0;
+	}
+	
+	public boolean hasTeam(ChatColor color) {
+		for (Team team : teams) {
+			if (team.getColor() == color)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public List<Team> getTeams() {
+		return teams;
+	}
+	
+	public Set<String> getTeamColors() {
+		Set<String> set = new HashSet<String>();
+		for (Team team : teams)
+			set.add(team.getColor() + MaterialHelper.getName(team.getColor().name()));
+		
+		return set;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1416,6 +1717,90 @@ public abstract class Game {
 	
 	public Map<Flag<?>, Object> getFlags() {
 		return this.flags;
+	}
+	
+	/* Queues system start */
+	public void addToQueue(Player player, ChatColor color) {
+		if (!HeavySpleef.instance.getConfig().getBoolean("queues.useQueues", true))
+			return;
+		for (Game game : GameManager.getGames()) {
+			game.removeFromQueue(player);
+		}
+		
+		Team team = getTeam(color);
+		queues.add(new Queue(player, this, team));
+		player.sendMessage(_("addedToQueue", getName()));
+	}
+	
+	public void removeFromQueue(Player player) {
+		Queue toRemove = null;
+		
+		for (Queue queue : queues) {
+			if (queue.getOwner().getName().equalsIgnoreCase(player.getName())) {
+				toRemove = queue;
+				break;
+			}
+		}
+		
+		if (toRemove == null)
+			return;
+		
+		queues.remove(toRemove);
+		player.sendMessage(_("noLongerInQueue", getName()));
+	}
+	
+	public void removeAllFromQueue() {
+		for (Queue queue : queues) {
+			removeFromQueue(queue.getOwner());
+		}
+	}
+	
+	public Queue getQueue(Player player) {
+		for (Queue queue : queues) {
+			if (queue.getOwner().getName().equalsIgnoreCase(player.getName()))
+				return queue;
+		}
+		
+		return null;
+	}
+	
+	public boolean hasQueue(Player player) {
+		for (Queue queue : queues) {
+			if (queue.getOwner().getName().equalsIgnoreCase(player.getName()))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public List<Queue> getQueues() {
+		return queues;
+	}
+	
+	/* Queues system end */
+	
+	/**
+	 * Adds all players from the queue in this game
+	 */
+	public void addPlayersFromQueue() {
+		List<Queue> copyOfQueues = new ArrayList<Queue>(queues); //We need a copy of the queues to prevent a ConcurrentModificationException...
+		
+		int maxToAdd = (getFlag(ONEVSONE) == null ? false : getFlag(ONEVSONE)) ? 2 : getFlag(MAXPLAYERS) == null ? -1 : getFlag(MAXPLAYERS);
+		int added = 0;
+		
+		for (Queue queue : copyOfQueues) {
+			Player player = queue.getOwner();
+			if (player == null)
+				continue;
+			if (maxToAdd > 0 && added >= maxToAdd)
+				continue;
+			
+			removeFromQueue(player);
+			ChatColor color = queue.getTeam() == null ? null : queue.getTeam().getColor();
+			
+			addPlayer(player, color);
+			added++;
+		}
 	}
 	
 	//Just a simple class to save a 1vs1 win

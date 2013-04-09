@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
+import me.matzefratze123.heavyspleef.core.QueuesManager;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.command.CommandSender;
@@ -45,12 +46,12 @@ public class CommandLeave extends HSCommand {
 	
 	public static void leave(Player player) {
 		if (!GameManager.isInAnyGame(player)) {
-			if (!GameManager.isInQueue(player)) {
+			if (!QueuesManager.hasQueue(player)) {
 				player.sendMessage(_("notInQueue"));
 				return;
 			}
 			
-			GameManager.removeFromQueue(player);
+			QueuesManager.removeFromQueue(player);
 			return;
 		}
 		Game game = GameManager.fromPlayer(player);

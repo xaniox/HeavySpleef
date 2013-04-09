@@ -89,7 +89,7 @@ public class HeavySpleef extends JavaPlugin {
 		instance = this;
 		config = new FileConfig(this);
 		
-		hooks = new HookManager();
+		hooks = HookManager.getInstance();
 		sel = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
@@ -102,7 +102,11 @@ public class HeavySpleef extends JavaPlugin {
 		
 		this.setupStatisticDatabase();
 		this.statisticDatabase.load();
-		this.startMetrics();
+		
+		//Start metrics async
+		Thread thread = new Thread(new MetricsStarter());
+		thread.start();
+		
 		this.initUpdate();
 		this.registerEvents();
 		this.getCommand("spleef").setExecutor(new CommandHandler());
@@ -188,16 +192,10 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new SignWallListener(), this);
 		pm.registerEvents(new QueuesListener(), this);
 		pm.registerEvents(new PVPTimerListener(), this);
-	}
-	
-	private void startMetrics() {
-		try {
-			Metrics m = new Metrics(this);
-			m.start();
-			this.getLogger().info("Metrics started...");
-		} catch (IOException e) {
-			this.getLogger().info("An error occured while submitting stats to metrics...");
-		}
+		
+		/*Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
+		if (tagAPIHook.hasHook())
+			pm.registerEvents(new TagListener(), this);*/
 	}
 	
 	private void initUpdate() {
@@ -231,6 +229,21 @@ public class HeavySpleef extends JavaPlugin {
 				statisticDatabase.save();
 			}
 		}, 0L, getConfig().getInt("general.saveIntervall") * 20L * 60L);
+	}
+	
+	private class MetricsStarter implements Runnable {
+
+		@Override
+		public void run() {
+			try {
+				Metrics m = new Metrics(HeavySpleef.this);
+				m.start();
+				HeavySpleef.this.getLogger().info("Metrics started...");
+			} catch (IOException e) {
+				HeavySpleef.this.getLogger().info("An error occured while submitting stats to metrics...");
+			}
+		}
+		
 	}
 	
 }

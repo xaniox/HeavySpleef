@@ -136,6 +136,8 @@ teleportWillCommence: &6Joining game %a. Teleport will commence in %a seconds...
 dontMove: &6Don't move!
 pvpTimerCancelled: &4Teleportation cancelled due to movement!
 
+notASign: &cSome blocks in this selections are not signs!
+
 # Публичные сообщения
 
 gameDisabled: &cИгру &6%a &cотключил %a

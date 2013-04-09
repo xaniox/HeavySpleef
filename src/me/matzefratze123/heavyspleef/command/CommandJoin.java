@@ -19,33 +19,25 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
-import static me.matzefratze123.heavyspleef.core.flag.FlagType.JACKPOTAMOUNT;
-import static me.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
-import static me.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.Team;
+import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandJoin extends HSCommand {
-
-	public static Map<String, Integer> pvpTimerTasks = new HashMap<String, Integer>();
 	
 	public CommandJoin() {
 		setMaxArgs(2);
 		setMinArgs(0);
 		setOnlyIngame(true);
-		setUsage("/spleef join <Arena>");
+		setUsage("/spleef join <Arena> [team]");
 	}
 
 	@Override
@@ -72,106 +64,32 @@ public class CommandJoin extends HSCommand {
 		Game game = GameManager.getGame(args[0].toLowerCase());
 		
 		if (args.length == 1) {
-			join(player, game);
+			if (game.getFlag(FlagType.TEAM) != null && game.getFlag(FlagType.TEAM)) {
+				player.sendMessage(_("specifieTeam", game.getTeamColors().toString()));
+				return;
+			}
+			
+			game.addPlayer(player, null);
 		} else if (args.length == 2) {
-			if (!player.hasPermission(Permissions.JOIN_GAME_OTHERS.getPerm())) {
-				player.sendMessage(LanguageHandler._("noPermission"));
+			if (game.getFlag(FlagType.TEAM) == null || !game.getFlag(FlagType.TEAM)) {
+				game.addPlayer(player, null);
 				return;
 			}
 			
-			Player target = Bukkit.getPlayer(args[1]);
-			if (target == null) {
-				player.sendMessage(_("playerNotOnline"));
+			ChatColor color = null;
+			
+			for (ChatColor colors : Team.allowedColors) {
+				if (colors.name().equalsIgnoreCase(args[1]))
+					color = colors;
+			}
+			
+			if (color == null) {
+				player.sendMessage(getUsage());
 				return;
 			}
 			
-			boolean join = join(target, game);
-			if (join)
-				player.sendMessage(_("targetHasJoined", target.getName(), game.getName()));
+			game.addPlayer(player, color);
 		}
-	}
-	
-	public static boolean join(Player player, Game game) {
-		int jackpotToPay = game.getFlag(JACKPOTAMOUNT) == null ? HeavySpleef.instance.getConfig().getInt("general.defaultToPay", 0) : game.getFlag(JACKPOTAMOUNT);
-		
-		if (game.isDisabled()) {
-			player.sendMessage(_("gameIsDisabled"));
-			return false;
-		}
-		if (!game.isFinal()) {
-			player.sendMessage(_("isntReadyToPlay"));
-			return false;
-		}
-		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.hasWorldEdit()) {
-			player.sendMessage(_("noWorldEdit"));
-			return false;
-		}
-		
-		if (HeavySpleef.hooks.hasVault()) {
-			if (HeavySpleef.hooks.getVaultEconomy().getBalance(player.getName()) < jackpotToPay) {
-				player.sendMessage(_("notEnoughMoneyToJoin"));
-				return false;
-			}
-		}
-		
-		if (GameManager.isInAnyGame(player)) {
-			player.sendMessage(_("cantJoinMultipleGames"));
-			return false;
-		}
-		if (game.isIngame()) {
-			player.sendMessage(_("gameAlreadyRunning"));
-			if (HeavySpleef.instance.getConfig().getBoolean("queues.useQueues"))
-				GameManager.addQueue(player, game.getName());
-			return false;
-		}
-		
-		boolean is1vs1 = game.getFlag(ONEVSONE) == null ? false : game.getFlag(ONEVSONE);
-		int maxplayers = game.getFlag(MAXPLAYERS) == null ? -1 : game.getFlag(MAXPLAYERS);
-		
-		if (game.isCounting() && plugin.getConfig().getBoolean("general.joinAtCountdown") && !is1vs1) {
-			joinGame(player, game);
-			return true;
-		} else if (game.isCounting()){
-			player.sendMessage(_("gameAlreadyRunning"));
-			if (HeavySpleef.instance.getConfig().getBoolean("queues.useQueues"))
-				GameManager.addQueue(player, game.getName());
-			return false;
-		}
-		if (maxplayers > 0 && game.getPlayers().length >= maxplayers) {
-			player.sendMessage(_("maxPlayersReached"));
-			if (HeavySpleef.instance.getConfig().getBoolean("queues.useQueues"))
-				GameManager.addQueue(player, game.getName());
-			return false;
-		}
-		
-		
-		return joinGame(player, game);
-	}
-	
-	private static boolean joinGame(final Player player, final Game game) {
-		int pvptimer = HeavySpleef.instance.getConfig().getInt("general.pvptimer");
-		
-		if (pvpTimerTasks.containsKey(player.getName()))
-			Bukkit.getScheduler().cancelTask(pvpTimerTasks.get(player.getName()));
-		
-		if (pvptimer > 0) {
-			player.sendMessage(_("teleportWillCommence", game.getName(), String.valueOf(pvptimer)));
-			player.sendMessage(_("dontMove"));
-		}
-		int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
-			
-			@Override
-			public void run() {
-				player.sendMessage(_("playerJoinedToPlayer", game.getName()));
-				game.addPlayer(player);
-				if (GameManager.queues.containsKey(player.getName()))
-					GameManager.queues.remove(player.getName());
-				pvpTimerTasks.remove(player.getName());
-			}
-		}, Math.abs(pvptimer) * 20L);
-		
-		pvpTimerTasks.put(player.getName(), taskId);
-		return true;
 	}
 
 }

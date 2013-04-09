@@ -76,9 +76,15 @@ onlyLobby: &cDu kannst diesen Befehl nur w\u00E4hrend der Lobby benutzen!
 votesDisabled: &6Votes sind f\u00FCr diesen Server deaktiviert!
 alreadyVoted: &6Du hast bereits gevotet!
 
+alreadyInTeam: &cDu bist bereits im %a &c Team!
+notInThisTeam: &cDu bist nicht im &a &cTeam!
+invalidColor: &cDies ist keine g\u00FCltige Teamfarbe!
+specifieTeam: &cBitte w\u00E4hle ein Team! Verf\u00FCgbare Teams: %a
+notASign: &cNicht alle Bl\u00F6cke in dieser Auswahl sind Schilder!
+
 # Erfolgsnachrichten
 
-floorCreated: &7Die Spleefebene wurde hinzugef\u00FCgt!
+floorCreated: &7Floor mit ID #%a hinzugef\u00FCgt!
 loseZoneCreated: &7Die Verlierzone wurde hinzugef\u00FCgt! (ID: %a)\nWenn du diese Verlierzone entfernen willst dann tipp ein: /spleef removelose %a %a
 gameCreated: &7Arena hinzugef\u00FCgt!
 gameDeleted: &7Arena gel\u00F6scht!
@@ -104,9 +110,9 @@ antiCampTeleport: &4AntiCamping&c: Du wurdest eine Ebene nach unten teleportiert
 paidIntoJackpot: &7Du hast %a in Jackpot dieses Spiels gezahlt!
 yourKnockOuts: &7Deine Knockouts: %a
 
-noLongerInQueue: &7Du bist nicht l\u00E4nger in der Warteschlange!
+noLongerInQueue: &7Du bist nicht l\u00E4nger in der Warteschlange f\u00FCr wurde das Spiel &6%a&7!
 leftQueue: &7Du hast das die Warteschlange f\u00FCr das Spiel %a verlassen!
-addedToQueue: &7Du bist nun in der Warteschlange f\u00FCr das Spiel %a
+addedToQueue: &7Du bist nun in der Warteschlange f\u00FCr das Spiel &6%a&7.
 notInQueue: &7Du bist in keiner Warteschlange!
 
 outOfGame: &cDu hast verloren!
@@ -140,6 +146,11 @@ teleportWillCommence: &6Trete dem Spiel %a bei. Teleportierung in %a Sekunden...
 dontMove: &6Beweg dich nicht...
 pvpTimerCancelled: &4Teleportierung abgebrochen!
 
+addedToTeam: &7Du wurdest dem Team %a &7hinzugef\u00FCgt
+removedFromTeam: &7Du hast das Team %a &7verlassen...
+teamAdded: &7Die Teamfarbe %a &7wurde dem Spiel hinzugef\u00FCgt.
+teamRemoved: &7Das Team mit der Farbe %a &7wurde enfernt.
+
 # Broadcast nachrichten
 
 gameDisabled: &cDas Spiel &6%a &cwurde von %a&c deaktiviert!
@@ -151,6 +162,7 @@ gameIsStarting: &1Spiel startet in %a Sekunden...
 gameStopped: &cDas Spiel wurde gestoppt!
 playerJoinedGame: &a%a&a ist dem Spiel beigetreten!
 hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!
+teamWin: &aTeam %a &ahat das Spiel in Arena %a gewonnen!
 
 remaining: &1%a Spieler verbleiben!
 

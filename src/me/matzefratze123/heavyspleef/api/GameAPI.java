@@ -104,10 +104,10 @@ public class GameAPI {
 	public boolean delete(GameData data) {
 		Validate.notNull(data);
 		
-		if (!hasGame(data.getGame().getName()))
+		if (!hasGame(data.getHandle().getName()))
 			return false;
 		
-		GameManager.deleteGame(data.getGame().getName());
+		GameManager.deleteGame(data.getHandle().getName());
 		return true;
 	}
 	

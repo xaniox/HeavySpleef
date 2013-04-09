@@ -116,6 +116,8 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("list", new CommandList());
 		addSubCommand("vote", new CommandVote());
 		addSubCommand("ready", new CommandVote());
+		/*addSubCommand("addteam", new CommandAddTeam());
+		addSubCommand("removeteam", new CommandRemoveTeam());*/
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

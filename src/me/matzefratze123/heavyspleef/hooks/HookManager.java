@@ -19,69 +19,50 @@
  */
 package me.matzefratze123.heavyspleef.hooks;
 
-import net.milkbowl.vault.economy.Economy;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HookManager {
 
-	private Economy econ;
-	private boolean hasVault = false;
+	//Hook instances start
+	public static VaultHook vaultHook = new VaultHook();
+	public static WorldEditHook weHook = new WorldEditHook();
+	public static ScoreboardAPIHook scoreboardHook = new ScoreboardAPIHook(); 
+	public static TagAPIHook tagAPIHook = new TagAPIHook();
+	//Hook instances end
 	
-	private WorldEditPlugin worldEdit;
-	private boolean hasWorldEdit = false;
+	public static Hook<?>[] allHooks = new Hook<?>[] {vaultHook, weHook, scoreboardHook, tagAPIHook};
+	private List<Hook<?>> hooks = new ArrayList<Hook<?>>();
 	
 	public HookManager() {
-		setupEconomy();
-		setupWorldEdit();
+		initHooks();
 	}
 	
-	private void setupEconomy() {
-	       if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
-	           return;
-	       }
-	       RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
-	       if (rsp == null) {
-	           return;
-	       }
-	       econ = rsp.getProvider();
-	       hasVault = econ != null;
+	public static HookManager getInstance() {
+		return new HookManager();
 	}
 	
-	private void setupWorldEdit() {
-		Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
+	private void initHooks() {
+		for (Hook<?> hook : allHooks) {
+			if (hooks.contains(hook))
+				hooks.remove(hook);
+			hooks.add(hook);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <V> Hook<V> getService(Class<? extends Hook<V>> clazz) {
+		for (Hook<?> hook : hooks) {
+			if (!hook.getClass().equals(clazz))
+				continue;
+			
+			Hook<V> h = (Hook<V>)hook;
+			return h;
+		}
 		
-		if (we == null)
-			return;
-		
-		if (!Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
-			return;
-		
-		if (!(we instanceof WorldEditPlugin))
-			return;
-		
-		worldEdit = (WorldEditPlugin) we;
-		hasWorldEdit = true;
-	}
-	
-	public boolean hasVault() {
-		return this.hasVault;
-	}
-	
-	public boolean hasWorldEdit() {
-		return this.hasWorldEdit;
-	}
-	
-	public WorldEditPlugin getWorldEdit() {
-		return this.worldEdit;
-	}
-	
-	public Economy getVaultEconomy() {
-		return this.econ;
+		return null;
 	}
 	
 }
+
+	

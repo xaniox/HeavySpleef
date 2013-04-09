@@ -41,6 +41,11 @@ public class StartCountdownTask extends Countdown {
 	}
 	
 	@Override
+	public void onInterrupt() {
+		game.cancelSTTask();
+	}
+	
+	@Override
 	public void onCount() {
 		game.setCurrentCount(getTimeRemaining());
 		if (getTimeRemaining() <= 5){//Do improved countdown

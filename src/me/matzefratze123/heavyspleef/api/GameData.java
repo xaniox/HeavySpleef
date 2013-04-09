@@ -54,7 +54,7 @@ public class GameData {
 		this.game = GameManager.getGame(name);
 	}
 	
-	protected Game getGame() {
+	public Game getHandle() {
 		return this.game;
 	}
 	
@@ -216,7 +216,7 @@ public class GameData {
 	 */
 	public void join(Player player) {
 		Validate.notNull(player, "Player cannot be null");
-		game.addPlayer(player);
+		game.addPlayer(player, null);
 	}
 	
 	/**

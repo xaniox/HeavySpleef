@@ -117,6 +117,14 @@ general:
   # Set this to 0 to disable this function
   pvptimer: 0
   
+  # The plugin can show ingame players a sidebar scoreboard
+  # with the knockouts and the status. To use this, you have
+  # to install ScoreboardAPI. Link to dev.bukkit:
+  # http://dev.bukkit.org/server-mods/scoreboardapi/
+  # If you want to use this, set this to true
+  # Also this feature requires Java 7
+  showSidebarScoreboard: true
+  
 leaderboard:
   # Points for Spleef Games
   win: 30

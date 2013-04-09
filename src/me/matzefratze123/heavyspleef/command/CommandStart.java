@@ -24,6 +24,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
+import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.command.CommandSender;
@@ -55,7 +56,7 @@ public class CommandStart extends HSCommand {
 			player.sendMessage(_("gameIsDisabled"));
 			return;
 		}
-		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.hasWorldEdit()) {
+		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 			player.sendMessage(_("noWorldEdit"));
 			return;
 		}

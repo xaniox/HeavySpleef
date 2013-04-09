@@ -19,6 +19,7 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
+import me.matzefratze123.heavyspleef.FileConfig;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
@@ -38,7 +39,8 @@ public class CommandReload extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		long millis = System.currentTimeMillis();
-		HeavySpleef.instance.reloadConfig();//First reload our config
+		HeavySpleef.config = new FileConfig(plugin);//Create a new config if the file was deleted
+		plugin.reloadConfig();//First reload our config
 		
 		int antiCampTid = HeavySpleef.instance.antiCampTid;//Get the task id's
 		int saverTid = HeavySpleef.instance.saverTid;
@@ -48,14 +50,16 @@ public class CommandReload extends HSCommand {
 		if (saverTid >= 0)
 			Bukkit.getScheduler().cancelTask(saverTid);
 		
-		HeavySpleef.instance.startAntiCampingTask();//Restart the tasks
-		HeavySpleef.instance.startSaveTask();
+		plugin.startAntiCampingTask();//Restart the tasks
+		plugin.startSaveTask();
 		
 		PlayerListener.cantBreak = HeavySpleef.instance.getConfig().getIntegerList("blocks.cantBreak");//And refresh the cant-break list
 		PlayerListener.loseOnTouchWaterOrLava = HeavySpleef.instance.getConfig().getBoolean("blocks.loseOnTouchWaterOrLava", true);
 		
 		ScoreBoard.refreshData();//Refresh scoreboard data
 		LanguageHandler.loadLanguageFiles();//Reload languages files
+		
+		plugin.getSelectionManager().setup();//Reload selection
 		
 		sender.sendMessage(_("pluginReloaded", HeavySpleef.instance.getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
 		//And we are done!

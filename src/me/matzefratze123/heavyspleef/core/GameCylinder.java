@@ -206,7 +206,6 @@ public class GameCylinder extends Game {
 		int z = center.getBlockZ();
 		
 		Vector v = new Vector(x, y, z);
-		
 		return new CylinderRegion(world, v, new Vector2D(radius, radius), minY, maxY);
 	}
 

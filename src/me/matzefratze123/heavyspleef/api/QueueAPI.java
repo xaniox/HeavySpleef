@@ -1,3 +1,4 @@
+/*
 /**
  *   HeavySpleef - The simple spleef plugin for bukkit
  *   
@@ -15,18 +16,19 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ * */
+ 
 package me.matzefratze123.heavyspleef.api;
 
 import me.matzefratze123.heavyspleef.core.Game;
-import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.core.QueuesManager;
 
 import org.apache.commons.lang.Validate;
+
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class QueueAPI {
-
 	/**
 	 * Gets the instance
 	 */
@@ -44,7 +46,7 @@ public class QueueAPI {
 	public GameData getQueue(Player player) {
 		Validate.notNull(player);
 		
-		Game game = GameManager.getQueue(player);
+		Game game = QueuesManager.getQueue(player);
 		return new GameData(game);
 	}
 	
@@ -55,7 +57,7 @@ public class QueueAPI {
 	 */
 	public boolean hasQueue(Player player) {
 		Validate.notNull(player, "Player cannot be null");
-		return GameManager.isInQueue(player);
+		return QueuesManager.hasQueue(player);
 	}
 	
 	/**
@@ -63,15 +65,13 @@ public class QueueAPI {
 	 * 
 	 * @param player The player to add
 	 * @param data The gamedata where the player should be in queue
+	 * @param teamColor The team of the queue, may be null if this is no team game...
 	 */
-	public boolean addQueue(Player player, GameData data) {
+	public boolean addQueue(Player player, GameData data, ChatColor teamColor) {
 		Validate.notNull(player, "Player cannot be null");
 		Validate.notNull(data, "GameData cannot be null");
 		
-		if (hasQueue(player))
-			GameManager.removeFromQueue(player);
-		
-		GameManager.addQueue(player, data.getGame().getName());
+		QueuesManager.addToQueue(player, data.getHandle(), teamColor);
 		return true;
 	}
 	
@@ -87,7 +87,7 @@ public class QueueAPI {
 		if (!hasQueue(player))
 			return false;
 		
-		GameManager.removeFromQueue(player);
+		QueuesManager.removeFromQueue(player);
 		return true;
 	}
 	
@@ -97,7 +97,7 @@ public class QueueAPI {
 	 */
 	public void removeAllQueues(GameData data) {
 		Validate.notNull(data, "GameData cannot be null");
-		GameManager.removeAllPlayersFromGameQueue(data.getGame().getName());
+		data.getHandle().removeAllFromQueue();
 	}
 	
 }

@@ -20,17 +20,20 @@
 package me.matzefratze123.heavyspleef.listener;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.command.CommandJoin;
 import me.matzefratze123.heavyspleef.command.CommandLeave;
 import me.matzefratze123.heavyspleef.command.CommandStart;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCuboid;
 import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.core.SignWall;
+import me.matzefratze123.heavyspleef.core.Team;
+import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -47,11 +50,12 @@ public class SignListener implements Listener {
 		Player p = e.getPlayer();
 		Block block = e.getBlock();
 		
-		String line1, line2, line3;
+		String line1, line2, line3, line4;
 		
 		line1 = ChatColor.stripColor(e.getLine(0));
 		line2 = ChatColor.stripColor(e.getLine(1));
 		line3 = ChatColor.stripColor(e.getLine(2));
+		line4 = ChatColor.stripColor(e.getLine(3));
 		
 		if (p == null)
 			return;
@@ -68,12 +72,29 @@ public class SignListener implements Listener {
 				block.breakNaturally();
 				return;
 			}
+			if (!line4.isEmpty()) {
+				ChatColor color = null;
+				
+				for (ChatColor c : Team.allowedColors) {
+					if (c.name().equalsIgnoreCase(line4))
+						color = c;
+				}
+				
+				if (color == null) {
+					p.sendMessage(Game._("invalidColor"));//TODO
+					block.breakNaturally();
+					return;
+				}
+				
+				line4 = color + MaterialHelper.getName(line4);
+			}
+			
 			p.sendMessage(GameCuboid._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 			e.setLine(1, ChatColor.RED + "[Join]");
 			e.setLine(2, line3);
-			e.setLine(3, "");
+			e.setLine(3, line4);
 		} else if (line2.equalsIgnoreCase("[Start]")) {
 			if (!GameManager.hasGame(line3.toLowerCase())) {
 				p.sendMessage(GameCuboid._("arenaDoesntExists"));
@@ -116,11 +137,12 @@ public class SignListener implements Listener {
 		
 		Sign sign = (Sign) state;
 		
-		String line1, line2, line3;
+		String line1, line2, line3, line4;
 		
 		line1 = ChatColor.stripColor(sign.getLine(0));
 		line2 = ChatColor.stripColor(sign.getLine(1));
 		line3 = ChatColor.stripColor(sign.getLine(2));
+		line4 = ChatColor.stripColor(sign.getLine(3));
 		
 		if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Join]")) {
 			if (!p.hasPermission(Permissions.SIGN_JOIN.getPerm())) {
@@ -140,8 +162,34 @@ public class SignListener implements Listener {
 					p.sendMessage(GameCuboid._("arenaDoesntExists"));
 					return;
 				}
+				ChatColor color = null;
 				
-				CommandJoin.join(p, GameManager.getGame(line3));
+				if (!line4.isEmpty()) {
+					try {
+						color = ChatColor.valueOf(line4.toUpperCase());
+					} catch (Exception ex) {
+						p.sendMessage(Game._("invalidTeam"));
+						return;
+					}
+				} else {
+					blockCalculationUp: {
+						Block up = block.getRelative(BlockFace.UP);
+						if (up.getType() != Material.WOOL)
+							break blockCalculationUp;
+						color = Team.woolDyeToChatColor(up.getData());
+					}
+					blockCalculationFace: {
+						Block attached = SignWall.getAttachedBlock(sign);
+						if (attached == null)
+							break blockCalculationFace;
+						if (attached.getType() != Material.WOOL)
+							break blockCalculationFace;
+						
+						color = Team.woolDyeToChatColor(attached.getData());
+					}
+				}
+				
+				GameManager.getGame(line3).addPlayer(p, color);
 			}
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Start]")) {
 			if (!p.hasPermission(Permissions.SIGN_START.getPerm())) {

@@ -20,6 +20,7 @@
 package me.matzefratze123.heavyspleef.selection;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,7 +36,7 @@ public class SelectionWorldEdit extends Selection {
 
 	@Override
 	public Location getFirst() {
-		WorldEditPlugin we = HeavySpleef.hooks.getWorldEdit();
+		WorldEditPlugin we = HeavySpleef.hooks.getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)
@@ -53,7 +54,7 @@ public class SelectionWorldEdit extends Selection {
 
 	@Override
 	public Location getSecond() {
-		WorldEditPlugin we = HeavySpleef.hooks.getWorldEdit();
+		WorldEditPlugin we = HeavySpleef.hooks.getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)
@@ -71,7 +72,7 @@ public class SelectionWorldEdit extends Selection {
 
 	@Override
 	public boolean has() {
-		WorldEditPlugin we = HeavySpleef.hooks.getWorldEdit();
+		WorldEditPlugin we = HeavySpleef.hooks.getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)
@@ -89,7 +90,7 @@ public class SelectionWorldEdit extends Selection {
 
 	@Override
 	public boolean isTroughWorlds() {
-		WorldEditPlugin we = HeavySpleef.hooks.getWorldEdit();
+		WorldEditPlugin we = HeavySpleef.hooks.getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)

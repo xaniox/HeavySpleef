@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.core.flag.FlagType;
-import me.matzefratze123.heavyspleef.utility.LocationSaver;
+import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -37,7 +36,6 @@ public class GameManager {
 	public static List<Game> games = new ArrayList<Game>();
 	
 	public static Map<String, Integer> antiCamping = new HashMap<String, Integer>();
-	public static Map<String, String> queues = new HashMap<String, String>();
 	
 	public static Game getGame(String id) {
 		id = id.toLowerCase();
@@ -69,7 +67,7 @@ public class GameManager {
 	}
 	
 	public static Game createCylinderGame(String id, Location center, int radius, int minY, int maxY) {
-		if (!HeavySpleef.hooks.hasWorldEdit())
+		if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook())
 			return null;
 		games.add(new GameCylinder(id, center, radius, minY, maxY));
 		return getGame(id);
@@ -111,50 +109,6 @@ public class GameManager {
 			}
 		}
 		return null;
-	}
-	
-	public static void addQueue(Player p, String gameName) {
-		gameName = gameName.toLowerCase();
-		if (queues.containsKey(p.getName()))
-			p.sendMessage(Game._("leftQueue", queues.get(p.getName())));
-		if (getGame(gameName).getFlag(FlagType.QUEUELOBBY) != null) {
-			LocationSaver.save(p);
-			p.teleport(getGame(gameName).getFlag(FlagType.QUEUELOBBY));
-		}
-		
-		p.sendMessage(Game._("addedToQueue", gameName));
-		queues.put(p.getName(), gameName);
-	}
-	
-	public static void removeFromQueue(Player player) {
-		player.sendMessage(Game._("noLongerInQueue"));
-		if (!isInAnyGame(player)) {
-			teleport: {
-			if (getQueue(player).getFlag(FlagType.QUEUELOBBY) == null)
-				break teleport;
-			if (LocationSaver.has(player))
-				player.teleport(LocationSaver.load(player));
-			else
-				player.teleport(getQueue(player).getFlag(FlagType.LOSE));
-			}
-		}
-		queues.remove(player.getName());
-	}
-	
-	public static boolean isInQueue(Player p) {
-		return queues.containsKey(p.getName());
-	}
-	
-	public static Game getQueue(Player p) {
-		return getGame(queues.get(p.getName()));
-	}
-	
-	public static void removeAllPlayersFromGameQueue(String gameName) {
-		gameName = gameName.toLowerCase();
-		for (String player : queues.keySet()) {
-			if (queues.get(player).equalsIgnoreCase(gameName))
-				queues.remove(player);
-		}
 	}
 
 	public static boolean isInAnyGameIngame(Player p) {

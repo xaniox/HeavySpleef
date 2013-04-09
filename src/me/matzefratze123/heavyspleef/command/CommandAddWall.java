@@ -44,11 +44,15 @@ public class CommandAddWall extends HSCommand {
 			return;
 		}
 		if (SignWall.getDifference(s.getFirst(), s.getSecond()) < 2) {
-			p.sendMessage(_("lengthMustBeOver1"));//TODO
+			p.sendMessage(_("lengthMustBeOver1"));
 			return;
 		}
 		if (s.getFirst().getBlockY() != s.getSecond().getBlockY()) {
 			p.sendMessage(_("yMustBeSame"));
+			return;
+		}
+		if (!SignWall.isAllSign(s.getFirst(), s.getSecond())) {
+			p.sendMessage(_("notASign"));//TODO
 			return;
 		}
 		
