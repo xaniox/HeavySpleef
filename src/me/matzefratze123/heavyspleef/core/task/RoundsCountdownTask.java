@@ -43,7 +43,7 @@ public class RoundsCountdownTask extends Countdown {
 	@Override
 	public void onCount() {
 		if (getTimeRemaining() <= 5){//Do improved countdown
-			if (HeavySpleef.instance.getConfig().getBoolean("sounds.plingSound", true)) {
+			if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
 				for (Player p : game.getPlayers())
 					p.playSound(p.getLocation(), Sound.NOTE_PLING, 4.0F, p.getLocation().getPitch());
 			}
@@ -56,7 +56,7 @@ public class RoundsCountdownTask extends Countdown {
 	
 	@Override
 	public void onFinish() {
-		int rounds = game.getFlag(ROUNDS) == null ? 2 : game.getFlag(ROUNDS);
+		int rounds = game.getFlag(ROUNDS);
 		
 		game.setGameState(GameState.INGAME);
 		game.broadcast(HSCommand.__(ChatColor.DARK_BLUE + "GO!"));

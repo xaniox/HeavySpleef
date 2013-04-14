@@ -39,7 +39,7 @@ public class CommandVote extends HSCommand {
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
 		
-		if (!HeavySpleef.instance.getConfig().getBoolean("general.autostart-vote-enabled", true)) {
+		if (!HeavySpleef.getSystemConfig().getBoolean("general.autostart-vote-enabled", true)) {
 			player.sendMessage(_("votesDisabled"));
 			return;
 		}

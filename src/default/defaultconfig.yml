@@ -39,12 +39,6 @@ general:
   # Should arenas be protected?
   protectArena: true
   
-  # Set the length of the default countdown until a game is starting
-  countdownFrom: 10
-  
-  # Default value of players that have to be in the lobby to start a game...
-  neededPlayers: 2
-  
   # Should games be saved to the database at intervall time?
   # This can cause lag but it's saver if you set this to true...
   # (You can save games manually with the command: /spleef save)
@@ -54,16 +48,6 @@ general:
   # (Only works if saveInIntervall is set to true)
   # (In minutes)
   saveIntervall: 30
-  
-  # Default value that the players must pay to play a game.
-  # Only works if Vault is enabled!
-  # (money value can be configured for every game)
-  defaultToPay: 0
-  
-  # Default reward value for the winner
-  # Only works if Vault is enabled!
-  # (reward value can be configured for every game)
-  defaultReward: 0
   
   # Should the built-in HeavySpleef selection system be used
   # or the WorldEdit wand selection? (allowed values: WorldEdit, HeavySpleef)
@@ -119,11 +103,9 @@ general:
   
   # The plugin can show ingame players a sidebar scoreboard
   # with the knockouts and the status. To use this, you have
-  # to install ScoreboardAPI. Link to dev.bukkit:
-  # http://dev.bukkit.org/server-mods/scoreboardapi/
-  # If you want to use this, set this to true
-  # Also this feature requires Java 7
-  showSidebarScoreboard: true
+  # to install the latest 1.5.1 R2 build of bukkit.
+  # Downloadable at dl.bukkit.org
+  showSidebarScoreboard: false
   
 leaderboard:
   # Points for Spleef Games
@@ -131,6 +113,32 @@ leaderboard:
   lose: -4
   knockout: 3
   gamePlayed: 3
+  
+flag-defaults:
+  # A list of all default values for flags...
+  # Please note that these values are the DEFAULT
+  # values. This means that this values will only be 
+  # used if there is no specified game flag!
+  # Set specified game flags with /spleef flag <arena> <flag> <value>
+  
+  minplayers: 2
+  maxplayers: 0
+  autostart: 0
+  countdown: 10
+  jackpotamount: 0
+  reward: 0
+  chances: 0
+  timeout: 0
+  rounds: 3
+  
+  1vs1: false
+  shovels: false
+  team: false
+  
+  # Syntax of an itemreward flag: 'ID AMOUNT ID2 AMOUNT2 ID3 AMOUNT3 etc.'
+  # Example: '264 5 388 3'. This would give 5 Diamonds and 3 Emeralds
+  itemreward: ''
+  losereward: ''
 
 queues:
   
@@ -155,7 +163,10 @@ scoreboards:
 language:
 
   # Language that should be used
-  # (Accepted: en, de, ru | fr isn't supported yet, but if you are french, feel free to translate the en.lang file to fr.lang)
+  # Preinstalled languages: en, de, ru
+  # Feel free to translate an own language file
+  # and contact me via a PM on dev.bukkit.org to add it
+  # if you want to :)
   language: en
   
   # Should messages be editable?
@@ -191,13 +202,6 @@ sounds:
   levelUp: true
   
 blocks:
-
-  # A list of blocks that can't be broken by players while spleefing (only id is permitted)
-  # Note that this only works if the broken block is outside a floor
-  cantBreak:
-  - 20 # Glass
-  - 89 # Glowstone
-  - 49 # Obsidian
   
   # Should water and lava be an automatic losezone?
   loseOnTouchWaterOrLava: true

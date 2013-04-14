@@ -173,7 +173,7 @@ public class SignWall extends RegionBase {
 		List<String> outPlayers = game.outPlayers;
 		
 		String infinity = new String("\u221E".getBytes(), Charset.forName("UTF-8"));
-		String maxPlayers = String.valueOf(game.getFlag(FlagType.MAXPLAYERS) == null || game.getFlag(FlagType.MAXPLAYERS) < 2 ? infinity : game.getFlag(FlagType.MAXPLAYERS));
+		String maxPlayers = String.valueOf(game.getFlag(FlagType.MAXPLAYERS) < 2 ? infinity : game.getFlag(FlagType.MAXPLAYERS));
 		
 		if (getJoinSign().getType() != Material.WALL_SIGN)
 			getJoinSign().setType(Material.WALL_SIGN);
@@ -187,12 +187,12 @@ public class SignWall extends RegionBase {
 		getInfoSign().setLine(0, ChatColor.RED + game.getName());
 		getInfoSign().setLine(1, game.getGameState().name());
 		getInfoSign().setLine(2, inPlayers.size() + "/" + ChatColor.GRAY + outPlayers.size() + ChatColor.RESET + "/" + maxPlayers);
-		boolean is1vs1 = game.getFlag(ONEVSONE) == null ? false : game.getFlag(ONEVSONE);
+		boolean is1vs1 = game.getFlag(ONEVSONE);
 		
 		if (game.isCounting())
 			getInfoSign().setLine(3, ChatColor.DARK_RED + "Start in " + ChatColor.BOLD + game.getCurrentCount());
 		else if (is1vs1 && (game.isIngame() || game.isCounting())) {
-			int rounds = game.getFlag(ROUNDS) == null ? 2 : game.getFlag(ROUNDS);
+			int rounds = game.getFlag(ROUNDS);
 			getInfoSign().setLine(3, ChatColor.DARK_GREEN + "Round " + game.getCurrentRound() + "/" + rounds);
 		} else
 			getInfoSign().setLine(3, "");

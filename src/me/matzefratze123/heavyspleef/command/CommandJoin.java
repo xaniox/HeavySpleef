@@ -64,14 +64,14 @@ public class CommandJoin extends HSCommand {
 		Game game = GameManager.getGame(args[0].toLowerCase());
 		
 		if (args.length == 1) {
-			if (game.getFlag(FlagType.TEAM) != null && game.getFlag(FlagType.TEAM)) {
+			if (game.getFlag(FlagType.TEAM)) {
 				player.sendMessage(_("specifieTeam", game.getTeamColors().toString()));
 				return;
 			}
 			
 			game.addPlayer(player, null);
 		} else if (args.length == 2) {
-			if (game.getFlag(FlagType.TEAM) == null || !game.getFlag(FlagType.TEAM)) {
+			if (!game.getFlag(FlagType.TEAM)) {
 				game.addPlayer(player, null);
 				return;
 			}

@@ -75,5 +75,10 @@ public class BooleanFlag extends Flag<Boolean> {
 		boolean bool = (Boolean)value;
 		return getName() + ": " + bool;
 	}
+
+	@Override
+	public FlagType getType() {
+		return FlagType.BOOLEAN_FLAG;
+	}
 	
 }

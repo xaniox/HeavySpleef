@@ -137,6 +137,7 @@ dontMove: &6Don't move!
 pvpTimerCancelled: &4Teleportation cancelled due to movement!
 
 notASign: &cSome blocks in this selections are not signs!
+gameRenamed: Renamed game &6%a &7to &5%a &7!
 
 # Публичные сообщения
 
@@ -150,6 +151,10 @@ gameStopped: &cИгра была остановлена!
 playerJoinedGame: &a%a присоединился к игре!
 hasWon: &a%a &1выиграл игру на арене &6%a&1!
 
+doubleKnockout: &7%a &7got a Double Knockout!
+tripleKnockout: &9%a &9got a Triple Knockout!
+superKnockout: &5%a &5got a Super Knockout!
+unbelievableKnockout: &5%a got an &6&lUnbelievable Knockout&r&5!
 
 wonRound: &a%a &chas won round &6%a &cof &6%a&c!
 roundsRemaining: &1%a rounds remaining!

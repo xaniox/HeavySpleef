@@ -37,12 +37,16 @@ public class PlayerStateManager {
 	
 	@SuppressWarnings("deprecation")
 	public static void savePlayerState(Player p) {
-		if (!HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true)) {
+		if (!HeavySpleef.getSystemConfig().getBoolean("general.savePlayerState", true)) {
 			p.setGameMode(GameMode.SURVIVAL);//Set to survival
 			p.setFoodLevel(20);
 			p.setHealth(20);
 			p.setAllowFlight(false);//Disable fly mode (Essentials etc.)
 			p.setFireTicks(0);
+			
+			for (PotionEffect effect : p.getActivePotionEffects()) { //We don't want invisible spleef players...
+				p.removePotionEffect(effect.getType());
+			}
 			return;
 		}
 		states.put(p.getName(), new PlayerState(p.getInventory().getContents(), p.getInventory().getHelmet(), p.getInventory().getChestplate(),
@@ -69,7 +73,7 @@ public class PlayerStateManager {
 	
 	@SuppressWarnings("deprecation")
 	public static void restorePlayerState(Player p) {
-		if (!HeavySpleef.instance.getConfig().getBoolean("general.savePlayerState", true)) {
+		if (!HeavySpleef.getSystemConfig().getBoolean("general.savePlayerState", true)) {
 			p.setFireTicks(0);//We don't want that the player is burning...
 			return;
 		}

@@ -111,15 +111,18 @@ public class GameCuboid extends Game {
 	 */
 	@Override
 	public void broadcast(String msg) {
-		if (HeavySpleef.instance.getConfig().getBoolean("general.globalBroadcast", false)) {
+		if (HeavySpleef.getSystemConfig().getBoolean("general.globalBroadcast", false)) {
 			Bukkit.broadcastMessage(msg);
 		} else {
-			int radius = HeavySpleef.instance.getConfig().getInt("general.broadcast-radius", 50);
+			int radius = HeavySpleef.getSystemConfig().getInt("general.broadcast-radius", 50);
 			int radiusSqared = radius * radius;
 			Location[] corners = get4Points();
 			
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				Location playerLocation = p.getLocation();
+				
+				if (p.getLocation().getWorld() != corners[0].getWorld())
+					continue;
 				
 				if (LocationHelper.getDistance2D(corners[0], p.getLocation()) != -1.0D &&
 					   (LocationHelper.getDistance2D(corners[0], playerLocation) <= radiusSqared ||
@@ -216,7 +219,9 @@ public class GameCuboid extends Game {
 		if (locations.length < 2)
 			return -1;
 		
-		Floor floor = new FloorCuboid(id, locations[0].getBlockY(), locations[0], locations[1], blockID, data, type);
+		int maxY = Math.max(locations[0].getBlockY(), locations[1].getBlockY());
+		
+		Floor floor = new FloorCuboid(id, maxY, locations[0], locations[1], blockID, data, type);
 		
 		floors.put(id, floor);
 		floor.create();

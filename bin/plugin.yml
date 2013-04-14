@@ -1,10 +1,11 @@
 name: HeavySpleef
 description: Easy to use spleef plugin for bukkit
 
-version: 1.1
+version: 1.1.2
 author: matzefratze123
 
 softdepend: [Vault, WorldEdit]
+load: POSTWORLD
 website: http://dev.bukkit.org/server-mods/heavyspleef/
 
 main: me.matzefratze123.heavyspleef.HeavySpleef

@@ -26,7 +26,7 @@ public class PVPTimerListener implements Listener {
 			return;
 		if (to.getBlockX() == from.getBlockX() && to.getBlockY() == from.getBlockY() && to.getBlockZ() == from.getBlockZ())
 			return;
-		if (HeavySpleef.instance.getConfig().getInt("general.pvptimer") <= 0)
+		if (HeavySpleef.getSystemConfig().getInt("general.pvptimer") <= 0)
 			return;
 		
 		Bukkit.getScheduler().cancelTask(Game.pvpTimerTasks.get(p.getName()));

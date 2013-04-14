@@ -69,5 +69,10 @@ public class IntegerFlag extends Flag<Integer> {
 		Integer i = (Integer)value;
 		return getName() + ": " + i;
 	}
+	
+	@Override
+	public FlagType getType() {
+		return FlagType.INTEGER_FLAG;
+	}
 
 }

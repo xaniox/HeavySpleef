@@ -51,6 +51,7 @@ import me.matzefratze123.heavyspleef.utility.ViPManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
@@ -118,6 +119,7 @@ public class HeavySpleef extends JavaPlugin {
 		CommandHandler.setPluginInstance(this);
 		CommandHandler.setConfigInstance(this);
 		
+		this.setEnabled(true);
 		this.getLogger().info("HeavySpleef v" + getDescription().getVersion() + " activated!");
 	}
 
@@ -128,6 +130,10 @@ public class HeavySpleef extends JavaPlugin {
 		this.database.save(true);
 		this.statisticDatabase.save();
 		this.getLogger().info("HeavySpleef deactivated!");
+	}
+	
+	public static FileConfiguration getSystemConfig() {
+		return instance.getConfig();
 	}
 	
 	private void setupInventory() {

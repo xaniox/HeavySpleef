@@ -114,7 +114,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 * <b>formula: 1000 + wins * games - (loses * games / 3)<b>
 	 */
 	public int getScore() {
-		FileConfiguration config = HeavySpleef.instance.getConfig();
+		FileConfiguration config = HeavySpleef.getSystemConfig();
 		
 		int pointsWin = config.getInt("leaderboard.win");
 		int pointsLose = config.getInt("leaderboard.lose");

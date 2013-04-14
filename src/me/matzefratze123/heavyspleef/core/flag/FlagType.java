@@ -22,8 +22,13 @@ package me.matzefratze123.heavyspleef.core.flag;
 import java.util.Arrays;
 import java.util.List;
 
-public class FlagType {
+public enum FlagType {
 
+	INTEGER_FLAG,
+	LOCATION_FLAG,
+	BOOLEAN_FLAG,
+	ITEMSTACK_FLAG;
+	
 	public static final LocationFlag WIN = new LocationFlag("win");
 	public static final LocationFlag LOSE = new LocationFlag("lose");
 	public static final LocationFlag LOBBY = new LocationFlag("lobby");
@@ -51,7 +56,7 @@ public class FlagType {
 	public static final Flag<?>[] flagList = new Flag<?>[] {WIN, LOSE, LOBBY, QUEUELOBBY, SPAWNPOINT1, SPAWNPOINT2,
 															MINPLAYERS, MAXPLAYERS, AUTOSTART, COUNTDOWN, JACKPOTAMOUNT,
 															REWARD, CHANCES, TIMEOUT, ROUNDS, ONEVSONE, SHOVELS, ITEMREWARD,
-															LOSEREWARD, TEAM};
+															LOSEREWARD};
 	
 	public static List<Flag<?>> getFlagList() {
 		return Arrays.asList(flagList);

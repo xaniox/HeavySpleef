@@ -122,8 +122,8 @@ public class ScoreBoard {
 	}
 	
 	public static void refreshData() {
-		SimpleBlockData numberData = MaterialHelper.fromString(HeavySpleef.instance.getConfig().getString("scoreboards.numberID"), true);
-		SimpleBlockData otherData = MaterialHelper.fromString(HeavySpleef.instance.getConfig().getString("scoreboards.otherID"), true);
+		SimpleBlockData numberData = MaterialHelper.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.numberID"), true);
+		SimpleBlockData otherData = MaterialHelper.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.otherID"), true);
 		
 		ScoreBoard.numberID = numberData.getMaterial().getId();
 		ScoreBoard.otherID = otherData.getMaterial().getId();

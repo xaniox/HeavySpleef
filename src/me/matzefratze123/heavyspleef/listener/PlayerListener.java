@@ -29,7 +29,6 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
@@ -60,12 +59,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class PlayerListener implements Listener {
 
 	private ArrayList<String> isCheckOut = new ArrayList<String>();
-	public static List<Integer> cantBreak;
 	public static boolean loseOnTouchWaterOrLava;
 	
 	public PlayerListener() {
-		cantBreak = HeavySpleef.instance.getConfig().getIntegerList("blocks.cantBreak");
-		loseOnTouchWaterOrLava = HeavySpleef.instance.getConfig().getBoolean("blocks.loseOnTouchWaterOrLava", true);
+		loseOnTouchWaterOrLava = HeavySpleef.getSystemConfig().getBoolean("blocks.loseOnTouchWaterOrLava", true);
 	}
 	
 	@EventHandler
@@ -125,7 +122,7 @@ public class PlayerListener implements Listener {
 		if (!game.canSpleef(block, p))
 			return;
 		
-		boolean shovels = game.getFlag(SHOVELS) == null ? false : game.getFlag(SHOVELS);
+		boolean shovels = game.getFlag(SHOVELS);
 		if (shovels)
 			return;
 		
@@ -143,7 +140,7 @@ public class PlayerListener implements Listener {
 				if (game.contains(block)) {
 					if (p.hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 						return;
-					if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena", true))
+					if (!HeavySpleef.getSystemConfig().getBoolean("general.protectArena", true))
 						return;
 					e.setCancelled(true);
 					fixBlockGlitch(p, block);
@@ -156,13 +153,6 @@ public class PlayerListener implements Listener {
 		
 		
 		Game game = GameManager.fromPlayer(p);
-		
-		if (cantBreak.contains(block.getTypeId())) {
-			e.setCancelled(true);
-			fixBlockGlitch(p, block);
-			p.sendMessage(Game._("notAllowedToBreakSpecified", MaterialHelper.getName(block.getType().name())));
-			return;
-		}
 		
 		if (!game.canSpleef(block, p)) {
 			e.setCancelled(true);
@@ -240,7 +230,7 @@ public class PlayerListener implements Listener {
 				return;
 			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 				return;
-			if (!HeavySpleef.instance.getConfig().getBoolean("general.protectArena", true))
+			if (!HeavySpleef.getSystemConfig().getBoolean("general.protectArena", true))
 				return;
 			e.setCancelled(true);
 			e.getPlayer().sendMessage(Game._("notAllowedToBuild"));
@@ -251,11 +241,13 @@ public class PlayerListener implements Listener {
 	public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
 		if (!GameManager.isInAnyGame(e.getPlayer()))
 			return;
+		if (e.getPlayer().hasPermission(Permissions.COMMAND_WHITELISTED.getPerm()))
+			return;
 		String[] split = e.getMessage().split(" ");
 		String cmd = split[0];
 		if (cmd.equalsIgnoreCase("/spleef") || cmd.equalsIgnoreCase("/hs") || cmd.equalsIgnoreCase("/hspleef"))
 			return;
-		List<String> whitelist = HeavySpleef.instance.getConfig().getStringList("general.commandWhitelist");
+		List<String> whitelist = HeavySpleef.getSystemConfig().getStringList("general.commandWhitelist");
 		for (String c : whitelist) {
 			if (c.equalsIgnoreCase(cmd))
 				return;

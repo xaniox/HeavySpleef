@@ -67,7 +67,6 @@ import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.LocationSaver;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 
@@ -85,11 +84,9 @@ public class YamlDatabase {
 	private HeavySpleef plugin;
 	private File databaseFile;
 	private File statsDatabaseFile;
-	private File locationsDatabaseFile;
 	
 	private FileConfiguration db;
 	private FileConfiguration statsdb;
-	private FileConfiguration locationsdb;
 	
 	public YamlDatabase() {
 		this.plugin = HeavySpleef.instance;
@@ -102,18 +99,14 @@ public class YamlDatabase {
 		
 		this.databaseFile = new File(folder, "games.yml");
 		this.statsDatabaseFile = new File(statsFolder, "stats.yml");
-		this.locationsDatabaseFile = new File(statsFolder, "locations.yml");
 		
 		if (!databaseFile.exists())
 			createDefaultDatabaseFile(databaseFile);
 		if (!statsDatabaseFile.exists())
 			createDefaultDatabaseFile(statsDatabaseFile);
-		if (!locationsDatabaseFile.exists())
-			createDefaultDatabaseFile(locationsDatabaseFile);
 		
 		this.db = YamlConfiguration.loadConfiguration(databaseFile);
 		this.statsdb = YamlConfiguration.loadConfiguration(statsDatabaseFile);
-		this.locationsdb = YamlConfiguration.loadConfiguration(locationsDatabaseFile);
 	}
 
 	private void createDefaultDatabaseFile(File file) {
@@ -138,7 +131,6 @@ public class YamlDatabase {
 
 	public void load() {
 		new PlayerStateSaver().loadPlayerStats();
-		loadLocations();
 		int count = 0;
 		
 		for (String key : db.getKeys(false)) {
@@ -156,6 +148,8 @@ public class YamlDatabase {
 	}
 
 	public void save(boolean savePlayerStates) {
+		for (String oldGameName : GameManager.deletedGames) //Delete old data sections...
+			db.set(oldGameName, null);
 		
 		for (Game game : GameManager.getGames()) {
 			ConfigurationSection section = db.createSection(game.getName());
@@ -169,7 +163,6 @@ public class YamlDatabase {
 		
 		if (savePlayerStates)
 			new PlayerStateSaver().savePlayerStates();
-		saveLocations();
 		saveConfig();
 	}
 	
@@ -463,30 +456,6 @@ public class YamlDatabase {
 		}
 		
 	}
-	
-	private void saveLocations() {
-		Map<String, Location> map = new HashMap<String, Location>(LocationSaver.getMap());
-		
-		for (String s : map.keySet())
-			locationsdb.set(s, convertLocationtoString(map.get(s)));
-		
-		try {
-			locationsdb.save(locationsDatabaseFile);
-		} catch (IOException e) {
-			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
-			e.printStackTrace();
-		}
-	}
-	
-	private void loadLocations() {
-		Map<String, Location> map = new HashMap<String, Location>();
-		
-		for (String s : locationsdb.getKeys(false))
-			map.put(s, convertStringtoLocation(locationsdb.getString(s)));
-		
-		LocationSaver.putMap(map);
-	}
-	
 
 	public ConfigurationSection getConfigurationSection(String name) {
 		return db.getConfigurationSection(name);

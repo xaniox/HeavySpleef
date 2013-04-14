@@ -34,6 +34,8 @@ public class GameManager {
 	
 	//Main core list that contains ALL games!
 	public static List<Game> games = new ArrayList<Game>();
+	public static List<String> deletedGames = new ArrayList<String>();
+	public static List<String> renamedGames = new ArrayList<String>();
 	
 	public static Map<String, Integer> antiCamping = new HashMap<String, Integer>();
 	
@@ -76,6 +78,7 @@ public class GameManager {
 	public static void deleteGame(String id) {
 		id = id.toLowerCase();
 		games.remove(getGame(id));
+		deletedGames.add(id);
 	}
 	
 	public static boolean hasGame(String id) {

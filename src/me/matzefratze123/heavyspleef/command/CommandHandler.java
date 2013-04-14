@@ -116,6 +116,7 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("list", new CommandList());
 		addSubCommand("vote", new CommandVote());
 		addSubCommand("ready", new CommandVote());
+		addSubCommand("rename", new CommandRename());
 		/*addSubCommand("addteam", new CommandAddTeam());
 		addSubCommand("removeteam", new CommandRemoveTeam());*/
 	}

@@ -28,15 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-
-import org.bukkit.ChatColor;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+
+import org.bukkit.ChatColor;
 
 /**
  * Contains methods and messages for language handling
@@ -54,26 +51,13 @@ public class LanguageHandler {
 	 * Loads the language file from the given language in the config.yml
 	 */
 	public static void loadLanguageFiles() {
-		boolean fromFile = HeavySpleef.instance.getConfig().getBoolean("language.editable");
+		boolean fromFile = HeavySpleef.getSystemConfig().getBoolean("language.editable");
 		if (fromFile)
 			copyLanguageFiles();
 		File languageFolder = new File(HeavySpleef.instance.getDataFolder().getPath() + "/language");
 		languageFolder.mkdirs();
-		List<String> acceptedLanguages = new ArrayList<String>();
 		
-		acceptedLanguages.add("de");
-		acceptedLanguages.add("en");
-		acceptedLanguages.add("fr");
-		acceptedLanguages.add("ru");
-		acceptedLanguages.add("es");
-		acceptedLanguages.add("pt");
-		
-		String language = HeavySpleef.instance.getConfig().getString("language.language", "en");
-		if (!acceptedLanguages.contains(language)) {
-			HeavySpleef.instance.getLogger().log(Level.WARNING, "Invalid language! Setting to English...");
-			setLanguage("en", fromFile);
-			return;
-		}
+		String language = HeavySpleef.getSystemConfig().getString("language.language", "en");
 		setLanguage(language, fromFile);
 	}
 	

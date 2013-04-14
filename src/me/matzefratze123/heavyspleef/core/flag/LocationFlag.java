@@ -67,5 +67,10 @@ public class LocationFlag extends Flag<Location> {
 	public String toInfo(Object value) {
 		return getName() + ": LOCATION";
 	}
+	
+	@Override
+	public FlagType getType() {
+		return FlagType.LOCATION_FLAG;
+	}
 
 }

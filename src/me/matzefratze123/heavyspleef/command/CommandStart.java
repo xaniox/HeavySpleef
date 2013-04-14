@@ -65,7 +65,7 @@ public class CommandStart extends HSCommand {
 			return;
 		}
 		
-		int minplayers = game.getFlag(FlagType.MINPLAYERS) == null ? HeavySpleef.instance.getConfig().getInt("general.neededPlayers") : game.getFlag(FlagType.MINPLAYERS);
+		int minplayers = game.getFlag(FlagType.MINPLAYERS);
 		
 		if (game.getPlayers().length < minplayers || game.getPlayers().length < 2) {
 			player.sendMessage(_("notEnoughPlayers", String.valueOf(minplayers)));

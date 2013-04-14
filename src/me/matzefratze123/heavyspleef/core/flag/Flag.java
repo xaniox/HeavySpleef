@@ -19,6 +19,8 @@
  */
 package me.matzefratze123.heavyspleef.core.flag;
 
+import me.matzefratze123.heavyspleef.database.DatabaseSerializeable;
+
 import org.bukkit.entity.Player;
 
 public abstract class Flag<T> implements DatabaseSerializeable<T> {
@@ -38,6 +40,8 @@ public abstract class Flag<T> implements DatabaseSerializeable<T> {
 	public abstract String toInfo(Object value);
 	
 	public abstract String getHelp();
+	
+	public abstract FlagType getType();
 	
 	@Override
 	public String toString() {

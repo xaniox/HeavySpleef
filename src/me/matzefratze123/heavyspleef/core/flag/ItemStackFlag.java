@@ -127,5 +127,10 @@ public class ItemStackFlag extends Flag<ItemStack[]> {
 		Set<String> asSet = new HashSet<String>(list);
 		return getName() + ": " + asSet.toString();
 	}
+	
+	@Override
+	public FlagType getType() {
+		return FlagType.ITEMSTACK_FLAG;
+	}
 
 }

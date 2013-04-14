@@ -7,6 +7,7 @@ import org.bukkit.event.Event;
 public abstract class SpleefEvent extends Event {
 
 	private GameData data;
+	
 	protected SpleefEvent(GameData data) {
 		this.data = data;
 	}

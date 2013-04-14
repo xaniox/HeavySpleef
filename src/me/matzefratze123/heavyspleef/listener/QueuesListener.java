@@ -27,6 +27,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class QueuesListener implements Listener {
 	
@@ -34,18 +37,44 @@ public class QueuesListener implements Listener {
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		Player p = e.getPlayer();
 		
+		if (p == null)
+			return;
 		if (!QueuesManager.hasQueue(p))
 			return;
-		if (HeavySpleef.instance.getConfig().getBoolean("queues.commandsInQueue", false))
+		if (HeavySpleef.getSystemConfig().getBoolean("queues.commandsInQueue", false))
 			return;
 		
 		String[] split = e.getMessage().split(" ");
 		String cmd = split[0];
-		if (cmd.equalsIgnoreCase("/spleef") || cmd.equalsIgnoreCase("/hs") || cmd.equalsIgnoreCase("/hspleef"))
-			return;
+		for (String command : HeavySpleef.commands) {
+			if (cmd.equalsIgnoreCase(command))
+				return;
+		}
 		
 		e.setCancelled(true);
 		p.sendMessage(Game._("noCommandsInQueue"));
+	}
+	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		handleQuit(e);
+	}
+	
+	@EventHandler
+	public void onKick(PlayerKickEvent e) {
+		handleQuit(e);
+	}
+	
+	private void handleQuit(PlayerEvent e) {
+		Player p = e.getPlayer();
+		
+		if (p == null)
+			return;
+		if (!QueuesManager.hasQueue(p))
+			return;
+		
+		//Remove the player from the queue if he quits
+		QueuesManager.removeFromQueue(p);
 	}
 
 }

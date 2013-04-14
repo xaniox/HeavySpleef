@@ -82,15 +82,17 @@ public class GameCylinder extends Game {
 
 	@Override
 	public void broadcast(String msg) {
-		if (HeavySpleef.instance.getConfig().getBoolean("general.globalBroadcast", false)) {
+		if (HeavySpleef.getSystemConfig().getBoolean("general.globalBroadcast", false)) {
 			Bukkit.broadcastMessage(msg);
 		} else {
-			int radius = HeavySpleef.instance.getConfig().getInt("general.broadcast-radius", 50);
+			int radius = HeavySpleef.getSystemConfig().getInt("general.broadcast-radius", 50);
 			int radiusSqared = radius * radius;
 			
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				Location playerLocation = p.getLocation();
 				
+				if (p.getLocation().getWorld() != this.center.getWorld())
+					continue;
 				if (LocationHelper.getDistance2D(this.center, playerLocation) <= radiusSqared || this.players.contains(p.getName())) {
 					p.sendMessage(msg);
 				}

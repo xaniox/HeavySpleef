@@ -151,6 +151,8 @@ removedFromTeam: &7Du hast das Team %a &7verlassen...
 teamAdded: &7Die Teamfarbe %a &7wurde dem Spiel hinzugef\u00FCgt.
 teamRemoved: &7Das Team mit der Farbe %a &7wurde enfernt.
 
+gameRenamed: &7Spiel &6%a &7wurde zu &5%a &7umbenannt!
+
 # Broadcast nachrichten
 
 gameDisabled: &cDas Spiel &6%a &cwurde von %a&c deaktiviert!
@@ -165,6 +167,11 @@ hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!
 teamWin: &aTeam %a &ahat das Spiel in Arena %a gewonnen!
 
 remaining: &1%a Spieler verbleiben!
+
+doubleKnockout: &7%a: &7Doppel-Knockout!
+tripleKnockout: &9%a: &9Dreier-Knockout!
+superKnockout: &5%a: &5Super-Knockout!
+unbelievableKnockout: &5%a: &6&lUnglaublicher-Knockout&r&5!
 
 wonRound: &a%a &chat Runde &6%a &cvon &6%a &cgewonnen!
 roundsRemaining: &1%a Runden verbleiben!

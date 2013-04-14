@@ -81,10 +81,6 @@ public class CommandAddFloor extends HSCommand {
 				player.sendMessage(_("notInsideArena"));
 				return;
 			}
-			if (!isOneLayer(loc1, loc2)) {
-				player.sendMessage(_("onlyOneLayer"));
-				return;
-			}
 			
 			addWoolFloor(game, player, loc1, loc2);
 			return;
@@ -121,10 +117,6 @@ public class CommandAddFloor extends HSCommand {
 				player.sendMessage(_("notInsideArena"));
 				return;
 			}
-			if (!isOneLayer(loc1, loc2)) {
-				player.sendMessage(_("onlyOneLayer"));
-				return;
-			}
 			
 			addGivenFloor(game, player, loc1, loc2);
 			return;
@@ -159,10 +151,6 @@ public class CommandAddFloor extends HSCommand {
 			Game game = getFromLocation(loc1, loc2);
 			if (game == null) {
 				player.sendMessage(_("notInsideArena"));
-				return;
-			}
-			if (!isOneLayer(loc1, loc2)) {
-				player.sendMessage(_("onlyOneLayer"));
 				return;
 			}
 			
@@ -205,24 +193,4 @@ public class CommandAddFloor extends HSCommand {
 		return g;
 	}
 	
-	private boolean isOneLayer(Location... locations) {
-		boolean oneLayer = true;
-		Location lastLocation = null;
-		
-		for (Location loc : locations) {
-			if (lastLocation == null) {
-				lastLocation = loc;
-				continue;
-			}
-			
-			if (loc.getBlockY() != lastLocation.getBlockY()) {
-				oneLayer = false;
-				break;
-			}	
-			
-			lastLocation = loc;
-		}
-		
-		return oneLayer;
-	}
 } 

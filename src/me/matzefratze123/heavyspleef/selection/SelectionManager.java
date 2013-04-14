@@ -44,7 +44,7 @@ public class SelectionManager {
 	}
 	
 	public void setup() {
-		String wandType = HeavySpleef.instance.getConfig().getString("general.wandType");
+		String wandType = HeavySpleef.getSystemConfig().getString("general.wandType");
 		
 		if (wandType == null || (!wandType.equalsIgnoreCase("HeavySpleef") && !wandType.equalsIgnoreCase("WorldEdit"))) {
 			HeavySpleef.instance.getLogger().info("Invalid wand type found! " + wandType + " is not permitted! Setting to HeavySpleef selection...");

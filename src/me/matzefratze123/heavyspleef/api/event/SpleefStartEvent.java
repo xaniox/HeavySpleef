@@ -36,7 +36,7 @@ public class SpleefStartEvent extends SpleefEvent {
 	}
 	
 	public HandlerList getHandlerList() {
-		return getHandlers();
+		return handlers;
 	}
 	
 }

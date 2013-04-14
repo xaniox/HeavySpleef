@@ -19,7 +19,6 @@
  */
 package me.matzefratze123.heavyspleef.core.region;
 
-
 import org.bukkit.Location;
 
 public class LoseZone extends RegionBase {

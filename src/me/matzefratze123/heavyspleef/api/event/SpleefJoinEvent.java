@@ -25,7 +25,7 @@ import org.bukkit.event.HandlerList;
 
 public class SpleefJoinEvent extends SpleefEvent {
 
-	public static HandlerList handlers = new HandlerList();
+	public static final HandlerList handlers = new HandlerList();
 	private Player player = null;
 	
 	public SpleefJoinEvent(GameData game, Player player) {
@@ -45,7 +45,7 @@ public class SpleefJoinEvent extends SpleefEvent {
 		return handlers;
 	}
 	
-	public HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 

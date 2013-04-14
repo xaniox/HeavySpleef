@@ -42,14 +42,14 @@ public class SpleefFinishEvent extends SpleefEvent {
 		return handlers;
 	}
 	
-	public HandlerList getHandlerList() {
-		return getHandlers();
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 	
 	/**
 	 * Gets the stopcause of this game
 	 * 
-	 * @return A enum constant of the StopCause
+	 * @return A enum constant of the type StopCause
 	 * @see me.matzefratze123.heavyspleef.core.StopCause
 	 */
 	public StopCause getCause() {
