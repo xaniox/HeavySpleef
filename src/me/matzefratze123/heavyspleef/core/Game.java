@@ -65,7 +65,7 @@ import me.matzefratze123.heavyspleef.stats.StatisticManager;
 import me.matzefratze123.heavyspleef.utility.ArrayHelper;
 import me.matzefratze123.heavyspleef.utility.LanguageHandler;
 import me.matzefratze123.heavyspleef.utility.LocationSaver;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 import me.matzefratze123.heavyspleef.utility.ViPManager;
 
@@ -353,6 +353,10 @@ public abstract class Game {
 		//TODO
 	}
 	
+	public void forceJoin(Player player) {
+		//TODO
+	}
+	
 	/**
 	 * Adds a player to this game
 	 * 
@@ -572,7 +576,7 @@ public abstract class Game {
 			for (ItemStack stack : getFlag(FlagType.LOSEREWARD)) {
 				ItemStack newStack = stack.getData().toItemStack(stack.getAmount());
 				player.getInventory().addItem(newStack);
-				player.sendMessage(_("loserewardReceived", String.valueOf(newStack.getAmount()), MaterialHelper.getName(newStack.getType().name())));
+				player.sendMessage(_("loserewardReceived", String.valueOf(newStack.getAmount()), Util.getName(newStack.getType().name())));
 			}
 		}
 		
@@ -768,7 +772,7 @@ public abstract class Game {
 		removePlayerFromTeam(p);
 		
 		for (Player player : getPlayers()) {
-			if (getFlag(LOSE) == null) player.teleport(LocationSaver.load(p));
+			if (getFlag(LOSE) == null) player.teleport(LocationSaver.load(player));
 			else player.teleport(getFlag(LOSE));
 			
 			player.setFireTicks(0);
@@ -848,7 +852,7 @@ public abstract class Game {
 		clearJackpot();
 		clearAll();
 		removeBoxes();
-		broadcast(_("teamWin", MaterialHelper.getName(team.getColor().name()), getName()));
+		broadcast(_("teamWin", Util.getName(team.getColor().name()), getName()));
 		cancelTasks();
 		setGameState(GameState.JOINABLE);
 		updateScoreBoards();
@@ -1311,7 +1315,8 @@ public abstract class Game {
 		if (GameManager.hasGame(newName))
 			return false;
 		
-		GameManager.deletedGames.add(getName());
+		HeavySpleef.instance.database.db.set(getName(), null);
+		HeavySpleef.instance.database.save();
 		this.name = newName;
 		return true;
 	}
@@ -1685,7 +1690,7 @@ public abstract class Game {
 	public Set<String> getTeamColors() {
 		Set<String> set = new HashSet<String>();
 		for (Team team : teams)
-			set.add(team.getColor() + MaterialHelper.getName(team.getColor().name()));
+			set.add(team.getColor() + Util.getName(team.getColor().name()));
 		
 		return set;
 	}
@@ -1695,7 +1700,7 @@ public abstract class Game {
 		for (ItemStack stack : getFlag(FlagType.ITEMREWARD)) {
 			ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
 			player.getInventory().addItem(newStack);
-			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), MaterialHelper.getName(stack.getType().name())));
+			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.getName(stack.getType().name())));
 		}
 		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook()) {
 			Economy econ = HeavySpleef.hooks.getService(VaultHook.class).getHook();

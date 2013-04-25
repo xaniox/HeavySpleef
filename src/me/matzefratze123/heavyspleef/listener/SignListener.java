@@ -20,6 +20,7 @@
 package me.matzefratze123.heavyspleef.listener;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.command.CommandHub;
 import me.matzefratze123.heavyspleef.command.CommandLeave;
 import me.matzefratze123.heavyspleef.command.CommandStart;
 import me.matzefratze123.heavyspleef.core.Game;
@@ -27,7 +28,7 @@ import me.matzefratze123.heavyspleef.core.GameCuboid;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.SignWall;
 import me.matzefratze123.heavyspleef.core.Team;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
@@ -66,6 +67,7 @@ public class SignListener implements Listener {
 			block.breakNaturally();
 			return;
 		}
+		
 		if (line2.equalsIgnoreCase("[Join]")) {
 			if (!line3.isEmpty() && !GameManager.hasGame(line3.toLowerCase())) {
 				p.sendMessage(GameCuboid._("arenaDoesntExists"));
@@ -86,34 +88,38 @@ public class SignListener implements Listener {
 					return;
 				}
 				
-				line4 = color + MaterialHelper.getName(line4);
+				line4 = color + Util.getName(line4);
 			}
 			
-			p.sendMessage(GameCuboid._("spleefSignCreated"));
+			p.sendMessage(Game._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 			e.setLine(1, ChatColor.RED + "[Join]");
 			e.setLine(2, line3);
 			e.setLine(3, line4);
+			
 		} else if (line2.equalsIgnoreCase("[Start]")) {
 			if (!GameManager.hasGame(line3.toLowerCase())) {
 				p.sendMessage(GameCuboid._("arenaDoesntExists"));
 				block.breakNaturally();
 				return;
 			}
-			p.sendMessage(GameCuboid._("spleefSignCreated"));
+			p.sendMessage(Game._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 			e.setLine(1, ChatColor.RED + "[Start]");
 			e.setLine(2, line3);
-			e.setLine(3, "");
+			
 		} else if (line2.equalsIgnoreCase("[Leave]")) {
-			p.sendMessage(GameCuboid._("spleefSignCreated"));
+			p.sendMessage(Game._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 			e.setLine(1, ChatColor.RED + "[Leave]");
-			e.setLine(2, line3);
-			e.setLine(3, "");
+		} else if (line2.equalsIgnoreCase("[HUB]")) {
+			p.sendMessage(Game._("spleefSignCreated"));
+			
+			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
+			e.setLine(1, ChatColor.RED + "[HUB]");
 		}
 	}
 	
@@ -146,7 +152,7 @@ public class SignListener implements Listener {
 		
 		if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Join]")) {
 			if (!p.hasPermission(Permissions.SIGN_JOIN.getPerm())) {
-				p.sendMessage(GameCuboid._("noPermission"));
+				p.sendMessage(Game._("noPermission"));
 				return;
 			}
 			
@@ -159,7 +165,7 @@ public class SignListener implements Listener {
 				return;
 			} else {
 				if (!GameManager.hasGame(line3)) {
-					p.sendMessage(GameCuboid._("arenaDoesntExists"));
+					p.sendMessage(Game._("arenaDoesntExists"));
 					return;
 				}
 				ChatColor color = null;
@@ -193,21 +199,28 @@ public class SignListener implements Listener {
 			}
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Start]")) {
 			if (!p.hasPermission(Permissions.SIGN_START.getPerm())) {
-				p.sendMessage(GameCuboid._("noPermission"));
+				p.sendMessage(Game._("noPermission"));
 				return;
 			}
 			if (!GameManager.hasGame(line3)) {
-				p.sendMessage(GameCuboid._("arenaDoesntExists"));
+				p.sendMessage(Game._("arenaDoesntExists"));
 				return;
 			}
 			CommandStart.start(p, GameManager.getGame(line3));
 		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Leave]")) {
 			if (!p.hasPermission(Permissions.SIGN_LEAVE.getPerm())) {
-				p.sendMessage(GameCuboid._("noPermission"));
+				p.sendMessage(Game._("noPermission"));
 				return;
 			}
 			
 			CommandLeave.leave(p);
+		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[HUB]")) {
+			if (!p.hasPermission(Permissions.SIGN_HUB.getPerm())) {
+				p.sendMessage(Game._("noPermission"));
+				return;
+			}
+			
+			CommandHub.tpToHub(p);
 		}
 		
 	}

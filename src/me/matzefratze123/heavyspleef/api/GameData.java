@@ -253,6 +253,10 @@ public class GameData {
 	 */
 	public boolean tryLose(Player player) {
 		Validate.notNull(player, "Player cannot be null");
+		if (!isIngame() && !isCounting())
+			throw new IllegalStateException("Player " + player.getName() + " cannot lose while game isn't ingame");
+		if (!isActive(player))
+			throw new IllegalStateException("Player " + player.getName() + " isn't ingame");
 		game.removePlayer(player, LoseCause.LOSE);
 		
 		return game.players.contains(player.getName());

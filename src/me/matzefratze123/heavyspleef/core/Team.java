@@ -5,7 +5,7 @@ import java.util.List;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.hooks.TagAPIHook;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,12 +31,12 @@ public class Team {
 	
 	public void join(Player player) {
 		if (players.contains(player.getName())) {
-			player.sendMessage(Game._("alreadyInTeam", color + MaterialHelper.getName(color.name())));
+			player.sendMessage(Game._("alreadyInTeam", color + Util.getName(color.name())));
 			return;
 		}
 		
 		players.add(player.getName());
-		player.sendMessage(Game._("addedToTeam", color + MaterialHelper.getName(color.name())));
+		player.sendMessage(Game._("addedToTeam", color + Util.getName(color.name())));
 		
 		if (HeavySpleef.hooks.getService(TagAPIHook.class).hasHook())
 			TagAPI.refreshPlayer(player);
@@ -44,12 +44,12 @@ public class Team {
 	
 	public void leave(Player player) {
 		if (!players.contains(player.getName())) {
-			player.sendMessage(Game._("notInThisTeam", color + MaterialHelper.getName(color.name())));
+			player.sendMessage(Game._("notInThisTeam", color + Util.getName(color.name())));
 			return;
 		}
 		
 		players.remove(player.getName());
-		player.sendMessage(Game._("removedFromTeam", color + MaterialHelper.getName(color.name())));
+		player.sendMessage(Game._("removedFromTeam", color + Util.getName(color.name())));
 		
 		if (HeavySpleef.hooks.getService(TagAPIHook.class).hasHook())
 			TagAPI.refreshPlayer(player);

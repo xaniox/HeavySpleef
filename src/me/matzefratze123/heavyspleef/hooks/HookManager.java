@@ -27,11 +27,10 @@ public class HookManager {
 	//Hook instances start
 	public static VaultHook vaultHook = new VaultHook();
 	public static WorldEditHook weHook = new WorldEditHook();
-	public static ScoreboardAPIHook scoreboardHook = new ScoreboardAPIHook(); 
 	public static TagAPIHook tagAPIHook = new TagAPIHook();
 	//Hook instances end
 	
-	public static Hook<?>[] allHooks = new Hook<?>[] {vaultHook, weHook, scoreboardHook, tagAPIHook};
+	public static Hook<?>[] allHooks = new Hook<?>[] {vaultHook, weHook, tagAPIHook};
 	private List<Hook<?>> hooks = new ArrayList<Hook<?>>();
 	
 	public HookManager() {

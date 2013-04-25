@@ -26,7 +26,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.region.RegionBase;
 import me.matzefratze123.heavyspleef.database.Parser;
 import me.matzefratze123.heavyspleef.utility.ArrayHelper;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.Location;
@@ -68,7 +68,6 @@ public class ScoreBoard {
 		this.secondCorner = Parser.roundLocation(xOrZAndY.getLocation());
 		
 		refreshData();
-		
 		calculateNumberPoints();
 	}
 	
@@ -87,7 +86,7 @@ public class ScoreBoard {
 			this.face = face;
 			this.game = game;
 			
-			Block xOrZ = getRelative(firstCorner.getBlock(), face, 19);
+			Block xOrZ = getRelative(firstCorner.getBlock(), face, 18);
 			Block xOrZAndY = getRelative(xOrZ, BlockFace.DOWN, 6);
 			
 			this.secondCorner = xOrZAndY.getLocation();
@@ -122,8 +121,8 @@ public class ScoreBoard {
 	}
 	
 	public static void refreshData() {
-		SimpleBlockData numberData = MaterialHelper.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.numberID"), true);
-		SimpleBlockData otherData = MaterialHelper.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.otherID"), true);
+		SimpleBlockData numberData = Util.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.numberID"), true);
+		SimpleBlockData otherData = Util.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.otherID"), true);
 		
 		ScoreBoard.numberID = numberData.getMaterial().getId();
 		ScoreBoard.otherID = otherData.getMaterial().getId();

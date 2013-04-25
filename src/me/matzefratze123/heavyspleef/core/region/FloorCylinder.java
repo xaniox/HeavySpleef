@@ -21,7 +21,6 @@ package me.matzefratze123.heavyspleef.core.region;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Type;
-import me.matzefratze123.heavyspleef.database.FloorLoader;
 import me.matzefratze123.heavyspleef.database.Parser;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
@@ -43,16 +42,22 @@ import com.sk89q.worldedit.regions.Region;
 public class FloorCylinder extends Floor {
 
 	private Location center;
-	private int radius;
+	private int radiusEastWest;
+	private int radiusNorthSouth;
 	
-	public FloorCylinder(int id, int y, int radius, Location center, int blockID, byte data, FloorType type) {
+	public FloorCylinder(int id, int y, int radiusEastWest, int radiusNorthSouth, Location center, int blockID, byte data, FloorType type) {
 		super(id, blockID, data, type, y);
 		
-		this.radius = radius;
+		this.radiusEastWest = radiusEastWest;
+		this.radiusNorthSouth = radiusNorthSouth;
 		this.center = center;
 		
 		if (isGivenFloor())
 			initFloor();
+	}
+	
+	public FloorCylinder(int id, int y, int radius, Location center, int blockID, byte data, FloorType type) {
+		this(id, y, radius, radius, center, blockID, data, type);
 	}
 	
 	public static FloorCylinder fromString(String fromString, String gameName) {
@@ -60,25 +65,29 @@ public class FloorCylinder extends Floor {
 		
 		int id = Integer.parseInt(parts[0]);
 		Location center = Parser.convertStringtoLocation(parts[1]);
-		int radius = Integer.parseInt(parts[2]);
 		
-		int m = Integer.parseInt(parts[3]);
-		byte data = Byte.parseByte(parts[4]);
+		int radiusEastWest = 0;
+		int radiusNorthSouth = 0;
 		
-		if (parts.length < 6) {//Just for converting old floors
-			if (m == 0)
-				return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, FloorType.RANDOMWOOL);
-			if (m == -1) {
-				FloorCylinder floor = new FloorCylinder(id, center.getBlockY(), radius, center, m, data, FloorType.GIVENFLOOR);
-				FloorLoader.loadFloor(floor, gameName);
-				return floor;
-			}	
-			return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, FloorType.SPECIFIEDID);
+		int arrayCounter = 3;
+		
+		if (parts.length < 7) {
+			radiusEastWest = Integer.parseInt(parts[2]);
+			radiusNorthSouth = Integer.parseInt(parts[2]);
+		} else {
+			radiusEastWest = Integer.parseInt(parts[2]);
+			radiusNorthSouth = Integer.parseInt(parts[3]);
+			arrayCounter++;
 		}
 		
-		FloorType type = FloorType.valueOf(parts[5].toUpperCase());
+		int m = Integer.parseInt(parts[arrayCounter]);
+		arrayCounter++;
+		byte data = Byte.parseByte(parts[arrayCounter]);
+		arrayCounter++;
 		
-		return new FloorCylinder(id, center.getBlockY(), radius, center, m, data, type);
+		FloorType type = FloorType.valueOf(parts[arrayCounter].toUpperCase());
+		
+		return new FloorCylinder(id, center.getBlockY(), radiusEastWest, radiusNorthSouth, center, m, data, type);
 	}
 
 	@Override
@@ -113,7 +122,7 @@ public class FloorCylinder extends Floor {
 		
 		EditSession e = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), 6000);
 		try {
-			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(id, data)), radius, 1, true);
+			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(id, data)), radiusEastWest, radiusNorthSouth, 1, true);
 		} catch (MaxChangedBlocksException e1) {
 			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't create circle floor...");
 		}
@@ -123,7 +132,7 @@ public class FloorCylinder extends Floor {
 	public void remove() {
 		EditSession e = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), 6000);
 		try {
-			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(0)), radius, 1, true);
+			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(0)), radiusEastWest, radiusNorthSouth, 1, true);
 		} catch (MaxChangedBlocksException e1) {
 			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't create remove floor...");
 		}
@@ -131,18 +140,18 @@ public class FloorCylinder extends Floor {
 
 	@Override
 	public void initFloor() {
-		int x1 = center.getBlockX() - radius;
-		int z1 = center.getBlockZ() - radius;
+		int x1 = center.getBlockX() - radiusEastWest;
+		int z1 = center.getBlockZ() - radiusNorthSouth;
 		
-		int x2 = center.getBlockX() + radius;
-		int z2 = center.getBlockZ() + radius;
+		int x2 = center.getBlockX() + radiusEastWest;
+		int z2 = center.getBlockZ() + radiusNorthSouth;
 		
 		
 		int y = center.getBlockY();
 		
 		World w = center.getWorld();
 		
-		CylinderRegion region = new CylinderRegion(BukkitUtil.getLocalWorld(w), BukkitUtil.toVector(center), new Vector2D(radius, radius), y, y);
+		CylinderRegion region = new CylinderRegion(BukkitUtil.getLocalWorld(w), BukkitUtil.toVector(center), new Vector2D(radiusEastWest, radiusNorthSouth), y, y);
 		
 		for (int x = x1; x <= x2; x++) {
 			for (int z = z1; z <= z2; z++) {
@@ -164,8 +173,12 @@ public class FloorCylinder extends Floor {
 		return this.center;
 	}
 	
-	public int getRadius() {
-		return this.radius;
+	public int getRadiusEastWest() {
+		return this.radiusEastWest;
+	}
+	
+	public int getRadiusNorthSouth() {
+		return this.radiusNorthSouth;
 	}
 
 	@Override
@@ -176,7 +189,7 @@ public class FloorCylinder extends Floor {
 	@Override
 	public String toString() {
 		int id = getId();
-		String base = id + ";" + Parser.convertLocationtoString(getCenter()) + ";" + getRadius();
+		String base = id + ";" + Parser.convertLocationtoString(getCenter()) + ";" + getRadiusEastWest() + ";" + getRadiusNorthSouth();
 		return base + ";" + getBlockID() + ";" + getData() + ";" + getFloorType().name(); 
 	}
 	
@@ -186,7 +199,7 @@ public class FloorCylinder extends Floor {
 		int centerY = center.getBlockY();
 		int centerZ = center.getBlockZ();
 		
-		Region region = new CylinderRegion(BukkitUtil.getLocalWorld(center.getWorld()), new Vector(centerX, centerY, centerZ), new Vector2D(this.radius, this.radius), getY(), getY());
+		Region region = new CylinderRegion(BukkitUtil.getLocalWorld(center.getWorld()), new Vector(centerX, centerY, centerZ), new Vector2D(this.radiusEastWest, this.radiusNorthSouth), getY(), getY());
 		return region.contains(BukkitUtil.toVector(toCheck));
 	}
 

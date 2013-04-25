@@ -53,15 +53,17 @@ public class CommandJoin extends HSCommand {
 			return;
 		}
 		
-		if (!player.hasPermission(Permissions.JOIN_GAME.getPerm())) {
-			player.sendMessage(LanguageHandler._("noPermission"));
-			return;
-		}
 		if (!GameManager.hasGame(args[0].toLowerCase())) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		Game game = GameManager.getGame(args[0].toLowerCase());
+		
+		if (!player.hasPermission(Permissions.JOIN_GAME.getPerm())
+		 && !player.hasPermission(Permissions.JOIN_GAME.getPerm() + "." + game.getName())) {
+			player.sendMessage(LanguageHandler._("noPermission"));
+			return;
+		}
 		
 		if (args.length == 1) {
 			if (game.getFlag(FlagType.TEAM)) {

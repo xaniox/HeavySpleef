@@ -19,9 +19,11 @@
  */
 package me.matzefratze123.heavyspleef.utility;
 
+import java.util.HashSet;
+
 import org.bukkit.Material;
 
-public class MaterialHelper {
+public class Util {
 
 	public static String getName(String str) {
 		str = str.toLowerCase();
@@ -92,6 +94,23 @@ public class MaterialHelper {
 			} catch (Exception e) {}
 		}
 		return new SimpleBlockData(m, data);
+	}
+	
+	/**
+	 * Gets the transparent materials for the method player.getTargetBlock(HashSet<Byte> transparent, int lenth)
+	 * 
+	 * @return A HashSet containing air, water and lava
+	 */
+	public static HashSet<Byte> getTransparentMaterials() {
+		HashSet<Byte> set = new HashSet<Byte>();
+		
+		set.add((byte)0);
+		set.add((byte)8);
+		set.add((byte)9);
+		set.add((byte)10);
+		set.add((byte)11);
+		
+		return set;
 	}
 
 }

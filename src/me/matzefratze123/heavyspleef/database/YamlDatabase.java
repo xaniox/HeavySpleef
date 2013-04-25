@@ -66,6 +66,7 @@ import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
+import me.matzefratze123.heavyspleef.core.region.HUBPortal;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.utility.PlayerState;
 import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
@@ -79,14 +80,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+@SuppressWarnings("unused")
 public class YamlDatabase {
 
 	private HeavySpleef plugin;
-	private File databaseFile;
-	private File statsDatabaseFile;
 	
-	private FileConfiguration db;
-	private FileConfiguration statsdb;
+	private File databaseFile;
+	private File globalDatabaseFile;
+	
+	public FileConfiguration db;
+	public FileConfiguration globalDb;
 	
 	public YamlDatabase() {
 		this.plugin = HeavySpleef.instance;
@@ -98,15 +101,15 @@ public class YamlDatabase {
 		statsFolder.mkdirs();
 		
 		this.databaseFile = new File(folder, "games.yml");
-		this.statsDatabaseFile = new File(statsFolder, "stats.yml");
+		this.globalDatabaseFile = new File(folder, "global-settings.yml");
 		
 		if (!databaseFile.exists())
 			createDefaultDatabaseFile(databaseFile);
-		if (!statsDatabaseFile.exists())
-			createDefaultDatabaseFile(statsDatabaseFile);
+		if (!globalDatabaseFile.exists())
+			createDefaultDatabaseFile(globalDatabaseFile);
 		
 		this.db = YamlConfiguration.loadConfiguration(databaseFile);
-		this.statsdb = YamlConfiguration.loadConfiguration(statsDatabaseFile);
+		this.globalDb = YamlConfiguration.loadConfiguration(globalDatabaseFile);
 	}
 
 	private void createDefaultDatabaseFile(File file) {
@@ -130,7 +133,6 @@ public class YamlDatabase {
 	}
 
 	public void load() {
-		new PlayerStateSaver().loadPlayerStats();
 		int count = 0;
 		
 		for (String key : db.getKeys(false)) {
@@ -144,28 +146,79 @@ public class YamlDatabase {
 		}
 		
 		plugin.getLogger().info("Loaded " + count + " games!");
+		loadGlobalSettings();
 		saveConfig();
 	}
 
-	public void save(boolean savePlayerStates) {
-		for (String oldGameName : GameManager.deletedGames) //Delete old data sections...
-			db.set(oldGameName, null);
-		
+	public void save() {
 		for (Game game : GameManager.getGames()) {
 			ConfigurationSection section = db.createSection(game.getName());
 			
-			saveBasics(game, section, savePlayerStates);
+			saveBasics(game, section);
 			if (game.getType() == Type.CUBOID)
 				saveCuboid((GameCuboid) game, section);
 			else if (game.getType() == Type.CYLINDER)
 				saveCylinder((GameCylinder) game, section);
 		}
 		
-		if (savePlayerStates)
-			new PlayerStateSaver().savePlayerStates();
+		saveGlobalSettings();
 		saveConfig();
 	}
 	
+	private void saveGlobalSettings() {
+		if (globalDb == null)
+			return;
+		//Save the spleef hub
+		Location spleefHub = GameManager.getSpleefHub();
+		if (spleefHub != null)
+			globalDb.set("hub", convertLocationtoString(spleefHub));
+		
+		//Create a section for the portals if there isn't one
+		ConfigurationSection portalsSection = globalDb.contains("portals") ? globalDb.getConfigurationSection("portals") : globalDb.createSection("portals");
+		
+		//Save every portal
+		for (HUBPortal portal : GameManager.getPortals()) {
+			ConfigurationSection section = globalDb.createSection(String.valueOf(portal.getId()));
+			
+			section.set("firstCorner", convertLocationtoString(portal.getFirstCorner()));
+			section.set("secondCorner", convertLocationtoString(portal.getSecondCorner()));
+		}
+	}
+	
+	private void loadGlobalSettings() {
+		if (globalDb == null)
+			return;
+		
+		if (globalDb.contains("hub"))
+			GameManager.setSpleefHub(convertStringtoLocation(globalDb.getString("hub")));
+		
+		ConfigurationSection portalsSection = globalDb.getConfigurationSection("portals");
+		if (portalsSection != null) {
+			for (String key : portalsSection.getKeys(false)) {
+				ConfigurationSection keySection = portalsSection.getConfigurationSection(key);
+				
+				Location firstCorner = null;
+				Location secondCorner = null;
+				int id = -1;
+				
+				if (keySection.contains("firstCorner"))
+					firstCorner = convertStringtoLocation(keySection.getString("firstCorner"));
+				if (keySection.contains("secondCorner"))
+					secondCorner = convertStringtoLocation(keySection.getString("secondCorner"));
+				
+				try {
+					id = Integer.parseInt(key);
+				} catch (NumberFormatException e) {
+					HeavySpleef.instance.getLogger().warning("Failed to load portal id for portal " + id + "! Ignoring portal...");
+					continue;
+				}
+				
+				HUBPortal portal = new HUBPortal(id, firstCorner, secondCorner);
+				GameManager.addPortal(portal);
+			}
+		}
+	}
+
 	private void saveCuboid(GameCuboid game, ConfigurationSection section) {
 		if (game.getType() != Type.CUBOID)
 			return;
@@ -194,7 +247,8 @@ public class YamlDatabase {
 		if (game.getType() != Type.CYLINDER)
 			return;
 		section.set("center", convertLocationtoString(game.getCenter()));
-		section.set("radius", game.getRadius());
+		section.set("radiusEastWest", game.getRadiusEastWest());
+		section.set("radiusNorthSouth", game.getRadiusNorthSouth());
 		section.set("minY", game.getMinY());
 		section.set("maxY", game.getMaxY());
 		
@@ -241,11 +295,22 @@ public class YamlDatabase {
 		String name = section.getName();
 		
 		Location center = convertStringtoLocation(section.getString("center"));
-		int radius = section.getInt("radius");
+		
+		int radiusEastWest = 0;
+		int radiusNorthSouth = 0;
+		
+		if (section.getString("radius") != null) {
+			radiusEastWest = section.getInt("radius");
+			radiusNorthSouth = section.getInt("radius");
+		} else {
+			radiusEastWest = section.getInt("radiusEastWest");
+			radiusNorthSouth = section.getInt("radiusNorthSouth");
+		}
+		
 		int minY = section.getInt("minY");
 		int maxY = section.getInt("maxY");
 		
-		Game game = GameManager.createCylinderGame(name, center, radius, minY, maxY);
+		Game game = GameManager.createCylinderGame(name, center, radiusEastWest, radiusNorthSouth, minY, maxY);
 		if (game == null)//Just in case if no WorldEdit is installed
 			return;
 		
@@ -330,8 +395,8 @@ public class YamlDatabase {
 		}
 	}
 	
-	private void saveBasics(Game game, ConfigurationSection section, boolean stop) {
-		if (stop)
+	private void saveBasics(Game game, ConfigurationSection section) {
+		if (game.hasActivity())
 			game.stop();
 		section.set("type", game.getType().name());
 		
@@ -355,106 +420,6 @@ public class YamlDatabase {
 		}
 		
 		section.set("scoreboards", scoreBoardsAsList);
-	}
-
-	private class PlayerStateSaver {
-		
-		private void savePlayerStates() {
-			Map<String, PlayerState> playerStates = PlayerStateManager.getPlayerStates();
-			for (String player : playerStates.keySet()) {
-				ConfigurationSection section = statsdb.createSection(player);
-				PlayerState state = playerStates.get(player);
-				
-				ItemStack[] invContents = state.getContents();
-				
-				for (int i = 0; i < 36; i++) {
-					ItemStack currentStack = invContents[i];
-					if (currentStack == null)
-						section.set("stack_" + i, "null");
-					else
-						section.set("stack_" + i, currentStack);
-				}
-				
-				List<String> potionEffects = new ArrayList<String>();
-				
-				section.set("helmet", state.getHelmet());
-				section.set("chestplate", state.getChestplate());
-				section.set("leggings", state.getLeggings());
-				section.set("boots", state.getBoots());
-				
-				section.set("health", state.getHealth());
-				section.set("food", state.getFoodLevel());
-				
-				section.set("level", state.getLevel());
-				section.set("exp", state.getExp());
-				
-				section.set("exhaustion", state.getExhaustion());
-				section.set("saturation", state.getSaturation());
-				section.set("fly", state.isFly());
-				
-				section.set("gamemode", state.getGm().getValue());
-				
-				for (PotionEffect pe : state.getPotioneffects())
-					potionEffects.add(convertPotionEffectToString(pe));
-				section.set("potioneffects", potionEffects);
-				
-			}
-			
-			try {
-				statsdb.save(statsDatabaseFile);
-			} catch (IOException e) {
-				Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
-				e.printStackTrace();
-			}
-		}
-		
-		private void loadPlayerStats() {
-			
-			for (String key : statsdb.getKeys(false)) {
-				ConfigurationSection section = statsdb.getConfigurationSection(key);
-				
-				ItemStack[] invContents = new ItemStack[36];
-				ItemStack helmet = section.getItemStack("helmet");
-				ItemStack chestplate = section.getItemStack("chestplate");
-				ItemStack leggings = section.getItemStack("leggings");
-				ItemStack boots = section.getItemStack("boots");
-				
-				for (int i = 0; i < 36; i++)
-					if (section.getString("stack_" + i).equalsIgnoreCase("null"))
-						invContents[i] = null;
-					else
-						invContents[i] = section.getItemStack("stack_" + i);
-				
-				int health = section.getInt("health");
-				int foodLevel = section.getInt("food");
-				
-				int level = section.getInt("level");
-				float exp = (float) section.getDouble("exp");
-				
-				float exhaustion = (float) section.getDouble("exhaustion");
-				float saturation = (float) section.getDouble("saturation");
-				boolean fly = false;
-				if (section.contains("fly"))
-					fly = section.getBoolean("fly");
-				
-				GameMode gm = GameMode.getByValue(section.getInt("gamemode"));
-				
-				Collection<PotionEffect> pe = new ArrayList<PotionEffect>();
-				for (String peString : section.getStringList("potioneffects"))
-					pe.add(convertStringToPotionEffect(peString));
-				
-				PlayerStateManager.states.put(key, new PlayerState(invContents, helmet, chestplate, leggings, boots, saturation, exhaustion, foodLevel, health, gm, pe, exp, level, fly));
-				statsdb.set(key, null);
-			}
-			
-			try {
-				statsdb.save(statsDatabaseFile);
-			} catch (IOException e) {
-				Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
-				e.printStackTrace();
-			}
-		}
-		
 	}
 
 	public ConfigurationSection getConfigurationSection(String name) {

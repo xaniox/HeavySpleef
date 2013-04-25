@@ -47,15 +47,19 @@ import com.sk89q.worldedit.regions.Region;
 public class GameCylinder extends Game {
 
 	private Location center;
-	private int radius;
+	
+	private int radiusNorthSouth;
+	private int radiusEastWest;
+	
 	private int minY;
 	private int maxY;
 	
-	public GameCylinder(String id, Location center, int radius, int minY, int maxY) {
+	public GameCylinder(String id, Location center, int radiusNorthSouth, int radiusEastWest, int minY, int maxY) {
 		super(id);
 		
 		this.center = center;
-		this.radius = radius;
+		this.radiusNorthSouth = radiusNorthSouth;
+		this.radiusEastWest = radiusEastWest;
 		this.minY = minY;
 		this.maxY = maxY - 1;//Need to subtract 1 because of false rounding
 	}
@@ -76,7 +80,7 @@ public class GameCylinder extends Game {
 		int centerY = center.getBlockY();
 		int centerZ = center.getBlockZ();
 		
-		Region region = new CylinderRegion(BukkitUtil.getLocalWorld(center.getWorld()), new Vector(centerX, centerY, centerZ), new Vector2D(this.radius - 1, this.radius - 1), minY + 1, maxY - 1);
+		Region region = new CylinderRegion(BukkitUtil.getLocalWorld(center.getWorld()), new Vector(centerX, centerY, centerZ), new Vector2D(this.radiusEastWest - 1, this.radiusNorthSouth - 1), minY + 1, maxY - 1);
 		return region.contains(BukkitUtil.toVector(l));
 	}
 
@@ -106,14 +110,44 @@ public class GameCylinder extends Game {
 		
 		Random random = new Random();
 		
+		int distanceX = (center.getBlockX() + radiusEastWest - 1) - (center.getBlockX() - radiusEastWest + 1);
+		int randomX = random.nextInt(distanceX) + (center.getBlockX() - radiusEastWest);
+		
+		int yBound1 = (int)(+ radiusEastWest * Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
+		int yBound2 = (int)(- radiusEastWest * Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
+		
+		int lowerBound = Math.min(yBound1, yBound2);
+		int higherBound = Math.max(yBound1, yBound2);
+		
+		int distanceZ = higherBound - lowerBound;
+		
+		System.out.println("Formelergebniss: " + +Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
+		System.out.println("Formelergebniss2: " + -Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
+		
+		int randomZ = random.nextInt(distanceZ) + center.getBlockZ() - radiusNorthSouth;
+		
+		return new Location(center.getWorld(), randomX, y, randomZ);
+		/*
 		double i = random.nextInt(360 + 1);
-		double r = random.nextInt(radius - 1);
+		double r = radiusEastWest == radiusNorthSouth ? random.nextInt(radiusNorthSouth - 1) : 2;//TODO ...
+		
 		
         double angle = i * Math.PI / 180;
         int x = (int)(center.getX() + r * Math.cos(angle));
         int z = (int)(center.getZ() + r * Math.sin(angle));
      
         return new Location(center.getWorld(), x, y, z);
+        */
+	}
+	
+	private double exponent(double i, int exp) {
+		double result = i;
+		
+		for (int c = 0; c < exp - 1; c++) {
+			result = result * i;
+		}
+		
+		return result;
 	}
 
 	@Override
@@ -125,7 +159,7 @@ public class GameCylinder extends Game {
 		if (locations.length < 1)
 			return -1;
 		
-		Floor floor = new FloorCylinder(id, locations[0].getBlockY(), radius, locations[0], blockID, data, type);
+		Floor floor = new FloorCylinder(id, locations[0].getBlockY(), radiusEastWest, radiusNorthSouth, locations[0], blockID, data, type);
 		floor.create();
 		floors.put(floor.getId(), floor);
 		return floor.getId();
@@ -141,7 +175,7 @@ public class GameCylinder extends Game {
 		
 		//Get the wall block above the floor
 		Location c = getCenter().clone();
-		c.setX(center.getBlockX() + getRadius());
+		c.setX(center.getBlockX() + getRadiusEastWest());
 		c.setY(floor.getY() + 1);
 		
 		//Save block datas into variables
@@ -164,7 +198,7 @@ public class GameCylinder extends Game {
 		
 		//Create a fix for the removed floor
 		try {
-			eSession.makeCylinder(new Vector(x, y, z), new SingleBlockPattern(new BaseBlock(typeAbove, dataAbove)), radius, 1, false);
+			eSession.makeCylinder(new Vector(x, y, z), new SingleBlockPattern(new BaseBlock(typeAbove, dataAbove)), radiusEastWest, radiusNorthSouth, 1, false);
 		} catch (MaxChangedBlocksException e) {
 			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't clear floor...");
 		}
@@ -188,8 +222,12 @@ public class GameCylinder extends Game {
 		return this.center;
 	}
 	
-	public int getRadius() {
-		return this.radius;
+	public int getRadiusEastWest() {
+		return this.radiusEastWest;
+	}
+	
+	public int getRadiusNorthSouth() {
+		return this.radiusNorthSouth;
 	}
 	
 	public int getMinY() {
@@ -208,7 +246,7 @@ public class GameCylinder extends Game {
 		int z = center.getBlockZ();
 		
 		Vector v = new Vector(x, y, z);
-		return new CylinderRegion(world, v, new Vector2D(radius, radius), minY, maxY);
+		return new CylinderRegion(world, v, new Vector2D(radiusEastWest, radiusNorthSouth), minY, maxY);
 	}
 
 }

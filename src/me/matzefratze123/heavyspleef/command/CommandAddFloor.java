@@ -27,7 +27,7 @@ import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.selection.Selection;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
@@ -39,7 +39,6 @@ import org.bukkit.entity.Player;
 public class CommandAddFloor extends HSCommand {
 
 	public CommandAddFloor() {
-		setMaxArgs(1);
 		setMinArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_FLOOR);
@@ -121,7 +120,7 @@ public class CommandAddFloor extends HSCommand {
 			addGivenFloor(game, player, loc1, loc2);
 			return;
 		} else {//Specified floor!
-			SimpleBlockData data = MaterialHelper.fromString(args[0], true);
+			SimpleBlockData data = Util.fromString(args[0], true);
 			if (data == null) {
 				player.sendMessage(_("invalidBlock"));
 				return;
@@ -162,17 +161,17 @@ public class CommandAddFloor extends HSCommand {
 	
 	private void addWoolFloor(Game game, Player p, Location... locations) {
 		int id = game.addFloor(35, (byte)0, FloorType.RANDOMWOOL, locations);
-		p.sendMessage(_("floorCreated", String.valueOf(id)));
+		p.sendMessage(_("floorCreated", String.valueOf(id + 1)));
 	}
 	
 	private void addSpecifiedFloor(Game game, Player p, SimpleBlockData data, Location... locations) {
 		int id = game.addFloor(data.getMaterial().getId(), data.getData(), FloorType.SPECIFIEDID, locations);
-		p.sendMessage(_("floorCreated", String.valueOf(id)));
+		p.sendMessage(_("floorCreated", String.valueOf(id + 1)));
 	}
 	
 	private void addGivenFloor(Game game, Player p, Location... locations) {
 		int id = game.addFloor(0, (byte)0, FloorType.GIVENFLOOR, locations);
-		p.sendMessage(_("floorCreated", String.valueOf(id)));
+		p.sendMessage(_("floorCreated", String.valueOf(id + 1)));
 	}
 	
 	private Game getFromLocation(Location... locations) {

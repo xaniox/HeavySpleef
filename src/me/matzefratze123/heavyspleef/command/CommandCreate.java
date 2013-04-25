@@ -33,11 +33,15 @@ import org.bukkit.entity.Player;
 public class CommandCreate extends HSCommand {
 
 	public CommandCreate() {
-		setMaxArgs(4);
 		setMinArgs(2);
 		setOnlyIngame(true);
 		setPermission(Permissions.CREATE_GAME);
-		setUsage("/spleef create <name> <cuboid|cylinder <radius> <height>>");
+		setUsage("/spleef create <name> cuboid\n" +
+		         "Creates a new cuboid game within your selection\n\n" + 
+				 "/spleef create <name> cylinder <radius> <height>\n" +
+				 "Creates a new cylinder arena with the radius and height\n\n" +
+				 "/spleef create <name> ellipse <radiusNorthSouth> <radiusEastWest> <height>\n" +
+				 "Creates a new ellipse game with the given two radians and the height");
 	}
 	
 	@Override
@@ -50,7 +54,6 @@ public class CommandCreate extends HSCommand {
 		
 		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
 			//Create a new cylinder game
-			//TODO WorldEdit check
 			if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 				player.sendMessage(_("noWorldEdit"));
 				return;
@@ -74,8 +77,39 @@ public class CommandCreate extends HSCommand {
 				int minY = center.getBlockY();
 				int maxY = center.getBlockY() + height;
 				
-				System.out.println("Creating game " + args[0]);
 				GameManager.createCylinderGame(args[0].toLowerCase(), center, radius, minY, maxY);
+			} catch (NumberFormatException e) {
+				player.sendMessage(_("notANumber", args[2]));
+				return;
+			}
+			
+		} else if (args[1].equalsIgnoreCase("oval") || args[1].equalsIgnoreCase("ellipse"))  {
+			//Create a new ellipse game
+			if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+				player.sendMessage(_("noWorldEdit"));
+				return;
+			}
+			if (args.length < 5) {
+				player.sendMessage(getUsage());
+				return;
+			}
+			for (Game game : GameManager.getGames()) {
+				if (game.contains(player.getLocation())) {
+					player.sendMessage(_("arenaCantBeInsideAnother"));
+					return;
+				}
+			}
+			try {
+				int radiusEastWest = Integer.parseInt(args[2]);
+				int radiusNorthSouth = Integer.parseInt(args[3]);
+				int height = Integer.parseInt(args[4]);
+				
+				Location center = player.getLocation();
+				
+				int minY = center.getBlockY();
+				int maxY = center.getBlockY() + height;
+				
+				GameManager.createCylinderGame(args[0].toLowerCase(), center, radiusEastWest, radiusNorthSouth, minY, maxY);
 			} catch (NumberFormatException e) {
 				player.sendMessage(_("notANumber", args[2]));
 				return;

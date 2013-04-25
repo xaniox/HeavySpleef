@@ -26,7 +26,7 @@ import java.util.Set;
 
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.database.ItemStackHelper;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
 
 import org.bukkit.entity.Player;
@@ -46,7 +46,7 @@ public class ItemStackFlag extends Flag<ItemStack[]> {
 		
 		int count = 0;
 		for (int i = 0; i + 1 < parts.length; i += 2) {
-			SimpleBlockData datas = MaterialHelper.fromString(parts[i], false);
+			SimpleBlockData datas = Util.fromString(parts[i], false);
 			int amount = 0;
 			
 			try {
@@ -121,7 +121,7 @@ public class ItemStackFlag extends Flag<ItemStack[]> {
 		ItemStack[] stacks = (ItemStack[])value;
 		
 		for (ItemStack stack : stacks) {
-			list.add(stack.getAmount() + " " + MaterialHelper.getName(stack.getType().name()));
+			list.add(stack.getAmount() + " " + Util.getName(stack.getType().name()));
 		}
 		
 		Set<String> asSet = new HashSet<String>(list);

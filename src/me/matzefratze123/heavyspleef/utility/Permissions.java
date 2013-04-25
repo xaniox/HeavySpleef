@@ -28,6 +28,7 @@ public enum Permissions {
 
 	// Command
 	KICK("heavyspleef.kick"),
+	TELEPORT_HUB("heavyspleef.teleporthub"),
 	SET_MIN_PLAYERS("heavyspleef.setminplayers"),
 	SET_MAX_PLAYERS("heavyspleef.setmaxplayers"),
 	SET_FLAG("heavyspleef.flag"),
@@ -66,7 +67,7 @@ public enum Permissions {
 	STATS_OTHERS("heavyspleef.statistic.others"),
 	SET_1VS1("heavyspleef.set1vs1"),
 	SET_ROUNDS("heavyspleef.setrounds"),
-	SET_DEFAULT_TEAM("heavyspleef.setdefaultteam"),
+	SET_HUB("heavyspleef.sethub"),
 	ADD_SCOREBOARD("heavyspleef.addscoreboard"),
 	REMOVE_SCOREBOARD("heavyspleef.removescoreboard"),
 	UPDATE_SCOREBOARD("heavyspleef.updatescoreboard"),
@@ -79,6 +80,9 @@ public enum Permissions {
 	RELOAD("heavyspleef.reload"),
 	INFO("heavyspleef.info"),
 	VOTE("heavyspleef.vote"),
+	USE_PORTAL("heavyspleef.useportal"),
+	ADD_PORTAL("heavyspleef.addportal"),
+	REMOVE_PORTAL("heavyspleef.removeportal"),
 	
 	// Bypass
 	BUILD_BYPASS("heavyspleef.build.bypass"),
@@ -90,7 +94,8 @@ public enum Permissions {
 	CREATE_SPLEEF_SIGN("heavyspleef.createsign"),
 	SIGN_JOIN("heavyspleef.sign.join"),
 	SIGN_LEAVE("heavyspleef.sign.leave"),
-	SIGN_START("heavyspleef.sign.start");
+	SIGN_START("heavyspleef.sign.start"),
+	SIGN_HUB("heavyspleef.sign.hub");
 	
 	
 	private String perm;

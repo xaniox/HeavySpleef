@@ -3,7 +3,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Team;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
@@ -41,7 +41,7 @@ public class CommandRemoveTeam extends HSCommand {
 		}
 		
 		game.removeTeam(color);
-		player.sendMessage(_("teamRemoved", color + MaterialHelper.getName(color.name())));
+		player.sendMessage(_("teamRemoved", color + Util.getName(color.name())));
 	}
 
 }

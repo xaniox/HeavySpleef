@@ -30,10 +30,12 @@ import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import me.matzefratze123.heavyspleef.database.YamlDatabase;
 import me.matzefratze123.heavyspleef.hooks.HookManager;
+import me.matzefratze123.heavyspleef.listener.HUBPortalListener;
 import me.matzefratze123.heavyspleef.listener.InventoryListener;
 import me.matzefratze123.heavyspleef.listener.PVPTimerListener;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
 import me.matzefratze123.heavyspleef.listener.QueuesListener;
+import me.matzefratze123.heavyspleef.listener.ReadyListener;
 import me.matzefratze123.heavyspleef.listener.SignListener;
 import me.matzefratze123.heavyspleef.listener.SignWallListener;
 import me.matzefratze123.heavyspleef.listener.UpdateListener;
@@ -52,6 +54,7 @@ import me.matzefratze123.heavyspleef.utility.ViPManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
@@ -127,7 +130,7 @@ public class HeavySpleef extends JavaPlugin {
 	public void onDisable() {
 		
 		this.getServer().getScheduler().cancelTasks(this);
-		this.database.save(true);
+		this.database.save();
 		this.statisticDatabase.save();
 		this.getLogger().info("HeavySpleef deactivated!");
 	}
@@ -198,6 +201,8 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new SignWallListener(), this);
 		pm.registerEvents(new QueuesListener(), this);
 		pm.registerEvents(new PVPTimerListener(), this);
+		pm.registerEvents(new HUBPortalListener(), this);
+		pm.registerEvents(new ReadyListener(), this);
 		
 		/*Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
 		if (tagAPIHook.hasHook())
@@ -231,7 +236,7 @@ public class HeavySpleef extends JavaPlugin {
 		this.saverTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			@Override
 			public void run() {
-				database.save(false);
+				database.save();
 				statisticDatabase.save();
 			}
 		}, 0L, getConfig().getInt("general.saveIntervall") * 20L * 60L);

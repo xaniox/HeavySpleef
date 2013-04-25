@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.core.region.HUBPortal;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 
 import org.bukkit.Location;
@@ -34,10 +35,12 @@ public class GameManager {
 	
 	//Main core list that contains ALL games!
 	public static List<Game> games = new ArrayList<Game>();
-	public static List<String> deletedGames = new ArrayList<String>();
 	public static List<String> renamedGames = new ArrayList<String>();
 	
 	public static Map<String, Integer> antiCamping = new HashMap<String, Integer>();
+	
+	public static Location spleefHub = null;
+	public static List<HUBPortal> portals = new ArrayList<HUBPortal>();
 	
 	public static Game getGame(String id) {
 		id = id.toLowerCase();
@@ -68,17 +71,22 @@ public class GameManager {
 		return getGame(id);
 	}
 	
-	public static Game createCylinderGame(String id, Location center, int radius, int minY, int maxY) {
+	public static Game createCylinderGame(String id, Location center, int radiusEastWest, int radiusNorthSouth, int minY, int maxY) {
 		if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook())
 			return null;
-		games.add(new GameCylinder(id, center, radius, minY, maxY));
+		games.add(new GameCylinder(id, center, radiusEastWest, radiusNorthSouth, minY, maxY));
 		return getGame(id);
+	}
+	
+	public static Game createCylinderGame(String id, Location center, int radius, int minY, int maxY) {
+		return createCylinderGame(id, center, radius, radius, minY, maxY);
 	}
 	
 	public static void deleteGame(String id) {
 		id = id.toLowerCase();
 		games.remove(getGame(id));
-		deletedGames.add(id);
+		HeavySpleef.instance.database.db.set(id, null);
+		HeavySpleef.instance.database.saveConfig();
 	}
 	
 	public static boolean hasGame(String id) {
@@ -126,4 +134,60 @@ public class GameManager {
 		}
 		return false;
 	}
+	
+	/* Spleef HUB Start */
+	public static void setSpleefHub(Location location) {
+		spleefHub = location;
+	}
+	
+	public static Location getSpleefHub() {
+		return spleefHub;
+	}
+	
+	public static void addPortal(HUBPortal portal) {
+		if (portal.isInterruptedId()) {
+			int newlyId = getValidId();
+			portal.setId(newlyId);
+		}
+		
+		portals.add(portal);
+	}
+	
+	public static void removePortal(HUBPortal portal) {
+		portals.remove(portal);
+	}
+	
+	public static HUBPortal getPortal(int id) {
+		for (HUBPortal portal : portals) {
+			if (portal.getId() == id)
+				return portal;
+		}
+		
+		return null;
+	}
+	
+	public static List<HUBPortal> getPortals() {
+		return GameManager.portals;
+	}
+	
+	public static boolean hasPortal(int id) {
+		for (HUBPortal portal : portals) {
+			if (portal.getId() == id)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	private static int getValidId() {
+		int id = 0;
+		
+		while(hasPortal(id))
+			id++;
+		
+		return id;
+	}
+	
+	/* Spleef HUB End */
+	
 }

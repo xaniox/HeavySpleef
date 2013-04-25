@@ -3,7 +3,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Team;
-import me.matzefratze123.heavyspleef.utility.MaterialHelper;
+import me.matzefratze123.heavyspleef.utility.Util;
 import me.matzefratze123.heavyspleef.utility.Permissions;
 
 import org.bukkit.ChatColor;
@@ -41,7 +41,7 @@ public class CommandAddTeam extends HSCommand {
 		}
 		
 		game.addTeam(color);
-		player.sendMessage(_("teamAdded", color + MaterialHelper.getName(color.name())));
+		player.sendMessage(_("teamAdded", color + Util.getName(color.name())));
 	}
 
 }

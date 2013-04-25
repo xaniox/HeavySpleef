@@ -149,7 +149,7 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 				
 				if (hasRow(owner))
 					executeUpdate("DELETE FROM " + tableName + " WHERE owner = '" + owner + "'");//We have to delete old values because of a bug in version 1.0...
-					//Will be replaced by: UPDATE tablename SET owner='owner', wins='wins', etc. WHERE owner LIKE owner 
+					//Will be replaced by: UPDATE tablename SET owner='owner', wins='wins', etc. WHERE owner LIKE owner
 				executeUpdate("INSERT INTO " + tableName + " (owner, wins, loses, knockouts, games, score) VALUES ('" + owner + "', '" + wins + "', '" + loses + "', '" + knockouts + "', '" + games + "', '" + score + "')");
 			}
 			conn.close();
@@ -197,7 +197,7 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 				c++;
 			}
 			
-			plugin.getLogger().info("Loaded " + c + " statistics data sets!");
+			plugin.getLogger().info("Loaded " + c + " statistics!");
 		} catch (SQLException e) {
 			plugin.getLogger().severe("An SQL Error occured while loading statistic database! Look at the error below for more information...");
 			e.printStackTrace();

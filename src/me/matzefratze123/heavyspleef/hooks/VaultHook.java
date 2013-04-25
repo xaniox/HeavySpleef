@@ -38,6 +38,8 @@ public class VaultHook implements Hook<Economy> {
 		
 		if (hook == null)
 			hook();
+		if (hook == null)
+			return false;
 		return true;
 	}
 

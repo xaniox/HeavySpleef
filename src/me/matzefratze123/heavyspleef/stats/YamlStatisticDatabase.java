@@ -80,6 +80,8 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public void load() {
+		int count = 0;
+		
 		for (String owner : db.getKeys(false)) {
 			ConfigurationSection section = db.getConfigurationSection(owner);
 			
@@ -90,7 +92,10 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 			
 			StatisticModule stat = new StatisticModule(owner, loses, wins, knockouts, games);
 			StatisticManager.addExistingStatistic(stat);
+			count++;
 		}
+		
+		HeavySpleef.instance.getLogger().info("Loaded " + count + " statistics!");
 	}
 
 }

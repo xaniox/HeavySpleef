@@ -24,7 +24,7 @@ import org.bukkit.block.Block;
 
 public abstract class RegionBase {
 
-	private int id;
+	private int id = -1;
 	
 	protected RegionBase(int id) {
 		this.setId(id);
@@ -40,8 +40,12 @@ public abstract class RegionBase {
 		return id;
 	}
 
-	protected void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public boolean isInterruptedId() {
+		return this.id < 0;
 	}
 	
 	public static boolean contains(Location loc1, Location loc2, Location toCheck) {
