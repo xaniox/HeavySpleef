@@ -1,7 +1,7 @@
 HeavySpleef
 ===========
 
-![Image](https://www.dropbox.com/s/bpvoqn2kmxmgj6b/HeavySpleefLogo.png)
+![Image](https://dl.dropbox.com/s/bpvoqn2kmxmgj6b/HeavySpleefLogo.png)
 
 What is HeavySpleef?
 
