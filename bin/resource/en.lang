@@ -72,7 +72,14 @@ onlyLobby: &cYou can use this command only during lobby!
 votesDisabled: &6Votes are disabled for this server!
 alreadyVoted: &6You already voted!
 
+alreadyInTeam: &cYou are already in team %a&c!
+notInThisTeam: &cYou are not in this team!
+invalidColor: &cThis an invalid team-color!
+specifieTeam: &cPlease pick a team! Avaible Teams: %a
 notASign: &cSome blocks in this selection are not signs!
+
+noSpleefHubSet: &cThe Spleef-HUB wasn't set!
+notLookingAtPortal: &cYou aren't looking at a portal!
 
 # Success messages
 
@@ -138,7 +145,19 @@ teleportWillCommence: &6Joining game %a. Teleport will commence in %a seconds...
 dontMove: &6Don't move!
 pvpTimerCancelled: &4Teleportation cancelled due to movement!
 
+addedToTeam: &7You joined team %a
+removedFromTeam: &7You left team %a
+teamAdded: &7The teamcolor %a &7was added!
+teamRemoved: &7The team with the color %a &7was removed!
+
 gameRenamed: &7Renamed game &6%a &7to &5%a &7!
+
+welcomeToHUB: &7Welcome to the &4&lSpleef-HUB&r&7!
+spleefHubSet: &7Global Spleef HUB set!
+portalRemoved: &7The portal was removed!
+portalAdded: &7Portal added!
+
+taggedAsReady: &7You have been tagged as ready
 
 # Broadcast Messages
 
@@ -151,12 +170,14 @@ gameIsStarting: &1Game is starting in %a seconds...
 gameStopped: &cThe game has been stopped!
 playerJoinedGame: &a%a&a has joined the game!
 hasWon: &a%a &1has won the game on arena &6%a&1!
+teamWin: &aTeam %a &ahas won the game in arena %a&7!
+
+remaining: &1%a players remaining!
 
 wonRound: &a%a &chas won round &6%a &cof &6%a&c!
 roundsRemaining: &1%a rounds remaining!
 wonThe1vs1: &a%a&a has won the game against %a! Congratulation!
 endedDraw: &aThe game in arena %a has ended in a draw...
-remaining: &1%a players remaining!
 
 doubleKnockout: &7%a &7got a Double Knockout!
 tripleKnockout: &9%a &9got a Triple Knockout!
