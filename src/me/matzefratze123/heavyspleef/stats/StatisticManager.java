@@ -22,13 +22,12 @@ package me.matzefratze123.heavyspleef.stats;
 import static org.bukkit.ChatColor.GREEN;
 import static org.bukkit.ChatColor.WHITE;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import me.matzefratze123.heavyspleef.utility.ArrayHelper;
 
 public class StatisticManager {
 
@@ -68,7 +67,7 @@ public class StatisticManager {
 	
 	public static String[] retrieveLeaderboard(int page) {
 		String[] array = new String[10];
-		List<StatisticModule> list = ArrayHelper.collectionToList(statistics.values());
+		List<StatisticModule> list = new ArrayList<StatisticModule>(statistics.values());
 		Collections.sort(list);
 		
 		page = Math.abs(page);
@@ -84,7 +83,7 @@ public class StatisticManager {
 				break;
 			
 			StatisticModule module = list.get(place);
-			array[i] = (place + 1) + ". " + GREEN + module.getName() + " - " + WHITE + "Wins: " + module.getWins() + " | Loses: " + module.getLoses() + " | KD: " + module.getKD();
+			array[i] = (place + 1) + ". " + GREEN + module.getName() + " - " + WHITE + "Wins: " + module.getWins() + " | Loses: " + module.getLoses() + " | Win Ratio: " + module.getKD();
 		}
 		
 		return array;

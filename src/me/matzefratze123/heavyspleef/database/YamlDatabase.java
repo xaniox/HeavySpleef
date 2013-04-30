@@ -38,9 +38,7 @@ import static me.matzefratze123.heavyspleef.core.flag.FlagType.TIMEOUT;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.WIN;
 import static me.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
 import static me.matzefratze123.heavyspleef.database.Parser.convertLoseZoneToString;
-import static me.matzefratze123.heavyspleef.database.Parser.convertPotionEffectToString;
 import static me.matzefratze123.heavyspleef.database.Parser.convertStringToLosezone;
-import static me.matzefratze123.heavyspleef.database.Parser.convertStringToPotionEffect;
 import static me.matzefratze123.heavyspleef.database.Parser.convertStringtoLocation;
 
 import java.io.File;
@@ -48,7 +46,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,19 +65,18 @@ import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import me.matzefratze123.heavyspleef.core.region.HUBPortal;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.PlayerState;
-import me.matzefratze123.heavyspleef.utility.PlayerStateManager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 
-@SuppressWarnings("unused")
+/**
+ * Provides a database manager for the plugin
+ * 
+ * @author matzefratze123
+ */
 public class YamlDatabase {
 
 	private HeavySpleef plugin;
@@ -91,6 +87,9 @@ public class YamlDatabase {
 	public FileConfiguration db;
 	public FileConfiguration globalDb;
 	
+	/**
+	 * Constructs a new YamlDatabase
+	 */
 	public YamlDatabase() {
 		this.plugin = HeavySpleef.instance;
 		
@@ -132,6 +131,9 @@ public class YamlDatabase {
 		}
 	}
 
+	/**
+	 * Loads all games from the database into the system
+	 */
 	public void load() {
 		int count = 0;
 		
@@ -150,6 +152,9 @@ public class YamlDatabase {
 		saveConfig();
 	}
 
+	/**
+	 * Saves all games from the system to the database
+	 */
 	public void save() {
 		for (Game game : GameManager.getGames()) {
 			ConfigurationSection section = db.createSection(game.getName());
@@ -178,7 +183,7 @@ public class YamlDatabase {
 		
 		//Save every portal
 		for (HUBPortal portal : GameManager.getPortals()) {
-			ConfigurationSection section = globalDb.createSection(String.valueOf(portal.getId()));
+			ConfigurationSection section = portalsSection.createSection(String.valueOf(portal.getId()));
 			
 			section.set("firstCorner", convertLocationtoString(portal.getFirstCorner()));
 			section.set("secondCorner", convertLocationtoString(portal.getSecondCorner()));
@@ -422,13 +427,22 @@ public class YamlDatabase {
 		section.set("scoreboards", scoreBoardsAsList);
 	}
 
+	/**
+	 * Gets a configuration section from the database file
+	 * 
+	 * @param name The name of the configuration-section
+	 */
 	public ConfigurationSection getConfigurationSection(String name) {
 		return db.getConfigurationSection(name);
 	}
 	
+	/**
+	 * Pushes all datas into the physical file
+	 */
 	public void saveConfig() {
 		try {
 			db.save(databaseFile);
+			globalDb.save(globalDatabaseFile);
 		} catch (IOException e) {
 			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
 			e.printStackTrace();
@@ -449,6 +463,7 @@ public class YamlDatabase {
 	
 	private void loadFlags(Game game, ConfigurationSection section) {
 		List<String> flagsAsString = section.getStringList("flags");
+		
 		if (flagsAsString == null)
 			return;
 		
@@ -463,8 +478,7 @@ public class YamlDatabase {
 			flags.put(flag, deserialized);
 		}
 		
-		if (flags.size() > 0)
-			game.setFlags(flags);
+		game.setFlags(flags);
 	}
 	
 }

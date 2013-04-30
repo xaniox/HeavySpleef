@@ -25,7 +25,7 @@ import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;

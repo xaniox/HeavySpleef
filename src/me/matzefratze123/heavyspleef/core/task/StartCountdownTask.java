@@ -51,7 +51,7 @@ public class StartCountdownTask extends Countdown {
 		if (getTimeRemaining() <= 5){//Do improved countdown
 			if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
 				for (Player p : game.getPlayers())
-					p.playSound(p.getLocation(), Sound.NOTE_PLING, 4.0F, p.getLocation().getPitch());
+					p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
 			}
 			game.tellAll(Game._("gameIsStarting", String.valueOf(getTimeRemaining())));
 		} else {//Do pre countdown

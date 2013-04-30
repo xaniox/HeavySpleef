@@ -94,17 +94,6 @@ public class GameData {
 	}
 	
 	/**
-	 * Checks if the game contains a location <b>inside</b> the game
-	 * (The zone were players are able to build if there is a floor)
-	 * 
-	 * @param location Location to check
-	 * @return True if the game spleef zone contains this location
-	 */
-	public boolean containsInside(Location location) {
-		return game.containsInner(location);
-	}
-	
-	/**
 	 * Broadcasts a message to this game
 	 * The message is heared by near players and ingame players
 	 * 

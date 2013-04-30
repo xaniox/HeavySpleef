@@ -21,20 +21,21 @@ package me.matzefratze123.heavyspleef.command;
 
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandAddScoreBoard extends HSCommand {
+public class CommandAddScoreboard extends HSCommand {
 
-	public CommandAddScoreBoard() {
+	public CommandAddScoreboard() {
 		setMinArgs(2);
 		setMaxArgs(2);
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_SCOREBOARD);
 		setUsage("/spleef addscoreboard <name> <EAST|WEST|SOUTH|NORTH>");
+		setTabHelp(new String[]{"<name> <EAST|WEST|SOUTH|NORTH>"});
 	}
 
 	@Override

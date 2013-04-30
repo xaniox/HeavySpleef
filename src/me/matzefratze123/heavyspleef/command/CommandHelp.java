@@ -19,7 +19,7 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -74,6 +74,7 @@ public class CommandHelp extends HSCommand {
 		setMaxArgs(1);
 		setMinArgs(0);
 		setUsage("/spleef help [page]");
+		setTabHelp(new String[]{"[page]"});
 	}
 	
 	@Override

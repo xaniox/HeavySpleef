@@ -27,11 +27,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
+/**
+ * A helper class for converting locations 
+ * and other stuff to strings and back
+ * 
+ * @author matzefratze123
+ */
 public class Parser {
 
+	/**
+	 * Converts a location to a string
+	 */
 	public static String convertLocationtoString(Location location) {
 		double x = location.getX();
 		double y = location.getY();
@@ -46,6 +53,9 @@ public class Parser {
 		return s;
 	}
 	
+	/**
+	 * Converts a string to a location
+	 */
 	public static Location convertStringtoLocation(String s) {
 		if (s == null || s.isEmpty() || s.equalsIgnoreCase("null"))
 			return null;
@@ -74,6 +84,9 @@ public class Parser {
 		return new Location(world, x, y, z);
 	}
 	
+	/**
+	 * Rounds a location to int values
+	 */
 	public static Location roundLocation(Location location) {
 		World world = location.getWorld();
 		int x = location.getBlockX();
@@ -83,6 +96,9 @@ public class Parser {
 		return new Location(world, x, y, z);
 	}
 	
+	/**
+	 * Converts a losezone to a string
+	 */
 	public static LoseZone convertStringToLosezone(String s) {
 		String[] split = s.split(";");
 		
@@ -93,6 +109,9 @@ public class Parser {
 		return new LoseZone(secondCorner, firstCorner, id);
 	}
 	
+	/**
+	 * Converts a string to a losezone
+	 */
 	public static String convertLoseZoneToString(LoseZone z) {
 		
 		int id = z.getId();
@@ -100,21 +119,6 @@ public class Parser {
 		String secondCorner = convertLocationtoString(z.getSecondCorner());
 		
 		return id + ";" + firstCorner + ";" + secondCorner;
-	}
-	
-	public static String convertPotionEffectToString(PotionEffect pe) {
-		int durationTicks = pe.getDuration();
-		int amplifier = pe.getAmplifier();
-		String potionType = pe.getType().getName();
-		return potionType + ";" + amplifier + ";" + durationTicks;
-	}
-	
-	public static PotionEffect convertStringToPotionEffect(String s) {
-		String[] split = s.split(";");
-		int durationTicks = Integer.parseInt(split[2]);
-		int amplifier = Integer.parseInt(split[1]);
-		PotionEffectType type = PotionEffectType.getByName(split[0]);
-		return new PotionEffect(type, durationTicks, amplifier);
 	}
 
 }

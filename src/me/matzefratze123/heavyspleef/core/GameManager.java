@@ -138,6 +138,9 @@ public class GameManager {
 	/* Spleef HUB Start */
 	public static void setSpleefHub(Location location) {
 		spleefHub = location;
+		if (location == null)
+			HeavySpleef.instance.database.globalDb.set("hub", null);
+		
 	}
 	
 	public static Location getSpleefHub() {

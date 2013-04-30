@@ -29,7 +29,7 @@ import org.bukkit.entity.Player;
 public class LocationFlag extends Flag<Location> {
 
 	public LocationFlag(String name) {
-		super(name);
+		super(name, null);
 	}
 
 	@Override

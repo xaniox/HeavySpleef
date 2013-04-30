@@ -22,7 +22,7 @@ package me.matzefratze123.heavyspleef.core.region;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.database.FloorLoader;
 import me.matzefratze123.heavyspleef.database.Parser;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

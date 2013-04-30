@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 public class CommandRemoveScoreBoard extends HSCommand {
 

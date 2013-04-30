@@ -104,8 +104,12 @@ general:
   # The plugin can show ingame players a sidebar scoreboard
   # with the knockouts and the status. To use this, you have
   # to install the latest 1.5.1 R2 build of bukkit.
-  # Downloadable at dl.bukkit.org
   showSidebarScoreboard: false
+  
+  # This is the ready block for players who don't want to use
+  # /spleef ready or /spleef vote
+  # (Hit the block)
+  ready-block: IRON_BLOCK
   
 leaderboard:
   # Points for Spleef Games
@@ -139,6 +143,8 @@ flag-defaults:
   # Example: '264 5 388 3'. This would give 5 Diamonds and 3 Emeralds
   itemreward: ''
   losereward: ''
+  
+  difficulty: MEDIUM
 
 queues:
   

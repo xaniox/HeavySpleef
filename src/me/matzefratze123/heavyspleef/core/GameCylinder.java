@@ -27,7 +27,7 @@ import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.LocationHelper;
+import me.matzefratze123.heavyspleef.util.DistanceHelper;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,7 +61,7 @@ public class GameCylinder extends Game {
 		this.radiusNorthSouth = radiusNorthSouth;
 		this.radiusEastWest = radiusEastWest;
 		this.minY = minY;
-		this.maxY = maxY - 1;//Need to subtract 1 because of false rounding
+		this.maxY = maxY;
 	}
 
 	@Override
@@ -72,15 +72,6 @@ public class GameCylinder extends Game {
 	@Override
 	public boolean contains(Location l) {
 		Region region = getCylinderRegion(minY, maxY);
-		return region.contains(BukkitUtil.toVector(l));
-	}
-	
-	public boolean containsInner(Location l) {
-		int centerX = center.getBlockX();
-		int centerY = center.getBlockY();
-		int centerZ = center.getBlockZ();
-		
-		Region region = new CylinderRegion(BukkitUtil.getLocalWorld(center.getWorld()), new Vector(centerX, centerY, centerZ), new Vector2D(this.radiusEastWest - 1, this.radiusNorthSouth - 1), minY + 1, maxY - 1);
 		return region.contains(BukkitUtil.toVector(l));
 	}
 
@@ -97,7 +88,7 @@ public class GameCylinder extends Game {
 				
 				if (p.getLocation().getWorld() != this.center.getWorld())
 					continue;
-				if (LocationHelper.getDistance2D(this.center, playerLocation) <= radiusSqared || this.players.contains(p.getName())) {
+				if (DistanceHelper.getDistance2D(this.center, playerLocation) <= radiusSqared || this.players.contains(p.getName())) {
 					p.sendMessage(msg);
 				}
 			}
@@ -106,27 +97,31 @@ public class GameCylinder extends Game {
 
 	@Override
 	public Location getRandomLocation() {
-		int y = getHighestFloor().getY() + 1;
+		//Formula for lower and higher bound of an ellipse:
+		//Y = +- b * sqrt(1 - (X/a)²)
+		//Formula adapted from: http://stackoverflow.com/questions/5529148/algorithm-calculate-pseudo-random-point-inside-an-ellipse
+		
+		double y = getHighestFloor().getY() + 1.25D;
 		
 		Random random = new Random();
 		
-		int distanceX = (center.getBlockX() + radiusEastWest - 1) - (center.getBlockX() - radiusEastWest + 1);
-		int randomX = random.nextInt(distanceX) + (center.getBlockX() - radiusEastWest);
+		int distanceX = (center.getBlockX() + radiusEastWest) - (center.getBlockX() - radiusEastWest);
+		double calculatedX = random.nextInt(distanceX / 2 - 1) + 1;
+		calculatedX = random.nextBoolean() ? calculatedX : -calculatedX;
 		
-		int yBound1 = (int)(+ radiusEastWest * Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
-		int yBound2 = (int)(- radiusEastWest * Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
+		int yBound1 = (int)(+ (double)radiusNorthSouth * Math.sqrt(1.0 - (exponent(calculatedX / (double)radiusEastWest, 2))));
+		int yBound2 = (int)(- (double)radiusNorthSouth * Math.sqrt(1.0 - (exponent(calculatedX / (double)radiusEastWest, 2))));
 		
-		int lowerBound = Math.min(yBound1, yBound2);
-		int higherBound = Math.max(yBound1, yBound2);
+		int lowerBound = center.getBlockZ() + Math.min(yBound1, yBound2);
+		int higherBound = center.getBlockZ() + Math.max(yBound1, yBound2);
 		
 		int distanceZ = higherBound - lowerBound;
 		
-		System.out.println("Formelergebniss: " + +Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
-		System.out.println("Formelergebniss2: " + -Math.sqrt(1 - (exponent(Math.abs(randomX - center.getBlockX()) / radiusNorthSouth, 2))));
-		
-		int randomZ = random.nextInt(distanceZ) + center.getBlockZ() - radiusNorthSouth;
+		int randomZ = (int)random.nextInt(distanceZ - 2) + 1 + lowerBound;
+		int randomX = (int)calculatedX + (center.getBlockX());
 		
 		return new Location(center.getWorld(), randomX, y, randomZ);
+		//Funzt
 		/*
 		double i = random.nextInt(360 + 1);
 		double r = radiusEastWest == radiusNorthSouth ? random.nextInt(radiusNorthSouth - 1) : 2;//TODO ...

@@ -82,6 +82,9 @@ invalidColor: &cDies ist keine g\u00FCltige Teamfarbe!
 specifieTeam: &cBitte w\u00E4hle ein Team! Verf\u00FCgbare Teams: %a
 notASign: &cNicht alle Bl\u00F6cke in dieser Auswahl sind Schilder!
 
+noSpleefHubSet: &cEs wurde kein Spleef-HUB gesetzt...
+notLookingAtPortal: &cDu schaust auf kein Portal...
+
 # Erfolgsnachrichten
 
 floorCreated: &7Floor mit ID #%a hinzugef\u00FCgt!
@@ -153,6 +156,13 @@ teamRemoved: &7Das Team mit der Farbe %a &7wurde enfernt.
 
 gameRenamed: &7Spiel &6%a &7wurde zu &5%a &7umbenannt!
 
+welcomeToHUB: &7Willkommen beim &4&lSpleef-HUB&r&7!
+spleefHubSet: &7Der globale Spleef-HUB wurde gesetzt!
+portalRemoved: &7Portal entfernt!
+portalAdded: &7Portal hinzugef\u00FCgt!
+
+taggedAsReady: &7Du wurdest als bereit gekennzeichnet!
+
 # Broadcast nachrichten
 
 gameDisabled: &cDas Spiel &6%a &cwurde von %a&c deaktiviert!
@@ -164,7 +174,7 @@ gameIsStarting: &1Spiel startet in %a Sekunden...
 gameStopped: &cDas Spiel wurde gestoppt!
 playerJoinedGame: &a%a&a ist dem Spiel beigetreten!
 hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!
-teamWin: &aTeam %a &ahat das Spiel in Arena %a gewonnen!
+teamWin: &aTeam %a &ahat das Spiel in Arena %a &7gewonnen!
 
 remaining: &1%a Spieler verbleiben!
 

@@ -22,12 +22,27 @@ package me.matzefratze123.heavyspleef.core.flag;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.inventory.ItemStack;
+
+import me.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
+
 public enum FlagType {
 
-	INTEGER_FLAG,
-	LOCATION_FLAG,
-	BOOLEAN_FLAG,
-	ITEMSTACK_FLAG;
+	INTEGER_FLAG(0),
+	LOCATION_FLAG(1),
+	BOOLEAN_FLAG(2),
+	ITEMSTACK_FLAG(3),
+	ENUM_FLAG(4);
+	
+	private int internalId;
+	
+	private FlagType(int internalId) {
+		this.internalId = internalId;
+	}
+	
+	public int getInternalId() {
+		return this.internalId;
+	}
 	
 	public static final LocationFlag WIN = new LocationFlag("win");
 	public static final LocationFlag LOSE = new LocationFlag("lose");
@@ -36,27 +51,29 @@ public enum FlagType {
 	public static final LocationFlag SPAWNPOINT1 = new LocationFlag("spawnpoint1");
 	public static final LocationFlag SPAWNPOINT2 = new LocationFlag("spawnpoint2");
 	
-	public static final IntegerFlag MINPLAYERS = new IntegerFlag("minplayers");
-	public static final IntegerFlag MAXPLAYERS = new IntegerFlag("maxplayers");
-	public static final IntegerFlag AUTOSTART = new IntegerFlag("autostart");
-	public static final IntegerFlag COUNTDOWN = new IntegerFlag("countdown");
-	public static final IntegerFlag JACKPOTAMOUNT = new IntegerFlag("jackpotamount");
-	public static final IntegerFlag REWARD = new IntegerFlag("reward");
-	public static final IntegerFlag CHANCES = new IntegerFlag("chances");
-	public static final IntegerFlag TIMEOUT = new IntegerFlag("timeout");
-	public static final IntegerFlag ROUNDS = new IntegerFlag("rounds");
+	public static final IntegerFlag MINPLAYERS = new IntegerFlag("minplayers", 2);
+	public static final IntegerFlag MAXPLAYERS = new IntegerFlag("maxplayers", 0);
+	public static final IntegerFlag AUTOSTART = new IntegerFlag("autostart", 0);
+	public static final IntegerFlag COUNTDOWN = new IntegerFlag("countdown", 10);
+	public static final IntegerFlag JACKPOTAMOUNT = new IntegerFlag("jackpotamount", 0);
+	public static final IntegerFlag REWARD = new IntegerFlag("reward", 0);
+	public static final IntegerFlag CHANCES = new IntegerFlag("chances", 0);
+	public static final IntegerFlag TIMEOUT = new IntegerFlag("timeout", 0);
+	public static final IntegerFlag ROUNDS = new IntegerFlag("rounds", 3);
 	
-	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1");
-	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels");
-	public static final BooleanFlag TEAM = new BooleanFlag("team");
+	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1", false);
+	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels", false);
+	public static final BooleanFlag TEAM = new BooleanFlag("team", false);
 	
-	public static final ItemStackFlag ITEMREWARD = new ItemStackFlag("itemreward");
-	public static final ItemStackFlag LOSEREWARD = new ItemStackFlag("losereward");
+	public static final ItemStackFlag ITEMREWARD = new ItemStackFlag("itemreward", new ItemStack[]{});
+	public static final ItemStackFlag LOSEREWARD = new ItemStackFlag("losereward", new ItemStack[]{});
+	
+	public static final EnumFlag<Difficulty> DIFFICULTY = new EnumFlag<Difficulty> ("difficulty", Difficulty.class, Difficulty.MEDIUM);
 	
 	public static final Flag<?>[] flagList = new Flag<?>[] {WIN, LOSE, LOBBY, QUEUELOBBY, SPAWNPOINT1, SPAWNPOINT2,
 															MINPLAYERS, MAXPLAYERS, AUTOSTART, COUNTDOWN, JACKPOTAMOUNT,
 															REWARD, CHANCES, TIMEOUT, ROUNDS, ONEVSONE, SHOVELS, ITEMREWARD,
-															LOSEREWARD};
+															LOSEREWARD, DIFFICULTY};
 	
 	public static List<Flag<?>> getFlagList() {
 		return Arrays.asList(flagList);

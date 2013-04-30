@@ -28,9 +28,11 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
+import me.matzefratze123.heavyspleef.core.flag.FlagType;
+import me.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.Permissions;
+import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -124,6 +126,11 @@ public class PlayerListener implements Listener {
 		
 		boolean shovels = game.getFlag(SHOVELS);
 		if (shovels)
+			return;
+		
+		System.out.println(game.getFlag(FlagType.DIFFICULTY).name());
+		
+		if (game.getFlag(FlagType.DIFFICULTY) != Difficulty.MEDIUM)
 			return;
 		
 		game.addBrokenBlock(p, block);

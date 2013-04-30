@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.LanguageHandler;
+import me.matzefratze123.heavyspleef.util.LanguageHandler;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -107,7 +107,7 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("stop", new CommandStop());
 		addSubCommand("stats", new CommandStats());
 		addSubCommand("update", new CommandUpdate());
-		addSubCommand("addscoreboard", new CommandAddScoreBoard());
+		addSubCommand("addscoreboard", new CommandAddScoreboard());
 		addSubCommand("removescoreboard", new CommandRemoveScoreBoard());
 		addSubCommand("addwall", new CommandAddWall());
 		addSubCommand("removewall", new CommandRemoveWall());
@@ -119,6 +119,10 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("rename", new CommandRename());
 		/*addSubCommand("addteam", new CommandAddTeam());
 		addSubCommand("removeteam", new CommandRemoveTeam());*/
+		addSubCommand("sethub", new CommandSetHub());
+		addSubCommand("addportal", new CommandAddPortal());
+		addSubCommand("removeportal", new CommandRemovePortal());
+		addSubCommand("hub", new CommandHub());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

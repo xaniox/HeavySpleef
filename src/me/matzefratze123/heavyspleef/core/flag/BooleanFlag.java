@@ -26,8 +26,8 @@ import org.bukkit.entity.Player;
 
 public class BooleanFlag extends Flag<Boolean> {
 
-	public BooleanFlag(String name) {
-		super(name);
+	public BooleanFlag(String name, Boolean defaulte) {
+		super(name, defaulte);
 	}
 
 	@Override

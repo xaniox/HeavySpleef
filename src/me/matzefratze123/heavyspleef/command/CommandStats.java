@@ -23,7 +23,7 @@ import static org.bukkit.ChatColor.*;
 
 import me.matzefratze123.heavyspleef.stats.StatisticManager;
 import me.matzefratze123.heavyspleef.stats.StatisticModule;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,13 +37,14 @@ public class CommandStats extends HSCommand {
 		setMaxArgs(2);
 		setMinArgs(0);
 		setOnlyIngame(true);
-		setUsage("/spleef stats [Name|top] [page]");
+		setUsage("/spleef stats [player|top] [page]");
+		setTabHelp(new String[]{"[player]", "[top]", "[top] [page]"});
 	}
-	
+
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		Player p = (Player)sender;
-		
+		Player p = (Player) sender;
+
 		if (args.length == 0) {
 			if (!p.hasPermission(Permissions.STATS.getPerm())) {
 				p.sendMessage(_("noPermission"));
@@ -53,8 +54,9 @@ public class CommandStats extends HSCommand {
 				p.sendMessage(ChatColor.RED + "You don't have statistics!");
 				return;
 			}
-			
-			StatisticModule stat = StatisticManager.getStatistic(p.getName(), false);
+
+			StatisticModule stat = StatisticManager.getStatistic(p.getName(),
+					false);
 			printStatistics(stat, p);
 		} else if (args.length >= 1 && args[0].equalsIgnoreCase("top")) {
 			int page = 0;
@@ -65,20 +67,21 @@ public class CommandStats extends HSCommand {
 					p.sendMessage(_("notANumber", args[1]));
 				}
 			}
-			
+
 			String[] leaderBoard = StatisticManager.retrieveLeaderboard(page);
-			p.sendMessage("--- " + ChatColor.GREEN + "Top Players" + ChatColor.WHITE + " ---");
+			p.sendMessage("--- " + ChatColor.GREEN + "Top Players"
+					+ ChatColor.WHITE + " ---");
 			for (String str : leaderBoard) {
 				if (str == null)
 					continue;
 				p.sendMessage(str);
-			}
+			}	
 		} else if (args.length == 1) {
 			if (!p.hasPermission(Permissions.STATS_OTHERS.getPerm())) {
 				p.sendMessage(_("noPermission"));
 				return;
 			}
-			
+
 			OfflinePlayer target = Bukkit.getPlayer(args[0]);
 			if (target == null)
 				target = Bukkit.getOfflinePlayer(args[0]);
@@ -87,15 +90,17 @@ public class CommandStats extends HSCommand {
 				return;
 			}
 			if (!StatisticManager.hasStatistic(args[0])) {
-				p.sendMessage(ChatColor.RED + "This player doesn't have statistics!");
+				p.sendMessage(ChatColor.RED
+						+ "This player doesn't have statistics!");
 				return;
 			}
-			
-			StatisticModule stat = StatisticManager.getStatistic(target.getName(), false);
+
+			StatisticModule stat = StatisticManager.getStatistic(
+					target.getName(), false);
 			printStatistics(stat, p);
 		}
 	}
-	
+
 	private void printStatistics(StatisticModule stat, Player p) {
 		if (!stat.getName().equalsIgnoreCase(p.getName()))
 			p.sendMessage("--- " + GREEN + "Statistics of " + stat.getName() + WHITE + " ---");

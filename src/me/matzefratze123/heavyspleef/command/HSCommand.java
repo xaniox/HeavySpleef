@@ -19,15 +19,21 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.LanguageHandler;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.LanguageHandler;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public abstract class HSCommand {
+public abstract class HSCommand implements TabCompleter {
 
 	private Permissions permission = null;
 	private int minArgs = 0;
@@ -36,6 +42,7 @@ public abstract class HSCommand {
 	public static HeavySpleef plugin;
 	public static FileConfiguration config;
 	protected String usage;
+	protected List<String> tabArgsComplete = new ArrayList<String>();
 
 	public abstract void execute(CommandSender sender, String[] args);
 	
@@ -83,6 +90,10 @@ public abstract class HSCommand {
 		this.onlyIngame = ingame;
 	}
 	
+	void setTabHelp(String[] help) {
+		this.tabArgsComplete = Arrays.asList(help);
+	}
+	
 	public static String _(String... key) {
 		return HeavySpleef.PREFIX + ChatColor.RESET + " " + LanguageHandler._(key);
 	}
@@ -97,5 +108,10 @@ public abstract class HSCommand {
 	
 	static void setFileConfiguration(FileConfiguration c) {
 		config = c;
+	}
+	
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+		return this.tabArgsComplete;
 	}
 }

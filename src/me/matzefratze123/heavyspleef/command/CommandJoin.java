@@ -24,8 +24,8 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Team;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
-import me.matzefratze123.heavyspleef.utility.LanguageHandler;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.LanguageHandler;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -37,7 +37,8 @@ public class CommandJoin extends HSCommand {
 		setMaxArgs(2);
 		setMinArgs(0);
 		setOnlyIngame(true);
-		setUsage("/spleef join <Arena> [team]");
+		setUsage("/spleef join <arena> [team]");
+		setTabHelp(new String[]{"<arena>", "<arena> [team]"});
 	}
 
 	@Override

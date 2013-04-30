@@ -23,8 +23,8 @@ import me.matzefratze123.heavyspleef.FileConfig;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
-import me.matzefratze123.heavyspleef.utility.LanguageHandler;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.LanguageHandler;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

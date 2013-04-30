@@ -22,9 +22,9 @@ package me.matzefratze123.heavyspleef.command;
 import java.io.File;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.Updater;
-import me.matzefratze123.heavyspleef.utility.Updater.UpdateType;
+import me.matzefratze123.heavyspleef.util.Permissions;
+import me.matzefratze123.heavyspleef.util.Updater;
+import me.matzefratze123.heavyspleef.util.Updater.UpdateType;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

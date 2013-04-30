@@ -22,7 +22,7 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -61,9 +61,6 @@ public class CommandVote extends HSCommand {
 		
 		game.addVote(player);
 		player.sendMessage(_("successfullyVoted"));
-		
-		if (game.canBegin())
-			game.countdown();
 	}
 
 }

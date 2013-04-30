@@ -30,8 +30,6 @@ import java.util.Collections;
 import java.util.List;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.ArrayHelper;
-
 import org.bukkit.Bukkit;
 
 public class MySQLStatisticDatabase implements IStatisticDatabase {
@@ -134,7 +132,7 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 			executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner TEXT, wins INT, loses INT, knockouts INT, games INT, score INT)");
 			checkColumns();
 			
-			List<StatisticModule> statistics = ArrayHelper.collectionToList(StatisticManager.getStatistics());
+			List<StatisticModule> statistics = new ArrayList<StatisticModule>(StatisticManager.getStatistics());
 			Collections.sort(statistics);
 			
 			for (StatisticModule stat : statistics) {
@@ -149,7 +147,7 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 				
 				if (hasRow(owner))
 					executeUpdate("DELETE FROM " + tableName + " WHERE owner = '" + owner + "'");//We have to delete old values because of a bug in version 1.0...
-					//Will be replaced by: UPDATE tablename SET owner='owner', wins='wins', etc. WHERE owner LIKE owner
+					//1.3: Will be replaced by: UPDATE tablename SET owner='owner', wins='wins', etc. WHERE owner LIKE owner
 				executeUpdate("INSERT INTO " + tableName + " (owner, wins, loses, knockouts, games, score) VALUES ('" + owner + "', '" + wins + "', '" + loses + "', '" + knockouts + "', '" + games + "', '" + score + "')");
 			}
 			conn.close();

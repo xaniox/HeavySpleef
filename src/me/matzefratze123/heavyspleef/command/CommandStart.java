@@ -25,7 +25,7 @@ import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,6 +38,7 @@ public class CommandStart extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.START_GAME);
 		setUsage("/spleef start <Name>");
+		setTabHelp(new String[]{"<name>"});
 	}
 	
 	@Override

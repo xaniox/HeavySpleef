@@ -28,8 +28,8 @@ import me.matzefratze123.heavyspleef.core.GameCuboid;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.SignWall;
 import me.matzefratze123.heavyspleef.core.Team;
-import me.matzefratze123.heavyspleef.utility.Util;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
+import me.matzefratze123.heavyspleef.util.Util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

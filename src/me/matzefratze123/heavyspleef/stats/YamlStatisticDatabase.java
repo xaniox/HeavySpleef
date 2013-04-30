@@ -21,6 +21,7 @@ package me.matzefratze123.heavyspleef.stats;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.ArrayHelper;
 
 public class YamlStatisticDatabase implements IStatisticDatabase {
 
@@ -53,7 +53,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	
 	@Override
 	public void save() {
-		List<StatisticModule> statistics = ArrayHelper.collectionToList(StatisticManager.getStatistics());
+		List<StatisticModule> statistics = new ArrayList<StatisticModule>(StatisticManager.getStatistics());
 		Collections.sort(statistics);
 		
 		for (StatisticModule stat : statistics) {

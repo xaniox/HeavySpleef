@@ -27,9 +27,9 @@ import me.matzefratze123.heavyspleef.core.Type;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.selection.Selection;
-import me.matzefratze123.heavyspleef.utility.Util;
-import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.Permissions;
+import me.matzefratze123.heavyspleef.util.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.Util;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -43,6 +43,7 @@ public class CommandAddFloor extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_FLOOR);
 		setUsage("/spleef addfloor <randomwool|given|block[:subdata]>]");
+		setTabHelp(new String[]{"randomwool", "given", "block[:subdata]"});
 	}
 	
 	@Override

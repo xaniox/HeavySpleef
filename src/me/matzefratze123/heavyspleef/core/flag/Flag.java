@@ -20,15 +20,32 @@
 package me.matzefratze123.heavyspleef.core.flag;
 
 import me.matzefratze123.heavyspleef.database.DatabaseSerializeable;
-
 import org.bukkit.entity.Player;
 
+/**
+ * This class represents a flag of a game</br>
+ * As this class uses generics, you should
+ * use the subclasses of this class.
+ * 
+ * @see IntegerFlag
+ * @see BooleanFlag
+ * @see EnumFlag
+ * @see ItemStackFlag
+ * @see LocationFlag
+ * 
+ * @author matzefratze123
+ *
+ * @param <T> The value of this flag
+ */
 public abstract class Flag<T> implements DatabaseSerializeable<T> {
 
+	T defaulte;
+	
 	protected String name;
 	
-	public Flag(String name) {
+	public Flag(String name, T defaulte) {
 		this.name = name;
+		this.defaulte = defaulte;
 	}
 	
 	public String getName() {
@@ -42,6 +59,10 @@ public abstract class Flag<T> implements DatabaseSerializeable<T> {
 	public abstract String getHelp();
 	
 	public abstract FlagType getType();
+	
+	public T getAbsolutDefault() {
+		return this.defaulte;
+	}
 	
 	@Override
 	public String toString() {

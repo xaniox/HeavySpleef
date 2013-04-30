@@ -22,8 +22,8 @@ package me.matzefratze123.heavyspleef.command;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
-import me.matzefratze123.heavyspleef.utility.Permissions;
-import me.matzefratze123.heavyspleef.utility.ViPManager;
+import me.matzefratze123.heavyspleef.util.Permissions;
+import me.matzefratze123.heavyspleef.util.ViPManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -36,6 +36,7 @@ public class CommandKick extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.KICK);
 		setUsage("/spleef kick <Player> [Reason]");
+		setTabHelp(new String[]{"<player>", "<player> [reason]"});
 	}
 	
 	@Override

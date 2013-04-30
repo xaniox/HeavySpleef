@@ -5,7 +5,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.SignWall;
 import me.matzefratze123.heavyspleef.selection.Selection;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,6 +18,7 @@ public class CommandAddWall extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_WALL);
 		setUsage("/spleef addwall <name>");
+		setTabHelp(new String[]{"<arena>"});
 	}
 
 	@Override

@@ -27,7 +27,7 @@ import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.utility.LocationHelper;
+import me.matzefratze123.heavyspleef.util.DistanceHelper;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -38,33 +38,11 @@ public class GameCuboid extends Game {
 	private Location firstCorner;
 	private Location secondCorner;
 	
-	private Location firstInnerCorner;
-	private Location secondInnerCorner;
-	
 	public GameCuboid(Location firstCorner, Location secondCorner, String name) {
 		super(name);
 		
 		this.firstCorner = firstCorner;
 		this.secondCorner = secondCorner;
-		
-		calculateInnerCorners();
-	}
-
-	private void calculateInnerCorners() {
-		
-		int firstCornerX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX()) + 1;
-		int firstCornerY = Math.min(getFirstCorner().getBlockY(), getSecondCorner().getBlockY()) + 1;
-		int firstCornerZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ()) + 1;
-		
-		int secondCornerX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX()) - 1;
-		int secondCornerY = Math.max(getFirstCorner().getBlockY(), getSecondCorner().getBlockY()) - 1;
-		int secondCornerZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ()) - 1;
-		
-		Location corner1 = new Location(getFirstCorner().getWorld(), firstCornerX, firstCornerY, firstCornerZ);
-		Location corner2 = new Location(getSecondCorner().getWorld(), secondCornerX, secondCornerY, secondCornerZ);
-		
-		this.firstInnerCorner = corner1;
-		this.secondInnerCorner = corner2;
 	}
 	
 	public Location getFirstCorner() {
@@ -81,14 +59,6 @@ public class GameCuboid extends Game {
 
 	public void setSecondCorner(Location secondCorner) {
 		this.secondCorner = secondCorner;
-	}
-
-	public Location getSecondInnerCorner() {
-		return secondInnerCorner;
-	}
-	
-	public Location getFirstInnerCorner() {
-		return firstInnerCorner;
 	}
 	
 	public Location[] get4Points() {
@@ -124,11 +94,11 @@ public class GameCuboid extends Game {
 				if (p.getLocation().getWorld() != corners[0].getWorld())
 					continue;
 				
-				if (LocationHelper.getDistance2D(corners[0], p.getLocation()) != -1.0D &&
-					   (LocationHelper.getDistance2D(corners[0], playerLocation) <= radiusSqared ||
-						LocationHelper.getDistance2D(corners[1], playerLocation) <= radiusSqared ||
-						LocationHelper.getDistance2D(corners[2], playerLocation) <= radiusSqared ||
-						LocationHelper.getDistance2D(corners[3], playerLocation) <= radiusSqared ||
+				if (DistanceHelper.getDistance2D(corners[0], p.getLocation()) != -1.0D &&
+					   (DistanceHelper.getDistance2D(corners[0], playerLocation) <= radiusSqared ||
+						DistanceHelper.getDistance2D(corners[1], playerLocation) <= radiusSqared ||
+						DistanceHelper.getDistance2D(corners[2], playerLocation) <= radiusSqared ||
+						DistanceHelper.getDistance2D(corners[3], playerLocation) <= radiusSqared ||
 						this.players.contains(p.getName()))) {
 					p.sendMessage(msg);
 				}
@@ -148,28 +118,6 @@ public class GameCuboid extends Game {
 		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
 		
 		if (!toCheck.getWorld().getName().equalsIgnoreCase(getFirstCorner().getWorld().getName()))
-			return false;
-		if (toCheck.getBlockX() > maxX || toCheck.getBlockX() < minX)
-			return false;
-		if (toCheck.getBlockY() > maxY || toCheck.getBlockY() < minY)
-			return false;
-		if (toCheck.getBlockZ() > maxZ || toCheck.getBlockZ() < minZ)
-			return false;
-		return true;
-	}
-	
-	@Override
-	public boolean containsInner(Location toCheck) {
-		int minX = Math.min(getFirstInnerCorner().getBlockX(), getSecondInnerCorner().getBlockX());
-		int maxX = Math.max(getFirstInnerCorner().getBlockX(), getSecondInnerCorner().getBlockX());
-		
-		int minY = Math.min(getFirstInnerCorner().getBlockY(), getSecondInnerCorner().getBlockY());
-		int maxY = Math.max(getFirstInnerCorner().getBlockY(), getSecondInnerCorner().getBlockY());
-		
-		int minZ = Math.min(getFirstInnerCorner().getBlockZ(), getSecondInnerCorner().getBlockZ());
-		int maxZ = Math.max(getFirstInnerCorner().getBlockZ(), getSecondInnerCorner().getBlockZ());
-		
-		if (!toCheck.getWorld().getName().equalsIgnoreCase(getFirstInnerCorner().getWorld().getName()))
 			return false;
 		if (toCheck.getBlockX() > maxX || toCheck.getBlockX() < minX)
 			return false;
@@ -199,7 +147,7 @@ public class GameCuboid extends Game {
 		int randomX = minX + random.nextInt(differenceX + 1); // Choose a random X location
 		int randomZ = minZ + random.nextInt(differenceZ + 1); // Choose a random Z location
 		
-		int y = getHighestFloor().getY() + 1;
+		double y = getHighestFloor().getY() + 1.25D;
 		
 		return new Location(getFirstCorner().getWorld(), randomX, y, randomZ); // Return the location
 	}

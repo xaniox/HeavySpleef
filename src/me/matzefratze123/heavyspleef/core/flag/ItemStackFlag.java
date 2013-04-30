@@ -26,8 +26,8 @@ import java.util.Set;
 
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.database.ItemStackHelper;
-import me.matzefratze123.heavyspleef.utility.Util;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.Util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,8 +35,8 @@ import org.bukkit.material.MaterialData;
 
 public class ItemStackFlag extends Flag<ItemStack[]> {
 
-	public ItemStackFlag(String name) {
-		super(name);
+	public ItemStackFlag(String name, ItemStack[] defaulte) {
+		super(name, defaulte);
 	}
 
 	@Override

@@ -23,8 +23,8 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
-import me.matzefratze123.heavyspleef.utility.ArrayHelper;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.ArrayHelper;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -38,6 +38,7 @@ public class CommandFlag extends HSCommand {
 		setUsage("/spleef flag <name> <flag> [state]\n" +
 				__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.flagList, true)));
 		setPermission(Permissions.SET_FLAG);
+		setTabHelp(new String[]{"<name> <flag> [value]"});
 	}
 	
 	@Override

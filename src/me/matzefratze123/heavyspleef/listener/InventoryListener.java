@@ -23,8 +23,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.matzefratze123.heavyspleef.utility.InventorySelector.ClickEvent;
-import me.matzefratze123.heavyspleef.utility.InventorySelector.InventorySelectorListener;
+import me.matzefratze123.heavyspleef.util.InventorySelector.ClickEvent;
+import me.matzefratze123.heavyspleef.util.InventorySelector.InventorySelectorListener;
 
 public class InventoryListener implements InventorySelectorListener {
 

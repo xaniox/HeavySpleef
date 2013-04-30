@@ -52,6 +52,7 @@ public class SignWall extends RegionBase {
 		this.loc2 = secondCorner;
 		
 		calculateSigns(firstCorner, secondCorner);
+		overrideOtherWalls();
 		update();
 	}
 	
@@ -66,6 +67,27 @@ public class SignWall extends RegionBase {
 		Location loc2 = Parser.convertStringtoLocation(parts[2]);
 		
 		return new SignWall(loc1, loc2, game, id);
+	}
+	
+	//Removes all other walls that overlap this wall
+	//Most users don't want to type /spleef removewall
+	private void overrideOtherWalls() {
+		
+		//Loop around every game
+		for (Game game : GameManager.getGames()) {
+			//Loop around there walls
+			for (SignWall wall : game.getWalls()) {
+				//Loop around the signs of the wall
+				for (Sign sign : wall.signs) {
+					//Loop around the signs of this wall
+					for (Sign thisSign : this.signs) {
+						//And check if it equals
+						if (sign.getLocation().equals(thisSign.getLocation()))
+							game.removeWall(wall.getId());//Remove the wall, because it overlaps an other
+					}
+				}
+			}
+		}
 	}
 	
 	private void calculateSigns(Location... locations) {

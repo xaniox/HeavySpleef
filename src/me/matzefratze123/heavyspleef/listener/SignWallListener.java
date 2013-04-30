@@ -23,7 +23,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.SignWall;
 import me.matzefratze123.heavyspleef.database.Parser;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;

@@ -24,7 +24,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.selection.Selection;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -40,8 +40,9 @@ public class CommandCreate extends HSCommand {
 		         "Creates a new cuboid game within your selection\n\n" + 
 				 "/spleef create <name> cylinder <radius> <height>\n" +
 				 "Creates a new cylinder arena with the radius and height\n\n" +
-				 "/spleef create <name> ellipse <radiusNorthSouth> <radiusEastWest> <height>\n" +
+				 "/spleef create <name> ellipse <radiusEastWest> <radiusNorthSouth> <height>\n" +
 				 "Creates a new ellipse game with the given two radians and the height");
+		setTabHelp(new String[]{"<name> cuboid", "<name> cylinder <radius> <height>", "<name> ellipse <radiusEastWest> <radiusNorthSouth> <height>"});
 	}
 	
 	@Override
@@ -100,8 +101,8 @@ public class CommandCreate extends HSCommand {
 				}
 			}
 			try {
-				int radiusEastWest = Integer.parseInt(args[2]);
-				int radiusNorthSouth = Integer.parseInt(args[3]);
+				int radiusEastWest = Integer.parseInt(args[3]);
+				int radiusNorthSouth = Integer.parseInt(args[2]);
 				int height = Integer.parseInt(args[4]);
 				
 				Location center = player.getLocation();

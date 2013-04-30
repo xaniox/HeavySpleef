@@ -24,8 +24,8 @@ import java.util.Set;
 
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.utility.ArrayHelper;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.ArrayHelper;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -39,6 +39,7 @@ public class CommandList extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.LIST);
 		setUsage("/spleef list [name]");
+		setTabHelp(new String[]{"[name]"});
 	}
 
 	@Override

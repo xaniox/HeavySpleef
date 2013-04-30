@@ -20,7 +20,7 @@
 package me.matzefratze123.heavyspleef.listener;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.utility.Permissions;
+import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

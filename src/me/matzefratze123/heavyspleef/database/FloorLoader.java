@@ -29,9 +29,10 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.region.Floor;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 public class FloorLoader {
 
@@ -47,6 +48,7 @@ public class FloorLoader {
 			o.flush();
 			o.close();
 		} catch (IOException e) {
+			HeavySpleef.instance.getLogger().severe("Could not save floor #" + f.getId() + " from the game " + game.getName() + " to the database! IOException?!");
 			e.printStackTrace();
 		}
 	}
@@ -69,6 +71,7 @@ public class FloorLoader {
 			floor.givenFloorList = list;
 			o.close();
 		} catch (IOException e) {
+			HeavySpleef.instance.getLogger().severe("Could not load floor #" + floor.getId() + " from the game " + gameName + " from the database! IOException?!");
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

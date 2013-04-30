@@ -25,9 +25,9 @@ import java.util.List;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.region.RegionBase;
 import me.matzefratze123.heavyspleef.database.Parser;
-import me.matzefratze123.heavyspleef.utility.ArrayHelper;
-import me.matzefratze123.heavyspleef.utility.Util;
-import me.matzefratze123.heavyspleef.utility.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.ArrayHelper;
+import me.matzefratze123.heavyspleef.util.SimpleBlockData;
+import me.matzefratze123.heavyspleef.util.Util;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;

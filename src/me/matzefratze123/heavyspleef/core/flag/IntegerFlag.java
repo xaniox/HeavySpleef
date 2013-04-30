@@ -25,8 +25,8 @@ import org.bukkit.entity.Player;
 
 public class IntegerFlag extends Flag<Integer> {
 
-	public IntegerFlag(String name) {
-		super(name);
+	public IntegerFlag(String name, int defaulte) {
+		super(name, defaulte);
 	}
 
 	@Override
