@@ -1,7 +1,9 @@
 HeavySpleef
 ===========
 
-What is HeavySpleef?                                       ![Image](https://dl.dropboxusercontent.com/s/4mz1suvdbzoi60f/HeavySpleefImage.png)
+![Image](https://www.dropbox.com/s/bpvoqn2kmxmgj6b/HeavySpleefLogo.png)
+
+What is HeavySpleef?
 
 Spleef is a gamemode in Minecraft where your goal is to knock out players by destroying a floor so the other player falls down.
 If a player touches a losezone he is out of the game. Last man standing wins...
