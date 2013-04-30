@@ -1,6 +1,3 @@
-HeavySpleef
-===========
-
 ![Image](https://dl.dropbox.com/s/bpvoqn2kmxmgj6b/HeavySpleefLogo.png)
 
 What is HeavySpleef?
