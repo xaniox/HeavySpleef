@@ -48,7 +48,7 @@ public class SignWallListener implements Listener {
 					
 					e.setCancelled(true);
 				} else {
-					for (Sign sign : wall.getSigns()) {
+					for (Sign sign : wall.getSignLocations()) {
 						if (Parser.roundLocation(SignWall.getAttachedBlock(sign).getLocation()).equals(e.getBlock().getLocation()))
 							e.setCancelled(true);
 					}

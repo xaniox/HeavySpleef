@@ -174,25 +174,7 @@ public class SignWall extends RegionBase {
 		this.locations = signArray;
 	}
 	
-	public Sign getJoinSign() {
-		if (locations.length < 1)
-			return null;
-		if (!isSign(locations[0].getBlock()))
-			return null;
-		
-		return (Sign)this.locations[0].getBlock().getState();
-	}
-	
-	public Sign getInfoSign() {
-		if (locations.length < 2)
-			return null;
-		if (!isSign(locations[1].getBlock()))
-			return null;
-		
-		return (Sign)this.locations[1].getBlock().getState();
-	}
-	
-	public Sign[] getSigns() {
+	public Sign[] getSignLocations() {
 		Sign[] array = new Sign[locations.length];
 				
 		for (int i = 0; i < locations.length; i++) {
@@ -211,28 +193,30 @@ public class SignWall extends RegionBase {
 		String infinity = new String("\u221E".getBytes(), Charset.forName("UTF-8"));
 		String maxPlayers = String.valueOf(game.getFlag(FlagType.MAXPLAYERS) < 2 ? infinity : game.getFlag(FlagType.MAXPLAYERS));
 		
-		if (getJoinSign().getType() != Material.WALL_SIGN)
-			getJoinSign().setType(Material.WALL_SIGN);
-		getJoinSign().setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
-		getJoinSign().setLine(1, ChatColor.RED + "[Join]");
-		getJoinSign().setLine(2, game.getName());
-		getJoinSign().update();
+		Sign joinSign = (Sign)locations[0].getBlock().getState();
+		if (joinSign.getType() != Material.WALL_SIGN)
+			joinSign.setType(Material.WALL_SIGN);
+		joinSign.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
+		joinSign.setLine(1, ChatColor.DARK_RED + "[Join]");
+		joinSign.setLine(2, game.getName());
+		joinSign.update();
 		
-		if (getInfoSign().getType() != Material.WALL_SIGN)
-			getInfoSign().setType(Material.WALL_SIGN);
-		getInfoSign().setLine(0, ChatColor.RED + game.getName());
-		getInfoSign().setLine(1, game.getGameState().name());
-		getInfoSign().setLine(2, inPlayers.size() + "/" + ChatColor.GRAY + outPlayers.size() + ChatColor.RESET + "/" + maxPlayers);
+		Sign infoSign = (Sign)locations[1].getBlock().getState();
+		if (infoSign.getType() != Material.WALL_SIGN)
+			infoSign.setType(Material.WALL_SIGN);
+		infoSign.setLine(0, ChatColor.RED + game.getName());
+		infoSign.setLine(1, game.getGameState().name());
+		infoSign.setLine(2, inPlayers.size() + "/" + ChatColor.GRAY + outPlayers.size() + ChatColor.RESET + "/" + maxPlayers);
 		boolean is1vs1 = game.getFlag(ONEVSONE);
 		
 		if (game.isCounting())
-			getInfoSign().setLine(3, ChatColor.DARK_RED + "Start in " + ChatColor.BOLD + game.getCurrentCount());
+			infoSign.setLine(3, ChatColor.DARK_RED + "Start in " + ChatColor.BOLD + game.getCurrentCount());
 		else if (is1vs1 && (game.isIngame() || game.isCounting())) {
 			int rounds = game.getFlag(ROUNDS);
-			getInfoSign().setLine(3, ChatColor.DARK_GREEN + "Round " + game.getCurrentRound() + "/" + rounds);
+			infoSign.setLine(3, ChatColor.DARK_GREEN + "Round " + game.getCurrentRound() + "/" + rounds);
 		} else
-			getInfoSign().setLine(3, "");
-		getInfoSign().update();
+			infoSign.setLine(3, "");
+		infoSign.update();
 		
 		Iterator<String> inIterator = inPlayers.iterator();
 		Iterator<String> outIterator = outPlayers.iterator();
