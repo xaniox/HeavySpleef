@@ -28,6 +28,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
+import me.matzefratze123.heavyspleef.core.QueuesManager;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
@@ -127,8 +128,6 @@ public class PlayerListener implements Listener {
 		boolean shovels = game.getFlag(SHOVELS);
 		if (shovels)
 			return;
-		
-		System.out.println(game.getFlag(FlagType.DIFFICULTY).name());
 		
 		if (game.getFlag(FlagType.DIFFICULTY) != Difficulty.MEDIUM)
 			return;
@@ -294,8 +293,11 @@ public class PlayerListener implements Listener {
 	}
 	
 	private void handleQuit(PlayerEvent e) {
+		QueuesManager.removeFromQueue(e.getPlayer());
+		
 		if (!GameManager.isInAnyGame(e.getPlayer()))
 			return;
+		
 		Game game = GameManager.fromPlayer(e.getPlayer());
 		game.removePlayer(e.getPlayer(), LoseCause.QUIT);
 	}

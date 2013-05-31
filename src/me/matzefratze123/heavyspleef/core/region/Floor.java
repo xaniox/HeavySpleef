@@ -22,13 +22,13 @@ package me.matzefratze123.heavyspleef.core.region;
 import java.util.ArrayList;
 import java.util.Random;
 
-import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.database.Parser;
 import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 import org.bukkit.Location;
 
-public abstract class Floor extends RegionBase {
+public abstract class Floor extends RegionBase implements Comparable<Floor> {
 
 	protected int m;
 	protected byte data;
@@ -54,7 +54,7 @@ public abstract class Floor extends RegionBase {
 	
 	public abstract void remove();
 	
-	public abstract Type getType();
+	public abstract GameType getType();
 	
 	public FloorType getFloorType() {
 		return type;
@@ -99,6 +99,11 @@ public abstract class Floor extends RegionBase {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public int compareTo(Floor o) {
+		return Integer.valueOf(y).compareTo(o.y);
 	}
 
 }

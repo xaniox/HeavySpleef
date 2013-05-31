@@ -30,6 +30,7 @@ import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.RegionBase;
 import me.matzefratze123.heavyspleef.database.Parser;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,7 +43,7 @@ public class SignWall extends RegionBase {
 	private Location loc1;
 	private Location loc2;
 	
-	private Sign[] signs;
+	private Location[] locations;
 	private Game game;
 	
 	public SignWall(Location firstCorner, Location secondCorner, Game game, int id) {
@@ -78,11 +79,11 @@ public class SignWall extends RegionBase {
 			//Loop around there walls
 			for (SignWall wall : game.getWalls()) {
 				//Loop around the signs of the wall
-				for (Sign sign : wall.signs) {
+				for (Location location : wall.locations) {
 					//Loop around the signs of this wall
-					for (Sign thisSign : this.signs) {
+					for (Location thisLocation : this.locations) {
 						//And check if it equals
-						if (sign.getLocation().equals(thisSign.getLocation()))
+						if (location.equals(thisLocation))
 							game.removeWall(wall.getId());//Remove the wall, because it overlaps an other
 					}
 				}
@@ -101,11 +102,11 @@ public class SignWall extends RegionBase {
 		
 		int minZ = Math.min(locations[0].getBlockZ(), locations[1].getBlockZ());
 		int maxZ = Math.max(locations[0].getBlockZ(), locations[1].getBlockZ());
-		Sign[] signArray = null;
+		Location[] signArray = null;
 		
 		int count = 0;
-		if (minX == maxX) {
-			signArray = new Sign[maxZ - minZ + 1];
+		if (minX == maxX) {//Wall trough Z!
+			signArray = new Location[maxZ - minZ + 1];
 			
 			Block block = locations[0].getWorld().getBlockAt(minX, locations[0].getBlockY(), minZ);
 			Sign sign = (Sign)block.getState();
@@ -127,17 +128,17 @@ public class SignWall extends RegionBase {
 				Block currentBlock = locations[0].getWorld().getBlockAt(minX, locations[0].getBlockY(), z);
 				
 				if (z == joinsign)
-					signArray[0] = (Sign)currentBlock.getState();
+					signArray[0] = currentBlock.getLocation();
 				else if (z == infosign) {
-					signArray[1] = (Sign)currentBlock.getState();
+					signArray[1] = currentBlock.getLocation();
 				} else {
-					signArray[count] = (Sign)currentBlock.getState();
+					signArray[count] = currentBlock.getLocation();
 				}
 				
 				count++;
 			}
-		} else if (minZ == maxZ) {
-			signArray = new Sign[maxX - minX + 1];
+		} else if (minZ == maxZ) {//Wall trough X!
+			signArray = new Location[maxX - minX + 1];
 			
 			Block block = locations[0].getWorld().getBlockAt(minX, locations[0].getBlockY(), minZ);
 			Sign sign = (Sign)block.getState();
@@ -159,35 +160,48 @@ public class SignWall extends RegionBase {
 				Block currentBlock = locations[0].getWorld().getBlockAt(x, locations[0].getBlockY(), minZ);
 				
 				if (x == joinsign)
-					signArray[0] = (Sign)currentBlock.getState();
+					signArray[0] = currentBlock.getLocation();
 				else if (x == infosign) {
-					signArray[1] = (Sign)currentBlock.getState();
+					signArray[1] = currentBlock.getLocation();
 				} else {
-					signArray[count] = (Sign)currentBlock.getState();
+					signArray[count] = currentBlock.getLocation();
 				}
 				
 				count++;
 			}
 		}
-		signs = signArray;
+		
+		this.locations = signArray;
 	}
 	
 	public Sign getJoinSign() {
-		if (signs.length < 1)
+		if (locations.length < 1)
+			return null;
+		if (!isSign(locations[0].getBlock()))
 			return null;
 		
-		return this.signs[0];
+		return (Sign)this.locations[0].getBlock().getState();
 	}
 	
 	public Sign getInfoSign() {
-		if (signs.length < 2)
+		if (locations.length < 2)
+			return null;
+		if (!isSign(locations[1].getBlock()))
 			return null;
 		
-		return this.signs[1];
+		return (Sign)this.locations[1].getBlock().getState();
 	}
 	
 	public Sign[] getSigns() {
-		return this.signs;
+		Sign[] array = new Sign[locations.length];
+				
+		for (int i = 0; i < locations.length; i++) {
+			if (!isSign(locations[i].getBlock()))
+				continue;
+			array[i] = (Sign) locations[i].getBlock().getState();
+		}
+		
+		return array;
 	}
 	
 	public void update() {
@@ -223,21 +237,29 @@ public class SignWall extends RegionBase {
 		Iterator<String> inIterator = inPlayers.iterator();
 		Iterator<String> outIterator = outPlayers.iterator();
 		
-		for (int i = 2; i < signs.length; i++) {
+		for (int i = 2; i < locations.length; i++) {
 			for (int line = 0; line < 4; line++) {
+				if (!isSign(locations[i].getBlock()))
+						continue;
+					
+				Sign sign = (Sign)locations[i].getBlock().getState();
+				
 				if (inIterator.hasNext()) {
 					String name = inIterator.next();
-					signs[i].setLine(line, name);
-					signs[i].update();
+					
+					Team team = game.getTeam(Bukkit.getPlayer(name));
+					String prefix = team == null ? "" : team.getColor().toString();
+					sign.setLine(line, prefix + name);
+					sign.update();
 				} else if (outIterator.hasNext()) {
 					String name = outIterator.next();
 					if (name.length() > 15)
 						name = name.substring(0, 15);
-					signs[i].setLine(line, ChatColor.GRAY + name);
-					signs[i].update();
+					sign.setLine(line, ChatColor.GRAY + name);
+					sign.update();
 				} else {
-					signs[i].setLine(line, "");
-					signs[i].update();
+					sign.setLine(line, "");
+					sign.update();
 				}
 			}
 		}
@@ -245,8 +267,8 @@ public class SignWall extends RegionBase {
 
 	@Override
 	public boolean contains(Location l) {
-		for (Sign sign : signs) {
-			if (Parser.roundLocation(sign.getLocation()).equals(Parser.roundLocation(l)))
+		for (Location location : locations) {
+			if (Parser.roundLocation(location).equals(Parser.roundLocation(l)))
 				return true;
 		}
 		
@@ -316,6 +338,10 @@ public class SignWall extends RegionBase {
 		BlockFace attachedFace = s.getAttachedFace();
 		
 		return sign.getBlock().getRelative(attachedFace);
+	}
+	
+	public static boolean isSign(Block block) {
+		return block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST;
 	}
 	
 }

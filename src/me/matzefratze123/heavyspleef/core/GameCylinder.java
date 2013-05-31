@@ -27,8 +27,6 @@ import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.util.DistanceHelper;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -65,8 +63,8 @@ public class GameCylinder extends Game {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.CYLINDER;
+	public GameType getType() {
+		return GameType.CYLINDER;
 	}
 
 	@Override
@@ -76,22 +74,27 @@ public class GameCylinder extends Game {
 	}
 
 	@Override
-	public void broadcast(String msg) {
-		if (HeavySpleef.getSystemConfig().getBoolean("general.globalBroadcast", false)) {
+	public void broadcast(String msg, BroadcastType type) {
+		switch(type) {
+		case INGAME:
+			tellAll(msg);
+			break;
+		case GLOBAL:
 			Bukkit.broadcastMessage(msg);
-		} else {
-			int radius = HeavySpleef.getSystemConfig().getInt("general.broadcast-radius", 50);
+			break;
+		case RADIUS:
+			int radius = HeavySpleef.getSystemConfig().getInt("general.broadcast-radius", 40);
 			int radiusSqared = radius * radius;
 			
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				Location playerLocation = p.getLocation();
-				
-				if (p.getLocation().getWorld() != this.center.getWorld())
+				if (p.getWorld() != center.getWorld())
 					continue;
-				if (DistanceHelper.getDistance2D(this.center, playerLocation) <= radiusSqared || this.players.contains(p.getName())) {
+				if (this.players.contains(p.getName()) || this.center.distanceSquared(p.getLocation()) <= radiusSqared)
 					p.sendMessage(msg);
-				}
+			
 			}
+			
+			break;
 		}
 	}
 
@@ -121,18 +124,6 @@ public class GameCylinder extends Game {
 		int randomX = (int)calculatedX + (center.getBlockX());
 		
 		return new Location(center.getWorld(), randomX, y, randomZ);
-		//Funzt
-		/*
-		double i = random.nextInt(360 + 1);
-		double r = radiusEastWest == radiusNorthSouth ? random.nextInt(radiusNorthSouth - 1) : 2;//TODO ...
-		
-		
-        double angle = i * Math.PI / 180;
-        int x = (int)(center.getX() + r * Math.cos(angle));
-        int z = (int)(center.getZ() + r * Math.sin(angle));
-     
-        return new Location(center.getWorld(), x, y, z);
-        */
 	}
 	
 	private double exponent(double i, int exp) {

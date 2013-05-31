@@ -19,7 +19,7 @@
  */
 package me.matzefratze123.heavyspleef.core.region;
 
-import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.database.FloorLoader;
 import me.matzefratze123.heavyspleef.database.Parser;
 import me.matzefratze123.heavyspleef.util.SimpleBlockData;
@@ -192,8 +192,8 @@ public class FloorCuboid extends Floor {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.CUBOID;
+	public GameType getType() {
+		return GameType.CUBOID;
 	}
 
 	@Override

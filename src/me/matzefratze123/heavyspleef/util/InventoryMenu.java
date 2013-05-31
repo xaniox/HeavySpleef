@@ -34,14 +34,14 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-public class InventorySelector implements Listener {
+public class InventoryMenu implements Listener {
 	
 	private Inventory inv;
 	private String inventoryName;
 	private int size;
 	private static List<InventorySelectorListener> listeners = new ArrayList<InventorySelectorListener>();
 	
-	public InventorySelector(Plugin plugin, String inventoryName, int size) {
+	public InventoryMenu(Plugin plugin, String inventoryName, int size) {
 		this.inventoryName = inventoryName;
 		
 		this.size = roundToSlot(size);
@@ -151,9 +151,6 @@ public class InventorySelector implements Listener {
 		for (InventorySelectorListener listener : listeners) {
 			ClickEvent event = new ClickEvent(e.getSlot(), e.getInventory().getItem(e.getSlot()), this, (Player)e.getWhoClicked());
 			listener.onClick(event);
-			
-			if (event.isCancelled())
-				e.setCancelled(true);
 		}
 	}
 	
@@ -181,11 +178,11 @@ public class InventorySelector implements Listener {
 		
 		private int slot;
 		private ItemStack stack;
-		private InventorySelector selector;
+		private InventoryMenu selector;
 		private Player player;
 		private boolean cancelled = false;
 		
-		public ClickEvent(int slot, ItemStack stack, InventorySelector selector, Player player) {
+		public ClickEvent(int slot, ItemStack stack, InventoryMenu selector, Player player) {
 			this.slot = slot;
 			this.stack = stack;
 			this.selector = selector;
@@ -200,7 +197,7 @@ public class InventorySelector implements Listener {
 			return this.stack;
 		}
 		
-		public InventorySelector getSelector() {
+		public InventoryMenu getSelector() {
 			return this.selector;
 		}
 		

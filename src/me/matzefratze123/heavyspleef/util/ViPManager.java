@@ -28,7 +28,7 @@ import org.bukkit.ChatColor;
 public class ViPManager {
 
 	//Just a list of unchangeable ViP's :P
-	public static String[] vips = new String[] {"matzefratze123", "x3Fawkesx3", "HeavyRain900", "pascalvdl", "timscoLP", "benfire1"};
+	public static String[] vips = new String[] {"matzefratze123", "x3Fawkesx3", "HeavyRain900", "pascalvdl", "benfire1"};
 	
 	public static void initVips() {
 		List<String> serverVips = HeavySpleef.getSystemConfig().getStringList("general.vip");

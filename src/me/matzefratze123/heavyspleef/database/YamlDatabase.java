@@ -57,7 +57,8 @@ import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
 import me.matzefratze123.heavyspleef.core.SignWall;
-import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.Team;
+import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.region.Floor;
@@ -67,6 +68,7 @@ import me.matzefratze123.heavyspleef.core.region.HUBPortal;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -140,9 +142,9 @@ public class YamlDatabase {
 		for (String key : db.getKeys(false)) {
 			ConfigurationSection section = db.getConfigurationSection(key);
 			
-			if (section.getString("type") == null || Type.valueOf(section.getString("type")) == Type.CUBOID)
+			if (section.getString("type") == null || GameType.valueOf(section.getString("type")) == GameType.CUBOID)
 				loadCuboid(section);
-			else if (Type.valueOf(section.getString("type")) == Type.CYLINDER)
+			else if (GameType.valueOf(section.getString("type")) == GameType.CYLINDER)
 				loadCylinder(section);
 			count++;
 		}
@@ -160,9 +162,9 @@ public class YamlDatabase {
 			ConfigurationSection section = db.createSection(game.getName());
 			
 			saveBasics(game, section);
-			if (game.getType() == Type.CUBOID)
+			if (game.getType() == GameType.CUBOID)
 				saveCuboid((GameCuboid) game, section);
-			else if (game.getType() == Type.CYLINDER)
+			else if (game.getType() == GameType.CYLINDER)
 				saveCylinder((GameCylinder) game, section);
 		}
 		
@@ -225,7 +227,7 @@ public class YamlDatabase {
 	}
 
 	private void saveCuboid(GameCuboid game, ConfigurationSection section) {
-		if (game.getType() != Type.CUBOID)
+		if (game.getType() != GameType.CUBOID)
 			return;
 		section.set("firstCorner", convertLocationtoString(game.getFirstCorner()));
 		section.set("secondCorner", convertLocationtoString(game.getSecondCorner()));
@@ -249,7 +251,7 @@ public class YamlDatabase {
 	
 	
 	private void saveCylinder(GameCylinder game, ConfigurationSection section) {
-		if (game.getType() != Type.CYLINDER)
+		if (game.getType() != GameType.CYLINDER)
 			return;
 		section.set("center", convertLocationtoString(game.getCenter()));
 		section.set("radiusEastWest", game.getRadiusEastWest());
@@ -331,17 +333,15 @@ public class YamlDatabase {
 	private void loadBasics(ConfigurationSection section, Game game) {
 		
 		List<String> loseZonesAsString = section.getStringList("losezones");
-		List<LoseZone> loseZones = new ArrayList<LoseZone>();
 		if (loseZonesAsString != null) {
 			for (String loseZone : loseZonesAsString)
-				loseZones.add(convertStringToLosezone(loseZone));
+				game.addLoseZone(convertStringToLosezone(loseZone));
 		}
 		
 		List<String> wallsAsList = section.getStringList("walls");
-		List<SignWall> walls = new ArrayList<SignWall>();
 		if (wallsAsList != null) {
 			for (String wall : wallsAsList)
-				walls.add(SignWall.fromString(wall, game));
+				game.addWall(SignWall.fromString(wall, game));
 		}
 		
 		//Old flag system
@@ -386,17 +386,29 @@ public class YamlDatabase {
 		
 		loadFlags(game, section);
 		
-		for (LoseZone loseZone : loseZones)
-			game.addLoseZone(loseZone);
-		
-		for (SignWall wall : walls)
-			game.addWall(wall);
-		
 		if (section.contains("scoreboards")) {
 			for (String board : section.getStringList("scoreboards")) {
 				ScoreBoard scoreBoard = new ScoreBoard(board, game);
 				game.addScoreBoard(scoreBoard);
 			}
+		}
+		
+		List<String> databaseTeams = section.getStringList("teams");
+		
+		for (String str : databaseTeams) {
+			String parts[] = str.split(";");
+			if (parts.length < 3)
+				continue;
+			
+			ChatColor color = ChatColor.valueOf(parts[0]);
+			int minplayers = Integer.parseInt(parts[1]);
+			int maxplayers = Integer.parseInt(parts[2]);
+			
+			Team team = new Team(color, game);
+			team.setMinPlayers(minplayers);
+			team.setMaxPlayers(maxplayers);
+			
+			game.addTeam(team);
 		}
 	}
 	
@@ -425,6 +437,14 @@ public class YamlDatabase {
 		}
 		
 		section.set("scoreboards", scoreBoardsAsList);
+		List<Team> teams = game.getTeams();
+		List<String> databaseTeams = new ArrayList<String>();
+		
+		for (Team team : teams) {
+			databaseTeams.add(team.getColor().name() + ";" + team.getMinPlayers() + ";" + team.getMaxPlayers());
+		}
+		
+		section.set("teams", databaseTeams);
 	}
 
 	/**

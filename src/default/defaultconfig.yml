@@ -4,15 +4,10 @@
 ####################################
 #
 # This is the main configuration file of HeavySpleef.
-#
-# If the server stopps correctly and a game is running
-# the game will be stopped and players that joins the
-# next time will be automatically teleported out of the
-# game. Use '/spleef save' to save all data of the spleef
-# games to the database...
+# Use /spleef save to save games instantly
 
-# Should the plugin  download the new version of
-# HeavySpleef.jar if there is an update avaible? (/spleef update)
+# Should the plugin be able to download a new version of
+# HeavySpleef if there is an update avaible? (/spleef update)
 # You'll find updates in the folder /plugins/update
 # The plugin will be auto installed by bukkit at the next
 # server reload / restart...
@@ -20,16 +15,11 @@ auto-update: true
 
 general:
   
-  # Should spleef messages be globally broadcasted? If false the messages will be
-  # broadcasted if a player has a specified radius from the arena (Configurable)
-  # If true, the messages will be broadcasted for every player... 
-  globalBroadcast: false
-  
   # How far away should spleefmessages be broadcasted for players?
-  # This works only if the globalBroadcast is set to false...
+  # This works if the message announce is set to radius.
   broadcast-radius: 40
   
-  # Which spleef prefix should be used?
+  # Which spleef prefix should we use?
   spleef-prefix: '&c[&6Spleef&c]'
   
   # Should player inventorys and other stuff (for expample health, foodlevel etc.) be cleared and saved?
@@ -38,16 +28,6 @@ general:
   
   # Should arenas be protected?
   protectArena: true
-  
-  # Should games be saved to the database at intervall time?
-  # This can cause lag but it's saver if you set this to true...
-  # (You can save games manually with the command: /spleef save)
-  saveInIntervall: false
-  
-  # In which intervall should games be saved?
-  # (Only works if saveInIntervall is set to true)
-  # (In minutes)
-  saveIntervall: 30
   
   # Should the built-in HeavySpleef selection system be used
   # or the WorldEdit wand selection? (allowed values: WorldEdit, HeavySpleef)
@@ -117,7 +97,22 @@ leaderboard:
   lose: -4
   knockout: 3
   gamePlayed: 3
+
+messages:
+  # Decide wether the following messages should be broadcasted
+  # around the game (radius), global (global) or only for ingame players (ingame)
   
+  game-disable: radius
+  game-enable: radius
+  game-start-info: radius
+  game-countdown: ingame
+  game-stop: radius
+  player-join: radius
+  player-lose: radius
+  knockouts: radius
+  win: radius
+  timeout: radius
+
 flag-defaults:
   # A list of all default values for flags...
   # Please note that these values are the DEFAULT
@@ -137,6 +132,7 @@ flag-defaults:
   
   1vs1: false
   shovels: false
+  shears: false
   team: false
   
   # Syntax of an itemreward flag: 'ID AMOUNT ID2 AMOUNT2 ID3 AMOUNT3 etc.'

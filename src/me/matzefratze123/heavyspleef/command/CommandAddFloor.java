@@ -23,7 +23,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCylinder;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.selection.Selection;
@@ -58,7 +58,7 @@ public class CommandAddFloor extends HSCommand {
 		if (args[0].equalsIgnoreCase("randomwool")) { //Wool floor
 			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
-					if (game.contains(player.getLocation()) && game.getType() == Type.CYLINDER) {
+					if (game.contains(player.getLocation()) && game.getType() == GameType.CYLINDER) {
 						GameCylinder gameC = (GameCylinder)game; //Cast the game to a GameCylinder because we can be sure that it is one...
 						
 						Location center = gameC.getCenter();
@@ -92,7 +92,7 @@ public class CommandAddFloor extends HSCommand {
 						System.out.println("game not contains, " + game.getName());
 						continue;
 					}
-					if (game.getType() != Type.CYLINDER) {
+					if (game.getType() != GameType.CYLINDER) {
 						System.out.println("no cylinder game?");
 						continue;
 					}
@@ -131,7 +131,7 @@ public class CommandAddFloor extends HSCommand {
 				for (Game game : GameManager.getGames()) {
 					if (!game.contains(player.getLocation()))
 						continue;
-					if (game.getType() != Type.CYLINDER)
+					if (game.getType() != GameType.CYLINDER)
 						continue;
 					GameCylinder cylGame = (GameCylinder) game;
 					Location center = cylGame.getCenter();

@@ -17,13 +17,15 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package me.matzefratze123.heavyspleef;
+package me.matzefratze123.heavyspleef.configuration;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
+
+import me.matzefratze123.heavyspleef.HeavySpleef;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 

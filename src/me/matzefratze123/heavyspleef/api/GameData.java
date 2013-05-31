@@ -27,10 +27,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import me.matzefratze123.heavyspleef.core.BroadcastType;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.LoseCause;
-import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
@@ -68,7 +69,7 @@ public class GameData {
 	/**
 	 * Gets the type of this game
 	 */
-	public Type getType() {
+	public GameType getType() {
 		return game.getType();
 	}
 	
@@ -98,9 +99,12 @@ public class GameData {
 	 * The message is heared by near players and ingame players
 	 * 
 	 * @param msg The message to send
+	 * @param type The broadcast type of this game
+	 * 
+	 * @see me.matzefratze123.heavyspleef.core.BroadcastType
 	 */
-	public void broadcast(String msg) {
-		game.broadcast(msg);
+	public void broadcast(String msg, BroadcastType type) {
+		game.broadcast(msg, type);
 	}
 	
 	/**
@@ -115,7 +119,7 @@ public class GameData {
 	 *         and doesn't adds the floor!
 	 */
 	public Floor addRandomWoolFloor(Location... locations) {
-		if (locations.length < 1 || (getType() == Type.CYLINDER && locations.length < 2))
+		if (locations.length < 1 || (getType() == GameType.CYLINDER && locations.length < 2))
 			return null;
 		
 		return game.getFloor(game.addFloor(0, (byte)0, FloorType.RANDOMWOOL, locations));
@@ -133,7 +137,7 @@ public class GameData {
 	 *         and doesn't adds the floor!
 	 */
 	public Floor addSpecifiedFloor(Material material, byte data, Location... locations) {
-		if (locations.length < 1 || (getType() == Type.CYLINDER && locations.length < 2))
+		if (locations.length < 1 || (getType() == GameType.CYLINDER && locations.length < 2))
 			return null;
 		
 		return game.getFloor(game.addFloor(material.getId(), data, FloorType.SPECIFIEDID, locations));
@@ -151,7 +155,7 @@ public class GameData {
 	 *         and doesn't adds the floor!
 	 */
 	public Floor addManuallyBuildedFloor(Location... locations) {
-		if (locations.length < 1 || (getType() == Type.CYLINDER && locations.length < 2))
+		if (locations.length < 1 || (getType() == GameType.CYLINDER && locations.length < 2))
 			return null;
 		
 		return game.getFloor(game.addFloor(0, (byte)0, FloorType.GIVENFLOOR, locations));
@@ -281,18 +285,16 @@ public class GameData {
 	
 	/**
 	 * Disables this game
-	 * 
-	 * @param disabler The disabler of this game. May be null.
 	 */
-	public void disable(Player disabler) {
-		game.disable(disabler.getName());
+	public void disable() {
+		game.disable(null);
 	}
 	
 	/**
 	 * Enables this game
 	 */
 	public void enable() {
-		game.enable();
+		game.enable(null);
 	}
 	
 	/**

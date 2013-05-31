@@ -117,12 +117,13 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("vote", new CommandVote());
 		addSubCommand("ready", new CommandVote());
 		addSubCommand("rename", new CommandRename());
-		/*addSubCommand("addteam", new CommandAddTeam());
-		addSubCommand("removeteam", new CommandRemoveTeam());*/
+		addSubCommand("addteam", new CommandAddTeam());
+		addSubCommand("removeteam", new CommandRemoveTeam());
 		addSubCommand("sethub", new CommandSetHub());
 		addSubCommand("addportal", new CommandAddPortal());
 		addSubCommand("removeportal", new CommandRemovePortal());
 		addSubCommand("hub", new CommandHub());
+		addSubCommand("teamflag", new CommandTeamFlag());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

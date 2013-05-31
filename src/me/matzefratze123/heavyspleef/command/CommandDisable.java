@@ -29,31 +29,41 @@ import org.bukkit.entity.Player;
 public class CommandDisable extends HSCommand {
 
 	public CommandDisable() {
-		setMaxArgs(1);
-		setMinArgs(1);
+		setMinArgs(0);
 		setPermission(Permissions.DISABLE);
-		setUsage("/spleef disable <Name>");
+		setUsage("/spleef disable [Name]");
 		setOnlyIngame(true);
-		setTabHelp(new String[]{"<name>"});
+		setTabHelp(new String[]{"[name]"});
 	}
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0].toLowerCase())) {
-			player.sendMessage(_("arenaDoesntExists"));
-			return;
+		if (args.length > 0) {
+			if (!GameManager.hasGame(args[0].toLowerCase())) {
+				player.sendMessage(_("arenaDoesntExists"));
+				return;
+			}
+			
+			Game game = GameManager.getGame(args[0].toLowerCase());
+			
+			if (game.isDisabled()) {
+				player.sendMessage(_("gameIsAlreadyDisabled"));
+				return;
+			}
+			
+			game.disable(player.getName());
+			player.sendMessage(_("gameDisabledToPlayer", game.getName()));
+		} else if (args.length == 0) {
+			for (Game game : GameManager.getGames()) {
+				if (game.isDisabled())
+					continue;
+				
+				game.disable(player.getName());
+			}
+			
+			player.sendMessage(_("allGamesDisabledToPlayer"));
 		}
-		
-		Game game = GameManager.getGame(args[0].toLowerCase());
-		
-		if (game.isDisabled()) {
-			player.sendMessage(_("gameIsAlreadyDisabled"));
-			return;
-		}
-		
-		game.disable(player.getName());
-		player.sendMessage(_("gameDisabledToPlayer", game.getName()));
 	}
 
 }

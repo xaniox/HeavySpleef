@@ -17,35 +17,20 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package me.matzefratze123.heavyspleef.core.task;
+package me.matzefratze123.heavyspleef.core;
 
-public abstract class Countdown implements Runnable {
-
-	private int remaining;
+public enum BroadcastType {
 	
-	protected Countdown(int start) {
-		this.remaining = start;
-	}
-
-	@Override
-	public void run() {
-		if (remaining == 0) {
-			onFinish();
-		} else if (remaining > 0){//Do pre countdown
-			onCount();
-			remaining--;
-		} else if (remaining < 0) {//Call the interrupt method, something is going false...
-			onInterrupt();
+	INGAME,
+	RADIUS,
+	GLOBAL;
+	
+	public static BroadcastType getBroadcastType(String name) {
+		try {
+			return BroadcastType.valueOf(name.toUpperCase());
+		} catch (Exception e) {
+			return null;
 		}
 	}
 	
-	public void onFinish() {}
-	
-	public void onCount() {}
-	
-	public void onInterrupt() {}
-	
-	public int getTimeRemaining() {
-		return this.remaining;
-	}
 }

@@ -20,12 +20,12 @@
 package me.matzefratze123.heavyspleef.core.task;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.configuration.ConfigUtil;
 import me.matzefratze123.heavyspleef.core.Game;
-
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-public class StartCountdownTask extends Countdown {
+public class StartCountdownTask extends AbstractCountdown {
 
 	private Game game;
 	
@@ -53,10 +53,10 @@ public class StartCountdownTask extends Countdown {
 				for (Player p : game.getPlayers())
 					p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
 			}
-			game.tellAll(Game._("gameIsStarting", String.valueOf(getTimeRemaining())));
+			game.broadcast(Game._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
 		} else {//Do pre countdown
 			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
-				game.tellAll(Game._("gameIsStarting", String.valueOf(getTimeRemaining())));
+				game.broadcast(Game._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
 		}
 	}
 

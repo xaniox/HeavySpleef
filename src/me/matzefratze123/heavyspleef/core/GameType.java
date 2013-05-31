@@ -19,7 +19,7 @@
  */
 package me.matzefratze123.heavyspleef.core;
 
-public enum Type {
+public enum GameType {
 
 	CUBOID,
 	CYLINDER;

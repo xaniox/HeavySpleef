@@ -70,11 +70,8 @@ public class HUBPortal extends RegionBase {
 		
 		if (!contains(player.getLocation()))
 			return;
-		if (!player.hasPermission(Permissions.USE_PORTAL.getPerm())) {
-			player.sendMessage(Game._("noPermission"));
-			player.teleport(e.getFrom());
+		if (!player.hasPermission(Permissions.USE_PORTAL.getPerm())) 
 			return;
-		}
 		
 		travel(player);
 	}

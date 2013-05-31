@@ -30,6 +30,7 @@ public enum Permissions {
 	KICK("heavyspleef.kick"),
 	TELEPORT_HUB("heavyspleef.teleporthub"),
 	SET_FLAG("heavyspleef.flag"),
+	SET_TEAMFLAG("heavyspleef.setteamflag"),
 	DISABLE("heavyspleef.disable"),
 	ENABLE("heavyspleef.enable"),
 	HELP_ADMIN("heavyspleef.help.admin"),
@@ -79,7 +80,8 @@ public enum Permissions {
 	SIGN_JOIN("heavyspleef.sign.join"),
 	SIGN_LEAVE("heavyspleef.sign.leave"),
 	SIGN_START("heavyspleef.sign.start"),
-	SIGN_HUB("heavyspleef.sign.hub");
+	SIGN_HUB("heavyspleef.sign.hub"),
+	SIGN_VOTE("heavyspleef.sign.vote");
 	
 	
 	private String perm;

@@ -27,8 +27,6 @@ import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
-import me.matzefratze123.heavyspleef.util.DistanceHelper;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -80,29 +78,36 @@ public class GameCuboid extends Game {
 	 * @param msg Message to broadcast
 	 */
 	@Override
-	public void broadcast(String msg) {
-		if (HeavySpleef.getSystemConfig().getBoolean("general.globalBroadcast", false)) {
+	public void broadcast(String msg, BroadcastType type) {
+		switch(type) {
+		case INGAME:
+			tellAll(msg);
+			break;
+		case GLOBAL:
 			Bukkit.broadcastMessage(msg);
-		} else {
-			int radius = HeavySpleef.getSystemConfig().getInt("general.broadcast-radius", 50);
+			break;
+		case RADIUS:
+			int radius = HeavySpleef.getSystemConfig().getInt("general.broadcast-radius", 40);
 			int radiusSqared = radius * radius;
 			Location[] corners = get4Points();
 			
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				Location playerLocation = p.getLocation();
-				
-				if (p.getLocation().getWorld() != corners[0].getWorld())
+				if (p.getWorld() != corners[0].getWorld())
 					continue;
-				
-				if (DistanceHelper.getDistance2D(corners[0], p.getLocation()) != -1.0D &&
-					   (DistanceHelper.getDistance2D(corners[0], playerLocation) <= radiusSqared ||
-						DistanceHelper.getDistance2D(corners[1], playerLocation) <= radiusSqared ||
-						DistanceHelper.getDistance2D(corners[2], playerLocation) <= radiusSqared ||
-						DistanceHelper.getDistance2D(corners[3], playerLocation) <= radiusSqared ||
-						this.players.contains(p.getName()))) {
+				if (this.players.contains(p.getName())) {
 					p.sendMessage(msg);
+					continue;
+				}
+				
+				for (Location corner : corners) {
+					if (p.getLocation().distanceSquared(corner) <= radiusSqared) {
+						p.sendMessage(msg);
+						break;
+					}
 				}
 			}
+			
+			break;
 		}
 	}
 
@@ -153,8 +158,8 @@ public class GameCuboid extends Game {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.CUBOID;
+	public GameType getType() {
+		return GameType.CUBOID;
 	}
 
 	@Override

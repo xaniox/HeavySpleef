@@ -36,7 +36,7 @@ public class CommandFlag extends HSCommand {
 		setMinArgs(2);
 		setOnlyIngame(true);
 		setUsage("/spleef flag <name> <flag> [state]\n" +
-				__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.flagList, true)));
+				__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.getFlagList(), true)));
 		setPermission(Permissions.SET_FLAG);
 		setTabHelp(new String[]{"<name> <flag> [value]"});
 	}
@@ -54,7 +54,7 @@ public class CommandFlag extends HSCommand {
 		boolean found = false;
 		Flag<?> flag = null;
 		
-		for (Flag<?> f : FlagType.flagList) {
+		for (Flag<?> f : FlagType.getFlagList()) {
 			if (f.getName().equalsIgnoreCase(args[1])) {
 				found = true;
 				flag = f;
@@ -64,7 +64,7 @@ public class CommandFlag extends HSCommand {
 		
 		if (!found || flag == null) {
 			player.sendMessage(_("invalidFlag"));
-			player.sendMessage(__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.flagList, true)));
+			player.sendMessage(__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.getFlagList(), true)));
 			return;
 		}
 		

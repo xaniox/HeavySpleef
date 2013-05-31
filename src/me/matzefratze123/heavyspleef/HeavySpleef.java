@@ -25,11 +25,14 @@ import java.util.HashMap;
 
 import me.matzefratze123.heavyspleef.api.GameAPI;
 import me.matzefratze123.heavyspleef.command.CommandHandler;
+import me.matzefratze123.heavyspleef.configuration.FileConfig;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import me.matzefratze123.heavyspleef.database.YamlDatabase;
+import me.matzefratze123.heavyspleef.hooks.Hook;
 import me.matzefratze123.heavyspleef.hooks.HookManager;
+import me.matzefratze123.heavyspleef.hooks.TagAPIHook;
 import me.matzefratze123.heavyspleef.listener.HUBPortalListener;
 import me.matzefratze123.heavyspleef.listener.InventoryListener;
 import me.matzefratze123.heavyspleef.listener.PVPTimerListener;
@@ -38,13 +41,14 @@ import me.matzefratze123.heavyspleef.listener.QueuesListener;
 import me.matzefratze123.heavyspleef.listener.ReadyListener;
 import me.matzefratze123.heavyspleef.listener.SignListener;
 import me.matzefratze123.heavyspleef.listener.SignWallListener;
+import me.matzefratze123.heavyspleef.listener.TagListener;
 import me.matzefratze123.heavyspleef.listener.UpdateListener;
 import me.matzefratze123.heavyspleef.selection.SelectionListener;
 import me.matzefratze123.heavyspleef.selection.SelectionManager;
 import me.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import me.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
 import me.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
-import me.matzefratze123.heavyspleef.util.InventorySelector;
+import me.matzefratze123.heavyspleef.util.InventoryMenu;
 import me.matzefratze123.heavyspleef.util.LanguageHandler;
 import me.matzefratze123.heavyspleef.util.Metrics;
 import me.matzefratze123.heavyspleef.util.PlayerState;
@@ -58,6 +62,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.kitteh.tag.TagAPI;
 
 public class HeavySpleef extends JavaPlugin {
 		
@@ -74,7 +79,7 @@ public class HeavySpleef extends JavaPlugin {
 	public IStatisticDatabase statisticDatabase;
 	
 	public static String[] commands = new String[] {"/spleef", "/hs", "/hspleef"};
-	public static InventorySelector selector = null;
+	public static InventoryMenu selector = null;
 	
 	public int saverTid = -1;
 	public int antiCampTid = -1;
@@ -97,7 +102,7 @@ public class HeavySpleef extends JavaPlugin {
 		database = new YamlDatabase();
 		database.load();
 		pluginFile = this.getFile();
-		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", ChatColor.RED + "[" + ChatColor.GOLD + "Spleef" + ChatColor.RED + "]"));
+		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", PREFIX));
 		
 		LanguageHandler.loadLanguageFiles();
 		ViPManager.initVips();
@@ -106,22 +111,19 @@ public class HeavySpleef extends JavaPlugin {
 		this.setupStatisticDatabase();
 		this.statisticDatabase.load();
 		
-		//Start metrics async
-		Thread thread = new Thread(new MetricsStarter());
-		thread.start();
+		//Start metrics
+		this.startMetrics();
 		
 		this.initUpdate();
 		this.registerEvents();
 		this.getCommand("spleef").setExecutor(new CommandHandler());
 		
 		this.startAntiCampingTask();
-		this.startSaveTask();
 		
 		CommandHandler.initCommands();
 		CommandHandler.setPluginInstance(this);
 		CommandHandler.setConfigInstance(this);
 		
-		this.setEnabled(true);
 		this.getLogger().info("HeavySpleef v" + getDescription().getVersion() + " activated!");
 	}
 
@@ -139,11 +141,11 @@ public class HeavySpleef extends JavaPlugin {
 	}
 	
 	private void setupInventory() {
-		InventorySelector.registerListener(new InventoryListener());
-		selector = new InventorySelector(this, LanguageHandler._("inventory"), GameManager.getGames().length);
+		InventoryMenu.registerListener(new InventoryListener());
+		selector = new InventoryMenu(this, LanguageHandler._("inventory"), GameManager.getGames().length);
 		Game[] games = GameManager.getGames();
 		
-		for (int i = 0; i < games.length && i < InventorySelector.roundToSlot(games.length); i++) {
+		for (int i = 0; i < games.length && i < InventoryMenu.roundToSlot(games.length); i++) {
 			selector.addItemStack(getInventoryShovel(games[i]), i);
 		}
 	}
@@ -153,7 +155,7 @@ public class HeavySpleef extends JavaPlugin {
 		selector.setSize(games.length);
 		selector.clear();
 		
-		for (int i = 0; i < games.length && i < InventorySelector.roundToSlot(games.length); i++) {
+		for (int i = 0; i < games.length && i < InventoryMenu.roundToSlot(games.length); i++) {
 			selector.addItemStack(getInventoryShovel(games[i]), i);
 		}
 	}
@@ -203,9 +205,11 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new HUBPortalListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
 		
-		/*Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
-		if (tagAPIHook.hasHook())
-			pm.registerEvents(new TagListener(), this);*/
+		Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
+		if (tagAPIHook.hasHook()) {
+			System.out.println("register events for tag");
+			pm.registerEvents(new TagListener(), this);
+		}
 	}
 	
 	private void initUpdate() {
@@ -229,31 +233,14 @@ public class HeavySpleef extends JavaPlugin {
 		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AntiCampingTask(warn, warnAt, teleportAt), 0L, 20L);
 	}
 	
-	public void startSaveTask() {
-		if (!getConfig().getBoolean("general.saveInIntervall"))
-			return;
-		this.saverTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-			@Override
-			public void run() {
-				database.save();
-				statisticDatabase.save();
-			}
-		}, 0L, getConfig().getInt("general.saveIntervall") * 20L * 60L);
-	}
-	
-	private class MetricsStarter implements Runnable {
-
-		@Override
-		public void run() {
-			try {
-				Metrics m = new Metrics(HeavySpleef.this);
-				m.start();
-				HeavySpleef.this.getLogger().info("Metrics started...");
-			} catch (IOException e) {
-				HeavySpleef.this.getLogger().info("An error occured while submitting stats to metrics...");
-			}
+	private void startMetrics() {
+		try {
+			Metrics m = new Metrics(HeavySpleef.this);
+			m.start();
+			HeavySpleef.this.getLogger().info("Metrics started...");
+		} catch (IOException e) {
+			HeavySpleef.this.getLogger().info("An error occured while submitting stats to metrics...");
 		}
-		
 	}
 	
 }

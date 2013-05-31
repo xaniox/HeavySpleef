@@ -19,12 +19,14 @@
  */
 package me.matzefratze123.heavyspleef.core.flag;
 
-import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.inventory.ItemStack;
-
 import me.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
+
+import org.bukkit.inventory.ItemStack;
 
 public enum FlagType {
 
@@ -50,6 +52,7 @@ public enum FlagType {
 	public static final LocationFlag QUEUELOBBY = new LocationFlag("queuelobby");
 	public static final LocationFlag SPAWNPOINT1 = new LocationFlag("spawnpoint1");
 	public static final LocationFlag SPAWNPOINT2 = new LocationFlag("spawnpoint2");
+	public static final LocationFlag SPECTATE = new LocationFlag("spectate");
 	
 	public static final IntegerFlag MINPLAYERS = new IntegerFlag("minplayers", 2);
 	public static final IntegerFlag MAXPLAYERS = new IntegerFlag("maxplayers", 0);
@@ -63,6 +66,7 @@ public enum FlagType {
 	
 	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1", false);
 	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels", false);
+	public static final BooleanFlag SHEARS = new BooleanFlag("shears", false);
 	public static final BooleanFlag TEAM = new BooleanFlag("team", false);
 	
 	public static final ItemStackFlag ITEMREWARD = new ItemStackFlag("itemreward", new ItemStack[]{});
@@ -70,13 +74,26 @@ public enum FlagType {
 	
 	public static final EnumFlag<Difficulty> DIFFICULTY = new EnumFlag<Difficulty> ("difficulty", Difficulty.class, Difficulty.MEDIUM);
 	
-	public static final Flag<?>[] flagList = new Flag<?>[] {WIN, LOSE, LOBBY, QUEUELOBBY, SPAWNPOINT1, SPAWNPOINT2,
-															MINPLAYERS, MAXPLAYERS, AUTOSTART, COUNTDOWN, JACKPOTAMOUNT,
-															REWARD, CHANCES, TIMEOUT, ROUNDS, ONEVSONE, SHOVELS, ITEMREWARD,
-															LOSEREWARD, DIFFICULTY};
-	
 	public static List<Flag<?>> getFlagList() {
-		return Arrays.asList(flagList);
+		List<Flag<?>> flags = new ArrayList<Flag<?>>();
+		
+		try {
+			//Using java reflection here
+			Field[] fields = FlagType.class.getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				if (!Modifier.isStatic(field.getModifiers()))
+					continue;
+				Object value = field.get(null);
+				if (!(value instanceof Flag<?>))
+					continue;
+				Flag<?> flag = (Flag<?>)value;
+				flags.add(flag);
+			}
+		
+		} catch (IllegalAccessException e) {}
+		
+		return flags;
 	}
 	
 	public static Flag<?> byName(String name) {

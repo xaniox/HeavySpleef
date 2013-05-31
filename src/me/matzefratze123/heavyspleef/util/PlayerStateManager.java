@@ -27,6 +27,7 @@ import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameCuboid;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -37,7 +38,6 @@ public class PlayerStateManager {
 	
 	@SuppressWarnings("deprecation")
 	public static void savePlayerState(Player p) {
-		
 		if (!HeavySpleef.getSystemConfig().getBoolean("general.savePlayerState", true)) {
 			p.setGameMode(GameMode.SURVIVAL);//Set to survival
 			p.setFoodLevel(20);
@@ -77,6 +77,8 @@ public class PlayerStateManager {
 		//Remove the haste effects (difficulty)
 		for (PotionEffect effect : p.getActivePotionEffects())
 			p.removePotionEffect(effect.getType());
+		p.getInventory().remove(Material.SHEARS);
+		p.getInventory().remove(Material.DIAMOND_SPADE);
 		
 		if (!HeavySpleef.getSystemConfig().getBoolean("general.savePlayerState", true)) {
 			return;

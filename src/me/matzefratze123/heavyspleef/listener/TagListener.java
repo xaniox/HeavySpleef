@@ -22,39 +22,39 @@ package me.matzefratze123.heavyspleef.listener;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.matzefratze123.heavyspleef.core.Game;
-import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.core.Team;
-
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
+import org.kitteh.tag.TagAPI;
 
 public class TagListener implements Listener {
-
-	private Map<String, String> previousTag = new HashMap<String, String>();
+	
+	private static Map<String, ChatColor> tags = new HashMap<String, ChatColor>();
+	
+	public static void setTag(Player player, ChatColor tag) {
+		if (tag == null) {
+			tags.remove(player.getName());
+		} else {
+			tags.put(player.getName(), tag);
+		}
+		
+		TagAPI.refreshPlayer(player);
+	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onNameTag(PlayerReceiveNameTagEvent e) {
-		Player player = e.getNamedPlayer();
-		
-		if (GameManager.isInAnyGame(player)) {
-		
-			Game game = GameManager.fromPlayer(player);
-			Team team = game.getTeam(player);
-			
-			if (team == null)
-				return;
-			
-			if (!previousTag.containsKey(player.getName()))
-				previousTag.put(player.getName(), e.getTag());
-			e.setTag(team.getColor() + player.getName());
-		} else {
-			e.setTag(previousTag.get(player.getName()));
-			previousTag.remove(player.getName());
+	public void onNameTagReceive(PlayerReceiveNameTagEvent e) {
+		if (!tags.containsKey(e.getNamedPlayer().getName())) {
+			return;
 		}
+		
+		String tag = tags.get(e.getNamedPlayer().getName()) + e.getNamedPlayer().getName();
+		if (tag.length() > 16)
+			tag = tag.substring(0, 16);
+		
+		e.setTag(tag);
 	}
 	
 }

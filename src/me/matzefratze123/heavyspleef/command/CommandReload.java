@@ -19,8 +19,8 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
-import me.matzefratze123.heavyspleef.FileConfig;
 import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.configuration.FileConfig;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
 import me.matzefratze123.heavyspleef.util.LanguageHandler;
@@ -51,7 +51,6 @@ public class CommandReload extends HSCommand {
 			Bukkit.getScheduler().cancelTask(saverTid);
 		
 		plugin.startAntiCampingTask();//Restart the tasks
-		plugin.startSaveTask();
 		
 		PlayerListener.loseOnTouchWaterOrLava = HeavySpleef.getSystemConfig().getBoolean("blocks.loseOnTouchWaterOrLava", true);
 		

@@ -85,6 +85,10 @@ notASign: &cNicht alle Bl\u00F6cke in dieser Auswahl sind Schilder!
 noSpleefHubSet: &cEs wurde kein Spleef-HUB gesetzt...
 notLookingAtPortal: &cDu schaust auf kein Portal...
 
+teamNeedMorePlayers: &cDas Team %a braucht mindestens %a Spieler!
+maxPlayersInTeam: &cDie maximale Spieleranzahl ist bereits in diesem Team!
+minimumTwoTeams: &cEs werden minimum zwei Teams ben\u00F6tigt um das Spiel zu starten!
+
 # Erfolgsnachrichten
 
 floorCreated: &7Floor mit ID #%a hinzugef\u00FCgt!
@@ -93,6 +97,8 @@ gameCreated: &7Arena hinzugef\u00FCgt!
 gameDeleted: &7Arena gel\u00F6scht!
 gameDisabledToPlayer: &7Du hast das Spiel %a deaktiviert!
 gameEnabledToPlayer: &7Du hast das Spiel %a aktiviert!
+allGamesDisabledToPlayer: &7Alle Spiele wurden deaktiviert!
+allGamesEnabledToPlayer: &7Alle Spiele wurden aktiviert!
 targetHasJoined: &7Der Spieler %a ist dem Spiel %a beigetreten!
 targetAddedToQueue: &7Der Spieler %a wurde zur Warteliste hinzugef\u00FCgt!
 playerJoinedToPlayer: &7Du bist dem Spiel %a beigetreten
@@ -162,6 +168,7 @@ portalRemoved: &7Portal entfernt!
 portalAdded: &7Portal hinzugef\u00FCgt!
 
 taggedAsReady: &7Du wurdest als bereit gekennzeichnet!
+teleportingToHub: &7Teleportiere zum HUB. Beweg dich nicht...
 
 # Broadcast nachrichten
 
@@ -198,5 +205,6 @@ timeoutReached: &1Timeout erreicht! Beende Spiel...
 loseCause_kick: &6%a&6 &cwurde aus dem Spiel gekickt!
 loseCause_leave: &6%a&6 &chat das Spiel %a verlassen!
 loseCause_lose: &6%a&6 &cwurde von &4%a &causgeknockt!
+loseCause_lose_unknown: &6%a &cwurde ausgeknockt!
 loseCause_quit: &6%a&6 &chat den Server verlassen w\u00E4hrend das Spiel lief...
 loseCause_unknown: &6%a&6 &chat das Spiel aus einem unbekannten Grund verlassen

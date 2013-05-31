@@ -19,12 +19,8 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
-import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
-import me.matzefratze123.heavyspleef.core.Type;
-import me.matzefratze123.heavyspleef.core.flag.FlagType;
-import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.command.CommandSender;
@@ -53,25 +49,8 @@ public class CommandStart extends HSCommand {
 	}
 
 	public static void start(Player player, Game game) {
-		if (game.isDisabled()) {
-			player.sendMessage(_("gameIsDisabled"));
+		if (!game.isAbleToStart(player))
 			return;
-		}
-		if (game.getType() == Type.CYLINDER && !HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
-			player.sendMessage(_("noWorldEdit"));
-			return;
-		}
-		if (game.isCounting() || game.isIngame()) {
-			player.sendMessage(_("cantStartGameWhileRunning"));
-			return;
-		}
-		
-		int minplayers = game.getFlag(FlagType.MINPLAYERS);
-		
-		if (game.getPlayers().length < minplayers || game.getPlayers().length < 2) {
-			player.sendMessage(_("notEnoughPlayers", String.valueOf(minplayers)));
-			return;
-		}
 		
 		game.countdown();
 		player.sendMessage(_("gameStarted"));

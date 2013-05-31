@@ -20,17 +20,18 @@
 package me.matzefratze123.heavyspleef.core.task;
 
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
+
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.command.HSCommand;
+import me.matzefratze123.heavyspleef.configuration.ConfigUtil;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameState;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-public class RoundsCountdownTask extends Countdown {
+public class RoundsCountdownTask extends AbstractCountdown {
 
 	private Game game;
 	
@@ -59,8 +60,8 @@ public class RoundsCountdownTask extends Countdown {
 		int rounds = game.getFlag(ROUNDS);
 		
 		game.setGameState(GameState.INGAME);
-		game.broadcast(HSCommand.__(ChatColor.DARK_BLUE + "GO!"));
-		game.broadcast(Game._("roundStarted", String.valueOf(game.getCurrentRound()), String.valueOf(rounds)));
+		game.broadcast(HSCommand.__(ChatColor.DARK_BLUE + "GO!"), ConfigUtil.getBroadcast("game-countdown"));
+		game.broadcast(Game._("roundStarted", String.valueOf(game.getCurrentRound()), String.valueOf(rounds)), ConfigUtil.getBroadcast("game-start-info"));
 		game.removeBoxes();
 		Bukkit.getScheduler().cancelTask(game.roundTid);
 	}

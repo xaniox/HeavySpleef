@@ -50,7 +50,7 @@ public class ArrayHelper {
 		return set;
 	}
 	
-	public static <T> Set<String> enumAsSet(T[] array, boolean lowerCase) {
+	public static <T> Set<String> enumAsSet(Iterable<T> array, boolean lowerCase) {
 		Set<String> set = new HashSet<String>();
 		
 		for (T enumeration : array) {

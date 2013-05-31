@@ -19,6 +19,7 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
+import me.matzefratze123.heavyspleef.configuration.ConfigUtil;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.GameState;
@@ -31,8 +32,7 @@ import org.bukkit.entity.Player;
 public class CommandEnable extends HSCommand {
 
 	public CommandEnable() {
-		setMaxArgs(1);
-		setMinArgs(1);
+		setMinArgs(0);
 		setOnlyIngame(true);
 		setPermission(Permissions.ENABLE);
 		setUsage("/spleef enable <Name>");
@@ -42,19 +42,30 @@ public class CommandEnable extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0].toLowerCase())){
-			player.sendMessage(_("arenaDoesntExists"));
-			return;
+		if (args.length > 0) {
+			if (!GameManager.hasGame(args[0].toLowerCase())){
+				player.sendMessage(_("arenaDoesntExists"));
+				return;
+			}
+			
+			Game game = GameManager.getGame(args[0].toLowerCase());
+			if (!game.isDisabled()) {
+				player.sendMessage(_("gameIsAlreadyEnabled"));
+				return;
+			}
+			game.broadcast(_("gameEnabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-enable"));
+			game.setGameState(GameState.JOINABLE);
+			player.sendMessage(_("gameEnabledToPlayer", game.getName()));
+		} else if (args.length == 0) {
+			for (Game game : GameManager.getGames()) {
+				if (!game.isDisabled())
+					continue;
+				
+				game.enable(player.getName());
+			}
+			
+			player.sendMessage(_("allGamesEnabledToPlayer"));
 		}
-		
-		Game game = GameManager.getGame(args[0].toLowerCase());
-		if (!game.isDisabled()) {
-			player.sendMessage(_("gameIsAlreadyEnabled"));
-			return;
-		}
-		game.broadcast(_("gameEnabled", game.getName(), ViPManager.colorName(player.getName())));
-		game.setGameState(GameState.JOINABLE);
-		player.sendMessage(_("gameEnabledToPlayer", game.getName()));
 	}
 
 }

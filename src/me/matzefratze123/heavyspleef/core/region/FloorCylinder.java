@@ -20,7 +20,7 @@
 package me.matzefratze123.heavyspleef.core.region;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.core.Type;
+import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.database.Parser;
 import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
@@ -182,8 +182,8 @@ public class FloorCylinder extends Floor {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.CYLINDER;
+	public GameType getType() {
+		return GameType.CYLINDER;
 	}
 
 	@Override

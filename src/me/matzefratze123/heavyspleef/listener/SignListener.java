@@ -83,7 +83,7 @@ public class SignListener implements Listener {
 				}
 				
 				if (color == null) {
-					p.sendMessage(Game._("invalidColor"));//TODO
+					p.sendMessage(Game._("invalidColor"));
 					block.breakNaturally();
 					return;
 				}
@@ -94,10 +94,8 @@ public class SignListener implements Listener {
 			p.sendMessage(Game._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
-			e.setLine(1, ChatColor.RED + "[Join]");
-			e.setLine(2, line3);
+			e.setLine(1, ChatColor.DARK_RED + "[Join]");
 			e.setLine(3, line4);
-			
 		} else if (line2.equalsIgnoreCase("[Start]")) {
 			if (!GameManager.hasGame(line3.toLowerCase())) {
 				p.sendMessage(GameCuboid._("arenaDoesntExists"));
@@ -107,19 +105,22 @@ public class SignListener implements Listener {
 			p.sendMessage(Game._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
-			e.setLine(1, ChatColor.RED + "[Start]");
-			e.setLine(2, line3);
-			
+			e.setLine(1, ChatColor.DARK_RED + "[Start]");
 		} else if (line2.equalsIgnoreCase("[Leave]")) {
 			p.sendMessage(Game._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
-			e.setLine(1, ChatColor.RED + "[Leave]");
+			e.setLine(1, ChatColor.DARK_RED + "[Leave]");
 		} else if (line2.equalsIgnoreCase("[HUB]")) {
 			p.sendMessage(Game._("spleefSignCreated"));
 			
 			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
-			e.setLine(1, ChatColor.RED + "[HUB]");
+			e.setLine(1, ChatColor.DARK_RED + "[HUB]");
+		} else if (line2.equalsIgnoreCase("[Vote]")) {
+			p.sendMessage(Game._("spleefSignCreated"));
+			
+			e.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
+			e.setLine(1, ChatColor.DARK_RED + "[Vote]");
 		}
 	}
 	
@@ -161,6 +162,7 @@ public class SignListener implements Listener {
 					p.sendMessage(Game._("noPermission"));
 					return;
 				}
+				
 				HeavySpleef.selector.open(p);
 				return;
 			} else {
@@ -221,6 +223,30 @@ public class SignListener implements Listener {
 			}
 			
 			CommandHub.tpToHub(p);
+		} else if (line1.equalsIgnoreCase("[Spleef]") && line2.equalsIgnoreCase("[Vote]")) {
+			if (!p.hasPermission(Permissions.SIGN_VOTE.getPerm())) {
+				p.sendMessage(Game._("noPermission"));
+				return;
+			}
+			
+			if (!GameManager.isInAnyGame(p)) {
+				p.sendMessage(Game._("onlyLobby"));
+				return;
+			}
+			
+			Game game = GameManager.fromPlayer(p);
+			
+			if (!game.isPreLobby()) {
+				p.sendMessage(Game._("onlyLobby"));
+				return;
+			}
+			if (game.hasVote(p)) {
+				p.sendMessage(Game._("alreadyVoted"));
+				return;
+			}
+			
+			game.addVote(p);
+			p.sendMessage(Game._("successfullyVoted"));
 		}
 		
 	}

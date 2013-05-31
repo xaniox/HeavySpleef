@@ -53,7 +53,7 @@ public class CommandAddWall extends HSCommand {
 			return;
 		}
 		if (!SignWall.isAllSign(s.getFirst(), s.getSecond())) {
-			p.sendMessage(_("notASign"));//TODO
+			p.sendMessage(_("notASign"));
 			return;
 		}
 		

@@ -39,6 +39,9 @@ public class Team {
 	private List<String> players = new ArrayList<String>();
 	private ChatColor color;
 	
+	private int maxplayers = -1;
+	private int minplayers = -1;
+	
 	public Team(ChatColor color, Game game) {
 		this.color = color;
 		this.game = game;
@@ -144,6 +147,22 @@ public class Team {
 		default:
 			return ChatColor.WHITE;
 		}
+	}
+	
+	public void setMaxPlayers(int maxplayers) {
+		this.maxplayers = maxplayers;
+	}
+	
+	public void setMinPlayers(int minplayers) {
+		this.minplayers = minplayers;
+	}
+	
+	public int getMinPlayers() {
+		return this.minplayers;
+	}
+	
+	public int getMaxPlayers() {
+		return this.maxplayers;
 	}
 	
 }
