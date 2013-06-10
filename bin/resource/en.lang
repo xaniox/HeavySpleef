@@ -84,6 +84,8 @@ notLookingAtPortal: &cYou aren't looking at a portal!
 teamNeedMorePlayers: &cThe team %a needs at minimum %a players!
 maxPlayersInTeam: &cThe maximum count of players in this team is reached! Please choose another team...
 minimumTwoTeams: &cYou need at least two teams to start the game!
+invalidTeam: &cThis team is invalid!
+unknownSpleefType: &cThe gametype %a is invalid! Available types: CUBOID, CYLINDER, ELLIPSE
 
 # Success messages
 
@@ -178,6 +180,7 @@ gameStopped: &cThe game has been stopped!
 playerJoinedGame: &a%a&a has joined the game!
 hasWon: &a%a &1has won the game on arena &6%a&1!
 teamWin: &aTeam %a &ahas won the game in arena %a&7!
+playerJoinedTeam: &a%a has joined the %a team!
 
 remaining: &1%a players remaining!
 

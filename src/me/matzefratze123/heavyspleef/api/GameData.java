@@ -383,4 +383,25 @@ public class GameData {
 		return game.getFlags();
 	}
 	
+	/**
+	 * Sets a metadata of the game
+	 * 
+	 * Use value null to remove the metadata
+	 */
+	public void setMetaData(String key, String value) {
+		if (value == null) {
+			getHandle().removeMetaData(key);
+		} else {
+			getHandle().setMetaData(key, value);
+		}
+	}
+	
+	/**
+	 * Gets a metadata from the game</br>
+	 * This returns null if there was no metadata with the given key found 
+	 */
+	public String getMetaData(String key) {
+		return getHandle().getMetaData(key);
+	}
+	
 }

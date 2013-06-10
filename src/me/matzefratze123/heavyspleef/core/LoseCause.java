@@ -25,6 +25,7 @@ public enum LoseCause {
 	LEAVE,
 	KICK,
 	LOSE,
+	PLUGIN,
 	UNKNOWN;
 	
 }

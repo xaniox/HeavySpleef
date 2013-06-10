@@ -24,11 +24,12 @@ import java.util.Random;
 
 import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.database.Parser;
+import me.matzefratze123.heavyspleef.util.Info;
 import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 import org.bukkit.Location;
 
-public abstract class Floor extends RegionBase implements Comparable<Floor> {
+public abstract class Floor extends RegionBase implements Comparable<Floor>, Info {
 
 	protected int m;
 	protected byte data;
@@ -55,6 +56,11 @@ public abstract class Floor extends RegionBase implements Comparable<Floor> {
 	public abstract void remove();
 	
 	public abstract GameType getType();
+	
+	@Override
+	public String asInfo() {
+		return "ID: " + getId() + ", shape: " + getType().name() + ", type: " + getFloorType();
+	}
 	
 	public FloorType getFloorType() {
 		return type;

@@ -42,6 +42,8 @@ public class Team {
 	private int maxplayers = -1;
 	private int minplayers = -1;
 	
+	private int currentKnockouts = 0;
+	
 	public Team(ChatColor color, Game game) {
 		this.color = color;
 		this.game = game;
@@ -122,7 +124,7 @@ public class Team {
 		case GREEN:
 			return 0x5;
 		case BLUE:
-			return 0x3;
+			return 0xB;
 		case YELLOW:
 			return 0x4;
 		case GRAY:
@@ -138,7 +140,7 @@ public class Team {
 			return ChatColor.RED;
 		case 0x5:
 			return ChatColor.GREEN;
-		case 0x3:
+		case 0xB:
 			return ChatColor.BLUE;
 		case 0x4:
 			return ChatColor.YELLOW;
@@ -163,6 +165,18 @@ public class Team {
 	
 	public int getMaxPlayers() {
 		return this.maxplayers;
+	}
+	
+	public int getCurrentKnockouts() {
+		return this.currentKnockouts;
+	}
+	
+	public void resetKnockouts() {
+		this.currentKnockouts = 0;
+	}
+	
+	public void addKnockout() {
+		this.currentKnockouts += 1;
 	}
 	
 }

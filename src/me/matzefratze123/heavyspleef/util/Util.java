@@ -19,7 +19,9 @@
  */
 package me.matzefratze123.heavyspleef.util;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.bukkit.Material;
 
@@ -31,12 +33,17 @@ public class Util {
 		String[] parts = str.split("_");
 		String realName = "";
 		
-		for (String part : parts) {
-			char[] chars = part.toCharArray();
+		Iterator<String> iter = Arrays.asList(parts).iterator();
+		while (iter.hasNext()) {
+			String next = iter.next();
+			
+			char[] chars = next.toCharArray();
 			chars[0] = Character.toUpperCase(chars[0]);
 			
-			part = String.copyValueOf(chars);
-			realName += part + " ";
+			next = String.copyValueOf(chars);
+			realName += next;
+			if (iter.hasNext())
+				realName += " ";
 		}
 		
 		return realName;

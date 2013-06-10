@@ -26,6 +26,8 @@ import java.util.Set;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
+import me.matzefratze123.heavyspleef.core.region.Floor;
+import me.matzefratze123.heavyspleef.core.region.LoseZone;
 import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.ChatColor;
@@ -54,8 +56,16 @@ public class CommandInfo extends HSCommand {
 		
 		player.sendMessage(ChatColor.YELLOW + "Name: " + game.getName() + ChatColor.GRAY + ", type: " + game.getType().name());
 		if (game.getFlags().size() > 0)
-			player.sendMessage(ChatColor.BLUE + "Flags: " + parseFlags(game));
+			player.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Flags: " + ChatColor.BLUE + parseFlags(game));
 		
+		player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Floors:");
+		for (Floor floor : game.getFloors()) {
+			player.sendMessage(ChatColor.LIGHT_PURPLE + "# " + floor.asInfo());
+		}
+		player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "Losezones:");
+		for (LoseZone zone : game.getLoseZones()) {
+			player.sendMessage(ChatColor.YELLOW + "# " + zone.asInfo());
+		}
 	}
 	
 	private Set<String> parseFlags(Game game) {

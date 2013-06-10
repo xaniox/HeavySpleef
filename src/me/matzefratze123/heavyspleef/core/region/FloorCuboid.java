@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.core.region;
 import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.database.FloorLoader;
 import me.matzefratze123.heavyspleef.database.Parser;
+import me.matzefratze123.heavyspleef.util.LocationHelper;
 import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 import org.bukkit.Location;
@@ -173,6 +174,15 @@ public class FloorCuboid extends Floor {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public String asInfo() {
+		String base = super.asInfo();
+		
+		base += "\n" + LocationHelper.locationToFriendlyString(firstCorner) + "; " + LocationHelper.locationToFriendlyString(secondCorner);
+		
+		return base;
 	}
 
 	public Location getFirstCorner() {

@@ -68,9 +68,22 @@ public class GameCylinder extends Game {
 	}
 
 	@Override
-	public boolean contains(Location l) {
+	public boolean contains(Location location) {
 		Region region = getCylinderRegion(minY, maxY);
-		return region.contains(BukkitUtil.toVector(l));
+		return region.contains(BukkitUtil.toVector(location));
+	}
+	
+	protected boolean containsInner(Location location) {
+		LocalWorld world = BukkitUtil.getLocalWorld(center.getWorld());
+		
+		int x = center.getBlockX();
+		int y = center.getBlockY();
+		int z = center.getBlockZ();
+		
+		Vector v = new Vector(x, y, z);
+		
+		Region region = new CylinderRegion(world, v, new Vector2D(radiusEastWest - 1, radiusNorthSouth - 1), minY, maxY);
+		return region.contains(BukkitUtil.toVector(location));
 	}
 
 	@Override

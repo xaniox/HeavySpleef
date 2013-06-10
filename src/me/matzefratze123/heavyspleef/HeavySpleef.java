@@ -207,6 +207,7 @@ public class HeavySpleef extends JavaPlugin {
 		
 		Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
 		if (tagAPIHook.hasHook()) {
+			System.out.println("TagEvent registered!");
 			pm.registerEvents(new TagListener(), this);
 		}
 	}

@@ -21,7 +21,7 @@ package me.matzefratze123.heavyspleef.util;
 
 import org.bukkit.Location;
 
-public class DistanceHelper {
+public class LocationHelper {
 	
 	public static double getDistance2D(Location loc1, Location loc2) {
 		
@@ -61,6 +61,16 @@ public class DistanceHelper {
 		double XZYdistance = XZdistance + (distanceY * distanceY);
 		
 		return XZYdistance;
+	}
+	
+	public static String locationToFriendlyString(Location location) {
+		String world = location.getWorld().getName();
+		
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
+		
+		return "[World: " + world + ", x: " + x + ", y: " + y + ", z: " + z + "]";
 	}
 	
 }

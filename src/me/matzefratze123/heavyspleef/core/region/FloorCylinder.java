@@ -22,6 +22,7 @@ package me.matzefratze123.heavyspleef.core.region;
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.GameType;
 import me.matzefratze123.heavyspleef.database.Parser;
+import me.matzefratze123.heavyspleef.util.LocationHelper;
 import me.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 import org.bukkit.Location;
@@ -201,6 +202,15 @@ public class FloorCylinder extends Floor {
 		
 		Region region = new CylinderRegion(BukkitUtil.getLocalWorld(center.getWorld()), new Vector(centerX, centerY, centerZ), new Vector2D(this.radiusEastWest, this.radiusNorthSouth), getY(), getY());
 		return region.contains(BukkitUtil.toVector(toCheck));
+	}
+
+	@Override
+	public String asInfo() {
+		String base = super.asInfo();
+		
+		base += "\n" + LocationHelper.locationToFriendlyString(center) + ", radius1: " + radiusEastWest + ", radius2: " + radiusNorthSouth;
+		
+		return base;
 	}
 
 }

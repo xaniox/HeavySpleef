@@ -58,7 +58,7 @@ public class PlayerStateManager {
 		p.setAllowFlight(false);//Disable fly mode (Essentials etc.)
 		p.setFireTicks(0);
 		p.getInventory().clear();
-		p.getInventory().setArmorContents(new ItemStack[] {null, null, null, null});
+		p.getInventory().setArmorContents(new ItemStack[4]);
 		p.setLevel(0);
 		p.setExp(0);
 		

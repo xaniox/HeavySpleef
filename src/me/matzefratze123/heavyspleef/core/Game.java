@@ -68,6 +68,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -96,6 +97,11 @@ public abstract class Game {
 	protected Map<String, Integer> multiKnockoutTaskIds = new HashMap<String, Integer>();
 	protected Map<String, Integer> multiKnockouts = new HashMap<String, Integer>();
 	protected Map<String, Scoreboard> previousScoreboards = new HashMap<String, Scoreboard>();
+	
+	/**
+	 * Metadata on this game
+	 */
+	protected Map<String, String> metadata = new HashMap<String, String>();
 	
 	public static Map<String, Integer> pvpTimerTasks = new HashMap<String, Integer>();
 	
@@ -126,7 +132,7 @@ public abstract class Game {
 	public List<Team> teams = new ArrayList<Team>();
 	public List<Queue> queues = new ArrayList<Queue>();
 	
-	private List<SimpleBlockData> toUndo = new ArrayList<SimpleBlockData>(); 
+	private List<SimpleBlockData> toUndo = new ArrayList<SimpleBlockData>();
 	
 	public ArrayList<Game.Win> wins = new ArrayList<Game.Win>();
 	
@@ -283,6 +289,7 @@ public abstract class Game {
 		removeAllFromQueue();
 		removeBoxes();
 		
+		resetTeams();
 		regen();
 		clearAll();
 		updateScoreBoards();
@@ -359,6 +366,11 @@ public abstract class Game {
 	public void addPlayer(Player player, ChatColor teamColor) {
 		int jackpotToPay = getFlag(JACKPOTAMOUNT) == null ? HeavySpleef.getSystemConfig().getInt("general.defaultToPay", 0) : getFlag(JACKPOTAMOUNT);
 		
+		SpleefJoinEvent event = new SpleefJoinEvent(new GameData(this), player);
+		Bukkit.getPluginManager().callEvent(event);
+		if (event.isCancelled())
+			return;
+		
 		if (isDisabled()) {
 			player.sendMessage(_("gameIsDisabled"));
 			return;
@@ -434,6 +446,7 @@ public abstract class Game {
 				if (getFlag(TEAM)) {
 					if (team != null) {
 						team.join(player);
+						broadcast(_("playerJoinedTeam", player.getName(), team.getColor() + Util.getName(team.getColor().name())), ConfigUtil.getBroadcast("player-join"));
 						if (HookManager.getInstance().getService(TagAPIHook.class).hasHook())
 							TagListener.setTag(player, team.getColor());
 					} else {
@@ -457,6 +470,7 @@ public abstract class Game {
 	private void join(Player player) {
 		if (isDisabled())
 			return;
+		
 		
 		boolean is1vs1 = getFlag(ONEVSONE);
 		boolean shovels = getFlag(SHOVELS);
@@ -484,8 +498,8 @@ public abstract class Game {
 		if (isWaiting()) //Activate the lobby mode
 			setGameState(GameState.LOBBY);
 		
-		tellAll(_("playerJoinedGame", ViPManager.colorName(player.getName())));
-		Bukkit.getPluginManager().callEvent(new SpleefJoinEvent(new GameData(this), player));
+		broadcast(_("playerJoinedGame", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("player-join"));
+		
 		player.setAllowFlight(false);
 		player.setFireTicks(0);
 		updateWalls();
@@ -511,7 +525,7 @@ public abstract class Game {
 		if (cause == null)
 			cause = LoseCause.UNKNOWN;
 		
-		if (!players.contains(player.getName())) //Player can't be removed if they are not playing
+		if (!players.contains(player.getName())) //Player can't be removed if he isn't playing
 			return;
 		
 		boolean is1vs1 = getFlag(ONEVSONE);
@@ -525,10 +539,11 @@ public abstract class Game {
 			
 			//Chances stuff start
 			//And put the chances that the player has left into the Map
-			if (!chancesUsed.containsKey(player.getName()))
+			if (!chancesUsed.containsKey(player.getName())) {
 				chancesUsed.put(player.getName(), 1);
-			else
+			} else {
 				chancesUsed.put(player.getName(), chancesUsed.get(player.getName()) + 1);
+			}
 		
 			if (chancesUsed.get(player.getName()) < chances) {
 				player.teleport(getNewRandomLocation(player));
@@ -544,18 +559,18 @@ public abstract class Game {
 			StatisticManager.getStatistic(player.getName(), true).addLose();
 		}
 		
-		players.remove(player.getName());
-		removePlayerFromTeam(player);
-		
-		if (isIngame()) {
-			outPlayers.add(player.getName());
-			broadcast(_("remaining", String.valueOf(players.size())), ConfigUtil.getBroadcast("knockouts"));
-			Bukkit.getPluginManager().callEvent(new SpleefLoseEvent(new GameData(this), player, cause));
-		}
+		Bukkit.getPluginManager().callEvent(new SpleefLoseEvent(new GameData(this), player, cause));
 		
 		if (!isPreLobby())
 			player.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(player))));
 		broadcast(getLoseMessage(cause, player), ConfigUtil.getBroadcast("player-lose"));
+		
+		players.remove(player.getName());
+		removePlayerFromTeam(player);
+		if (isIngame()) {
+			outPlayers.add(player.getName());
+			broadcast(_("remaining", String.valueOf(players.size())), ConfigUtil.getBroadcast("knockouts"));
+		}
 		
 		if (getFlag(LOSE) == null)
 			player.teleport(LocationSaver.load(player));
@@ -802,6 +817,7 @@ public abstract class Game {
 		broadcast(_("hasWon", ViPManager.colorName(p.getName()), this.getName()), ConfigUtil.getBroadcast("win"));
 		p.sendMessage(_("win"));
 		p.sendMessage(_("yourKnockOuts", String.valueOf(getKnockouts(p))));
+		resetTeams();
 		clearAll();
 		removeBoxes();
 		
@@ -869,10 +885,11 @@ public abstract class Game {
 		}
 		
 		Bukkit.getPluginManager().callEvent(new SpleefFinishEvent(new GameData(this), StopCause.WIN, null));
+		resetTeams();
 		clearJackpot();
 		clearAll();
 		removeBoxes();
-		broadcast(_("teamWin", Util.getName(team.getColor() + team.getColor().name()), getName()), ConfigUtil.getBroadcast("win"));
+		broadcast(_("teamWin", team.getColor() + Util.getName(team.getColor().name()), getName()), ConfigUtil.getBroadcast("win"));
 		cancelTasks();
 		setGameState(GameState.JOINABLE);
 		updateScoreBoards();
@@ -902,11 +919,11 @@ public abstract class Game {
 			PlayerStateManager.restorePlayerState(p);
 		}
 		
-		
 		clearAll();
 		removeBoxes();
 		broadcast(_("endedDraw", getName()), ConfigUtil.getBroadcast("win"));
 		cancelTasks();
+		resetTeams();
 		setGameState(GameState.JOINABLE);
 		updateScoreBoards();
 		updateWalls();
@@ -933,7 +950,7 @@ public abstract class Game {
 			
 			String killerName = "";
 			
-			Player killer = Bukkit.getPlayer(getKiller(player, true));
+			Player killer = Bukkit.getPlayer(getKiller(player, false));
 			if (killer == null)
 				return _("loseCause_lose_unknown", team.getColor() + player.getName());
 			
@@ -942,9 +959,11 @@ public abstract class Game {
 			if (killerTeam == null)
 				return _("loseCause_" + cause.name().toLowerCase(), team.getColor() + player.getName(), ViPManager.colorName(killerName));
 			
+			killerTeam.addKnockout();
 			return _("loseCause_" + cause.name().toLowerCase(), team.getColor() + player.getName(), killerTeam.getColor() + killerName);
-		case UNKNOWN:
-			return _("loseCause_" + cause.name().toLowerCase(), ViPManager.colorName(player.getName()));
+		case UNKNOWN: 
+		case PLUGIN:
+			return _("loseCause_unknown", ViPManager.colorName(player.getName()));
 		default:
 			return "null";
 		}
@@ -1476,6 +1495,10 @@ public abstract class Game {
 			return false;
 		if (!isIngame())
 			return false;
+		if (getType() == GameType.CYLINDER) {
+			if (!((GameCylinder)this).containsInner(location))
+				return false;
+		}
 		
 		for (Floor floor : getFloors()) {
 			if (!floor.contains(location))
@@ -1556,16 +1579,14 @@ public abstract class Game {
 				if (count == 1 && getFlag(SPAWNPOINT1) != null) {
 					p.teleport(getFlag(SPAWNPOINT1));
 					buildBox(Material.GLASS, getFlag(SPAWNPOINT1));
-					return;
-				}
-				else if (count == 2 && getFlag(SPAWNPOINT2) != null) {
+				} else if (count == 2 && getFlag(SPAWNPOINT2) != null) {
 					p.teleport(getFlag(SPAWNPOINT2));
 					buildBox(Material.GLASS, getFlag(SPAWNPOINT2));
-					return;
 				}
+			} else {
+				p.teleport(getRandomLocation());
 			}
 			
-			p.teleport(getRandomLocation()); //Should not be fired
 			count++;
 		}
 	}
@@ -1702,31 +1723,41 @@ public abstract class Game {
 	private void createSidebarScoreboard() {
 		if (!HeavySpleef.getSystemConfig().getBoolean("general.showSidebarScoreboard"))
 			return;
+		
+		//The scoreboard manager
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		board = manager.getNewScoreboard();
 		
 		if (board == null)
 			return;
 		
-		board.registerNewObjective("showKnockouts", "Knockouts");
-		Objective objective = board.getObjective("showKnockouts");
-		
+		//Register our new Objective
+		Objective objective = board.registerNewObjective("showKnockouts", "Knockouts");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		if (getFlag(ONEVSONE))
-			objective.setDisplayName(ChatColor.GREEN + "Status 0:0");
-		else
-			objective.setDisplayName(ChatColor.GREEN + "Knockouts");
 		
-	
-		for (Player player : getPlayers()) {
-			Score score = objective.getScore(player);
-			score.setScore(0);
+		//Set the displayname
+		if (getFlag(ONEVSONE)) {
+			objective.setDisplayName(ChatColor.GREEN + "Status 0:0");
+		} else {
+			objective.setDisplayName(ChatColor.GREEN + "Knockouts");
+		}
+		
+		if (getFlag(TEAM)) {
+			//Add team scores
+			for (Team team : getTeams()) {
+				Score score = objective.getScore(Bukkit.getOfflinePlayer(team.getColor() + Util.getName(team.getColor().name())));
+				score.setScore(0);
+			}
+		} else {
+			//Add player scores
+			for (Player player : getPlayers()) {
+				Score score = objective.getScore(player);
+				score.setScore(0);
+			}
 		}
 		
 		for (Player player : getPlayers()) {
 			previousScoreboards.put(player.getName(), player.getScoreboard());
-			System.out.println("Setting scoreboard for " + player.getName() + "!");
-			System.out.println(board);
 			player.setScoreboard(board);
 		}
 	}
@@ -1744,6 +1775,7 @@ public abstract class Game {
 		List<Player> allPlayers = ArrayHelper.mergeArrays(in, out);
 		
 		if (isWaiting()) {
+			//Remove the scoreboard
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				Scoreboard playerBoard = player.getScoreboard();
 				
@@ -1755,15 +1787,32 @@ public abstract class Game {
 			board = null;
 			return;
 		}
-		for (Player player : allPlayers) {//Loop around all players
-			if (!players.contains(player.getName()))//If the player is out we remove the ingame item
-				board.resetScores(player);
-			
-			Objective objective = board.getObjective("showKnockouts");
-			objective.getScore(player).setScore(getKnockouts(player));  //Set the score
-			
-			if (!players.contains(player.getName()))//Only show scoreboard if they are not out
-				player.setScoreboard(previousScoreboards.get(player.getName()));
+		
+		if (getFlag(TEAM)) {
+			for (Team team : teams) {
+				OfflinePlayer teamSlot = Bukkit.getOfflinePlayer(team.getColor() + Util.getName(team.getColor().name()));
+				
+				if (!team.hasPlayersLeft()) {
+					if (board.getPlayers().contains(teamSlot)) {
+						board.resetScores(teamSlot);
+					}
+					
+					continue;
+				}
+				
+				Objective objective = board.getObjective("showKnockouts");
+				objective.getScore(teamSlot).setScore(team.getCurrentKnockouts());
+			}
+		} else {
+			for (Player player : allPlayers) {//Loop around all players
+				if (!players.contains(player.getName())) {//If the player is out we remove the ingame item
+					board.resetScores(player);
+					player.setScoreboard(previousScoreboards.get(player.getName()));
+				}
+				
+				Objective objective = board.getObjective("showKnockouts");
+				objective.getScore(player).setScore(getKnockouts(player));  //Set the score
+			}
 		}
 		
 		if (getFlag(ONEVSONE)) {
@@ -1944,6 +1993,13 @@ public abstract class Game {
 		
 		return set;
 	}
+	
+	public void resetTeams() {
+		for (Team team : teams) {
+			team.resetKnockouts();
+		}
+	}
+	
 	/* Team stuff end */
 	
 	/**
@@ -2132,6 +2188,22 @@ public abstract class Game {
 	}
 	
 	/* Queues system end */
+	
+	public void setMetaData(String key, String value) {
+		metadata.put(key, value);
+	}
+	
+	public boolean hasMetaData(String key) {
+		return metadata.containsKey(key);
+	}
+	
+	public String getMetaData(String key) {
+		return metadata.get(key);
+	}
+	
+	public String removeMetaData(String key) {
+		return metadata.remove(key);
+	}
 	
 	//Just a simple class to save a 1vs1 win
 	public class Win implements Cloneable, Comparable<Win> {

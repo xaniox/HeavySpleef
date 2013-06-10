@@ -57,6 +57,7 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -197,6 +198,16 @@ public class PlayerListener implements Listener {
 		Player p = (Player)e.getEntity();
 		if (GameManager.isInAnyGame(p))
 			e.setFoodLevel(20);
+	}
+	
+	@EventHandler
+	public void onItemPickup(PlayerPickupItemEvent e) {
+		Player player = e.getPlayer();
+		
+		if (!GameManager.isInAnyGame(player))
+			return;
+		
+		e.setCancelled(true);
 	}
 	
 	@EventHandler

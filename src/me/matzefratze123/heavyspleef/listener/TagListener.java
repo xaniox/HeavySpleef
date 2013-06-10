@@ -41,6 +41,7 @@ public class TagListener implements Listener {
 			tags.put(player.getName(), tag);
 		}
 		
+		System.out.println("Setting tag " + (tag != null ? tag.name() : "null") + " for " + player.getName() + "!");
 		TagAPI.refreshPlayer(player);
 	}
 	
@@ -50,6 +51,7 @@ public class TagListener implements Listener {
 			return;
 		}
 		
+		System.out.println("Tag fired!");
 		String tag = tags.get(e.getNamedPlayer().getName()) + e.getNamedPlayer().getName();
 		if (tag.length() > 16)
 			tag = tag.substring(0, 16);

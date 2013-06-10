@@ -88,6 +88,8 @@ notLookingAtPortal: &cDu schaust auf kein Portal...
 teamNeedMorePlayers: &cDas Team %a braucht mindestens %a Spieler!
 maxPlayersInTeam: &cDie maximale Spieleranzahl ist bereits in diesem Team!
 minimumTwoTeams: &cEs werden minimum zwei Teams ben\u00F6tigt um das Spiel zu starten!
+invalidTeam: &cDieses Team ist ung\u00FCltig
+unknownSpleefType: &cDer Arenatyp %a ist nicht g\u00FCltig! Erlaubte Typen: CUBOID, CYLINDER, ELLIPSE
 
 # Erfolgsnachrichten
 
@@ -182,11 +184,12 @@ gameStopped: &cDas Spiel wurde gestoppt!
 playerJoinedGame: &a%a&a ist dem Spiel beigetreten!
 hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!
 teamWin: &aTeam %a &ahat das Spiel in Arena %a &7gewonnen!
+playerJoinedTeam: &a%a ist dem %a Team beigetreten!
 
 remaining: &1%a Spieler verbleiben!
 
 doubleKnockout: &7%a: &7Doppel-Knockout!
-tripleKnockout: &9%a: &9Dreier-Knockout!
+tripleKnockout: &9%a: &9Trippel-Knockout!
 superKnockout: &5%a: &5Super-Knockout!
 unbelievableKnockout: &5%a: &6&lUnglaublicher-Knockout&r&5!
 
