@@ -61,7 +61,7 @@ public class CommandRemoveTeam extends HSCommand {
 		}
 		
 		game.removeTeam(color);
-		player.sendMessage(_("teamRemoved", color + Util.getName(color.name())));
+		player.sendMessage(_("teamRemoved", color + Util.toFriendlyString(color.name())));
 	}
 
 }

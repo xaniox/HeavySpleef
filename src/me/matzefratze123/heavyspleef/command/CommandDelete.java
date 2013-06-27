@@ -19,7 +19,6 @@
  */
 package me.matzefratze123.heavyspleef.command;
 
-import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
 import me.matzefratze123.heavyspleef.util.Permissions;
@@ -50,7 +49,6 @@ public class CommandDelete extends HSCommand {
 		
 		game.removeAllFromQueue();
 		GameManager.deleteGame(args[0].toLowerCase());
-		HeavySpleef.instance.refreshInventory();
 		sender.sendMessage(_("gameDeleted"));
 	}
 

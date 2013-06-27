@@ -149,6 +149,7 @@ public class PlayerListener implements Listener {
 						return;
 					if (!HeavySpleef.getSystemConfig().getBoolean("general.protectArena", true))
 						return;
+					
 					e.setCancelled(true);
 					fixBlockGlitch(p, block);
 					p.sendMessage(Game._("notAllowedToBuild"));

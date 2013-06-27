@@ -50,7 +50,7 @@ public class ReadyListener implements Listener {
 		if (!game.isPreLobby())
 			return;
 		
-		SimpleBlockData readyBlock = Util.fromString(HeavySpleef.getSystemConfig().getString("general.ready-block"), false);
+		SimpleBlockData readyBlock = Util.getMaterialFromString(HeavySpleef.getSystemConfig().getString("general.ready-block"), false);
 		if (readyBlock == null)
 			return;
 		

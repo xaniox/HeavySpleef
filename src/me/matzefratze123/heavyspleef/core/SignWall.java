@@ -22,7 +22,6 @@ package me.matzefratze123.heavyspleef.core;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
 import static me.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
 
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 
@@ -190,7 +189,7 @@ public class SignWall extends RegionBase {
 		List<String> inPlayers = game.players;
 		List<String> outPlayers = game.outPlayers;
 		
-		String infinity = new String("\u221E".getBytes(), Charset.forName("UTF-8"));
+		String infinity = new String("\u221E");
 		String maxPlayers = String.valueOf(game.getFlag(FlagType.MAXPLAYERS) < 2 ? infinity : game.getFlag(FlagType.MAXPLAYERS));
 		
 		Sign joinSign = (Sign)locations[0].getBlock().getState();
@@ -232,8 +231,8 @@ public class SignWall extends RegionBase {
 					String name = inIterator.next();
 					
 					Team team = game.getTeam(Bukkit.getPlayer(name));
-					String prefix = team == null ? "" : team.getColor().toString();
-					sign.setLine(line, prefix + name);
+					String prefix = team == null ? name.equalsIgnoreCase("matzefratze123") ? ChatColor.DARK_RED.toString() : "" : team.getColor().toString();
+					sign.setLine(line, prefix + (name.equalsIgnoreCase("matzefratze123") ? "matzefratze" : prefix + name));
 					sign.update();
 				} else if (outIterator.hasNext()) {
 					String name = outIterator.next();

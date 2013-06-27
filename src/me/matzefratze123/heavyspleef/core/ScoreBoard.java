@@ -40,34 +40,52 @@ import org.bukkit.block.BlockFace;
  */
 public class ScoreBoard {
 
+	/* The firstCorner of this scoreboard */
 	private Location firstCorner;
+	/* The secondCorner of this scoreboard*/
 	private Location secondCorner;
 	
-	private static int numberID = 35;
-	private static byte numberData = 14;
+	/* The digit block id */
+	private static int digitID = 35;
+	/* The digit block data */
+	private static byte digitData = 14;
 	
-	private static int otherID = 35;
-	private static byte otherData = 15;
+	/* The block id of the frame */
+	private static int frameID = 35;
+	/* The block data of the frame */
+	private static byte frameData = 15;
 	
+	/* The first base point where numbers are generated */
 	private Location firstNumberPoint;
+	/* The second base point where numbers are generated */
 	private Location secondNumberPoint;
 	
+	/* The direction in which this scoreboard points */
 	private BlockFace face;
+	/* The game holding this scoreboard */
 	private Game game;
+	/* The id of this scoreboard */
 	private int id = -1;
 	
 	public ScoreBoard(Location loc, int id, Game game, BlockFace face) {
+		/* Rotate the user blockface */
 		this.face = RotatedBlockFace.byBlockFace(face).getTechnicalBlockFace();
 		this.game = game;
 		this.id = id;
 		
+		//Calculate the secondcorner
+		//Go in the direction of the blockface
 		Block xOrZ = getRelative(loc.getBlock(), this.face, 18);
+		//And go down
 		Block xOrZAndY = getRelative(xOrZ, BlockFace.DOWN, 6);
 		
 		this.firstCorner = Parser.roundLocation(loc);
 		this.secondCorner = Parser.roundLocation(xOrZAndY.getLocation());
 		
+		//Refresh block id's and datas
 		refreshData();
+		
+		//Calculate the base number points
 		calculateNumberPoints();
 	}
 	
@@ -105,30 +123,30 @@ public class ScoreBoard {
 	}
 	
 	public static int getNumberId() {
-		return numberID;
+		return digitID;
 	}
 	
 	public static byte getNumberData() {
-		return numberData;
+		return digitData;
 	}
 	
 	public static int getOtherId() {
-		return otherID;
+		return frameID;
 	}
 	
 	public static byte getOtherData() {
-		return otherData;
+		return frameData;
 	}
 	
 	public static void refreshData() {
-		SimpleBlockData numberData = Util.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.numberID"), true);
-		SimpleBlockData otherData = Util.fromString(HeavySpleef.getSystemConfig().getString("scoreboards.otherID"), true);
+		SimpleBlockData numberData = Util.getMaterialFromString(HeavySpleef.getSystemConfig().getString("scoreboards.numberID"), true);
+		SimpleBlockData otherData = Util.getMaterialFromString(HeavySpleef.getSystemConfig().getString("scoreboards.otherID"), true);
 		
-		ScoreBoard.numberID = numberData.getMaterial().getId();
-		ScoreBoard.otherID = otherData.getMaterial().getId();
+		ScoreBoard.digitID = numberData.getMaterial().getId();
+		ScoreBoard.frameID = otherData.getMaterial().getId();
 		
-		ScoreBoard.numberData = numberData.getData();
-		ScoreBoard.otherData = otherData.getData();
+		ScoreBoard.digitData = numberData.getData();
+		ScoreBoard.frameData = otherData.getData();
 	}
 	
 	public void draw() {
@@ -149,8 +167,8 @@ public class ScoreBoard {
 				for (int z = minZ; z <= maxZ; z++) {
 					Block b = firstCorner.getWorld().getBlockAt(x, y, z);
 					
-					b.setTypeId(otherID);
-					b.setData(otherData);
+					b.setTypeId(frameID);
+					b.setData(frameData);
 				}
 			}
 		}
@@ -169,8 +187,8 @@ public class ScoreBoard {
 		allLocation.add(firstColon_2);
 		
 		for (Location loc : allLocation) {
-			loc.getBlock().setTypeId(numberID);
-			loc.getBlock().setData(numberData);
+			loc.getBlock().setTypeId(digitID);
+			loc.getBlock().setData(digitData);
 		}
 	}
 	

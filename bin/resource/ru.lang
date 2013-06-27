@@ -72,6 +72,21 @@ onlyLobby: &cYou can use this command only during lobby!
 votesDisabled: &6Votes are disabled for this server!
 alreadyVoted: &6You already voted!
 
+alreadyInTeam: &cYou are already in team %a&c!
+notInThisTeam: &cYou are not in this team!
+invalidColor: &cThis an invalid team-color!
+specifieTeam: &cPlease pick a team! Available Teams: %a
+notASign: &cSome blocks in this selection are not signs!
+
+noSpleefHubSet: &cThe Spleef-HUB wasn't set!
+notLookingAtPortal: &cYou aren't looking at a portal!
+
+teamNeedMorePlayers: &cThe team %a needs at minimum %a players!
+maxPlayersInTeam: &cThe maximum count of players in this team is reached! Please choose another team...
+minimumTwoTeams: &cYou need at least two teams to start the game!
+invalidTeam: &cThis team is invalid!
+unknownSpleefType: &cThe gametype %a is invalid! Available types: CUBOID, CYLINDER, ELLIPSE
+
 # Сообщения об успешном выполнении
 
 floorCreated: &7Пол был создан!
@@ -139,6 +154,14 @@ pvpTimerCancelled: &4Teleportation cancelled due to movement!
 notASign: &cSome blocks in this selections are not signs!
 gameRenamed: Renamed game &6%a &7to &5%a &7!
 
+welcomeToHUB: &7Welcome to the &4&lSpleef-HUB&r&7!
+spleefHubSet: &7Global Spleef HUB set!
+portalRemoved: &7The portal was removed!
+portalAdded: &7Portal added!
+
+taggedAsReady: &7You have been tagged as ready
+teleportingToHub: &7Teleporting to Spleef HUB. Don't move...
+
 # Публичные сообщения
 
 gameDisabled: &cИгру &6%a &cотключил %a
@@ -150,6 +173,9 @@ gameIsStarting: &1Игра начнется через %a секунд...
 gameStopped: &cИгра была остановлена!
 playerJoinedGame: &a%a присоединился к игре!
 hasWon: &a%a &1выиграл игру на арене &6%a&1!
+teamWin: &aTeam %a &ahas won the game in arena %a&7!
+playerJoinedTeam: &a%a has joined the %a team!
+teamEliminated: &aThe %a &ateam was eliminated!
 
 doubleKnockout: &7%a &7got a Double Knockout!
 tripleKnockout: &9%a &9got a Triple Knockout!
@@ -174,3 +200,4 @@ loseCause_leave: &6%a &cвышел из игры на арене %a!
 loseCause_lose: &6%a &cпотерпел поражение от &4%a&c!
 loseCause_quit: &6%a &cвышел во время игры!
 loseCause_unknown: &6%a &cпокинул арену по неизвестной причине...
+loseCause_lose_unknown: &6%a &cwas knocked out!

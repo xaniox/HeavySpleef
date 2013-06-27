@@ -19,187 +19,108 @@
  */
 package me.matzefratze123.heavyspleef.stats;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import org.bukkit.Bukkit;
+import me.matzefratze123.heavyspleef.stats.sql.Database;
+import me.matzefratze123.heavyspleef.stats.sql.Field;
+import me.matzefratze123.heavyspleef.stats.sql.Field.Type;
+import me.matzefratze123.heavyspleef.stats.sql.Table;
 
 public class MySQLStatisticDatabase implements IStatisticDatabase {
-
-	private String dbHost;
-	private String dbPort;
-	private String databaseName;
-	private String dbUser;
-	private String dbPassword;
 	
-	private final String tableName = "HeavySpleef_Statistics";
+	private static final String tableName = "HeavySpleef_Statistics";
+	private static Map<String, Field> columns;
 	
-	private HeavySpleef plugin;
-	private Connection conn;
-	
-	public MySQLStatisticDatabase() {
-		this.plugin = HeavySpleef.instance;
-		this.dbHost = plugin.getConfig().getString("statistic.host");
-		this.dbPort = plugin.getConfig().getString("statistic.port");
-		this.databaseName = plugin.getConfig().getString("statistic.databaseName");
-		this.dbUser = plugin.getConfig().getString("statistic.user");
-		this.dbPassword = plugin.getConfig().getString("statistic.password");
-		createConnection();
-	}
-	
-	private Connection getInstance() {
-		try {
-			if (conn == null || conn.isClosed())
-			
-				createConnection();
-			return conn;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return conn;
-	}
-	
-	private void createConnection() {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-	        String url = "jdbc:mysql://" + dbHost + ":"
-	                + dbPort + "/" + databaseName + "?" + "user="
-	        		+ dbUser + "&" + "password=" + dbPassword;
-			
-	        conn = DriverManager.getConnection(url);
-	    } catch (ClassNotFoundException e) {
-	        Bukkit.getLogger().severe("No drivers found for MySQL statistic database! Changing to YAML!");
-	        plugin.statisticDatabase = new YamlStatisticDatabase();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	        Bukkit.getLogger().severe("Could not connect to MySQL database! Bad username or password?");
-	        Bukkit.getLogger().severe("Using YAML Database!");
-	        plugin.statisticDatabase = new YamlStatisticDatabase();
-	    }
-	}
-	
-	public ResultSet executeQuery(String sql) throws SQLException {
-		conn = getInstance();
-		Statement statement = conn.createStatement();
-		return statement.executeQuery(sql);
-	}
-	
-	public void executeUpdate(String sql) throws SQLException {
-		conn = getInstance();
-		Statement statement = conn.createStatement();
-		statement.executeUpdate(sql);
-	}
-	
-	public boolean hasColumn(String columnName) throws SQLException {
-		conn = getInstance();
-		
-		DatabaseMetaData meta = conn.getMetaData();
-		ResultSet set = meta.getColumns(null, null, this.tableName, columnName);
-		
-		return set.next();
-	}
-	
-	public boolean hasRow(String owner) throws SQLException {
-		conn = getInstance();
-		
-		ResultSet set = executeQuery("SELECT * FROM " + tableName + " WHERE owner LIKE '" + owner + "'");
-		return set.next();
-	}
-	
-	public void checkColumns() throws SQLException {
-		String[] columns = new String[] {"owner", "wins", "loses", "knockouts", "games", "score"};
-		
-		for (String col : columns) {
-			if (!hasColumn(col))
-				executeUpdate("ALTER TABLE " + this.tableName + " ADD " + col + " INT");
+	static {
+		if (columns == null) {
+			columns = new HashMap<String, Field>();
+			columns.put("owner", new Field(Type.CHAR, 16));
+			columns.put("wins", new Field(Type.INT));
+			columns.put("loses", new Field(Type.INT));
+			columns.put("knockouts", new Field(Type.INT));
+			columns.put("games", new Field(Type.INT));
+			columns.put("score", new Field(Type.INT));
 		}
 	}
-
-
+	
 	@Override
 	public void save() {
-		conn = getInstance();
+		Database database = new Database(HeavySpleef.instance);
+		if (!database.hasTable(tableName))
+			database.createTable(tableName, columns);
 		
-		try {
-			executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner TEXT, wins INT, loses INT, knockouts INT, games INT, score INT)");
-			checkColumns();
-			
-			List<StatisticModule> statistics = new ArrayList<StatisticModule>(StatisticManager.getStatistics());
-			Collections.sort(statistics);
-			
-			for (StatisticModule stat : statistics) {
-				
-				int wins = stat.getWins();
-				int loses = stat.getLoses();
-				int knockouts = stat.getKnockouts();
-				int games = stat.getGamesPlayed();
-				int score = stat.getScore();
-				
-				String owner = stat.getName();
-				
-				if (hasRow(owner))
-					executeUpdate("DELETE FROM " + tableName + " WHERE owner = '" + owner + "'");//We have to delete old values because of a bug in version 1.0...
-					//1.3: Will be replaced by: UPDATE tablename SET owner='owner', wins='wins', etc. WHERE owner LIKE owner
-				executeUpdate("INSERT INTO " + tableName + " (owner, wins, loses, knockouts, games, score) VALUES ('" + owner + "', '" + wins + "', '" + loses + "', '" + knockouts + "', '" + games + "', '" + score + "')");
-			}
-			conn.close();
-		} catch (SQLException e) {
-			plugin.getLogger().severe("An SQL Error occured while saving statistic database! Look at the error below for more information...");
-			e.printStackTrace();
+		Table table = database.getTable(tableName);
+		for (String columnName : columns.keySet()) {
+			if (!table.hasColumn(columnName))
+				table.addColumn(columnName, columns.get(columnName));
 		}
+		
+		List<StatisticModule> statistics = new ArrayList<StatisticModule>(StatisticManager.getStatistics());
+		Collections.sort(statistics);
+		
+		for (StatisticModule stat : statistics) {
+			
+			int wins = stat.getWins();
+			int loses = stat.getLoses();
+			int knockouts = stat.getKnockouts();
+			int games = stat.getGamesPlayed();
+			int score = stat.getScore();
+			
+			String owner = stat.getName();
+			
+			Map<String, Object> values = new HashMap<String, Object>();
+			values.put("owner", owner);
+			values.put("wins", wins);
+			values.put("loses", loses);
+			values.put("knockouts", knockouts);
+			values.put("games", games);
+			values.put("score", score);
+			
+			Map<String, Object> where = new HashMap<String, Object>();
+			where.put("owner", owner);
+			
+			table.insertOrUpdate(values, where);
+		}
+		
+		database.close();
 	}
 
 	@Override
 	public void load() {
-		conn = getInstance();
+		Database database = new Database(HeavySpleef.instance);
+		if (!database.hasTable(tableName))
+			return;
+		
+		Table table = database.getTable(tableName);
+		ResultSet result = table.select("*");
+		
+		int c = 0;
 		
 		try {
-			List<String> tables = new ArrayList<String>();
-			
-			DatabaseMetaData metaData = conn.getMetaData();
-			ResultSet table = metaData.getTables(null, null, null, new String[] {"TABLE"});
-			
-			while (table.next()) {
-				String tableName = table.getString("TABLE_NAME");
-				tables.add(tableName);
-			}
-			
-			if (!tables.contains(tableName)) {
-				plugin.getLogger().warning("WARNING! Failed to load statistics!!! Could not find a MySQL TABLE!");
-				plugin.getLogger().info("Creating a new table instead...");
-				executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (owner TEXT, wins INT, loses INT, knockouts INT, games INT)");
-				return;
-			}
-			
-			ResultSet stats = executeQuery("SELECT * FROM " + tableName);
-			int c = 0;
-			
-			while (stats.next()) {
-				String owner = stats.getString("owner");
+			while (result.next()) {
+				String owner = result.getString("owner");
+				int wins = result.getInt("wins");
+				int loses = result.getInt("loses");
+				int knockouts = result.getInt("knockouts");
+				int games = result.getInt("games");
 				
-				int wins = stats.getInt("wins");
-				int loses = stats.getInt("loses");
-				int knockouts = stats.getInt("knockouts");
-				int games = stats.getInt("games");
-				
-				StatisticModule s = new StatisticModule(owner, loses, wins, knockouts, games);
-				StatisticManager.addExistingStatistic(s);
+				StatisticModule module = new StatisticModule(owner, loses, wins, knockouts, games);
+				StatisticManager.addExistingStatistic(module);
 				c++;
 			}
-			
-			plugin.getLogger().info("Loaded " + c + " statistics!");
 		} catch (SQLException e) {
-			plugin.getLogger().severe("An SQL Error occured while loading statistic database! Look at the error below for more information...");
-			e.printStackTrace();
+			
 		}
+		
+		HeavySpleef.instance.getLogger().info("Loaded " + c + " statistic data sets.");
+		database.close();
 	}
 
 }

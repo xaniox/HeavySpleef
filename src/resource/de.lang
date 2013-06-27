@@ -91,6 +91,8 @@ minimumTwoTeams: &cEs werden minimum zwei Teams ben\u00F6tigt um das Spiel zu st
 invalidTeam: &cDieses Team ist ung\u00FCltig
 unknownSpleefType: &cDer Arenatyp %a ist nicht g\u00FCltig! Erlaubte Typen: CUBOID, CYLINDER, ELLIPSE
 
+notIngame: &cDu kannst diesen Befehl nur Ingame benutzen!
+
 # Erfolgsnachrichten
 
 floorCreated: &7Floor mit ID #%a hinzugef\u00FCgt!
@@ -184,7 +186,9 @@ gameStopped: &cDas Spiel wurde gestoppt!
 playerJoinedGame: &a%a&a ist dem Spiel beigetreten!
 hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!
 teamWin: &aTeam %a &ahat das Spiel in Arena %a &7gewonnen!
-playerJoinedTeam: &a%a ist dem %a Team beigetreten!
+playerJoinedTeam: &a%a ist dem %a &aTeam beigetreten!
+teamEliminated: &aDas %a&a Team ist ausgeschieden!
+floorsRegenerated: &aAlle Ebenen wurden neu generiert.
 
 remaining: &1%a Spieler verbleiben!
 

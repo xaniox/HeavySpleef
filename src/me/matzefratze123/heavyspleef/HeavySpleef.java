@@ -21,20 +21,16 @@ package me.matzefratze123.heavyspleef;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import me.matzefratze123.heavyspleef.api.GameAPI;
 import me.matzefratze123.heavyspleef.command.CommandHandler;
-import me.matzefratze123.heavyspleef.configuration.FileConfig;
-import me.matzefratze123.heavyspleef.core.Game;
-import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.config.FileConfig;
 import me.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import me.matzefratze123.heavyspleef.database.YamlDatabase;
 import me.matzefratze123.heavyspleef.hooks.Hook;
 import me.matzefratze123.heavyspleef.hooks.HookManager;
 import me.matzefratze123.heavyspleef.hooks.TagAPIHook;
 import me.matzefratze123.heavyspleef.listener.HUBPortalListener;
-import me.matzefratze123.heavyspleef.listener.InventoryListener;
 import me.matzefratze123.heavyspleef.listener.PVPTimerListener;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
 import me.matzefratze123.heavyspleef.listener.QueuesListener;
@@ -51,23 +47,18 @@ import me.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
 import me.matzefratze123.heavyspleef.util.InventoryMenu;
 import me.matzefratze123.heavyspleef.util.LanguageHandler;
 import me.matzefratze123.heavyspleef.util.Metrics;
-import me.matzefratze123.heavyspleef.util.PlayerState;
 import me.matzefratze123.heavyspleef.util.Updater;
 import me.matzefratze123.heavyspleef.util.ViPManager;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.tag.TagAPI;
 
 public class HeavySpleef extends JavaPlugin {
 		
-	private SelectionManager sel;
-	public HashMap<String, PlayerState> playerStates = new HashMap<String, PlayerState>();
+	private SelectionManager selectionManager;
 	
 	public static FileConfig config;
 	public static HeavySpleef instance;
@@ -79,7 +70,7 @@ public class HeavySpleef extends JavaPlugin {
 	public IStatisticDatabase statisticDatabase;
 	
 	public static String[] commands = new String[] {"/spleef", "/hs", "/hspleef"};
-	public static InventoryMenu selector = null;
+	private InventoryMenu menu;
 	
 	public int saverTid = -1;
 	public int antiCampTid = -1;
@@ -98,7 +89,7 @@ public class HeavySpleef extends JavaPlugin {
 		config = new FileConfig(this);
 		
 		hooks = HookManager.getInstance();
-		sel = new SelectionManager();
+		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
 		pluginFile = this.getFile();
@@ -106,19 +97,20 @@ public class HeavySpleef extends JavaPlugin {
 		
 		LanguageHandler.loadLanguageFiles();
 		ViPManager.initVips();
-		setupInventory();
 		
-		this.setupStatisticDatabase();
-		this.statisticDatabase.load();
+		menu = new InventoryMenu(LanguageHandler._("inventory"), this);
+		
+		setupStatisticDatabase();
+		statisticDatabase.load();
 		
 		//Start metrics
-		this.startMetrics();
+		startMetrics();
 		
-		this.initUpdate();
-		this.registerEvents();
-		this.getCommand("spleef").setExecutor(new CommandHandler());
+		initUpdate();
+		registerEvents();
+		getCommand("spleef").setExecutor(new CommandHandler());
 		
-		this.startAntiCampingTask();
+		startAntiCampingTask();
 		
 		CommandHandler.initCommands();
 		CommandHandler.setPluginInstance(this);
@@ -140,37 +132,6 @@ public class HeavySpleef extends JavaPlugin {
 		return instance.getConfig();
 	}
 	
-	private void setupInventory() {
-		InventoryMenu.registerListener(new InventoryListener());
-		selector = new InventoryMenu(this, LanguageHandler._("inventory"), GameManager.getGames().length);
-		Game[] games = GameManager.getGames();
-		
-		for (int i = 0; i < games.length && i < InventoryMenu.roundToSlot(games.length); i++) {
-			selector.addItemStack(getInventoryShovel(games[i]), i);
-		}
-	}
-	
-	public void refreshInventory() {
-		Game[] games = GameManager.getGames();
-		selector.setSize(games.length);
-		selector.clear();
-		
-		for (int i = 0; i < games.length && i < InventoryMenu.roundToSlot(games.length); i++) {
-			selector.addItemStack(getInventoryShovel(games[i]), i);
-		}
-	}
-	
-	private ItemStack getInventoryShovel(Game game) {
-		ItemStack stack = new ItemStack(Material.DIAMOND_SPADE);
-		ItemMeta meta = stack.getItemMeta();
-		
-		meta.setDisplayName(ChatColor.GRAY + "Join " + ChatColor.GOLD + game.getName());
-		
-		stack.setItemMeta(meta);
-		
-		return stack;
-	}
-	
 	private void setupStatisticDatabase() {
 		String type = this.getConfig().getString("statistic.dbType");
 		
@@ -189,7 +150,7 @@ public class HeavySpleef extends JavaPlugin {
 	}
 	
 	public SelectionManager getSelectionManager() {
-		return sel;
+		return selectionManager;
 	}
 	
 	private void registerEvents() {
@@ -207,7 +168,6 @@ public class HeavySpleef extends JavaPlugin {
 		
 		Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
 		if (tagAPIHook.hasHook()) {
-			System.out.println("TagEvent registered!");
 			pm.registerEvents(new TagListener(), this);
 		}
 	}
@@ -226,21 +186,21 @@ public class HeavySpleef extends JavaPlugin {
 	public void startAntiCampingTask() {
 		if (!getConfig().getBoolean("anticamping.enabled"))
 			return;
-		boolean warn = getConfig().getBoolean("anticamping.campWarn");
-		int warnAt = getConfig().getInt("anticamping.warnAt");
-		int teleportAt = getConfig().getInt("anticamping.teleportAt");
 		
-		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AntiCampingTask(warn, warnAt, teleportAt), 0L, 20L);
+		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AntiCampingTask(), 0L, 20L);
 	}
 	
 	private void startMetrics() {
 		try {
 			Metrics m = new Metrics(HeavySpleef.this);
 			m.start();
-			HeavySpleef.this.getLogger().info("Metrics started...");
 		} catch (IOException e) {
 			HeavySpleef.this.getLogger().info("An error occured while submitting stats to metrics...");
 		}
+	}
+	
+	public InventoryMenu getInventoryMenu() {
+		return menu;
 	}
 	
 }

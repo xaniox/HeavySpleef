@@ -59,6 +59,7 @@ public class Parser {
 	public static Location convertStringtoLocation(String s) {
 		if (s == null || s.isEmpty() || s.equalsIgnoreCase("null"))
 			return null;
+		
 		String[] split = s.split(",");
 		
 		World world = Bukkit.getWorld(split[0]);
@@ -71,8 +72,9 @@ public class Parser {
 			if (f.exists()) {
 				Bukkit.getServer().createWorld(new WorldCreator(split[0]));
 				world = Bukkit.getWorld(split[0]);
-			} else
+			} else {
 				return null;
+			}
 		}
 		
 		if (split.length > 4) {

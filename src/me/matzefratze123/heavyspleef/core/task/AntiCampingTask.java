@@ -1,102 +1,133 @@
-/**
- *   HeavySpleef - The simple spleef plugin for bukkit
- *   
- *   Copyright (C) 2013 matzefratze123
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package me.matzefratze123.heavyspleef.core.task;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import me.matzefratze123.heavyspleef.core.GameCuboid;
+import me.matzefratze123.heavyspleef.HeavySpleef;
+import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameManager;
+import me.matzefratze123.heavyspleef.core.GameState;
+import me.matzefratze123.heavyspleef.core.region.Floor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class AntiCampingTask implements Runnable {
-
-	private boolean warn;
+	
+	private static boolean taskEnabled = false;
+	
+	private boolean warnUser;
 	private int     warnAt;
 	private int     teleportAt;
 	
-	
 	private Map<String, Location> lastLocation = new HashMap<String, Location>();
+	private Map<String, Integer> antiCamping = new HashMap<String, Integer>();
 	
-	public AntiCampingTask(boolean warn, int warnAt, int teleportAt) {
-		this.warn = warn;
-		this.warnAt = warnAt;
-		this.teleportAt = teleportAt;
+	public AntiCampingTask() {
+		if (taskEnabled)
+			throw new IllegalStateException("Cannot start AntiCampingTask twice!");
+		
+		taskEnabled = true;
+		
+		//Get config values
+		warnAt = HeavySpleef.getSystemConfig().getInt("anticamping.warnAt", 3);
+		warnUser = HeavySpleef.getSystemConfig().getBoolean("anticamping.campWarn", true);
+		teleportAt = HeavySpleef.getSystemConfig().getInt("anticamping.teleportAt", 6);
 	}
 	
 	@Override
 	public void run() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (!GameManager.isInAnyGameIngame(p))
+		//Check every player
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			//Goto the next player when he is not ingame
+			if (!GameManager.isInAnyGame(player))
 				continue;
-			if (GameManager.antiCamping.containsKey(p.getName())) {
-				int current = GameManager.antiCamping.get(p.getName());
-				compareLocations(p, current);
-				lastLocation.put(p.getName(), p.getLocation());
-			} else {
-				int current = 0;
-				compareLocations(p, current);	
-				lastLocation.put(p.getName(), p.getLocation());
+			
+			Game game = GameManager.fromPlayer(player);
+			if (game.getGameState() != GameState.INGAME)
+				continue;
+			
+			//Get the base value
+			int current = antiCamping.containsKey(player.getName()) ? antiCamping.get(player.getName()) : 0;
+			
+			if (lastLocation.containsKey(player.getName())) {
+				Location last = lastLocation.get(player.getName());
+				Location now = player.getLocation();
+				
+				//Compare the differences of the last location
+				double differenceX = last.getX() < now.getX() ? now.getX() - last.getX() : last.getX() - now.getX();
+				double differenceZ = last.getZ() < now.getZ() ? now.getZ() - last.getZ() : last.getZ() - now.getZ();
+				
+				if ((differenceX < 1.0 && differenceZ < 1.0) || player.isSneaking()) {
+					//Add one second to map
+					current++;
+					
+					if (current == warnAt && warnUser)
+						player.sendMessage(Game._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
+					
+					if (current >= teleportAt) {
+						teleportDown(player);
+						antiCamping.remove(player.getName());
+					} else {
+						antiCamping.put(player.getName(), current);
+					}
+				} else {
+					antiCamping.remove(player.getName());
+				}
+				
+			}
+			
+			lastLocation.put(player.getName(), player.getLocation());
+		}
+	}
+	
+	private void teleportDown(Player player) {
+		Location location = player.getLocation();
+		
+		Game game = GameManager.fromPlayer(player);
+		if (game == null)
+			return;
+		
+		List<Floor> floors = new ArrayList<Floor>(game.getFloors());
+		Floor nearestFloor = null;
+		
+		//Calculate the nearest floor
+		for (Floor floor : floors) {
+			if (floor.getY() > location.getY())
+				continue;
+			
+			if (nearestFloor == null) {
+				nearestFloor = floor;
+				continue;
+			}
+			
+			if (location.getY() - floor.getY() < location.getY() - nearestFloor.getY())
+				nearestFloor = floor;
+		}
+		
+		if (nearestFloor == null)
+			return;
+		Collections.sort(floors);
+		for (int i = 0; i < floors.size(); i++) {
+			//Check if the player is at the last floor
+			if (i == 0 && nearestFloor.getY() == floors.get(i).getY()) {
+				player.teleport(player.getLocation().clone().add(0, -1, 0));
+				player.sendMessage(Game._("antiCampTeleport"));
+				return;
+			} else if (floors.get(i).getY() == nearestFloor.getY()){
+				Location cloned = player.getLocation();
+				cloned.setY(floors.get(i - 1).getY() + 1.25);
+				
+				player.teleport(cloned);
+				player.sendMessage(Game._("antiCampTeleport"));
+				return;
 			}
 			
 		}
 	}
 	
-	private void compareLocations(Player p, int current) {
-		if (lastLocation.containsKey(p.getName())) {
-			Location last = lastLocation.get(p.getName());
-			Location now = p.getLocation();
-			
-			double differenceX = last.getX() < now.getX() ? now.getX() - last.getX() : last.getX() - now.getX();
-			double differenceZ = last.getZ() < now.getZ() ? now.getZ() - last.getZ() : last.getZ() - now.getZ();
-			
-			if ((differenceX < 1.0D && differenceZ < 1.0D) || p.isSneaking())
-				addSecond(current, p);
-			else
-				GameManager.antiCamping.put(p.getName(), 0);
-		}
-	}
-	
-	private void addSecond(int current, Player p) {
-		current++;
-		
-		if (current == this.warnAt) {
-			if (this.warn)
-				p.sendMessage(GameCuboid._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
-		} else if (current >= this.teleportAt) {
-			p.sendMessage(GameCuboid._("antiCampTeleport"));
-			teleportDown(p);
-			GameManager.antiCamping.put(p.getName(), 0);
-			return;
-		}
-		GameManager.antiCamping.put(p.getName(), current);
-		lastLocation.put(p.getName(), p.getLocation());
-	}
-	
-	private void teleportDown(Player p) {
-		Location loc = p.getLocation();
-		loc.setY(loc.getY() - 2);
-		p.teleport(loc);
-	}
-
 }

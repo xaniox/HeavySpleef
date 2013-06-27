@@ -27,7 +27,7 @@ import org.bukkit.Material;
 
 public class Util {
 
-	public static String getName(String str) {
+	public static String toFriendlyString(String str) {
 		str = str.toLowerCase();
 		
 		String[] parts = str.split("_");
@@ -55,7 +55,7 @@ public class Util {
 	 * @param s The string
 	 * @return The material specified by this string. If there is no Material the return is null
 	 */
-	public static Material getFromName(String s) {
+	public static Material getMaterialFromName(String s) {
 		if (s == null)
 			return null;
 		Material mat;
@@ -81,14 +81,14 @@ public class Util {
 	 * @param str The string
 	 * @return A simpleblockdata objects that contains the material and data
 	 */ 
-	public static SimpleBlockData fromString(String str, boolean onlySolid) {
+	public static SimpleBlockData getMaterialFromString(String str, boolean onlySolid) {
 		if (str == null)
 			return null;
 		String[] parts = str.split(":");
 		
 		if (parts.length < 1)
 			return null;
-		Material m = getFromName(parts[0]);
+		Material m = getMaterialFromName(parts[0]);
 		if (m == null)
 			return null;
 		if (!SimpleBlockData.isSolid(m.getId()) && onlySolid)
@@ -118,6 +118,35 @@ public class Util {
 		set.add((byte)11);
 		
 		return set;
+	}
+	
+	public static String toFriendlyString(Iterable<?> iterable, String seperator) {
+		Iterator<?> iter = iterable.iterator();
+		StringBuilder builder = new StringBuilder();
+		
+		while(iter.hasNext()) {
+			Object next = iter.next();
+			
+			builder.append(next);
+			if (iter.hasNext())
+				builder.append(seperator);
+		}
+		
+		return builder.toString();
+	}
+	
+	public static String toFriendlyString(Object[] o, String seperator) {
+		StringBuilder builder = new StringBuilder();
+		
+		for (int i = 0; i < o.length; i++) {
+			Object next = o[i];
+			
+			builder.append(next);
+			if (o.length >= i + 2)
+				builder.append(seperator);
+		}
+		
+		return builder.toString();
 	}
 
 }

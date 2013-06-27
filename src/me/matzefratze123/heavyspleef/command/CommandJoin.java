@@ -50,7 +50,8 @@ public class CommandJoin extends HSCommand {
 				player.sendMessage(getUsage());
 				return;
 			}
-			HeavySpleef.selector.open(player);
+			
+			HeavySpleef.instance.getInventoryMenu().open(player);
 			return;
 		}
 		
@@ -60,10 +61,11 @@ public class CommandJoin extends HSCommand {
 		}
 		Game game = GameManager.getGame(args[0].toLowerCase());
 		
-		if (!player.hasPermission(Permissions.JOIN_GAME.getPerm())
-		 && !player.hasPermission(Permissions.JOIN_GAME.getPerm() + "." + game.getName())) {
-			player.sendMessage(LanguageHandler._("noPermission"));
-			return;
+		if (!player.hasPermission(Permissions.JOIN_GAME.getPerm())) {
+			if (!player.hasPermission(Permissions.JOIN_GAME.getPerm() + "." + game.getName().toLowerCase())) {
+				player.sendMessage(LanguageHandler._("noPermission"));
+				return;
+			}
 		}
 		
 		if (args.length == 1) {

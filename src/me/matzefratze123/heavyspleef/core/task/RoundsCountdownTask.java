@@ -23,7 +23,7 @@ import static me.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.command.HSCommand;
-import me.matzefratze123.heavyspleef.configuration.ConfigUtil;
+import me.matzefratze123.heavyspleef.config.ConfigUtil;
 import me.matzefratze123.heavyspleef.core.Game;
 import me.matzefratze123.heavyspleef.core.GameState;
 import org.bukkit.Bukkit;

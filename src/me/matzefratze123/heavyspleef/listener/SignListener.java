@@ -88,7 +88,7 @@ public class SignListener implements Listener {
 					return;
 				}
 				
-				line4 = color + Util.getName(line4);
+				line4 = color + Util.toFriendlyString(line4);
 			}
 			
 			p.sendMessage(Game._("spleefSignCreated"));
@@ -163,7 +163,7 @@ public class SignListener implements Listener {
 					return;
 				}
 				
-				HeavySpleef.selector.open(p);
+				HeavySpleef.instance.getInventoryMenu().open(p);
 				return;
 			} else {
 				if (!GameManager.hasGame(line3)) {

@@ -37,13 +37,14 @@ import me.matzefratze123.heavyspleef.api.event.SpleefFinishEvent;
 import me.matzefratze123.heavyspleef.api.event.SpleefJoinEvent;
 import me.matzefratze123.heavyspleef.api.event.SpleefLoseEvent;
 import me.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
-import me.matzefratze123.heavyspleef.configuration.ConfigUtil;
+import me.matzefratze123.heavyspleef.config.ConfigUtil;
 import me.matzefratze123.heavyspleef.core.flag.Flag;
 import me.matzefratze123.heavyspleef.core.flag.FlagType;
 import me.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 import me.matzefratze123.heavyspleef.core.region.Floor;
 import me.matzefratze123.heavyspleef.core.region.FloorType;
 import me.matzefratze123.heavyspleef.core.region.LoseZone;
+import me.matzefratze123.heavyspleef.core.task.RegenerationTask;
 import me.matzefratze123.heavyspleef.core.task.RoundsCountdownTask;
 import me.matzefratze123.heavyspleef.core.task.StartCountdownTask;
 import me.matzefratze123.heavyspleef.core.task.TimeoutTask;
@@ -104,9 +105,7 @@ public abstract class Game {
 	protected Map<String, String> metadata = new HashMap<String, String>();
 	
 	public static Map<String, Integer> pvpTimerTasks = new HashMap<String, Integer>();
-	
-	public    Map<String, List<Block>> brokenBlocks = new HashMap<String, List<Block>>();
-	
+	public Map<String, List<Block>> brokenBlocks = new HashMap<String, List<Block>>();
 	protected GameState state;
 	
 	//The minecraft sidebar scoreboard
@@ -115,6 +114,7 @@ public abstract class Game {
 	public int tid = -1;
 	public int roundTid = -1;
 	public int timeoutTid = -1;
+	public int floorRegenTid = -1;
 	
 	protected int jackpot = 0;
 	protected int currentCountdown = 0;
@@ -262,11 +262,16 @@ public abstract class Game {
 			}
 		}
 		
+		int regeneration = getFlag(REGEN_INTERVALL);
+		
+		if (regeneration > 0)
+			this.floorRegenTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new RegenerationTask(this), regeneration * 20L, regeneration * 20L);
+		
 		tellAll(_("gameHasStarted"));
 		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast("game-start-info"));
 		broadcast(_("startedGameWith", String.valueOf(players.size())), ConfigUtil.getBroadcast("game-start-info"));
 		updateWalls();
-		cancelSTTask();
+		cancelStartCountdownTask();
 	}
 	
 	/**
@@ -276,6 +281,7 @@ public abstract class Game {
 		cancelTasks(); 
 		
 		for (Player p : getPlayers()) {
+			players.remove(p.getName());
 			
 			if (getFlag(LOSE) == null) p.teleport(LocationSaver.load(p));
 			else p.teleport(getFlag(LOSE));
@@ -446,7 +452,7 @@ public abstract class Game {
 				if (getFlag(TEAM)) {
 					if (team != null) {
 						team.join(player);
-						broadcast(_("playerJoinedTeam", player.getName(), team.getColor() + Util.getName(team.getColor().name())), ConfigUtil.getBroadcast("player-join"));
+						broadcast(_("playerJoinedTeam", player.getName(), team.getColor() + Util.toFriendlyString(team.getColor().name())), ConfigUtil.getBroadcast("player-join"));
 						if (HookManager.getInstance().getService(TagAPIHook.class).hasHook())
 							TagListener.setTag(player, team.getColor());
 					} else {
@@ -566,7 +572,12 @@ public abstract class Game {
 		broadcast(getLoseMessage(cause, player), ConfigUtil.getBroadcast("player-lose"));
 		
 		players.remove(player.getName());
+		Team team = getTeam(player);
 		removePlayerFromTeam(player);
+		if (team != null && !team.hasPlayersLeft()) {
+			broadcast(_("teamEliminated", team.getColor() + Util.toFriendlyString(team.getColor().name())), ConfigUtil.getBroadcast("player-lose"));
+		}
+		
 		if (isIngame()) {
 			outPlayers.add(player.getName());
 			broadcast(_("remaining", String.valueOf(players.size())), ConfigUtil.getBroadcast("knockouts"));
@@ -581,11 +592,6 @@ public abstract class Game {
 		voted.remove(player.getName());
 		updateSidebarScoreboard();
 		
-		for (Team team : teams) {
-			if (team.hasPlayer(player))
-				team.leave(player);
-		}
-		
 		if (HookManager.getInstance().getService(TagAPIHook.class).hasHook())
 			TagListener.setTag(player, null);
 		PlayerStateManager.restorePlayerState(player);
@@ -593,7 +599,7 @@ public abstract class Game {
 			for (ItemStack stack : getFlag(LOSEREWARD)) {
 				ItemStack newStack = stack.getData().toItemStack(stack.getAmount());
 				player.getInventory().addItem(newStack);
-				player.sendMessage(_("loserewardReceived", String.valueOf(newStack.getAmount()), Util.getName(newStack.getType().name())));
+				player.sendMessage(_("loserewardReceived", String.valueOf(newStack.getAmount()), Util.toFriendlyString(newStack.getType().name())));
 			}
 		}
 		
@@ -604,8 +610,8 @@ public abstract class Game {
 			if (getFlag(TEAM)) {
 				int teamsLeft = 0;
 				
-				for (Team team : teams) {
-					if (team.hasPlayersLeft())
+				for (Team t : teams) {
+					if (t.hasPlayersLeft())
 						teamsLeft++;
 				}
 				
@@ -889,7 +895,7 @@ public abstract class Game {
 		clearJackpot();
 		clearAll();
 		removeBoxes();
-		broadcast(_("teamWin", team.getColor() + Util.getName(team.getColor().name()), getName()), ConfigUtil.getBroadcast("win"));
+		broadcast(_("teamWin", team.getColor() + Util.toFriendlyString(team.getColor().name()), getName()), ConfigUtil.getBroadcast("win"));
 		cancelTasks();
 		setGameState(GameState.JOINABLE);
 		updateScoreBoards();
@@ -950,7 +956,7 @@ public abstract class Game {
 			
 			String killerName = "";
 			
-			Player killer = Bukkit.getPlayer(getKiller(player, false));
+			Player killer = Bukkit.getPlayer(getKiller(player, true));
 			if (killer == null)
 				return _("loseCause_lose_unknown", team.getColor() + player.getName());
 			
@@ -1007,6 +1013,8 @@ public abstract class Game {
 	 * @param player The playername to add
 	 */
 	public void addKnockout(final String player) {
+		if (player == null)
+			return;
 		if (knockouts.containsKey(player))
 			knockouts.put(player, knockouts.get(player) + 1);
 		else
@@ -1320,6 +1328,7 @@ public abstract class Game {
 	/**
 	 * Setup the floors of this game and creates all of this floors
 	 */
+	@SuppressWarnings("deprecation")
 	private void prepareGame() {
 		regen();
 		this.jackpot = 0;
@@ -1329,11 +1338,13 @@ public abstract class Game {
 			for (Player p : getPlayers()) {
 				//Give players the shovel...
 				p.getInventory().addItem(getSpleefShovel());
+				p.updateInventory();
 			}
 		} else if (getFlag(SHEARS)) {
 			for (Player p : getPlayers()) {
 				//Give the players the shear
 				p.getInventory().addItem(getSpleefShear());
+				p.updateInventory();
 			}
 		}
 	}
@@ -1543,12 +1554,13 @@ public abstract class Game {
 	}
 	
 	protected void cancelTasks() {
-		cancelSTTask();
-		cancelRCTask();
-		cancelTOTask();
+		cancelStartCountdownTask();
+		cancelRoundTask();
+		cancelTimeoutTask();
+		cancelFloorRegenerationTask();
 	}
 	
-	protected void cancelRCTask() {
+	protected void cancelRoundTask() {
 		if ((Bukkit.getScheduler().isQueued(this.roundTid) || Bukkit.getScheduler().isCurrentlyRunning(this.roundTid)) && roundTid != -1) {
 			Bukkit.getScheduler().cancelTask(this.roundTid);
 			this.roundTid = -1;
@@ -1558,17 +1570,24 @@ public abstract class Game {
 	/**
 	 * Internal method. Don't call this
 	 */
-	public void cancelSTTask() {
+	public void cancelStartCountdownTask() {
 		if ((Bukkit.getScheduler().isQueued(this.tid) || Bukkit.getScheduler().isCurrentlyRunning(this.tid)) && tid != -1) {
 			Bukkit.getScheduler().cancelTask(this.tid);
 			this.tid = -1;
 		}
 	}
 	
-	protected void cancelTOTask() {
+	protected void cancelTimeoutTask() {
 		if ((Bukkit.getScheduler().isQueued(this.timeoutTid) || Bukkit.getScheduler().isCurrentlyRunning(this.timeoutTid)) && timeoutTid != -1) {
 			Bukkit.getScheduler().cancelTask(this.timeoutTid);
 			this.timeoutTid = -1;
+		}
+	}
+	
+	protected void cancelFloorRegenerationTask() {
+		if ((Bukkit.getScheduler().isQueued(this.floorRegenTid) || Bukkit.getScheduler().isCurrentlyRunning(this.floorRegenTid)) && this.floorRegenTid != -1) {
+			Bukkit.getScheduler().cancelTask(this.floorRegenTid);
+			this.floorRegenTid = -1;
 		}
 	}
 	
@@ -1745,7 +1764,7 @@ public abstract class Game {
 		if (getFlag(TEAM)) {
 			//Add team scores
 			for (Team team : getTeams()) {
-				Score score = objective.getScore(Bukkit.getOfflinePlayer(team.getColor() + Util.getName(team.getColor().name())));
+				Score score = objective.getScore(Bukkit.getOfflinePlayer(team.getColor() + Util.toFriendlyString(team.getColor().name())));
 				score.setScore(0);
 			}
 		} else {
@@ -1790,7 +1809,7 @@ public abstract class Game {
 		
 		if (getFlag(TEAM)) {
 			for (Team team : teams) {
-				OfflinePlayer teamSlot = Bukkit.getOfflinePlayer(team.getColor() + Util.getName(team.getColor().name()));
+				OfflinePlayer teamSlot = Bukkit.getOfflinePlayer(team.getColor() + Util.toFriendlyString(team.getColor().name()));
 				
 				if (!team.hasPlayersLeft()) {
 					if (board.getPlayers().contains(teamSlot)) {
@@ -1989,7 +2008,7 @@ public abstract class Game {
 	public Set<String> getTeamColors() {
 		Set<String> set = new HashSet<String>();
 		for (Team team : teams)
-			set.add(team.getColor() + Util.getName(team.getColor().name()));
+			set.add(team.getColor() + Util.toFriendlyString(team.getColor().name()));
 		
 		return set;
 	}
@@ -2013,7 +2032,7 @@ public abstract class Game {
 		for (ItemStack stack : getFlag(ITEMREWARD)) {
 			ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
 			player.getInventory().addItem(newStack);
-			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.getName(stack.getType().name())));
+			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.toFriendlyString(stack.getType().name())));
 		}
 		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook()) {
 			Economy econ = HeavySpleef.hooks.getService(VaultHook.class).getHook();

@@ -88,14 +88,10 @@ public class CommandAddFloor extends HSCommand {
 		} else if (args[0].equalsIgnoreCase("given")) { //Given floor
 			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
-					if (!game.contains(block)) {
-						System.out.println("game not contains, " + game.getName());
+					if (!game.contains(block))
 						continue;
-					}
-					if (game.getType() != GameType.CYLINDER) {
-						System.out.println("no cylinder game?");
+					if (game.getType() != GameType.CYLINDER) 
 						continue;
-					}
 					GameCylinder cylGame = (GameCylinder) game;
 					Location center = cylGame.getCenter();
 					
@@ -121,7 +117,7 @@ public class CommandAddFloor extends HSCommand {
 			addGivenFloor(game, player, loc1, loc2);
 			return;
 		} else {//Specified floor!
-			SimpleBlockData data = Util.fromString(args[0], true);
+			SimpleBlockData data = Util.getMaterialFromString(args[0], true);
 			if (data == null) {
 				player.sendMessage(_("invalidBlock"));
 				return;

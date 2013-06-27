@@ -61,7 +61,7 @@ public class CommandAddTeam extends HSCommand {
 		}
 		
 		game.addTeam(color);
-		player.sendMessage(_("teamAdded", color + Util.getName(color.name())));
+		player.sendMessage(_("teamAdded", color + Util.toFriendlyString(color.name())));
 	}
 
 }

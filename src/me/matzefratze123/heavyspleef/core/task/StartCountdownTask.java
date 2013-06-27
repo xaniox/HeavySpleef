@@ -20,7 +20,7 @@
 package me.matzefratze123.heavyspleef.core.task;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.configuration.ConfigUtil;
+import me.matzefratze123.heavyspleef.config.ConfigUtil;
 import me.matzefratze123.heavyspleef.core.Game;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -42,7 +42,7 @@ public class StartCountdownTask extends AbstractCountdown {
 	
 	@Override
 	public void onInterrupt() {
-		game.cancelSTTask();
+		game.cancelStartCountdownTask();
 	}
 	
 	@Override

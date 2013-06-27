@@ -30,7 +30,7 @@ import org.bukkit.entity.Player;
  * @see IntegerFlag
  * @see BooleanFlag
  * @see EnumFlag
- * @see ItemStackFlag
+ * @see ArrayItemStackFlag
  * @see LocationFlag
  * 
  * @author matzefratze123
@@ -40,6 +40,7 @@ import org.bukkit.entity.Player;
 public abstract class Flag<T> implements DatabaseSerializeable<T> {
 
 	T defaulte;
+	String[] aliases;
 	
 	protected String name;
 	
@@ -50,6 +51,14 @@ public abstract class Flag<T> implements DatabaseSerializeable<T> {
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public void setAliases(String[] aliases) {
+		this.aliases = aliases;
+	}
+	
+	public String[] getAliases() {
+		return this.aliases;
 	}
 	
 	public abstract T parse(Player player, String input);

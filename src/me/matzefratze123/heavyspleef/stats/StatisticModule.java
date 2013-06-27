@@ -29,7 +29,7 @@ import me.matzefratze123.heavyspleef.HeavySpleef;
  * @author matzefratze123
  */
 public class StatisticModule implements Comparable<StatisticModule> {
-
+	
 	/**
 	 * The owner of the statistic
 	 */
@@ -148,6 +148,8 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addWin() {
 		wins++;
+		if (StatisticManager.pushOnChange)
+			StatisticManager.push(true);
 	}
 	
 	/**
@@ -155,6 +157,8 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addLose() {
 		loses++;
+		if (StatisticManager.pushOnChange)
+			StatisticManager.push(true);
 	}
 	
 	/**
@@ -162,6 +166,8 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addKnockout() {
 		knockouts++;
+		if (StatisticManager.pushOnChange)
+			StatisticManager.push(true);
 	}
 	
 	/**
@@ -169,6 +175,8 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addGame() {
 		gamesPlayed++;
+		if (StatisticManager.pushOnChange)
+			StatisticManager.push(true);
 	}
 
 	@Override
@@ -188,4 +196,5 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		d = Math.round(d);
 		return d / 10000.0D;
 	}
+	
 }

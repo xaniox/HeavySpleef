@@ -20,9 +20,7 @@
 package me.matzefratze123.heavyspleef.core;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
 import me.matzefratze123.heavyspleef.core.region.HUBPortal;
@@ -36,8 +34,6 @@ public class GameManager {
 	//Main core list that contains ALL games!
 	public static List<Game> games = new ArrayList<Game>();
 	public static List<String> renamedGames = new ArrayList<String>();
-	
-	public static Map<String, Integer> antiCamping = new HashMap<String, Integer>();
 	
 	public static Location spleefHub = null;
 	public static List<HUBPortal> portals = new ArrayList<HUBPortal>();

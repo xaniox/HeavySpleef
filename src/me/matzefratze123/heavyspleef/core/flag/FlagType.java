@@ -20,12 +20,14 @@
 package me.matzefratze123.heavyspleef.core.flag;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import me.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public enum FlagType {
@@ -33,8 +35,9 @@ public enum FlagType {
 	INTEGER_FLAG(0),
 	LOCATION_FLAG(1),
 	BOOLEAN_FLAG(2),
-	ITEMSTACK_FLAG(3),
-	ENUM_FLAG(4);
+	ARRAY_ITEMSTACK_FLAG(3),
+	ENUM_FLAG(4),
+	SINGLE_ITEMsTACK_FLAG(5);
 	
 	private int internalId;
 	
@@ -46,54 +49,103 @@ public enum FlagType {
 		return this.internalId;
 	}
 	
+	public static Set<Flag<?>> customFlags = new HashSet<Flag<?>>();
+	
+	@FlagData(aliases = {"winpoint"})
 	public static final LocationFlag WIN = new LocationFlag("win");
+	@FlagData(aliases = {"losepoint"})
 	public static final LocationFlag LOSE = new LocationFlag("lose");
+	@FlagData(aliases = {"lobbypoint"})
 	public static final LocationFlag LOBBY = new LocationFlag("lobby");
+	@FlagData
 	public static final LocationFlag QUEUELOBBY = new LocationFlag("queuelobby");
+	@FlagData
 	public static final LocationFlag SPAWNPOINT1 = new LocationFlag("spawnpoint1");
+	@FlagData
 	public static final LocationFlag SPAWNPOINT2 = new LocationFlag("spawnpoint2");
+	@FlagData(aliases = {"spectatepoint"})
 	public static final LocationFlag SPECTATE = new LocationFlag("spectate");
 	
+	@FlagData(aliases = {"min"})
 	public static final IntegerFlag MINPLAYERS = new IntegerFlag("minplayers", 2);
+	@FlagData(aliases = {"max"})
 	public static final IntegerFlag MAXPLAYERS = new IntegerFlag("maxplayers", 0);
+	@FlagData
 	public static final IntegerFlag AUTOSTART = new IntegerFlag("autostart", 0);
+	@FlagData
 	public static final IntegerFlag COUNTDOWN = new IntegerFlag("countdown", 10);
+	@FlagData
 	public static final IntegerFlag JACKPOTAMOUNT = new IntegerFlag("jackpotamount", 0);
+	@FlagData
 	public static final IntegerFlag REWARD = new IntegerFlag("reward", 0);
+	@FlagData
 	public static final IntegerFlag CHANCES = new IntegerFlag("chances", 0);
+	@FlagData
 	public static final IntegerFlag TIMEOUT = new IntegerFlag("timeout", 0);
+	@FlagData
 	public static final IntegerFlag ROUNDS = new IntegerFlag("rounds", 3);
+	@FlagData(aliases = {"regeneration-intervall", "regeneration", "regen-intervall"})
+	public static final IntegerFlag REGEN_INTERVALL = new IntegerFlag("regen", -1);
 	
+	@FlagData
 	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1", false);
+	@FlagData(aliases = {"shovel"})
 	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels", false);
+	@FlagData
 	public static final BooleanFlag SHEARS = new BooleanFlag("shears", false);
+	@FlagData(aliases = {"teamgame"})
 	public static final BooleanFlag TEAM = new BooleanFlag("team", false);
 	
-	public static final ItemStackFlag ITEMREWARD = new ItemStackFlag("itemreward", new ItemStack[]{});
-	public static final ItemStackFlag LOSEREWARD = new ItemStackFlag("losereward", new ItemStack[]{});
+	@FlagData
+	public static final ArrayItemStackFlag ITEMREWARD = new ArrayItemStackFlag("itemreward", new ItemStack[]{});
+	@FlagData
+	public static final ArrayItemStackFlag LOSEREWARD = new ArrayItemStackFlag("losereward", new ItemStack[]{});
+	@FlagData
+	public static final SingleItemStackFlag ICON = new SingleItemStackFlag("icon", new ItemStack(Material.DIAMOND_SPADE));
 	
+	@FlagData
 	public static final EnumFlag<Difficulty> DIFFICULTY = new EnumFlag<Difficulty> ("difficulty", Difficulty.class, Difficulty.MEDIUM);
 	
 	public static List<Flag<?>> getFlagList() {
 		List<Flag<?>> flags = new ArrayList<Flag<?>>();
+		flags.addAll(customFlags);
 		
 		try {
 			//Using java reflection here
 			Field[] fields = FlagType.class.getDeclaredFields();
 			for (Field field : fields) {
 				field.setAccessible(true);
-				if (!Modifier.isStatic(field.getModifiers()))
+				FlagData data = (FlagData) field.getAnnotation(FlagData.class);
+				if (data == null)
 					continue;
+				
 				Object value = field.get(null);
 				if (!(value instanceof Flag<?>))
 					continue;
+				
 				Flag<?> flag = (Flag<?>)value;
+				flag.setAliases(data.aliases());
 				flags.add(flag);
 			}
 		
 		} catch (IllegalAccessException e) {}
 		
 		return flags;
+	}
+	
+	/**
+	 * Registeres a flag for spleef arenas
+	 * 
+	 * Your flag has to extend the Flag classes
+	 * 
+	 * @see IntegerFlag
+	 * @see BooleanFlag
+	 * @see EnumFlag
+	 * @see ArrayItemStackFlag
+	 * @see LocationFlag
+	 */
+	public static void registerFlag(Flag<?> flag) {
+		customFlags.add(flag);
 	}
 	
 	public static Flag<?> byName(String name) {

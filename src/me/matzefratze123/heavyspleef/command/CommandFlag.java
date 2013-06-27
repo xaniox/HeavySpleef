@@ -54,11 +54,24 @@ public class CommandFlag extends HSCommand {
 		boolean found = false;
 		Flag<?> flag = null;
 		
-		for (Flag<?> f : FlagType.getFlagList()) {
+		flags: for (Flag<?> f : FlagType.getFlagList()) {
 			if (f.getName().equalsIgnoreCase(args[1])) {
 				found = true;
 				flag = f;
 				break;
+			} else {
+				//Check the aliases
+				String[] aliases = f.getAliases();
+				if (aliases == null) //Aliases null, continue
+					continue;
+				
+				for (String alias : aliases) {
+					if (alias.equalsIgnoreCase(args[1])) {
+						found = true;
+						flag = f;
+						break flags;
+					}
+				}
 			}
 		}
 		

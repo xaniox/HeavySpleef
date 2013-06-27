@@ -20,7 +20,7 @@
 package me.matzefratze123.heavyspleef.stats;
 
 public interface IStatisticDatabase {
-
+	
 	public void save();
 	
 	public void load();

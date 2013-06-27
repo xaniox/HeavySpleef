@@ -33,9 +33,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-public class ItemStackFlag extends Flag<ItemStack[]> {
+public class ArrayItemStackFlag extends Flag<ItemStack[]> {
 
-	public ItemStackFlag(String name, ItemStack[] defaulte) {
+	public ArrayItemStackFlag(String name, ItemStack[] defaulte) {
 		super(name, defaulte);
 	}
 
@@ -46,7 +46,7 @@ public class ItemStackFlag extends Flag<ItemStack[]> {
 		
 		int count = 0;
 		for (int i = 0; i + 1 < parts.length; i += 2) {
-			SimpleBlockData datas = Util.fromString(parts[i], false);
+			SimpleBlockData datas = Util.getMaterialFromString(parts[i], false);
 			int amount = 0;
 			
 			try {
@@ -121,7 +121,7 @@ public class ItemStackFlag extends Flag<ItemStack[]> {
 		ItemStack[] stacks = (ItemStack[])value;
 		
 		for (ItemStack stack : stacks) {
-			list.add(stack.getAmount() + " " + Util.getName(stack.getType().name()));
+			list.add(stack.getAmount() + " " + Util.toFriendlyString(stack.getType().name()));
 		}
 		
 		Set<String> asSet = new HashSet<String>(list);
@@ -130,7 +130,7 @@ public class ItemStackFlag extends Flag<ItemStack[]> {
 	
 	@Override
 	public FlagType getType() {
-		return FlagType.ITEMSTACK_FLAG;
+		return FlagType.ARRAY_ITEMSTACK_FLAG;
 	}
 
 }

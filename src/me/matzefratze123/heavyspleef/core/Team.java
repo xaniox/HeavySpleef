@@ -55,12 +55,12 @@ public class Team {
 	
 	public void join(Player player) {
 		if (players.contains(player.getName())) {
-			player.sendMessage(Game._("alreadyInTeam", color + Util.getName(color.name())));
+			player.sendMessage(Game._("alreadyInTeam", color + Util.toFriendlyString(color.name())));
 			return;
 		}
 		
 		players.add(player.getName());
-		player.sendMessage(Game._("addedToTeam", color + Util.getName(color.name())));
+		player.sendMessage(Game._("addedToTeam", color + Util.toFriendlyString(color.name())));
 		
 		if (HeavySpleef.hooks.getService(TagAPIHook.class).hasHook())
 			TagAPI.refreshPlayer(player);
@@ -68,12 +68,12 @@ public class Team {
 	
 	public void leave(Player player) {
 		if (!players.contains(player.getName())) {
-			player.sendMessage(Game._("notInThisTeam", color + Util.getName(color.name())));
+			player.sendMessage(Game._("notInThisTeam", color + Util.toFriendlyString(color.name())));
 			return;
 		}
 		
 		players.remove(player.getName());
-		player.sendMessage(Game._("removedFromTeam", color + Util.getName(color.name())));
+		player.sendMessage(Game._("removedFromTeam", color + Util.toFriendlyString(color.name())));
 		
 		if (HeavySpleef.hooks.getService(TagAPIHook.class).hasHook())
 			TagAPI.refreshPlayer(player);

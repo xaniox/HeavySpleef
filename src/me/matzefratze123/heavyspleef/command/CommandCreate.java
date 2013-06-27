@@ -85,7 +85,6 @@ public class CommandCreate extends HSCommand {
 			}
 			
 			player.sendMessage(_("gameCreated"));
-			HeavySpleef.instance.refreshInventory();
 		} else if (args[1].equalsIgnoreCase("oval") || args[1].equalsIgnoreCase("ellipse"))  {
 			//Create a new ellipse game
 			if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
@@ -119,7 +118,6 @@ public class CommandCreate extends HSCommand {
 			}
 			
 			player.sendMessage(_("gameCreated"));
-			HeavySpleef.instance.refreshInventory();
 		} else if (args[1].equalsIgnoreCase("cuboid") || args[1].equalsIgnoreCase("cub")) {
 			//Create a new cuboid game
 			Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
@@ -141,7 +139,6 @@ public class CommandCreate extends HSCommand {
 			
 			GameManager.createCuboidGame(args[0].toLowerCase(), s.getFirst(), s.getSecond());
 			player.sendMessage(_("gameCreated"));
-			HeavySpleef.instance.refreshInventory();
 		} else {
 			player.sendMessage(_("unknownSpleefType"));
 		}

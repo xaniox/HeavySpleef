@@ -28,17 +28,17 @@ import org.bukkit.ChatColor;
 public class ViPManager {
 
 	//Just a list of unchangeable ViP's :P
-	public static String[] vips = new String[] {"matzefratze123", "x3Fawkesx3", "HeavyRain900", "pascalvdl", "benfire1"};
+	public static String[] baseVips = new String[] {"matzefratze123", "x3Fawkesx3", "HeavyRain900", "benfire1"};
 	
 	public static void initVips() {
 		List<String> serverVips = HeavySpleef.getSystemConfig().getStringList("general.vip");
 		
-		List<String> allVips = ArrayHelper.mergeArrays(serverVips.toArray(new String[serverVips.size()]), vips);
-		vips = allVips.toArray(new String[allVips.size()]);
+		List<String> allVips = ArrayHelper.mergeArrays(serverVips.toArray(new String[serverVips.size()]), baseVips);
+		baseVips = allVips.toArray(new String[allVips.size()]);
 	}
 	
 	public static String colorName(String str) {
-		for (String vip : vips) {
+		for (String vip : baseVips) {
 			if (vip.equalsIgnoreCase(str)) {
 				return ChatColor.DARK_RED + str;
 			}

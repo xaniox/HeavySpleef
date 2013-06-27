@@ -29,9 +29,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.matzefratze123.heavyspleef.HeavySpleef;
+
+import org.bukkit.Bukkit;
+
 public class StatisticManager {
 
-	private static Map<String, StatisticModule> statistics = new HashMap<String, StatisticModule>();
+	private static volatile Map<String, StatisticModule> statistics = new HashMap<String, StatisticModule>();
+	static boolean pushOnChange;
+	
+	static {
+		pushOnChange = HeavySpleef.getSystemConfig().getBoolean("statistic.push-on-change");
+	}
 	
 	public static StatisticModule getStatistic(String owner, boolean add) {
 		if (add && !hasStatistic(owner))
@@ -87,6 +96,27 @@ public class StatisticManager {
 		}
 		
 		return array;
+	}
+	
+	/**
+	 * Pushes all statistics to the database
+	 * </br></br>
+	 * Note that the paramater async only works if
+	 * the database type is set to mysql</br>
+	 * (Cannot use Bukkits SnakeYAML async as it is not thread-safe)
+	 */
+	public static void push(boolean async) {
+		if (HeavySpleef.getSystemConfig().getString("statistic.dbType").equalsIgnoreCase("mysql") && async) {
+			Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.instance, new Runnable() {
+				
+				@Override
+				public void run() {
+					new MySQLStatisticDatabase().save();
+				}
+			});
+		} else {
+			HeavySpleef.instance.statisticDatabase.save();
+		}
 	}
 	
 }

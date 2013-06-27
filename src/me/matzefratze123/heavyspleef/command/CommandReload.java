@@ -20,13 +20,14 @@
 package me.matzefratze123.heavyspleef.command;
 
 import me.matzefratze123.heavyspleef.HeavySpleef;
-import me.matzefratze123.heavyspleef.configuration.FileConfig;
+import me.matzefratze123.heavyspleef.config.FileConfig;
 import me.matzefratze123.heavyspleef.core.ScoreBoard;
 import me.matzefratze123.heavyspleef.listener.PlayerListener;
 import me.matzefratze123.heavyspleef.util.LanguageHandler;
 import me.matzefratze123.heavyspleef.util.Permissions;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class CommandReload extends HSCommand {
@@ -41,6 +42,8 @@ public class CommandReload extends HSCommand {
 		long millis = System.currentTimeMillis();
 		HeavySpleef.config = new FileConfig(plugin);//Create a new config if the file was deleted
 		plugin.reloadConfig();//First reload our config
+		
+		HeavySpleef.PREFIX = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("general.spleef-prefix", HeavySpleef.PREFIX));
 		
 		int antiCampTid = HeavySpleef.instance.antiCampTid;//Get the task id's
 		int saverTid = HeavySpleef.instance.saverTid;

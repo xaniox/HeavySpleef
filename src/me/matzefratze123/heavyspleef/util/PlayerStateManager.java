@@ -80,9 +80,8 @@ public class PlayerStateManager {
 		p.getInventory().remove(Material.SHEARS);
 		p.getInventory().remove(Material.DIAMOND_SPADE);
 		
-		if (!HeavySpleef.getSystemConfig().getBoolean("general.savePlayerState", true)) {
+		if (!HeavySpleef.getSystemConfig().getBoolean("general.savePlayerState", true))
 			return;
-		}
 		
 		PlayerState state = states.get(p.getName());
 		if (state == null) {
@@ -100,7 +99,10 @@ public class PlayerStateManager {
 		p.setAllowFlight(state.isFly());
 		p.setLevel(state.getLevel());
 		p.setExp(state.getExp());
-		p.setHealth(state.getHealth());
+		
+		if (p.getGameMode() != GameMode.CREATIVE)
+			p.setHealth(state.getHealth());
+		
 		p.setFoodLevel(state.getFoodLevel());
 		p.addPotionEffects(state.getPotioneffects());
 		p.setExhaustion(state.getExhaustion());

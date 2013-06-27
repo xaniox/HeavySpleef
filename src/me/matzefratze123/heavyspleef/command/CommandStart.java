@@ -29,8 +29,6 @@ import org.bukkit.entity.Player;
 public class CommandStart extends HSCommand {
 
 	public CommandStart() {
-		setMaxArgs(1);
-		setMinArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.START_GAME);
 		setUsage("/spleef start <Name>");
@@ -40,11 +38,36 @@ public class CommandStart extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0].toLowerCase())) {
-			sender.sendMessage(_("arenaDoesntExists"));
-			return;
+		Game game;
+		
+		if (args.length <= 0) {
+			if (!GameManager.isInAnyGame(player)) {
+				player.sendMessage(_("notIngame"));
+				return;
+			}
+			
+			game = GameManager.fromPlayer(player);
+		} else {
+			if (!GameManager.hasGame(args[0].toLowerCase())) {
+				sender.sendMessage(_("arenaDoesntExists"));
+				return;
+			}
+			
+			permissionsCheck: {
+				Game playerGame = GameManager.fromPlayer(player);
+				
+				if (playerGame != null && playerGame.getName().equalsIgnoreCase(args[0]))
+					break permissionsCheck;
+				if (player.hasPermission(Permissions.START_GAME_OTHER.getPerm()))
+					break permissionsCheck;
+				
+				player.sendMessage(_("noPermission"));
+				return;
+			}
+			
+			game = GameManager.getGame(args[0]);
 		}
-		Game game = GameManager.getGame(args[0].toLowerCase());
+		
 		start(player, game);
 	}
 

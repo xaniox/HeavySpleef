@@ -39,7 +39,7 @@ public class UpdateListener implements Listener {
 		if (!HeavySpleef.updateAvaible)
 			return;
 		
-		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Your version is outdated! " + ChatColor.GOLD + HeavySpleef.updateName + ChatColor.DARK_PURPLE + " (" + HeavySpleef.updateSize + " bytes)");
+		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Your spleef version is outdated! New version: " + ChatColor.GOLD + HeavySpleef.updateName + ChatColor.DARK_PURPLE + " (" + HeavySpleef.updateSize + " bytes)");
 		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " If you want to download a new version of HeavySpleef type /spleef update");
 		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " You may have to" + ChatColor.UNDERLINE + " delete " + ChatColor.RESET + ChatColor.DARK_PURPLE + "your config.yml for a new one!");
 	}

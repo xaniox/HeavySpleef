@@ -40,29 +40,6 @@ public class LocationHelper {
 		return realDistanceSqared;
 	}
 	
-	public static double getDistance3D(Location loc1, Location loc2) {
-		if (!loc1.getWorld().getName().equalsIgnoreCase(loc2.getWorld().getName()))
-			return -1.0D;
-		
-		double minX = Math.min(loc1.getX(), loc2.getX());
-		double maxX = Math.max(loc1.getX(), loc2.getX());
-		
-		double minZ = Math.min(loc1.getZ(), loc2.getZ());
-		double maxZ = Math.max(loc1.getZ(), loc2.getZ());
-		
-		double minY = Math.min(loc1.getY(), loc1.getY());
-		double maxY = Math.max(loc1.getY(), loc2.getY());
-		
-		double distanceX = maxX - minX;
-		double distanceZ = maxZ - minZ;
-		double distanceY = maxY - minY;
-		
-		double XZdistance = (distanceX * distanceX) + (distanceZ * distanceZ);
-		double XZYdistance = XZdistance + (distanceY * distanceY);
-		
-		return XZYdistance;
-	}
-	
 	public static String locationToFriendlyString(Location location) {
 		String world = location.getWorld().getName();
 		

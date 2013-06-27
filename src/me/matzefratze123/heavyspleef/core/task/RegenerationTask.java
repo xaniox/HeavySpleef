@@ -17,31 +17,23 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package me.matzefratze123.heavyspleef.listener;
+package me.matzefratze123.heavyspleef.core.task;
 
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import me.matzefratze123.heavyspleef.config.ConfigUtil;
+import me.matzefratze123.heavyspleef.core.Game;
 
-import me.matzefratze123.heavyspleef.util.InventoryMenu.ClickEvent;
-import me.matzefratze123.heavyspleef.util.InventoryMenu.InventorySelectorListener;
-
-public class InventoryListener implements InventorySelectorListener {
-
-	@Override
-	public void onClick(ClickEvent e) {
-		Player player = e.getPlayer();
-		ItemStack stack = e.getItemStack();
-		
-		if (stack == null)
-			return;
-		
-		ItemMeta meta = stack.getItemMeta();
-		String displayName = meta.getDisplayName();
-		
-		displayName = displayName.substring(9);
-		player.performCommand("hs join " + displayName);
-		e.getSelector().close(player);
+public class RegenerationTask implements Runnable {
+	
+	private Game game;
+	
+	public RegenerationTask(Game game) {
+		this.game = game;
 	}
-
+	
+	@Override
+	public void run() {
+		game.regen();
+		game.broadcast(Game._("floorsRegenerated"), ConfigUtil.getBroadcast("floor-regeneration"));
+	}
+	
 }
