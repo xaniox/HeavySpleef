@@ -27,9 +27,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandAddScoreboard extends HSCommand {
+public class CommandAddScoreBoard extends HSCommand {
 
-	public CommandAddScoreboard() {
+	public CommandAddScoreBoard() {
 		setMinArgs(2);
 		setMaxArgs(2);
 		setOnlyIngame(true);

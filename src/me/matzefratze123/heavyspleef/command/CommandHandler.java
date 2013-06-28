@@ -107,7 +107,7 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("stop", new CommandStop());
 		addSubCommand("stats", new CommandStats());
 		addSubCommand("update", new CommandUpdate());
-		addSubCommand("addscoreboard", new CommandAddScoreboard());
+		addSubCommand("addscoreboard", new CommandAddScoreBoard());
 		addSubCommand("removescoreboard", new CommandRemoveScoreBoard());
 		addSubCommand("addwall", new CommandAddWall());
 		addSubCommand("removewall", new CommandRemoveWall());
