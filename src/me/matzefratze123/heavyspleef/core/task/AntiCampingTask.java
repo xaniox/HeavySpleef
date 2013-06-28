@@ -97,7 +97,7 @@ public class AntiCampingTask implements Runnable {
 		
 		//Calculate the nearest floor
 		for (Floor floor : floors) {
-			if (floor.getY() > location.getY())
+			if (floor.getY() >= location.getY())
 				continue;
 			
 			if (nearestFloor == null) {
