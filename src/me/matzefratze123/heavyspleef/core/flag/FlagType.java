@@ -95,6 +95,8 @@ public enum FlagType {
 	public static final BooleanFlag SHEARS = new BooleanFlag("shears", false);
 	@FlagData(aliases = {"teamgame"})
 	public static final BooleanFlag TEAM = new BooleanFlag("team", false);
+	@FlagData
+	public static final BooleanFlag BOWSPLEEF = new BooleanFlag("bowspleef", false);
 	
 	@FlagData
 	public static final ArrayItemStackFlag ITEMREWARD = new ArrayItemStackFlag("itemreward", new ItemStack[]{});
