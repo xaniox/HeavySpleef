@@ -28,7 +28,7 @@ public class AntiCampingTask implements Runnable {
 	private Map<String, Integer> antiCamping = new HashMap<String, Integer>();
 	
 	public AntiCampingTask() {
-		if (taskEnabled)
+		if (taskEnabled && isTaskRunning(HeavySpleef.instance.antiCampTid))
 			throw new IllegalStateException("Cannot start AntiCampingTask twice!");
 		
 		taskEnabled = true;
@@ -128,6 +128,13 @@ public class AntiCampingTask implements Runnable {
 			}
 			
 		}
+	}
+	
+	private static boolean isTaskRunning(int task) {
+		if (task < 0)
+			return false;
+		
+		return Bukkit.getScheduler().isCurrentlyRunning(task) || Bukkit.getScheduler().isQueued(task);
 	}
 	
 }
