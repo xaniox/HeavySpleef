@@ -40,6 +40,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,9 +49,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -59,6 +64,9 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.util.BlockIterator;
 
 public class PlayerListener implements Listener {
 
@@ -132,6 +140,8 @@ public class PlayerListener implements Listener {
 		
 		if (game.getFlag(FlagType.DIFFICULTY) != Difficulty.MEDIUM)
 			return;
+		if (game.getFlag(FlagType.BOWSPLEEF))
+			return;
 		
 		game.addBrokenBlock(p, block);
 		block.setType(Material.AIR);
@@ -169,6 +179,11 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
+		if (game.getFlag(FlagType.BOWSPLEEF)) {
+			e.setCancelled(true);
+			return;
+		}
+		
 		e.getBlock().setTypeId(0);
 		game.addBrokenBlock(p, block);
 		
@@ -190,6 +205,70 @@ public class PlayerListener implements Listener {
 			
 			p.teleport(bLoc);
 		}
+	}
+	
+	@EventHandler
+	public void onProjectileHit(ProjectileHitEvent e) {
+		if (!(e.getEntity() instanceof Arrow))
+			return;
+		
+		Arrow arrow = (Arrow)e.getEntity();
+		if (!(arrow.getShooter() instanceof Player))
+			return;
+		
+		Player player = (Player)arrow.getShooter();
+		if (!GameManager.isInAnyGame(player))
+			return;
+		
+		Game game = GameManager.fromPlayer(player);
+		if (!game.getFlag(FlagType.BOWSPLEEF))
+			return;
+		
+		BlockIterator iterator = new BlockIterator(arrow.getWorld(), arrow.getLocation().toVector(), arrow.getVelocity().normalize(), 0, 4);
+	    Block hitBlock = null;
+	    
+	    while (iterator.hasNext()) {
+	    	hitBlock = iterator.next();
+	    	
+	    	if (hitBlock.getType() != Material.AIR)
+	    		break;
+	    }
+	    
+	    if (!game.canSpleef(hitBlock, player))
+	    	return;
+	    
+	    FallingBlock block = arrow.getWorld().spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());
+	    block.setMetadata("bowspleef", new FixedMetadataValue(HeavySpleef.instance, true));
+	    hitBlock.setType(Material.AIR);
+	    arrow.remove();
+	}
+	
+	/**
+	 * Used to cancel the land of "bowspleefed" falling blocks
+	 */
+	@EventHandler
+	public void onEntityChangeBlock(EntityChangeBlockEvent e) {
+		if (!(e.getEntity() instanceof FallingBlock))
+			return;
+		
+		boolean bowspleefEntity = false;
+		
+		List<MetadataValue> metadatas = e.getEntity().getMetadata("bowspleef");
+		for (MetadataValue metadata : metadatas) {
+			if (metadata.getOwningPlugin() != HeavySpleef.instance)
+				continue;
+			
+			if (metadata.asBoolean()) {
+				bowspleefEntity = true;
+				break;
+			}
+		}
+		
+		if (!bowspleefEntity)
+			return;
+		
+		e.setCancelled(true);
+		e.getEntity().remove();
 	}
 	
 	@EventHandler

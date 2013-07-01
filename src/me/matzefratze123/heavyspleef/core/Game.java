@@ -74,6 +74,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -231,6 +232,7 @@ public abstract class Game {
 	/**
 	 * Starts the game
 	 */
+	@SuppressWarnings("deprecation")
 	public void start() {
 		updateScoreBoards();
 		setGameState(GameState.INGAME);
@@ -255,10 +257,24 @@ public abstract class Game {
 		
 		//Withdraw jackpot money
 		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook() && jackpotToPay > 0) {
-			for (Player p : getPlayers()) {
-				HeavySpleef.hooks.getService(VaultHook.class).getHook().withdrawPlayer(p.getName(), jackpotToPay);
-				p.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getService(VaultHook.class).getHook().format(jackpotToPay)));
+			for (Player player : getPlayers()) {
+				HeavySpleef.hooks.getService(VaultHook.class).getHook().withdrawPlayer(player.getName(), jackpotToPay);
+				player.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getService(VaultHook.class).getHook().format(jackpotToPay)));
 				this.jackpot += jackpotToPay;
+			}
+		}
+		
+		if (getFlag(FlagType.BOWSPLEEF)) {
+			ItemStack bow = new ItemStack(Material.BOW);
+			ItemStack arrow = new ItemStack(Material.ARROW);
+			
+			bow.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+			
+			for (Player player : getPlayers()) {
+				player.getInventory().addItem(bow);
+				player.getInventory().addItem(arrow);
+				
+				player.updateInventory();
 			}
 		}
 		
