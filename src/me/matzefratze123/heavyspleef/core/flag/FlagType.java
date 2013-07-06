@@ -65,6 +65,8 @@ public enum FlagType {
 	public static final LocationFlag SPAWNPOINT2 = new LocationFlag("spawnpoint2");
 	@FlagData(aliases = {"spectatepoint"})
 	public static final LocationFlag SPECTATE = new LocationFlag("spectate");
+	@FlagData(aliases = {"spawn"})
+	public static final LocationFlag SPAWNPOINT = new LocationFlag("spawnpoint");
 	
 	@FlagData(aliases = {"min"})
 	public static final IntegerFlag MINPLAYERS = new IntegerFlag("minplayers", 2);

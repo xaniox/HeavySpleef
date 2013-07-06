@@ -56,6 +56,11 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	private int gamesPlayed;
 	
 	/**
+	 * The elo of this player
+	 */
+	private int elo;
+	
+	/**
 	 * Creates a empty statistic with the given name
 	 */
 	public StatisticModule(String name) {
@@ -64,6 +69,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		this.wins = 0;
 		this.knockouts = 0;
 		this.gamesPlayed = 0;
+		this.elo = 1000;
 	}
 	
 	/**
@@ -75,6 +81,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		this.wins = wins;
 		this.knockouts = knockouts;
 		this.gamesPlayed = gamesPlayed;
+		//this.elo = elo;
 	}
 	
 	/**
@@ -122,6 +129,15 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		int pointsGamePlayed = config.getInt("leaderboard.gamePlayed");
 		
 		return (pointsWin * getWins()) + (pointsLose * getLoses()) + (pointsKnockout * getKnockouts()) + (pointsGamePlayed * getGamesPlayed());
+	}
+	
+	/**
+	 * Get's the elo of this player
+	 * 
+	 * @return The elo
+	 */
+	public int getElo() {
+		return this.elo;
 	}
 	
 	/**
@@ -177,6 +193,13 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		gamesPlayed++;
 		if (StatisticManager.pushOnChange)
 			StatisticManager.push(true);
+	}
+	
+	/**
+	 * Sets the elo of this player
+	 */
+	public void setElo(int elo) {
+		this.elo = elo;
 	}
 
 	@Override

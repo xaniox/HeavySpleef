@@ -54,6 +54,7 @@ import me.matzefratze123.heavyspleef.hooks.VaultHook;
 import me.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import me.matzefratze123.heavyspleef.listener.TagListener;
 import me.matzefratze123.heavyspleef.stats.StatisticManager;
+import me.matzefratze123.heavyspleef.stats.StatisticModule;
 import me.matzefratze123.heavyspleef.util.ArrayHelper;
 import me.matzefratze123.heavyspleef.util.LanguageHandler;
 import me.matzefratze123.heavyspleef.util.LocationSaver;
@@ -1619,7 +1620,11 @@ public abstract class Game {
 					buildBox(Material.GLASS, getFlag(SPAWNPOINT2));
 				}
 			} else {
-				p.teleport(getRandomLocation());
+				if (getFlag(SPAWNPOINT) != null) {
+					p.teleport(getFlag(SPAWNPOINT));
+				} else {
+					p.teleport(getRandomLocation());
+				}
 			}
 			
 			count++;
@@ -2238,6 +2243,23 @@ public abstract class Game {
 	
 	public String removeMetaData(String key) {
 		return metadata.remove(key);
+	}
+	
+	private void doCalculateElo() {
+		String[] in = players.toArray(new String[players.size()]);
+		String[] out = outPlayers.toArray(new String[outPlayers.size()]);
+		
+		ArrayList<String> allPlayers = ArrayHelper.mergeArrays(in, out);
+		
+		//Store all future elo's in a map and set them after the loop
+		//We don't want to calculate with new elo's
+		Map<String, Integer> eloToSet = new HashMap<String, Integer>();
+		
+		for (String player : allPlayers) {
+			StatisticModule module = StatisticManager.getStatistic(player, true);
+			
+			int elo = module.getElo();
+		}
 	}
 	
 	//Just a simple class to save a 1vs1 win
