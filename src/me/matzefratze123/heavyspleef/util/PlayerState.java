@@ -35,14 +35,14 @@ public class PlayerState {
 	private float exhaustion;
 	private float saturation;
 	private int foodLevel;
-	private int health;
+	private double health;
 	private GameMode gm;
 	private Collection<PotionEffect> potioneffects;
 	private float exp;
 	private int level;
 	private boolean fly;
 	
-	public PlayerState(ItemStack[] invContents, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, float exhaustion, float saturation, int foodLevel, int health, GameMode gm, Collection<PotionEffect> potionEffects, float exp, int level, boolean fly) {
+	public PlayerState(ItemStack[] invContents, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, float exhaustion, float saturation, int foodLevel, double health, GameMode gm, Collection<PotionEffect> potionEffects, float exp, int level, boolean fly) {
 		this.setContents(invContents);
 		this.setHelmet(helmet);
 		this.setChestplate(chestplate);
@@ -91,11 +91,11 @@ public class PlayerState {
 		this.foodLevel = foodLevel;
 	}
 
-	public int getHealth() {
+	public double getHealth() {
 		return health;
 	}
 
-	public void setHealth(int health) {
+	public void setHealth(double health) {
 		this.health = health;
 	}
 
