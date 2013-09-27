@@ -19,27 +19,7 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.AUTOSTART;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.CHANCES;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.COUNTDOWN;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.DIFFICULTY;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.ITEMREWARD;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.JACKPOTAMOUNT;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.LOBBY;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.LOSE;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.LOSEREWARD;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.MINPLAYERS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.REGEN_INTERVALL;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.REWARD;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.SHEARS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.SHOVELS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.SPECTATE;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.TEAM;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.TIMEOUT;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.WIN;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,8 +82,10 @@ import de.matzefratze123.heavyspleef.util.ArrayHelper;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.LocationSaver;
 import de.matzefratze123.heavyspleef.util.PlayerStateManager;
+import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Util;
 import de.matzefratze123.heavyspleef.util.ViPManager;
+import de.matzefratze123.heavyspleef.util.SpleefLogger.LogType;
 
 public abstract class Game {
 	
@@ -140,6 +122,7 @@ public abstract class Game {
 	private List<String> voted = new ArrayList<String>(); //Stores which players have voted
 	protected List<String> players = new ArrayList<String>(); //Stores which players are ingame
 	protected List<String> outPlayers = new ArrayList<String>(); //Stores players which have lost the game
+	private List<String> spectating = new ArrayList<String>();
 	
 	//Minecraft sidebar scoreboard
 	private Scoreboard scoreboard;
@@ -156,17 +139,6 @@ public abstract class Game {
 	protected PlayerTeleportTask teleportTask; //Current teleport task
 	
 	/* Temporary data objects end */
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	protected Map<String, Scoreboard> previousScoreboards = new HashMap<String, Scoreboard>();
 	
@@ -332,7 +304,7 @@ public abstract class Game {
 		}
 		
 		int timeout = getFlag(TIMEOUT);
-		int entryFee = getFlag(JACKPOTAMOUNT);
+		int entryFee = getFlag(ENTRY_FEE);
 		
 		if (timeout > 0)
 			this.timeoutTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new TimeoutTask(timeout, this), 0L, 20L);
@@ -444,13 +416,37 @@ public abstract class Game {
 		}
 		
 		Location spectate = getFlag(SPECTATE);
-		if (spectate == null) {
-			player.sendMessage(_("spectatePointNotSet"));
-			return;
-		}
 		
+		LocationSaver.save(player);
 		player.teleport(spectate);
 		player.sendMessage(_("welcomeToSpectate"));
+		spectating.add(player.getName());
+	}
+	
+	public boolean isSpectating(Player player) {
+		return spectating.contains(player.getName());
+	}
+	
+	public List<Player> getSpectating() {
+		List<Player> list = new ArrayList<Player>();
+		
+		for (String str : spectating) {
+			Player player = Bukkit.getPlayer(str);
+			if (player == null)
+				continue;
+			
+			list.add(player);
+		}
+		
+		return list;
+	}
+	
+	public void leaveSpectate(Player player) {
+		if (!isSpectating(player))
+			return;
+		
+		spectating.remove(player.getName());
+		player.teleport(LocationSaver.load(player));
 	}
 	
 	/**
@@ -485,6 +481,7 @@ public abstract class Game {
 			return;
 		
 		players.add(player.getName());
+		SpleefLogger.log(LogType.JOIN, this, player);
 		
 		Location lobby = getFlag(LOBBY) == null ? getRandomLocation() : getFlag(LOBBY);
 		LocationSaver.save(player);
@@ -609,6 +606,13 @@ public abstract class Game {
 		broadcast(getLoseMessage(cause, player), ConfigUtil.getBroadcast("player-lose"));
 		
 		players.remove(player.getName());
+		
+		if (cause == LoseCause.LEAVE) {
+			SpleefLogger.log(LogType.LEAVE, this, player); 
+		} else {
+			SpleefLogger.log(LogType.LOSE, this, player);
+		}
+		
 		Team team = getTeam(player);
 		removePlayerFromTeam(player);
 		if (team != null && !team.hasPlayersLeft()) {
@@ -632,6 +636,8 @@ public abstract class Game {
 		if (HookManager.getInstance().getService(TagAPIHook.class).hasHook())
 			TagListener.setTag(player, null);
 		PlayerStateManager.restorePlayerState(player);
+		
+		
 		if (cause == LoseCause.LOSE) {
 			for (ItemStack stack : getFlag(LOSEREWARD)) {
 				ItemStack newStack = stack.getData().toItemStack(stack.getAmount());
@@ -640,10 +646,13 @@ public abstract class Game {
 			}
 		}
 		
+		//If player quits in the lobby mode
 		if (players.size() <= 0)
 			setGameState(GameState.JOINABLE);
+		
 		updateWalls();
-		if (state == GameState.INGAME || state == GameState.COUNTING) {
+		
+		if (state == GameState.INGAME|| state == GameState.COUNTING) {
 			if (getFlag(TEAM)) {
 				int teamsLeft = 0;
 				
@@ -662,7 +671,6 @@ public abstract class Game {
 			
 			cancelTasks();
 			win(Bukkit.getPlayer(players.get(0)));
-			
 		}
 	}
 	
@@ -839,6 +847,8 @@ public abstract class Game {
 		
 		regen();
 		players.remove(p.getName());
+		SpleefLogger.log(LogType.WIN, this, p);
+		
 		removePlayerFromTeam(p);
 		
 		for (Player player : getPlayers()) {
@@ -898,6 +908,8 @@ public abstract class Game {
 		
 		regen();
 		
+		int winnersTeamSize = team.getPlayers().length;
+		
 		for (Player winner : team.getPlayers()) {
 			if (getFlag(WIN) == null)
 				winner.teleport(LocationSaver.load(winner));
@@ -911,7 +923,7 @@ public abstract class Game {
 			if (HookManager.getInstance().getService(TagAPIHook.class).hasHook())
 				TagListener.setTag(winner, null);
 			StatisticManager.getStatistic(winner.getName(), true).addWin();
-			giveRewards(winner, false);
+			giveRewards(winner, false, winnersTeamSize);
 			
 			removePlayerFromTeam(winner);
 		}
@@ -2007,18 +2019,30 @@ public abstract class Game {
 	 * 
 	 * @param player Player who should receive rewards
 	 * @param clearJackpot If the jackpot should be cleared (resets the jackpot)
+	 * @param winnersTeamSize How many players won the game. This parameter indicates that the money reward is splitted up equally
 	 */
-	public void giveRewards(Player player, boolean clearJackpot) {
+	public void giveRewards(Player player, boolean clearJackpot, int winnersTeamSize) {
 		for (ItemStack stack : getFlag(ITEMREWARD)) {
 			ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
 			player.getInventory().addItem(newStack);
 			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.toFriendlyString(stack.getType().name())));
 		}
+		
 		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook()) {
 			Economy econ = HeavySpleef.hooks.getService(VaultHook.class).getHook();
 			if (this.jackpot > 0) {
-				EconomyResponse r = econ.depositPlayer(player.getName(), this.jackpot);
+				//Split the reward between the winning teams
+				double prize;
+				
+				if (getFlag(TEAM)) {
+					prize = (double)jackpot / winnersTeamSize;
+				} else {
+					prize = jackpot;
+				}
+				
+				EconomyResponse r = econ.depositPlayer(player.getName(), prize);
 				player.sendMessage(_("jackpotReceived", econ.format(r.amount)));
+				
 				if (clearJackpot)
 					clearJackpot();
 			}
@@ -2029,6 +2053,17 @@ public abstract class Game {
 				player.sendMessage(_("rewardReceived", econ.format(r.amount)));
 			}
 		}
+	}
+	
+	/**
+	 * Gives spleef rewards to the given player
+	 * Possible rewards: Money reward, Jackpot reward, Item reward
+	 * 
+	 * @param player Player who should receive rewards
+	 * @param clearJackpot If the jackpot should be cleared (resets the jackpot)
+	 */
+	public void giveRewards(Player player, boolean clearJackpot) {
+		giveRewards(player, clearJackpot, 1);
 	}
 	
 	private void clearJackpot() {

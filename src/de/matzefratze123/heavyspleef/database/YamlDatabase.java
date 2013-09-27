@@ -19,23 +19,7 @@
  */
 package de.matzefratze123.heavyspleef.database;
 
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.AUTOSTART;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.CHANCES;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.COUNTDOWN;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.JACKPOTAMOUNT;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.LOBBY;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.LOSE;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.MINPLAYERS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.QUEUELOBBY;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.REWARD;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.SHOVELS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.SPAWNPOINT1;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.SPAWNPOINT2;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.TIMEOUT;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.WIN;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.*;
 import static de.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
 import static de.matzefratze123.heavyspleef.database.Parser.convertLoseZoneToString;
 import static de.matzefratze123.heavyspleef.database.Parser.convertStringToLosezone;
@@ -49,7 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -359,8 +342,6 @@ public class YamlDatabase {
 		if (section.getString("queuesPoint") != null)
 			game.setFlag(QUEUELOBBY, convertStringtoLocation(section.getString("queuesPoint")));
 		
-		if (section.contains("money"))
-			game.setFlag(JACKPOTAMOUNT, section.getInt("money"));
 		if (section.contains("reward"))
 			game.setFlag(REWARD, section.getInt("reward"));
 		if (section.contains("minPlayers"))

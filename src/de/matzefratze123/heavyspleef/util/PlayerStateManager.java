@@ -74,6 +74,8 @@ public class PlayerStateManager {
 	
 	@SuppressWarnings("deprecation")
 	public static void restorePlayerState(Player p) {
+		if (p.isDead())
+			return;
 		p.setFireTicks(0);//We don't want that the player is burning because of lava or something similar...
 		
 		//Remove the haste effects (difficulty)

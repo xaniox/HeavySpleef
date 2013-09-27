@@ -22,9 +22,10 @@ general:
   # Which spleef prefix should we use?
   spleef-prefix: '&c[&6Spleef&c]'
   
-  # Should player inventorys and other stuff (for expample health, foodlevel etc.) be cleared and saved?
-  # The state of the player will be restored on leave, lose and win.
-  savePlayerState: true
+  # Should player inventorys and other stuff (for example health, foodlevel etc.) be saved?
+  # The state of the player will be restored on the end of the game. This makes sure that
+  # no player can cheat via enderpearls or something similar
+  saveInventory: true
   
   # Should arenas be protected?
   protectArena: true
@@ -82,8 +83,7 @@ general:
   pvptimer: 0
   
   # The plugin can show ingame players a sidebar scoreboard
-  # with the knockouts and the status. To use this, you have
-  # to install the latest 1.5.1 R2 build of bukkit.
+  # with the knockouts and the status.
   showSidebarScoreboard: false
   
   # This is the ready block for players who don't want to use

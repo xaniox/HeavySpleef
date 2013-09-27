@@ -47,6 +47,7 @@ public enum Permissions {
 	LEAVE_GAME("heavyspleef.leave"),
 	START_GAME("heavyspleef.start"),
 	START_GAME_OTHER("heavyspleef.start.other"),
+	SPECTATE("heavyspleef.spectate"),
 	
 	CREATE_GAME("heavyspleef.create"),
 	DELETE_GAME("heavyspleef.delete"),

@@ -54,6 +54,7 @@ import de.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
 import de.matzefratze123.heavyspleef.util.InventoryMenu;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Metrics;
+import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Updater;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
@@ -105,6 +106,7 @@ public class HeavySpleef extends JavaPlugin {
 		
 		setupStatisticDatabase();
 		statisticDatabase.load();
+		SpleefLogger.logRaw("Starting plugin version " + getDescription().getVersion() + "!");
 		
 		//Start metrics
 		startMetrics();
@@ -129,7 +131,9 @@ public class HeavySpleef extends JavaPlugin {
 		this.getServer().getScheduler().cancelTasks(this);
 		this.database.save();
 		this.statisticDatabase.save();
-		this.getLogger().info("HeavySpleef deactivated!");
+		SpleefLogger.logRaw("Stopping plugin!");
+		
+		this.getLogger().info("HeavySpleef disabled!");
 	}
 	
 	

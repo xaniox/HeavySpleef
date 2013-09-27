@@ -20,10 +20,7 @@
 package de.matzefratze123.heavyspleef.command;
 
 
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.JACKPOTAMOUNT;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.TEAM;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.*;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -114,7 +111,7 @@ public class CommandJoin extends HSCommand {
 	}
 	
 	public static void doFurtherChecks(final Game game, final Player player, ChatColor teamColor) {
-		int jackpotToPay = game.getFlag(JACKPOTAMOUNT) == null ? HeavySpleef.getSystemConfig().getInt("general.defaultToPay", 0) : game.getFlag(JACKPOTAMOUNT);
+		int jackpotToPay = game.getFlag(ENTRY_FEE) == null ? HeavySpleef.getSystemConfig().getInt("general.defaultToPay", 0) : game.getFlag(ENTRY_FEE);
 		
 		if (game.isDisabled()) {
 			player.sendMessage(_("gameIsDisabled"));
@@ -136,6 +133,10 @@ public class CommandJoin extends HSCommand {
 			}
 		}
 		
+		if (GameManager.isSpectating(player)) {
+			player.sendMessage(_("alreadySpectating"));
+			return;
+		}
 		if (GameManager.isActive(player)) {
 			player.sendMessage(_("cantJoinMultipleGames"));
 			return;

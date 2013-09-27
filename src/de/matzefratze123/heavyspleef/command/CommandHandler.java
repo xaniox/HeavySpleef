@@ -125,6 +125,7 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("removeportal", new CommandRemovePortal());
 		addSubCommand("hub", new CommandHub());
 		addSubCommand("teamflag", new CommandTeamFlag());
+		addSubCommand("spectate", new CommandSpectate());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {

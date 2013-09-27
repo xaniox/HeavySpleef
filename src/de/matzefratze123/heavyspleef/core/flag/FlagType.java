@@ -78,7 +78,7 @@ public enum FlagType {
 	@FlagData
 	public static final IntegerFlag COUNTDOWN = new IntegerFlag("countdown", 10);
 	@FlagData
-	public static final IntegerFlag JACKPOTAMOUNT = new IntegerFlag("jackpotamount", 0);
+	public static final IntegerFlag ENTRY_FEE = new IntegerFlag("entryfee", 0);
 	@FlagData
 	public static final IntegerFlag REWARD = new IntegerFlag("reward", 0);
 	@FlagData

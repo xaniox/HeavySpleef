@@ -98,14 +98,26 @@ public class GameManager {
 		return has;
 	}
 	
-	public static boolean isActive(Player p) {
+	public static boolean isActive(Player player) {
 		for (Game game : getGames()) {
 			Player[] players = game.getPlayers();
 			for (Player pl : players) {
-				if (pl.getName().equalsIgnoreCase(p.getName()))
+				if (pl.getName().equalsIgnoreCase(player.getName()))
 					return true;
 			}
 		}
+		return false;
+	}
+	
+	public static boolean isSpectating(Player player) {
+		for (Game game : getGames()) {
+			List<Player> players = game.getSpectating();
+			for (Player pl : players) {
+				if (pl.getName().equalsIgnoreCase(player.getName()))
+					return true;
+			}
+		}
+		
 		return false;
 	}
 	
@@ -114,6 +126,11 @@ public class GameManager {
 			Player[] players = game.getPlayers();
 			for (Player pl : players) {
 				if (pl.getName().equalsIgnoreCase(p.getName()))
+					return game;
+			}
+			
+			for (Player spectating : game.getSpectating()) {
+				if (spectating.getName().equalsIgnoreCase(p.getName()))
 					return game;
 			}
 		}

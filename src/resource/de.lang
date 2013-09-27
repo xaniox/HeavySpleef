@@ -92,6 +92,9 @@ invalidTeam: &cDieses Team ist ung\u00FCltig
 unknownSpleefType: &cDer Arenatyp %a ist nicht g\u00FCltig! Erlaubte Typen: CUBOID, CYLINDER, ELLIPSE
 
 notIngame: &cDu kannst diesen Befehl nur Ingame benutzen!
+noSpectatePoint: &7F\u00FCr dieses Spiel wurde noch kein Beobachtungspunkt gesetzt!
+cannotSpectateWhilePlaying: &7Du kannst das Spiel nicht beobachten wenn du selbst spielst!
+alreadySpectating: &7Du beobachtest bereits ein Spiel!
 
 # Erfolgsnachrichten
 
@@ -173,6 +176,7 @@ portalAdded: &7Portal hinzugef\u00FCgt!
 
 taggedAsReady: &7Du wurdest als bereit gekennzeichnet!
 teleportingToHub: &7Teleportiere zum HUB. Beweg dich nicht...
+welcomeToSpectate: &7Du beobachtest jetzt das Spiel. Benutze &l/spleef leave &7um aus dem Beobachtungsmodus herauszukommen!
 
 # Broadcast nachrichten
 

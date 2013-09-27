@@ -53,6 +53,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.BlockIterator;
@@ -66,11 +67,14 @@ import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.util.Permissions;
+import de.matzefratze123.heavyspleef.util.PlayerStateManager;
 import de.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 public class PlayerListener implements Listener {
 
 	private ArrayList<String> isCheckOut = new ArrayList<String>();
+	private List<String> dead = new ArrayList<String>();
+	
 	public static boolean loseOnTouchWaterOrLava;
 	
 	public PlayerListener() {
@@ -184,7 +188,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		e.getBlock().setTypeId(0);
+		e.getBlock().setType(Material.AIR);
 		game.addBrokenBlock(p, block);
 		
 	}
@@ -336,10 +340,11 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
-		if (!GameManager.isActive(e.getPlayer()))
+		if (!GameManager.isActive(e.getPlayer()) && !GameManager.isSpectating(e.getPlayer()))
 			return;
 		if (e.getPlayer().hasPermission(Permissions.COMMAND_WHITELISTED.getPerm()))
 			return;
+		
 		String[] split = e.getMessage().split(" ");
 		String cmd = split[0];
 		if (cmd.equalsIgnoreCase("/spleef") || cmd.equalsIgnoreCase("/hs") || cmd.equalsIgnoreCase("/hspleef"))
@@ -367,12 +372,37 @@ public class PlayerListener implements Listener {
 	//But we don't know if someone types /kill player while he's playing spleef...
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		Player p = e.getEntity();
-		if (!GameManager.isActive(p))
+		Player player = e.getEntity();
+		
+		if (GameManager.isActive(player)) {
+			
+			Game game = GameManager.fromPlayer(player);
+			game.leave(player, LoseCause.UNKNOWN);
+			
+			dead.add(player.getName());
+		} else if (GameManager.isSpectating(player)) {
+			GameManager.fromPlayer(player).leaveSpectate(player);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent e) {
+		final Player player = e.getPlayer();
+		
+		if (!dead.contains(player.getName()))
 			return;
 		
-		Game game = GameManager.fromPlayer(p);
-		game.leave(p, LoseCause.UNKNOWN);
+		//Player died while spleefing, restore his inventory
+		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				if (player != null && player.isOnline())
+					PlayerStateManager.restorePlayerState(player);
+			}
+		}, 10L);
+		
+		dead.remove(player.getName());
 	}
 	
 	@EventHandler

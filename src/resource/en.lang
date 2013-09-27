@@ -88,6 +88,9 @@ invalidTeam: &cThis team is invalid!
 unknownSpleefType: &cThe gametype %a is invalid! Available types: CUBOID, CYLINDER, ELLIPSE
 
 notIngame: &cYou can use this command only ingame!
+noSpectatePoint: &7There is no spectate point set for this game!
+cannotSpectateWhilePlaying: &7You cannot spectate while ingame!
+alreadySpectating: &7You are already spectating a game!
 
 # Success messages
 
@@ -169,6 +172,7 @@ portalAdded: &7Portal added!
 
 taggedAsReady: &7You have been tagged as ready
 teleportingToHub: &7Teleporting to Spleef HUB. Don't move...
+welcomeToSpectate: &7You are now spectating. Use &l/spleef leave &7to leave the spectate mode!
 
 # Broadcast Messages
 

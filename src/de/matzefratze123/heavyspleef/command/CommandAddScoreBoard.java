@@ -48,6 +48,7 @@ public class CommandAddScoreBoard extends HSCommand {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
+		
 		if (!args[1].equalsIgnoreCase("EAST") && !args[1].equalsIgnoreCase("WEST") && !args[1].equalsIgnoreCase("NORTH") && !args[1].equalsIgnoreCase("SOUTH")) {
 			p.sendMessage(_("invalidBlockFace"));
 			return;

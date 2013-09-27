@@ -46,6 +46,11 @@ public class CommandLeave extends HSCommand {
 	}
 	
 	public static void leave(Player player) {
+		if (GameManager.isSpectating(player)) {
+			GameManager.fromPlayer(player).leaveSpectate(player);
+			return;
+		}
+		
 		if (!GameManager.isActive(player)) {
 			if (!QueuesManager.hasQueue(player)) {
 				player.sendMessage(_("notInQueue"));

@@ -34,11 +34,20 @@ public class PlayerTeleportTask implements Runnable {
 		for (Player player : game.getPlayers()) {
 			if (game.getFlag(FlagType.ONEVSONE)) {
 				//Check if first spawn has been generated and spawnpoint is not null
+				Location defaultSpawnpoint = game.getFlag(FlagType.SPAWNPOINT);
+				
 				if (!firstSpawnGenerated && firstSpawnpoint != null) {
 					generateBox(firstSpawnpoint);
+					player.teleport(firstSpawnpoint);
+					
 					firstSpawnGenerated = true;
 				} else if (secondSpawnpoint != null) {
 					generateBox(secondSpawnpoint);
+					player.teleport(secondSpawnpoint);
+				} else if (defaultSpawnpoint != null) {
+					player.teleport(defaultSpawnpoint);
+				} else {
+					player.teleport(game.getRandomLocation());
 				}
 				
 			} else {
