@@ -263,6 +263,16 @@ public abstract class Game {
 				p.updateInventory();
 			}
 		}
+		
+		if (getFlag(SPLEGG)) {
+			for (Player p : getPlayers()) {
+				//Give the players a splegg gun
+				p.getInventory().addItem(getSpleggShovel());
+				p.updateInventory();
+			}
+		}
+		
+		
 	}
 	
 	/**
@@ -831,6 +841,20 @@ public abstract class Game {
 		
 		shear.setItemMeta(meta);
 		return shear;
+	}
+	
+	private static ItemStack getSpleggShovel() {
+		ItemStack shovel = new ItemStack(Material.DIAMOND_SPADE);
+		ItemMeta meta = shovel.getItemMeta();
+		
+		meta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Splegg Launcher");
+		
+		List<String> lore = new ArrayList<String>();
+		lore.add(ChatColor.YELLOW + "Right click to " + ChatColor.RED + "fire" + ChatColor.YELLOW + "!");
+		meta.setLore(lore);
+		
+		shovel.setItemMeta(meta);
+		return shovel;
 	}
 	
 	/**

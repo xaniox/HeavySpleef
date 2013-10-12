@@ -31,11 +31,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -122,7 +125,7 @@ public class PlayerListener implements Listener {
 		}, 20L);
 	}
 	
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		Block block = e.getClickedBlock();
@@ -132,6 +135,8 @@ public class PlayerListener implements Listener {
 		if (block == null)
 			return;
 		if (!GameManager.isActive(p))
+			return;
+		if (e.getAction() != Action.LEFT_CLICK_BLOCK)
 			return;
 		
 		Game game = GameManager.fromPlayer(p);
@@ -146,9 +151,33 @@ public class PlayerListener implements Listener {
 			return;
 		if (game.getFlag(FlagType.BOWSPLEEF))
 			return;
+		if (game.getFlag(FlagType.SPLEGG))
 		
 		game.addBrokenBlock(p, block);
 		block.setType(Material.AIR);
+	}
+	
+	@EventHandler
+	public void onSpleggGunClick(PlayerInteractEvent e) {
+		Player player = e.getPlayer();
+		
+		if (player == null)
+			return;
+		if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)
+			return;
+		if (!GameManager.isActive(player))
+			return;
+		
+		Game game = GameManager.fromPlayer(player);
+		if (!game.isIngame())
+			return;
+		if (!game.getFlag(FlagType.SPLEGG))
+			return;
+		if (player.getItemInHand().getType() != Material.DIAMOND_SPADE)
+			return;
+		
+		//Launch egg
+		player.launchProjectile(Egg.class);
 	}
 	
 	@EventHandler
@@ -213,38 +242,69 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent e) {
-		if (!(e.getEntity() instanceof Arrow))
+		if (!(e.getEntity() instanceof Arrow) && !(e.getEntity() instanceof Egg))
 			return;
 		
-		Arrow arrow = (Arrow)e.getEntity();
-		if (!(arrow.getShooter() instanceof Player))
+		Projectile projectile = (Projectile) e.getEntity();
+		
+		if (!(projectile.getShooter() instanceof Player))
 			return;
 		
-		Player player = (Player)arrow.getShooter();
+		Player player = (Player)projectile.getShooter();
 		if (!GameManager.isActive(player))
 			return;
 		
 		Game game = GameManager.fromPlayer(player);
-		if (!game.getFlag(FlagType.BOWSPLEEF))
-			return;
 		
-		BlockIterator iterator = new BlockIterator(arrow.getWorld(), arrow.getLocation().toVector(), arrow.getVelocity().normalize(), 0, 4);
-	    Block hitBlock = null;
-	    
-	    while (iterator.hasNext()) {
-	    	hitBlock = iterator.next();
-	    	
-	    	if (hitBlock.getType() != Material.AIR)
-	    		break;
-	    }
-	    
-	    if (!game.canSpleef(hitBlock, player))
-	    	return;
-	    
-	    FallingBlock block = arrow.getWorld().spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());
-	    block.setMetadata("bowspleef", new FixedMetadataValue(HeavySpleef.instance, true));
-	    hitBlock.setType(Material.AIR);
-	    arrow.remove();
+		if (projectile instanceof Arrow) {
+			Arrow arrow = (Arrow) projectile;
+			
+			if (!game.getFlag(FlagType.BOWSPLEEF))
+				return;
+			
+			//Use BlockIterator to detect the hit block
+			BlockIterator iterator = new BlockIterator(arrow.getWorld(), arrow.getLocation().toVector(), arrow.getVelocity().normalize(), 0, 4);
+		    Block hitBlock = null;
+		    
+		    while (iterator.hasNext()) {
+		    	hitBlock = iterator.next();
+		    	
+		    	if (hitBlock.getType() != Material.AIR)
+		    		break;
+		    }
+		    
+		    if (!game.canSpleef(hitBlock, player))
+		    	return;
+		    
+		    game.addBrokenBlock(player, hitBlock);
+		    FallingBlock block = arrow.getWorld().spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());
+		    block.setMetadata("bowspleef", new FixedMetadataValue(HeavySpleef.instance, true));
+		    hitBlock.setType(Material.AIR);
+		    arrow.remove();
+		} else if (projectile instanceof Egg) {
+			Egg egg = (Egg) projectile;
+			
+			if (!game.getFlag(FlagType.SPLEGG))
+				return;
+			
+			//Use BlockIterator to detect the hit block
+			BlockIterator iterator = new BlockIterator(egg.getWorld(), egg.getLocation().toVector(), egg.getVelocity().normalize(), 0, 4);
+		    Block hitBlock = null;
+		    
+		    while (iterator.hasNext()) {
+		    	hitBlock = iterator.next();
+		    	
+		    	if (hitBlock.getType() != Material.AIR)
+		    		break;
+		    }
+		    
+		    if (!game.canSpleef(hitBlock, player))
+		    	return;
+		    
+		    game.addBrokenBlock(player, hitBlock);
+		    hitBlock.setType(Material.AIR);
+		    egg.remove();
+		}
 	}
 	
 	/**
