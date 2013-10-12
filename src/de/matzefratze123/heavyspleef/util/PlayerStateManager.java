@@ -49,12 +49,11 @@ public class PlayerStateManager {
 			return;
 		}
 		
-		p.setGameMode(GameMode.SURVIVAL);//Set to survival
-		
 		states.put(p.getName(), new PlayerState(p.getInventory().getContents(), p.getInventory().getHelmet(), p.getInventory().getChestplate(),
 				  p.getInventory().getLeggings(), p.getInventory().getBoots(),p.getExhaustion(), p.getSaturation(),
 				  p.getFoodLevel(), p.getHealth(),p.getGameMode(), p.getActivePotionEffects(), p.getExp(), p.getLevel(), p.getAllowFlight()));
 
+		p.setGameMode(GameMode.SURVIVAL);//Set to survival
 		p.setFoodLevel(20);
 		p.setHealth(20);
 		p.setAllowFlight(false);//Disable fly mode (Essentials etc.)

@@ -19,6 +19,9 @@
  */
 package de.matzefratze123.heavyspleef.core.flag;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
@@ -44,6 +47,8 @@ public abstract class Flag<T> implements DatabaseSerializeable<T> {
 	String[] aliases;
 	
 	protected String name;
+	protected List<Flag<?>> conflicts = new ArrayList<Flag<?>>();
+	protected List<Flag<?>> required = new ArrayList<Flag<?>>();
 	
 	public Flag(String name, T defaulte) {
 		this.name = name;
@@ -69,6 +74,14 @@ public abstract class Flag<T> implements DatabaseSerializeable<T> {
 	public abstract String getHelp();
 	
 	public abstract FlagType getType();
+	
+	public abstract Flag<T> setConflictingFlags(Flag<?>... conflicts);
+	
+	public abstract List<Flag<?>> getConflictingFlags();
+	
+	public abstract Flag<T> setRequiredFlags(Flag<?>... flags);
+	
+	public abstract List<Flag<?>> getRequiredFlags();
 	
 	public T getAbsoluteDefault() {
 		return this.defaulte;

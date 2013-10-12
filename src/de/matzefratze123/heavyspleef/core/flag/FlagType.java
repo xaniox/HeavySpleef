@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -51,6 +50,19 @@ public enum FlagType {
 	}
 	
 	public static Set<Flag<?>> customFlags = new HashSet<Flag<?>>();
+	
+	@FlagData
+	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1", false);
+	@FlagData(aliases = {"shovel"})
+	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels", false);
+	@FlagData
+	public static final BooleanFlag SHEARS = new BooleanFlag("shears", false);
+	@FlagData(aliases = {"teamgame"})
+	public static final BooleanFlag TEAM = new BooleanFlag("team", false);
+	@FlagData
+	public static final BooleanFlag BOWSPLEEF = new BooleanFlag("bowspleef", false);
+	@FlagData
+	public static final BooleanFlag SPLEGG = new BooleanFlag("splegg", false);
 	
 	@FlagData(aliases = {"winpoint"})
 	public static final LocationFlag WIN = new LocationFlag("win");
@@ -90,16 +102,7 @@ public enum FlagType {
 	@FlagData(aliases = {"regeneration-intervall", "regeneration", "regen-intervall"})
 	public static final IntegerFlag REGEN_INTERVALL = new IntegerFlag("regen", -1);
 	
-	@FlagData
-	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1", false);
-	@FlagData(aliases = {"shovel"})
-	public static final BooleanFlag SHOVELS = new BooleanFlag("shovels", false);
-	@FlagData
-	public static final BooleanFlag SHEARS = new BooleanFlag("shears", false);
-	@FlagData(aliases = {"teamgame"})
-	public static final BooleanFlag TEAM = new BooleanFlag("team", false);
-	@FlagData
-	public static final BooleanFlag BOWSPLEEF = new BooleanFlag("bowspleef", false);
+	
 	
 	@FlagData
 	public static final ArrayItemStackFlag ITEMREWARD = new ArrayItemStackFlag("itemreward", new ItemStack[]{});
@@ -110,6 +113,21 @@ public enum FlagType {
 	
 	@FlagData
 	public static final EnumFlag<Difficulty> DIFFICULTY = new EnumFlag<Difficulty> ("difficulty", Difficulty.class, Difficulty.MEDIUM);
+	
+	static {
+		ONEVSONE.setConflictingFlags(TEAM);
+		TEAM.setConflictingFlags(ONEVSONE);
+		
+		SHOVELS.setConflictingFlags(SPLEGG, BOWSPLEEF, SHEARS);
+		SPLEGG.setConflictingFlags(SHOVELS, BOWSPLEEF, SHEARS);
+		BOWSPLEEF.setConflictingFlags(SHOVELS, SPLEGG, SHEARS);
+		SHEARS.setConflictingFlags(SHOVELS, SPLEGG, BOWSPLEEF);
+		
+		SPAWNPOINT1.setRequiredFlags(ONEVSONE);
+		SPAWNPOINT2.setRequiredFlags(ONEVSONE);
+		CHANCES.setConflictingFlags(ONEVSONE);
+		ROUNDS.setRequiredFlags(ONEVSONE);
+	}
 	
 	public static List<Flag<?>> getFlagList() {
 		List<Flag<?>> flags = new ArrayList<Flag<?>>();

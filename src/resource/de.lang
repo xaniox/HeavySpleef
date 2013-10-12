@@ -96,6 +96,9 @@ noSpectatePoint: &7F\u00FCr dieses Spiel wurde noch kein Beobachtungspunkt geset
 cannotSpectateWhilePlaying: &7Du kannst das Spiel nicht beobachten wenn du selbst spielst!
 alreadySpectating: &7Du beobachtest bereits ein Spiel!
 
+requiringFlags: &cF\u00FCr diese Flag werden folgende Flags vorausgesetzt: %a
+conflictingFlags: &cDiese Flag ist nicht kompatibel mit folgenden Flags: %a
+
 # Erfolgsnachrichten
 
 floorCreated: &7Floor mit ID #%a hinzugef\u00FCgt!

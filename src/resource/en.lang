@@ -92,6 +92,9 @@ noSpectatePoint: &7There is no spectate point set for this game!
 cannotSpectateWhilePlaying: &7You cannot spectate while ingame!
 alreadySpectating: &7You are already spectating a game!
 
+requiringFlags: &cThis flag requires other flags: %a
+conflictingFlags: &cThis flag is not compatible with the following flags: %a
+
 # Success messages
 
 floorCreated: &7Floor with ID #%a added!

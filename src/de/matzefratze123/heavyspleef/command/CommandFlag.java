@@ -20,16 +20,21 @@
 package de.matzefratze123.heavyspleef.command;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.flag.BooleanFlag;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.util.ArrayHelper;
 import de.matzefratze123.heavyspleef.util.Permissions;
+import de.matzefratze123.heavyspleef.util.Util;
 
 public class CommandFlag extends HSCommand {
 
@@ -80,6 +85,33 @@ public class CommandFlag extends HSCommand {
 			player.sendMessage(_("invalidFlag"));
 			player.sendMessage(__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.getFlagList(), true)));
 			return;
+		}
+		
+		
+		//Check required flags
+		for (Flag<?> required : flag.getRequiredFlags()) {
+			if (!game.hasFlag(required) || (required instanceof BooleanFlag && !(Boolean)game.getFlag(required))) {
+				List<String> flagNames = new ArrayList<String>();
+				for (Flag<?> f : flag.getRequiredFlags()) {
+					flagNames.add(f.getName());
+				}
+				
+				player.sendMessage(_("requiringFlags", Util.toFriendlyString(flagNames, ", ")));
+				return;
+			}
+		}
+		
+		//Check conflicting flags
+		for (Flag<?> conflicting : flag.getConflictingFlags()) {
+			if (game.hasFlag(conflicting)  || (conflicting instanceof BooleanFlag && (Boolean)game.getFlag(conflicting))) {
+				List<String> flagNames = new ArrayList<String>();
+				for (Flag<?> f : flag.getConflictingFlags()) {
+					flagNames.add(f.getName());
+				}
+				
+				player.sendMessage(_("conflictingFlags", Util.toFriendlyString(flagNames, ", ")));
+				return;
+			}
 		}
 		
 		StringBuilder buildArgs = new StringBuilder();

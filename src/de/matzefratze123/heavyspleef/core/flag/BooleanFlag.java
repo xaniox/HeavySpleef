@@ -19,10 +19,10 @@
  */
 package de.matzefratze123.heavyspleef.core.flag;
 
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
 import de.matzefratze123.heavyspleef.HeavySpleef;
 
 public class BooleanFlag extends Flag<Boolean> {
@@ -80,6 +80,38 @@ public class BooleanFlag extends Flag<Boolean> {
 	@Override
 	public FlagType getType() {
 		return FlagType.BOOLEAN_FLAG;
+	}
+	
+	@Override
+	public Flag<Boolean> setConflictingFlags(Flag<?>... conflicts) {
+		this.conflicts.clear();
+		
+		for (Flag<?> flag : conflicts) {
+			this.conflicts.add(flag);
+		}
+		//Method chaining -> return this;
+		return this;
+	}
+	
+	@Override
+	public List<Flag<?>> getConflictingFlags() {
+		return conflicts;
+	}
+	
+	@Override
+	public Flag<Boolean> setRequiredFlags(Flag<?>... flags) {
+		required.clear();
+		
+		for (Flag<?> flag : flags) {
+			this.required.add(flag);
+		}
+		//Method chaining -> return this;
+		return this;
+	}
+	
+	@Override
+	public List<Flag<?>> getRequiredFlags() {
+		return required;
 	}
 	
 }

@@ -133,5 +133,37 @@ public class ArrayItemStackFlag extends Flag<ItemStack[]> {
 	public FlagType getType() {
 		return FlagType.ARRAY_ITEMSTACK_FLAG;
 	}
+	
+	@Override
+	public Flag<ItemStack[]> setConflictingFlags(Flag<?>... conflicts) {
+		this.conflicts.clear();
+		
+		for (Flag<?> flag : conflicts) {
+			this.conflicts.add(flag);
+		}
+		//Method chaining -> return this;
+		return this;
+	}
+	
+	@Override
+	public List<Flag<?>> getConflictingFlags() {
+		return conflicts;
+	}
+	
+	@Override
+	public Flag<ItemStack[]> setRequiredFlags(Flag<?>... flags) {
+		required.clear();
+		
+		for (Flag<?> flag : flags) {
+			this.required.add(flag);
+		}
+		//Method chaining -> return this;
+		return this;
+	}
+	
+	@Override
+	public List<Flag<?>> getRequiredFlags() {
+		return required;
+	}
 
 }

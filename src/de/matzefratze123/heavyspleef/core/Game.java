@@ -2112,6 +2112,10 @@ public abstract class Game {
 		}
 	}
 	
+	public boolean hasFlag(Flag<?> flag) {
+		return flags.containsKey(flag);
+	}
+	
 	/**
 	 * Sets all flags for this game
 	 * 

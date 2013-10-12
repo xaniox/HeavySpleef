@@ -20,8 +20,9 @@
 package de.matzefratze123.heavyspleef.core.flag;
 
 
-import org.bukkit.entity.Player;
+import java.util.List;
 
+import org.bukkit.entity.Player;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 
 public class IntegerFlag extends Flag<Integer> {
@@ -74,6 +75,38 @@ public class IntegerFlag extends Flag<Integer> {
 	@Override
 	public FlagType getType() {
 		return FlagType.INTEGER_FLAG;
+	}
+	
+	@Override
+	public Flag<Integer> setConflictingFlags(Flag<?>... conflicts) {
+		this.conflicts.clear();
+		
+		for (Flag<?> flag : conflicts) {
+			this.conflicts.add(flag);
+		}
+		//Method chaining -> return this;
+		return this;
+	}
+	
+	@Override
+	public List<Flag<?>> getConflictingFlags() {
+		return conflicts;
+	}
+	
+	@Override
+	public Flag<Integer> setRequiredFlags(Flag<?>... flags) {
+		required.clear();
+		
+		for (Flag<?> flag : flags) {
+			this.required.add(flag);
+		}
+		//Method chaining -> return this;
+		return this;
+	}
+	
+	@Override
+	public List<Flag<?>> getRequiredFlags() {
+		return required;
 	}
 
 }
