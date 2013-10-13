@@ -75,13 +75,29 @@ public abstract class Flag<T> implements DatabaseSerializeable<T> {
 	
 	public abstract FlagType getType();
 	
-	public abstract Flag<T> setConflictingFlags(Flag<?>... conflicts);
+	public void setConflictingFlags(Flag<?>... conflicts) {
+		this.conflicts.clear();
+		
+		for (Flag<?> flag : conflicts) {
+			this.conflicts.add(flag);
+		}
+	}
 	
-	public abstract List<Flag<?>> getConflictingFlags();
+	public List<Flag<?>> getConflictingFlags() {
+		return conflicts;
+	}
 	
-	public abstract Flag<T> setRequiredFlags(Flag<?>... flags);
+	public void setRequiredFlags(Flag<?>... flags) {
+		required.clear();
+		
+		for (Flag<?> flag : flags) {
+			this.required.add(flag);
+		}
+	}
 	
-	public abstract List<Flag<?>> getRequiredFlags();
+	public List<Flag<?>> getRequiredFlags() {
+		return required;
+	}
 	
 	public T getAbsoluteDefault() {
 		return this.defaulte;
