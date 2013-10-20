@@ -135,6 +135,7 @@ flag-defaults:
   shovels: false
   shears: false
   team: false
+  splegg: false
   
   # Syntax of an array itemreward flag: 'ID AMOUNT ID2 AMOUNT2 ID3 AMOUNT3 etc.'
   # Example: '264 5 388 3'. This would give 5 Diamonds and 3 Emeralds

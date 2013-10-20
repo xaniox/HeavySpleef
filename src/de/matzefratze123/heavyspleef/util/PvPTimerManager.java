@@ -8,6 +8,11 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 
+/**
+ * Provides an manager for pvp timers
+ * 
+ * @author matzefratze123
+ */
 public class PvPTimerManager {
 	
 	private static Map<String, Integer> pvpTimerTasks = new HashMap<String, Integer>();

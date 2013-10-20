@@ -1462,8 +1462,9 @@ public abstract class Game {
 			return false;
 		
 		HeavySpleef.instance.database.db.set(getName(), null);
-		HeavySpleef.instance.database.save();
 		this.name = newName;
+		
+		HeavySpleef.instance.database.save();
 		return true;
 	}
 	

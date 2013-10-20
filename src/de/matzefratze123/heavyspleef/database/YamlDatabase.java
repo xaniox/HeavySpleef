@@ -131,6 +131,8 @@ public class YamlDatabase {
 			else if (GameType.valueOf(section.getString("type")) == GameType.CYLINDER)
 				loadCylinder(section);
 			count++;
+			
+			HeavySpleef.debug("Loaded " + key + "!");
 		}
 		
 		plugin.getLogger().info("Loaded " + count + " games!");

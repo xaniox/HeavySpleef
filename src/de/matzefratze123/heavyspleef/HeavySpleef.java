@@ -199,6 +199,10 @@ public class HeavySpleef extends JavaPlugin {
 		return GameAPI.getInstance();
 	}
 	
+	public static void debug(String msg) {
+		System.out.println("[HeavySpleef] [Debug] " + msg);
+	}
+	
 	public SelectionManager getSelectionManager() {
 		return selectionManager;
 	}

@@ -34,7 +34,6 @@ public class GameManager {
 	
 	//Main core list that contains ALL games!
 	public static List<Game> games = new ArrayList<Game>();
-	public static List<String> renamedGames = new ArrayList<String>();
 	
 	public static Location spleefHub = null;
 	public static List<HUBPortal> portals = new ArrayList<HUBPortal>();
