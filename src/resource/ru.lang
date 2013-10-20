@@ -1,100 +1,101 @@
+# Перевод от AlexMerser
 # Сообщения об ошибках
 
-noPermission: &cУ вас нет разрешения!
-onlyIngame: &cЭта команда может быть использована только в игре!
-unknownCommand: &cНеизвестная команда HeavySpleef! Наберите &6/spleef help [№ страницы] &cдля получения помощи!
+noPermission: &cУ вас нет прав!
+onlyIngame: &cВвод доступен только с игры!
+unknownCommand: &cНеизвестная команда!Введите &6/spleef help [страница] &cдля списка всех команд"
 
-selectionCantTroughWorlds: &cYour selection can't be trough worlds!
-needSelection: &cПожалуйста, сделайте выбор первым!
-notInsideArena: &cВыш выбор не в границах какой-либо арены! Невозможно добавить область...
-invalidBlock: &cThis blockdata is not valid!
+selectionCantTroughWorlds: &cВаше выдиление не может проходить сквозь миры!
+needSelection: &cСначала выделите территорию!
+notInsideArena: &cВыделенная территория находится за границами территории!
+invalidBlock: &cНеправильный ID блока!
 
-arenaAlreadyExists: &cЭта арена уже существует!
-arenaDoesntExists: &cЭта арена не существует!
+arenaAlreadyExists: &cТакая арена уже существует!
+arenaDoesntExists: &cТакая арена не существует!
 arenaCantBeInsideAnother: &cИгра не может быть в другой игре!
-cantDeleteGameWhileIngame: &cНе удается удалить игру, пока вы или кто-то находится в игре!
-gameIsAlreadyDisabled: &cЭта игра уже отключена!
-gameIsAlreadyEnabled: &cЭта игра уже включена!
+cantDeleteGameWhileIngame: &cНельзя удалить арену, пока Вы или кто-то находится в ней!
+gameIsAlreadyDisabled: &cЭта арена уже отключена!
+gameIsAlreadyEnabled: &cЭта арена уже включена!
 
-pageDoesntExists: &cЭта страница не существует!
-gameIsDisabled: &cЭта игра отключена!
-isntReadyToPlay: &cАрена все еще не готова к игре!
-notEnoughMoneyToJoin: &cВы не имеете достаточно денег, чтобы присоединиться к этой игре!
-playerNotOnline: &cЭтот игрок не в сети!
-targetHasntEnoughMoney: &cЭтот игрок не имеет достаточно денег, чтобы присоединиться к этой игре!
-gameAlreadyRunning: &cИгра запущена на этой арене!
-cantJoinMultipleGames: &cНе могу объединить несколько игр!
-playerIsntInAnyGame: &cЭтот игрок не в игре!
-playerIsntInAnyGameToPlayer: &cВы не в игре!
-minimumToLow: &cМинимальное количество игроков не может быть ниже, чем 2!
+pageDoesntExists: &cТакая страница не существует!
+gameIsDisabled: &cАрена отключена!
+isntReadyToPlay: &cАрена еще не настроена!
+notEnoughMoneyToJoin: &cУ Вас не хватает денег, чтобы войти на эту арену!
+playerNotOnline: &cЭтот игрок не онлайн!
+targetHasntEnoughMoney: &cЭтотому игроку не хватает денег, чтобы войти на эту арену!
+gameAlreadyRunning: &cИгра уже началась!Подождите ее окончания!
+cantJoinMultipleGames: &cНельзя быть в несколькых аренах одновременно!
+playerIsntInAnyGame: &cЭтот игрок не играет!
+playerIsntInAnyGameToPlayer: &cВы не играете!
+minimumToLow: &cМинимальное количество игроков должно быть выше 2!
 notANumber: &c%a не является числом
 notLookingAtABlock: &cВы не смотрите на блок!
-notLookingAtFloor: &cYou are not looking at a floor!
-cantRemoveFloorWhileRunning: &cНе удается удалить пол в то время как идет игра!
+notLookingAtFloor: &cВы не смотрите на пол!
+cantRemoveFloorWhileRunning: &cНельзя удалить пол во время игры!
 loseZoneWithIDDoesntExists: &cLosezone с указанным ID не существует!
-cantRemoveLoseWhileRunning: &cНе удается удалить losezone в то время как идет игра!
-noVault: &cVault не установлен на этом сервере или не работает правильно!
-cantStartGameWhileRunning: &cНе удается запустить игру в то время как она уже запущена!
-notEnoughPlayers: &cНе хватает игроков! Вам нужно по крайней мере, %a
+cantRemoveLoseWhileRunning: &cНельзя удалять losezone во время игры!
+noVault: &cVault не установлен на или работает не правильно!
+cantStartGameWhileRunning: &cНельзя запустить игру повторно!
+notEnoughPlayers: &cНе хватает игроков! Необходимо минимум %a
 
 notAllowedLeaveArena: &cВам не разрешено покидать арену!
-notAllowedToBuild: &cВы не можете строить здесь!
+notAllowedToBuild: &cВы не можете ломать и строить здесь!
 notAllowedToBreakSpecified: &cВы не можете разрушать %a!
 cantChangeGamemode: &cНевозможно изменить игровой режим во время игры!
 cantUseCommands: &cВы не можете использовать эту команду пока вы участник игры!
 loginAfterServerShutdown: &cВы были телепортированы из игры %a на спавн проигравших, так как во время игры сервер был остановлен.
-notAllowedToCreateSpleefSigns: &cВы не можете создать spleef таблички!
+notAllowedToCreateSpleefSigns: &cУ Вас нет прав создавать spleef таблички!
 
 errorOnState: &cПроизошла ошибка при загрузке старого инвентаря. Простите... :(
 noGameRunning: &cНет игр запущенных на этой арене!
 
-noWorldEdit: &cCan't use this function! WorldEdit wasn't found on this server!
+noWorldEdit: &cНевозможно использовать эту функцию - WorldEdit не найден на сервере!
 
-onlyOneLayer: &cThe size of a floor in the y-coordinate can only be one layer!
-maxPlayersReached: &cThe maximum count of players in this arena is reached!
+onlyOneLayer: &cРазмер пола в Y-координате может быть только 1 слоем!
+maxPlayersReached: &cМаксимальное количество игроков привышено на этой арене!
 
-invalidBlockFace: &cThis direction is invalid!
-notLookingAtScoreBoard: &cYou are not looking at a scoreboard!
+invalidBlockFace: &cНеизвестное направление!
+notLookingAtScoreBoard: &cВы не смотрите на доску счета!
 
-didntSelectWall: &cYou didn't select a wall!
-yMustBeSame: &cThe y-coordinate must be the same!
-notLookingAtWall: &cYou aren't looking at a wall!
-cannotDestroyWallAdmin: &cYou cannot destroy this sign! To remove the wall look on it and type: /spleef removewall
-cannotDestroyWallUser: &cYou cannot destroy this sign!
-lengthMustBeOver1: &cThe length of the wall must be at least 2 blocks!
+didntSelectWall: &cВы не можете выбрать стенку!
+yMustBeSame: &cY-Координата должны быть одинаковой!
+notLookingAtWall: &cВы не смотрите на таблички!
+cannotDestroyWallAdmin: &cВы не можете ломать эту табличку!Для разрушения этих табличек смотрите на них и введите &4/spleef removewall
+cannotDestroyWallUser: &cВы не можете ломать эту табличку!
+lengthMustBeOver1: &cДлина стены должны быть 2 блока!
 
-noCommandsInQueue: &cYou can't use commands while in queue!
+noCommandsInQueue: &cВы не можете использовать команды в очереди!
 
-invalidFlag: &cInvalid flag!
-invalidFlagFormat: &cInvalid flag-format!
-onlyLobby: &cYou can use this command only during lobby!
+invalidFlag: &cФлаг не найден!
+invalidFlagFormat: &cНеправильный формат флага!
+onlyLobby: &cВы можете использовать эту команду только в лобби арены!
 
-votesDisabled: &6Votes are disabled for this server!
-alreadyVoted: &6You already voted!
+votesDisabled: &6Голосования отключены на этом сервере!
+alreadyVoted: &6Вы уже голосовали!
 
-alreadyInTeam: &cYou are already in team %a&c!
-notInThisTeam: &cYou are not in this team!
-invalidColor: &cThis an invalid team-color!
-specifieTeam: &cPlease pick a team! Available Teams: %a
-notASign: &cSome blocks in this selection are not signs!
+alreadyInTeam: &cВы и так уже в команде %a&c!
+notInThisTeam: &cВас нет в этой команде!
+invalidColor: &cНеправильный цвет команды!
+specifieTeam: &cПожалуйста, выбирите команду! Возможные команды: %a
+notASign: &cНекоторые блоки в выделении не являются табличками!
 
-noSpleefHubSet: &cThe Spleef-HUB wasn't set!
-notLookingAtPortal: &cYou aren't looking at a portal!
+noSpleefHubSet: &cСплиф-Хаб не установлен!
+notLookingAtPortal: &cВы не смотрите на портал!
 
-teamNeedMorePlayers: &cThe team %a needs at minimum %a players!
-maxPlayersInTeam: &cThe maximum count of players in this team is reached! Please choose another team...
-minimumTwoTeams: &cYou need at least two teams to start the game!
-invalidTeam: &cThis team is invalid!
-unknownSpleefType: &cThe gametype %a is invalid! Available types: CUBOID, CYLINDER, ELLIPSE
+teamNeedMorePlayers: &cКоманда %a требует еще как минимум %a игроков!
+maxPlayersInTeam: &cМаксимальное количество игроков первышено в этой команде!Пожалуйста, выбирите другую...
+minimumTwoTeams: &cВам потребуется минимум две команды, чтобы начать игру!
+invalidTeam: &cКоманда не найдена!
+unknownSpleefType: &cТип арены %a не найден! Доступные типы: CUBOID, CYLINDER, ELLIPSE
 
 # Сообщения об успешном выполнении
 
-floorCreated: &7Пол был создан!
+floorCreated: &7Пол создан!
 loseZoneCreated: &7Losezone для игры была добавлена! (ID: %a)\n Если вы хотите удалить эту losezone, просто наберите /spleef removelosezone %a %a)
 gameCreated: &7Игра успешно добавлена!
-gameDeleted: &7Spleefarena успешно удалена!
-gameDisabledToPlayer: &7Вы отключили игру %a
-gameEnabledToPlayer: &7Вы включили игру %a
+gameDeleted: &7Арена успешно удалена!
+gameDisabledToPlayer: &7Вы отключили игру на %a
+gameEnabledToPlayer: &7Вы включили игру на %a
 targetHasJoined: &7Игрок %a присоединился к игре %a !
 targetAddedToQueue: &7Игрок %a добавлен в очередь!
 playerJoinedToPlayer: &7Вы присоединились к игре %a
@@ -104,63 +105,63 @@ left: &cВы вышли из игры...
 floorRemoved: &7Пол был удален!
 loseZoneRemoved: &7Losezone с ID %a была удалена!
 gamesSaved: &7Все игры были сохранены в базе данных!
-gameStarted: &7Начало игры!
+gameStarted: &7Игра началась!
 win: &6Вы выиграли игру!
 jackpotReceived: &7Вы получили джекпот %a за победу в этой игре!
-rewardReceived: &7You received %a reward for winning this game!
+rewardReceived: &7Вы получили %a как приз за выигрыш на этой арене!
 
-antiCampWarn: &4AntiCamping&c: У вас осталось &4%a &cдо того как вы упадете вниз!
-antiCampTeleport: &4AntiCamping&c: Вы упали вниз из-за того, что долго стояли на одном месте!
+antiCampWarn: &4АнтиОтдых&c: У вас осталось &4%a &cдо того как вы упадете вниз!
+antiCampTeleport: &4АнтиОтдых&c: Вы упали вниз из-за того, что долго стояли на одном месте!
 
 paidIntoJackpot: &7Вы внесли %a в джекпот игры!
 yourKnockOuts: &aВы победили: %a
 
-noLongerInQueue: &7Вас нет больше в очереди!
-leftQueue: &7Вы покинули очередь на игру %a
-addedToQueue: &7Вы находитесь в очереди на игру %a
-notInQueue: &7You are not in a queue!
+noLongerInQueue: &7Вас больше нет в очереди!
+leftQueue: &7Вы вышли с очереди на арену %a
+addedToQueue: &7Вы находитесь в очереди на арену %a
+notInQueue: &7Вы не находитесь в очереди!
 
 outOfGame: &cВы вышли из игры...
 spleefSignCreated: &7Spleef табличка успешно создана!
-stateSaved: &7Ваши состояние и инвентарь были сохранены!
-stateRestored: &7Ваше состояние было восстановленно!
+stateSaved: &7Ваш инвентарь сохранен!
+stateRestored: &7Ваш инвентарь восстановленно!
 gameStopped: &cИгра была остановлена!
 
-chancesLeft: &cYou have %a chances left!
-chancesLeftBroadcast: &c%a has %a chances left!
+chancesLeft: &cВы имеете %a шансов!
+chancesLeftBroadcast: &c%a имеет %a шансов!
 
-scoreBoardAdded: &7The scoreboard has been added!
-scoreBoardRemoved: &7The scoreboard has been removed!
+scoreBoardAdded: &7Доска со счетом была добавлена!
+scoreBoardRemoved: &7Доска со счетом была удалена!
 
-wallRemoved: &7The wall has been removed!
-signWallAdded: &7The wall was added!
+wallRemoved: &7Таблички созданы!
+signWallAdded: &7Таблички удалены!
 
 inventory: &6&lвыбрать игру...
 
-flagCleared: &7Flag named %a cleared!
-flagSet: &7Flag %a set!
+flagCleared: &7Флаг %a убран!
+flagSet: &7Флаг %a установлен!
 
-pluginReloaded: &7HeavySpleef version %a reloaded! Took %ams
+pluginReloaded: &7HeavySpleef v%a перезагружен за %aмсек.
 
-itemRewardReceived: &7You received %a %a as a prize!
-loserewardReceived: &7You received %a %a as a consolation prize!
+itemRewardReceived: &7Вы получили %a %a как приз за игру!
+loserewardReceived: &7Вы получили %a %a как утешительный приз!
 
-successfullyVoted: &6Successfully received vote!
+successfullyVoted: &6Ваш голос принят!
 
-teleportWillCommence: &6Joining game %a. Teleport will commence in %a seconds...
-dontMove: &6Don't move!
-pvpTimerCancelled: &4Teleportation cancelled due to movement!
+teleportWillCommence: &6Вход на арену %a. Телепортация через %a секунд...
+dontMove: &6Не двигайся!
+pvpTimerCancelled: &4Телепортация отменнена из-за передвижения!
 
-notASign: &cSome blocks in this selections are not signs!
-gameRenamed: Renamed game &6%a &7to &5%a &7!
+notASign: &cНекоторые блоки в выдилении не явлются табличками!
+gameRenamed: Арена &6%a &7переименована на &5%a &7!
 
-welcomeToHUB: &7Welcome to the &4&lSpleef-HUB&r&7!
-spleefHubSet: &7Global Spleef HUB set!
-portalRemoved: &7The portal was removed!
-portalAdded: &7Portal added!
+welcomeToHUB: &7Добро пожаловать на &4&lSpleef-Хаб&r&7!
+spleefHubSet: &7Сплиф-Хаб создан!
+portalRemoved: &7Портал удален!
+portalAdded: &7Портал создан!
 
-taggedAsReady: &7You have been tagged as ready
-teleportingToHub: &7Teleporting to Spleef HUB. Don't move...
+taggedAsReady: &7Вы были приняты, как готовыми к игре
+teleportingToHub: &7Телепортация на Spleef-Хаб. Не двигайтесь...
 
 # Публичные сообщения
 
@@ -169,35 +170,35 @@ gameEnabled: &aИгру &6%a &aвключил %a
 gameHasStarted: &1Игра началась! Удачи...
 gameOnArenaHasStarted: &6Игра на арене %a началась!
 startedGameWith: &6Началась игра с %a игроками!
-gameIsStarting: &1Игра начнется через %a секунд...
+gameIsStarting: &1Игра начнется через &4%a&1 секунд...
 gameStopped: &cИгра была остановлена!
 playerJoinedGame: &a%a присоединился к игре!
-hasWon: &a%a &1выиграл игру на арене &6%a&1!
-teamWin: &aTeam %a &ahas won the game in arena %a&7!
-playerJoinedTeam: &a%a has joined the %a team!
-teamEliminated: &aThe %a &ateam was eliminated!
+hasWon: &a%a &1победил на арене &6%a&1!
+teamWin: &aКоманда %a &aпобедила на арене %a&7!
+playerJoinedTeam: &a%a зашел за команду %a!
+teamEliminated: &aКоманда %a &aбыла исключена!
 
-doubleKnockout: &7%a &7got a Double Knockout!
-tripleKnockout: &9%a &9got a Triple Knockout!
-superKnockout: &5%a &5got a Super Knockout!
-unbelievableKnockout: &5%a got an &6&lUnbelievable Knockout&r&5!
+doubleKnockout: &7%a &7получил Double Knockout!
+tripleKnockout: &9%a &9получил Triple Knockout!
+superKnockout: &5%a &5получил Super Knockout!
+unbelievableKnockout: &5%a получил &6&lUnbelievable Knockout&r&5!
 
-wonRound: &a%a &chas won round &6%a &cof &6%a&c!
-roundsRemaining: &1%a rounds remaining!
-wonThe1vs1: &a%a has won the game against %a!
-endedDraw: &aThe game in arena %a has ended in a draw...
-remaining: &1%a players remaining!
+wonRound: &a%a &cвыиграл раунд &6%a &cна арене &6%a&c!
+roundsRemaining: &1%a раундов осталось!
+wonThe1vs1: &a%a выиграл на арене против %a!
+endedDraw: &aTИгра на арене %a закончился в ничью...
+remaining: &1%a игроков осталось!
 
-roundStarted: &aRound &6%a &aof &6%a &ahas started!
-roundStartsIn: &1Round starts in %a seconds...
+roundStarted: &aРаунд &6%a &aна арене &6%a &aначат!
+roundStartsIn: &1Раунд начнется через &4%a&1 секунд...
 
-timeLeftSeconds: &1%a seconds left until the game ends!
-timeLeftMinutes: &1%a minutes and %a seconds left until the game ends!
-timeoutReached: &1Reached timeout! Finish the game...
+timeLeftSeconds: &1%a сек. до завершения игры!
+timeLeftMinutes: &1%a минут и %a секунд до конца игры!
+timeoutReached: &1Время вышло! Игра закончена...
 
-loseCause_kick: &6%a &cбыл изгнан из игры!
+loseCause_kick: &6%a &cизгнан из игры!
 loseCause_leave: &6%a &cвышел из игры на арене %a!
-loseCause_lose: &6%a &cпотерпел поражение от &4%a&c!
+loseCause_lose: &6%a &cпровалился от руки &4%a&c!
 loseCause_quit: &6%a &cвышел во время игры!
 loseCause_unknown: &6%a &cпокинул арену по неизвестной причине...
-loseCause_lose_unknown: &6%a &cwas knocked out!
+loseCause_lose_unknown: &6%a &cпровалислся!
