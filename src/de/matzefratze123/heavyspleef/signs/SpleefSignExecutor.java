@@ -113,7 +113,6 @@ public class SpleefSignExecutor implements Listener {
 		
 		SpleefSign matching = matchSign(e.getLines());
 		
-		System.out.println(matching);
 		if (matching == null)
 			return;
 		
@@ -145,10 +144,6 @@ public class SpleefSignExecutor implements Listener {
 
 				// If one line is false the sign is not matching the current
 				// SpleefSign
-				
-				System.out.println("signline: " + line);
-				System.out.println("spleefsignline: " + spleefSignLine);
-				
 				if (!line.equalsIgnoreCase(spleefSignLine)) {
 					matching = false;
 				}
