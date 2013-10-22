@@ -20,7 +20,7 @@ general:
   broadcast-radius: 40
   
   # Which spleef prefix should we use?
-  spleef-prefix: '&c[&6Spleef&c]'
+  spleef-prefix: '&8[&6&lSpleef&8]'
   
   # Should player inventorys and other stuff (for example health, foodlevel etc.) be saved?
   # The state of the player will be restored on the end of the game. This makes sure that

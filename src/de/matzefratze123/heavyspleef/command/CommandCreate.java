@@ -40,8 +40,6 @@ public class CommandCreate extends HSCommand {
 		         "Creates a new cuboid game within your selection\n\n" + 
 				 "/spleef create <name> cylinder <radius> <height>\n" +
 				 "Creates a new cylinder arena with the radius and height\n\n" +
-				 "/spleef create <name> polygonal\n" +
-				 "Creates a new polygonal arena with your given worldedit selection\n\n" +
 				 "/spleef create <name> ellipse <radiusEastWest> <radiusNorthSouth> <height>\n" +
 				 "Creates a new ellipse game with the given two radians and the height");
 		setTabHelp(new String[]{"<name> cuboid", "<name> cylinder <radius> <height>", "<name> ellipse <radiusEastWest> <radiusNorthSouth> <height>"});

@@ -22,7 +22,6 @@ package de.matzefratze123.heavyspleef;
 import java.io.File;
 import java.io.IOException;
 
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -42,7 +41,6 @@ import de.matzefratze123.heavyspleef.listener.PVPTimerListener;
 import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.listener.QueuesListener;
 import de.matzefratze123.heavyspleef.listener.ReadyListener;
-import de.matzefratze123.heavyspleef.listener.SignListener;
 import de.matzefratze123.heavyspleef.listener.SignWallListener;
 import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.listener.UpdateListener;
@@ -79,8 +77,8 @@ public class HeavySpleef extends JavaPlugin {
 	public static HeavySpleef instance;
 	
 	//Other stuff
-	public static String PREFIX = ChatColor.RED + "[" + ChatColor.GOLD + "Spleef" + ChatColor.RED + "]"; 
-	public static String[] commands = new String[] {"/spleef", "/hs", "/hspleef"};
+	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
+	public static final String[] commands = new String[] {"spleef", "spl", "hs", "hspleef"};
 	public int saverTid = -1;
 	public int antiCampTid = -1;
 	
