@@ -91,7 +91,8 @@ public enum Permissions {
 	SIGN_LEAVE("heavyspleef.sign.leave"),
 	SIGN_START("heavyspleef.sign.start"),
 	SIGN_HUB("heavyspleef.sign.hub"),
-	SIGN_VOTE("heavyspleef.sign.vote");
+	SIGN_VOTE("heavyspleef.sign.vote"),
+	SIGN_SPECTATE("heavyspleef.sign.spectate");
 	
 	
 	private String perm;

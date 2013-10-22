@@ -48,6 +48,13 @@ import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.listener.UpdateListener;
 import de.matzefratze123.heavyspleef.selection.SelectionListener;
 import de.matzefratze123.heavyspleef.selection.SelectionManager;
+import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
+import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignHub;
+import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignJoin;
+import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignLeave;
+import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignSpectate;
+import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignStart;
+import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignVote;
 import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
@@ -113,6 +120,8 @@ public class HeavySpleef extends JavaPlugin {
 		
 		initUpdate();
 		registerEvents();
+		registerSigns();
+		
 		//Register our main command
 		getCommand("spleef").setExecutor(new CommandHandler());
 		
@@ -141,7 +150,6 @@ public class HeavySpleef extends JavaPlugin {
 	private void registerEvents() {
 		PluginManager pm = this.getServer().getPluginManager();
 		
-		pm.registerEvents(new SignListener(), this);
 		pm.registerEvents(new SelectionListener(this), this);
 		pm.registerEvents(new PlayerListener(), this);
 		pm.registerEvents(new UpdateListener(), this);
@@ -150,11 +158,23 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new PVPTimerListener(), this);
 		pm.registerEvents(new HUBPortalListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
+		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
 		
 		Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
 		if (tagAPIHook.hasHook()) {
 			pm.registerEvents(new TagListener(), this);
 		}
+	}
+	
+	private void registerSigns() {
+		SpleefSignExecutor executor = SpleefSignExecutor.getInstance();
+		
+		executor.registerSign(new SpleefSignJoin());
+		executor.registerSign(new SpleefSignLeave());
+		executor.registerSign(new SpleefSignStart());
+		executor.registerSign(new SpleefSignHub());
+		executor.registerSign(new SpleefSignSpectate());
+		executor.registerSign(new SpleefSignVote());
 	}
 	
 	private void setupStatisticDatabase() {
