@@ -80,7 +80,7 @@ import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.stats.StatisticManager;
 import de.matzefratze123.heavyspleef.util.ArrayHelper;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
-import de.matzefratze123.heavyspleef.util.LocationSaver;
+import de.matzefratze123.heavyspleef.util.LocationKeeper;
 import de.matzefratze123.heavyspleef.util.PlayerStateManager;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Util;
@@ -363,7 +363,7 @@ public abstract class Game {
 		for (Player p : getPlayers()) {
 			players.remove(p.getName());
 			
-			if (getFlag(LOSE) == null) p.teleport(LocationSaver.load(p));
+			if (getFlag(LOSE) == null) p.teleport(LocationKeeper.load(p));
 			else p.teleport(getFlag(LOSE));
 			
 			PlayerStateManager.restorePlayerState(p);
@@ -427,7 +427,7 @@ public abstract class Game {
 		
 		Location spectate = getFlag(SPECTATE);
 		
-		LocationSaver.save(player);
+		LocationKeeper.save(player);
 		player.teleport(spectate);
 		player.sendMessage(_("welcomeToSpectate"));
 		spectating.add(player.getName());
@@ -441,7 +441,7 @@ public abstract class Game {
 		List<Player> list = new ArrayList<Player>();
 		
 		for (String str : spectating) {
-			Player player = Bukkit.getPlayer(str);
+			Player player = Bukkit.getPlayerExact(str);
 			if (player == null)
 				continue;
 			
@@ -456,7 +456,7 @@ public abstract class Game {
 			return;
 		
 		spectating.remove(player.getName());
-		player.teleport(LocationSaver.load(player));
+		player.teleport(LocationKeeper.load(player));
 	}
 	
 	/**
@@ -494,7 +494,7 @@ public abstract class Game {
 		SpleefLogger.log(LogType.JOIN, this, player);
 		
 		Location lobby = getFlag(LOBBY) == null ? getRandomLocation() : getFlag(LOBBY);
-		LocationSaver.save(player);
+		LocationKeeper.save(player);
 		
 		if (isCounting() || isIngame())
 			player.teleport(getRandomLocation());
@@ -569,13 +569,17 @@ public abstract class Game {
 	 * @param cause Cause of lose
 	 */
 	public void leave(Player player, LoseCause cause) {
-		if (player == null)
+		if (player == null) {
 			return;
-		if (cause == null)
-			cause = LoseCause.UNKNOWN;
+		}
 		
-		if (!players.contains(player.getName())) //Player can't be removed if he isn't playing
+		if (cause == null) {
+			cause = LoseCause.UNKNOWN;
+		}
+		
+		if (!players.contains(player.getName())) { //Player can't be removed if he isn't playing
 			return;
+		}
 		
 		boolean is1vs1 = getFlag(ONEVSONE);
 		int chances = getFlag(CHANCES);
@@ -635,7 +639,7 @@ public abstract class Game {
 		}
 		
 		if (getFlag(LOSE) == null)
-			player.teleport(LocationSaver.load(player));
+			player.teleport(LocationKeeper.load(player));
 		else
 			player.teleport(getFlag(LOSE));
 		
@@ -680,7 +684,7 @@ public abstract class Game {
 				return;
 			
 			cancelTasks();
-			win(Bukkit.getPlayer(players.get(0)));
+			win(Bukkit.getPlayerExact(players.get(0)));
 		}
 	}
 	
@@ -755,7 +759,7 @@ public abstract class Game {
 			}
 			
 			
-			win(Bukkit.getPlayer(win.getOwner()));//Win, broadcast and end the game!
+			win(Bukkit.getPlayerExact(win.getOwner()));//Win, broadcast and end the game!
 			broadcast(_("wonThe1vs1", ViPManager.colorName(win.getOwner()), ViPManager.colorName(loser_)), ConfigUtil.getBroadcast("win"));
 			return;
 		}
@@ -865,7 +869,7 @@ public abstract class Game {
 			return;
 		
 		if (getFlag(WIN) == null)
-			p.teleport(LocationSaver.load(p));
+			p.teleport(LocationKeeper.load(p));
 		else
 			p.teleport(getFlag(WIN));
 		
@@ -876,7 +880,7 @@ public abstract class Game {
 		removePlayerFromTeam(p);
 		
 		for (Player player : getPlayers()) {
-			if (getFlag(LOSE) == null) player.teleport(LocationSaver.load(player));
+			if (getFlag(LOSE) == null) player.teleport(LocationKeeper.load(player));
 			else player.teleport(getFlag(LOSE));
 			
 			player.setFireTicks(0);
@@ -936,7 +940,7 @@ public abstract class Game {
 		
 		for (Player winner : team.getPlayers()) {
 			if (getFlag(WIN) == null)
-				winner.teleport(LocationSaver.load(winner));
+				winner.teleport(LocationKeeper.load(winner));
 			else
 				winner.teleport(getFlag(WIN));
 			
@@ -954,7 +958,7 @@ public abstract class Game {
 		
 		for (Player leftPlayer : getPlayers()) {
 			if (getFlag(LOSE) == null)
-				leftPlayer.teleport(LocationSaver.load(leftPlayer));
+				leftPlayer.teleport(LocationKeeper.load(leftPlayer));
 			else
 				leftPlayer.teleport(getFlag(WIN));
 			
@@ -992,7 +996,7 @@ public abstract class Game {
 		
 		for (Player p : getPlayers()) {
 			if (getFlag(WIN) == null)
-				p.teleport(LocationSaver.load(p));
+				p.teleport(LocationKeeper.load(p));
 			else
 				p.teleport(getFlag(WIN));
 			
@@ -1035,7 +1039,7 @@ public abstract class Game {
 			
 			String killerName = "";
 			
-			Player killer = Bukkit.getPlayer(getKiller(player, true));
+			Player killer = Bukkit.getPlayerExact(getKiller(player, true));
 			if (killer == null)
 				return _("loseCause_lose_unknown", team.getColor() + player.getName());
 			
@@ -1391,7 +1395,7 @@ public abstract class Game {
 		String[] playersAsString = players.toArray(new String[players.size()]);
 		ArrayList<Player> pList = new ArrayList<Player>(); 
 		for (String player : playersAsString) {
-			Player p = Bukkit.getPlayer(player);
+			Player p = Bukkit.getPlayerExact(player);
 			if (p == null)
 				continue;
 			pList.add(p);
@@ -1406,7 +1410,7 @@ public abstract class Game {
 		String[] playersAsString = outPlayers.toArray(new String[outPlayers.size()]);
 		ArrayList<Player> pList = new ArrayList<Player>(); 
 		for (String player : playersAsString) {
-			Player p = Bukkit.getPlayer(player);
+			Player p = Bukkit.getPlayerExact(player);
 			if (p == null)
 				continue;
 			pList.add(p);

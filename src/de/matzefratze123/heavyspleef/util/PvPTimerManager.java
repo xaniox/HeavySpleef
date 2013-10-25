@@ -20,8 +20,9 @@ public class PvPTimerManager {
 	public static void addToTimer(Player player, Runnable target) {
 		int pvptimer = HeavySpleef.getSystemConfig().getInt("general.pvptimer");
 		
-		if (pvpTimerTasks.containsKey(player.getName()))
+		if (pvpTimerTasks.containsKey(player.getName())) {
 			cancelTimerTask(player);
+		}
 		
 		int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, target, Math.abs(pvptimer) * 20L);
 		
@@ -29,8 +30,9 @@ public class PvPTimerManager {
 	}
 	
 	public static void cancelTimerTask(Player player) {
-		if (!pvpTimerTasks.containsKey(player.getName()))
+		if (!pvpTimerTasks.containsKey(player.getName())) {
 			return;
+		}
 		
 		Bukkit.getScheduler().cancelTask(pvpTimerTasks.get(player.getName()));
 		pvpTimerTasks.remove(player.getName());

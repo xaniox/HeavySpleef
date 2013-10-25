@@ -56,8 +56,6 @@ public class CommandReload extends HSCommand {
 		
 		plugin.startAntiCampingTask();//Restart the tasks
 		
-		PlayerListener.loseOnTouchWaterOrLava = HeavySpleef.getSystemConfig().getBoolean("blocks.loseOnTouchWaterOrLava", true);
-		
 		ScoreBoard.refreshData();//Refresh scoreboard data
 		LanguageHandler.loadLanguageFiles();//Reload languages files
 		

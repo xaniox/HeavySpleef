@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.core;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -32,8 +33,9 @@ import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 
 public class GameManager {
 	
-	//Main core list that contains ALL games!
-	public static List<Game> games = new ArrayList<Game>();
+	//Main list which contains all games
+	//Using LinkedList for more speed while iterating
+	public static List<Game> games = new LinkedList<Game>();
 	
 	public static Location spleefHub = null;
 	public static List<HUBPortal> portals = new ArrayList<HUBPortal>();

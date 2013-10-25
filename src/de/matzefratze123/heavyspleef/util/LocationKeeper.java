@@ -25,7 +25,7 @@ import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class LocationSaver {
+public class LocationKeeper {
 
 	private static Map<String, Location> locations = new HashMap<String, Location>();
 	

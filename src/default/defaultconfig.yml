@@ -208,11 +208,6 @@ sounds:
   # Should a levelup sound be played to the player that wins the game?
   levelUp: true
   
-blocks:
-  
-  # Should water and lava be an automatic losezone?
-  loseOnTouchWaterOrLava: true
-  
 statistic:
 
   # Which database type should be used for statistic database storing?

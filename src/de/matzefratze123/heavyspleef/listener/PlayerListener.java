@@ -78,30 +78,26 @@ public class PlayerListener implements Listener {
 	private ArrayList<String> isCheckOut = new ArrayList<String>();
 	private List<String> dead = new ArrayList<String>();
 	
-	public static boolean loseOnTouchWaterOrLava;
-	
-	public PlayerListener() {
-		loseOnTouchWaterOrLava = HeavySpleef.getSystemConfig().getBoolean("blocks.loseOnTouchWaterOrLava", true);
-	}
-	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
 		final Player p = e.getPlayer();
 		
 		Location to = e.getTo();
 		
-		if (!GameManager.isActive(p))
+		if (!GameManager.isActive(p)) {
 			return;
-		Game game = GameManager.fromPlayer(p);
-		if (!game.isCounting() && !game.isIngame())
-			return;
+		}
 		
-		if (loseOnTouchWaterOrLava && 
-				  (to.getBlock().getType() == Material.WATER 
-				|| to.getBlock().getType() == Material.LAVA 
-				|| to.getBlock().getType() == Material.STATIONARY_WATER 
-				|| to.getBlock().getType() == Material.STATIONARY_LAVA))
+		Game game = GameManager.fromPlayer(p);
+		
+		if (!game.isCounting() && !game.isIngame()) {
+			return;
+		}
+		
+		if (to.getBlock().getType() == Material.WATER || to.getBlock().getType() == Material.LAVA || to.getBlock().getType() == Material.STATIONARY_WATER || to.getBlock().getType() == Material.STATIONARY_LAVA) {
 			out(p, game);
+			return;
+		}
 			
 		for (LoseZone loseZone : game.getLoseZones()) {
 			if (loseZone.contains(to)) {
@@ -112,15 +108,18 @@ public class PlayerListener implements Listener {
 		
 	}
 	
-	private void out(final Player p, Game game) {
-		if (isCheckOut.contains(p.getName()))
+	private void out(final Player player, Game game) {
+		if (isCheckOut.contains(player.getName())) {
 			return;
-		game.leave(p, LoseCause.LOSE);
-		isCheckOut.add(p.getName());
+		}
+		
+		game.leave(player, LoseCause.LOSE);
+		isCheckOut.add(player.getName());
+		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
 			@Override
 			public void run() {
-				isCheckOut.remove(p.getName());
+				isCheckOut.remove(player.getName());
 			}
 		}, 20L);
 	}
