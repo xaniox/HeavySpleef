@@ -39,7 +39,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	private FileConfiguration db;
 	
 	public YamlStatisticDatabase() {
-		this.plugin = HeavySpleef.instance;
+		this.plugin = HeavySpleef.getInstance();
 		new File(plugin.getDataFolder().getPath() + "/statistic").mkdirs();
 		
 		File dbFile = new File(plugin.getDataFolder().getPath() + "/statistic/statistics.yml");
@@ -53,23 +53,25 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	}
 	
 	@Override
-	public void save() {
+	public void saveAccounts() {
 		List<StatisticModule> statistics = new ArrayList<StatisticModule>(StatisticManager.getStatistics());
 		Collections.sort(statistics);
 		
-		for (StatisticModule stat : statistics) {
-			ConfigurationSection section = null;
-			
-			if (!db.contains(stat.getName()))
-				section = db.createSection(stat.getName());
-			else
-				section = db.getConfigurationSection(stat.getName());
-			
-			section.set("wins", stat.getWins());
-			section.set("loses", stat.getLoses());
-			section.set("knockouts", stat.getKnockouts());
-			section.set("games", stat.getGamesPlayed());
-			section.set("score", stat.getScore());
+		synchronized (db) {
+			for (StatisticModule stat : statistics) {
+				ConfigurationSection section = null;
+				
+				if (!db.contains(stat.getName()))
+					section = db.createSection(stat.getName());
+				else
+					section = db.getConfigurationSection(stat.getName());
+				
+				section.set("wins", stat.getWins());
+				section.set("loses", stat.getLoses());
+				section.set("knockouts", stat.getKnockouts());
+				section.set("games", stat.getGamesPlayed());
+				section.set("score", stat.getScore());
+			}
 		}
 		
 		try {
@@ -80,23 +82,66 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	}
 
 	@Override
-	public void load() {
+	public void loadAccount(String holder) {
 		int count = 0;
 		
-		for (String owner : db.getKeys(false)) {
-			ConfigurationSection section = db.getConfigurationSection(owner);
-			
-			int wins = section.getInt("wins");
-			int loses = section.getInt("loses");
-			int knockouts = section.getInt("knockouts");
-			int games = section.getInt("games");
-			
-			StatisticModule stat = new StatisticModule(owner, loses, wins, knockouts, games);
-			StatisticManager.addExistingStatistic(stat);
-			count++;
+		synchronized (db) {
+			for (String owner : db.getKeys(false)) {
+				ConfigurationSection section = db.getConfigurationSection(owner);
+				
+				int wins = section.getInt("wins");
+				int loses = section.getInt("loses");
+				int knockouts = section.getInt("knockouts");
+				int games = section.getInt("games");
+				
+				StatisticModule stat = new StatisticModule(owner, loses, wins, knockouts, games);
+				StatisticManager.addExistingStatistic(stat);
+				count++;
+			}
 		}
 		
-		HeavySpleef.instance.getLogger().info("Loaded " + count + " statistics!");
+		HeavySpleef.getInstance().getLogger().info("Loaded " + count + " statistics!");
+	}
+
+	@Override
+	public void unloadAccount(StatisticModule module) {
+		ConfigurationSection section = null;
+		
+		synchronized (db) {
+			if (!db.contains(module.getName()))
+				section = db.createSection(module.getName());
+			else
+				section = db.getConfigurationSection(module.getName());
+			
+			section.set("wins", module.getWins());
+			section.set("loses", module.getLoses());
+			section.set("knockouts", module.getKnockouts());
+			section.set("games", module.getGamesPlayed());
+			section.set("score", module.getScore());
+		}
+	}
+
+	@Override
+	public List<StatisticModule> loadAccounts() {
+		
+		List<StatisticModule> list = new ArrayList<StatisticModule>();
+	
+		synchronized (db) {
+			for (String owner : db.getKeys(false)) {
+				ConfigurationSection section = db.getConfigurationSection(owner);
+				
+				int wins = section.getInt("wins");
+				int loses = section.getInt("loses");
+				int knockouts = section.getInt("knockouts");
+				int games = section.getInt("games");
+				
+				StatisticModule stat = new StatisticModule(owner, loses, wins, knockouts, games);
+				list.add(stat);
+			}
+		}
+		
+		return list;
+		
 	}
 
 }

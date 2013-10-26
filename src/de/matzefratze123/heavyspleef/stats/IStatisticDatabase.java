@@ -19,10 +19,16 @@
  */
 package de.matzefratze123.heavyspleef.stats;
 
+import java.util.List;
+
 public interface IStatisticDatabase {
 	
-	public void save();
+	public void saveAccounts();
 	
-	public void load();
+	public void loadAccount(String holder);
+	
+	public void unloadAccount(StatisticModule module);
+	
+	public List<StatisticModule> loadAccounts();
 	
 }

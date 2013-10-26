@@ -32,6 +32,7 @@ import de.matzefratze123.heavyspleef.stats.sql.Database;
 import de.matzefratze123.heavyspleef.stats.sql.Field;
 import de.matzefratze123.heavyspleef.stats.sql.Table;
 import de.matzefratze123.heavyspleef.stats.sql.Field.Type;
+import de.matzefratze123.heavyspleef.util.Logger;
 
 
 public class MySQLStatisticDatabase implements IStatisticDatabase {
@@ -52,8 +53,8 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 	}
 	
 	@Override
-	public void save() {
-		Database database = new Database(HeavySpleef.instance);
+	public void saveAccounts() {
+		Database database = new Database(HeavySpleef.getInstance());
 		if (!database.hasTable(tableName))
 			database.createTable(tableName, columns);
 		
@@ -94,15 +95,96 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 	}
 
 	@Override
-	public void load() {
-		Database database = new Database(HeavySpleef.instance);
+	public void loadAccount(String holder) {
+		Database database = new Database(HeavySpleef.getInstance());
 		if (!database.hasTable(tableName))
 			return;
 		
 		Table table = database.getTable(tableName);
-		ResultSet result = table.select("*");
+		for (String columnName : columns.keySet()) {
+			if (!table.hasColumn(columnName))
+				table.addColumn(columnName, columns.get(columnName));
+		}
 		
-		int c = 0;
+		Map<String, Object> where = new HashMap<String, Object>();
+		
+		where.put("owner", holder);
+		ResultSet result = table.select("*", where);
+		
+		try {
+			if (!result.next()) {
+				StatisticManager.addNewStatistic(holder);
+			} else {
+				String owner = result.getString("owner");
+				int wins = result.getInt("wins");
+				int loses = result.getInt("loses");
+				int knockouts = result.getInt("knockouts");
+				int games = result.getInt("games");
+				
+				StatisticModule module = new StatisticModule(owner, loses, wins, knockouts, games);
+				StatisticManager.addExistingStatistic(module);
+			}
+			
+		} catch (SQLException e) {
+			Logger.severe("Failed to load statistics for user " + holder + ": " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		database.close();
+	}
+
+	@Override
+	public void unloadAccount(StatisticModule module) {
+		Database database = new Database(HeavySpleef.getInstance());
+		if (!database.hasTable(tableName))
+			database.createTable(tableName, columns);
+		
+		Table table = database.getTable(tableName);
+		for (String columnName : columns.keySet()) {
+			if (!table.hasColumn(columnName))
+				table.addColumn(columnName, columns.get(columnName));
+		}
+			
+		int wins = module.getWins();
+		int loses = module.getLoses();
+		int knockouts = module.getKnockouts();
+		int games = module.getGamesPlayed();
+		int score = module.getScore();
+			
+		String owner = module.getName();
+		
+		Map<String, Object> values = new HashMap<String, Object>();
+		values.put("owner", owner);
+		values.put("wins", wins);
+		values.put("loses", loses);
+		values.put("knockouts", knockouts);
+		values.put("games", games);
+		values.put("score", score);
+			
+		Map<String, Object> where = new HashMap<String, Object>();
+		where.put("owner", owner);
+			
+		table.insertOrUpdate(values, where);
+		
+		database.close();
+		
+		
+	}
+
+	@Override
+	public List<StatisticModule> loadAccounts() {
+		Database database = new Database(HeavySpleef.getInstance());
+		if (!database.hasTable(tableName))
+			return null;
+		
+		Table table = database.getTable(tableName);
+		for (String columnName : columns.keySet()) {
+			if (!table.hasColumn(columnName))
+				table.addColumn(columnName, columns.get(columnName));
+		}
+		
+		List<StatisticModule> list = new ArrayList<StatisticModule>();
+		ResultSet result = table.select("*");
 		
 		try {
 			while (result.next()) {
@@ -113,15 +195,17 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 				int games = result.getInt("games");
 				
 				StatisticModule module = new StatisticModule(owner, loses, wins, knockouts, games);
-				StatisticManager.addExistingStatistic(module);
-				c++;
+				list.add(module);
 			}
-		} catch (SQLException e) {
 			
+		} catch (SQLException e) {
+			Logger.severe("Failed to load statistics: " + e.getMessage());
+			e.printStackTrace();
 		}
 		
-		HeavySpleef.instance.getLogger().info("Loaded " + c + " statistic data sets.");
 		database.close();
+		
+		return list;
 	}
 
 }
