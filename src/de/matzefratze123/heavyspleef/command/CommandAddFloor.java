@@ -52,12 +52,12 @@ public class CommandAddFloor extends HSCommand {
 		Player player = (Player)sender;
 		Block block = player.getTargetBlock(null, 100);
 		
-		Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
+		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 		Location loc1 = s.getFirst();
 		Location loc2 = s.getSecond();
 		
 		if (args[0].equalsIgnoreCase("randomwool")) { //Wool floor
-			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+			if (HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
 					if (game.contains(player.getLocation()) && game.getType() == GameType.CYLINDER) {
 						GameCylinder gameC = (GameCylinder)game; //Cast the game to a GameCylinder because we can be sure that it is one...
@@ -87,7 +87,7 @@ public class CommandAddFloor extends HSCommand {
 			return;
 			
 		} else if (args[0].equalsIgnoreCase("given")) { //Given floor
-			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+			if (HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
 					if (!game.contains(block))
 						continue;
@@ -124,7 +124,7 @@ public class CommandAddFloor extends HSCommand {
 				return;
 			}
 			
-			if (HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+			if (HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
 				for (Game game : GameManager.getGames()) {
 					if (!game.contains(player.getLocation()))
 						continue;

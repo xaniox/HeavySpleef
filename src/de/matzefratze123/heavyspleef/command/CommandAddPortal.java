@@ -42,7 +42,7 @@ public class CommandAddPortal extends HSCommand {
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
 		
-		Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
+		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 		Location loc1 = s.getFirst();
 		Location loc2 = s.getSecond();
 		

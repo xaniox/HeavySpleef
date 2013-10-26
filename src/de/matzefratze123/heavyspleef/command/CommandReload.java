@@ -41,13 +41,13 @@ public class CommandReload extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		long millis = System.currentTimeMillis();
-		HeavySpleef.config = new FileConfig(plugin);//Create a new config if the file was deleted
+		new FileConfig(plugin);//Create a new config if the file was deleted
 		plugin.reloadConfig();//First reload our config
 		
 		HeavySpleef.PREFIX = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("general.spleef-prefix", HeavySpleef.PREFIX));
 		
-		int antiCampTid = HeavySpleef.instance.antiCampTid;//Get the task id's
-		int saverTid = HeavySpleef.instance.saverTid;
+		int antiCampTid = HeavySpleef.getInstance().antiCampTid;//Get the task id's
+		int saverTid = HeavySpleef.getInstance().saverTid;
 		
 		if (antiCampTid >= 0)
 			Bukkit.getScheduler().cancelTask(antiCampTid);//And cancel the tasks
@@ -61,7 +61,7 @@ public class CommandReload extends HSCommand {
 		
 		plugin.getSelectionManager().setup();//Reload selection
 		
-		sender.sendMessage(_("pluginReloaded", HeavySpleef.instance.getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
+		sender.sendMessage(_("pluginReloaded", HeavySpleef.getInstance().getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
 		//And we are done!
 	}
 

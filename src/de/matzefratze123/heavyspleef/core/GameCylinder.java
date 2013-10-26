@@ -202,7 +202,7 @@ public class GameCylinder extends Game {
 		try {
 			eSession.makeCylinder(new Vector(x, y, z), new SingleBlockPattern(new BaseBlock(typeAbove, dataAbove)), radiusEastWest, radiusNorthSouth, 1, false);
 		} catch (MaxChangedBlocksException e) {
-			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't clear floor...");
+			HeavySpleef.getInstance().getLogger().warning("Changing to much blocks once! Can't clear floor...");
 		}
 	}
 	

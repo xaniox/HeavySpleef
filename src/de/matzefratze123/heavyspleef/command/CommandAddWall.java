@@ -32,7 +32,7 @@ public class CommandAddWall extends HSCommand {
 		}
 		Game game = GameManager.getGame(args[0]);
 		
-		Selection s = HeavySpleef.instance.getSelectionManager().getSelection(p);
+		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(p);
 		if (!s.has()) {
 			p.sendMessage(_("needSelection"));
 			return;

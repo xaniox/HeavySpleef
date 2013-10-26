@@ -49,7 +49,7 @@ public class CommandAddLose extends HSCommand {
 			return;
 		}
 		
-		Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
+		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 		
 		if (!s.has()) {
 			player.sendMessage(_("needSelection"));

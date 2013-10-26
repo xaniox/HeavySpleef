@@ -63,7 +63,7 @@ public class Team {
 		players.add(player.getName());
 		player.sendMessage(Game._("addedToTeam", color + Util.toFriendlyString(color.name())));
 		
-		if (HeavySpleef.hooks.getService(TagAPIHook.class).hasHook())
+		if (HeavySpleef.getInstance().getHookManager().getService(TagAPIHook.class).hasHook())
 			TagAPI.refreshPlayer(player);
 	}
 	
@@ -76,7 +76,7 @@ public class Team {
 		players.remove(player.getName());
 		player.sendMessage(Game._("removedFromTeam", color + Util.toFriendlyString(color.name())));
 		
-		if (HeavySpleef.hooks.getService(TagAPIHook.class).hasHook())
+		if (HeavySpleef.getInstance().getHookManager().getService(TagAPIHook.class).hasHook())
 			TagAPI.refreshPlayer(player);
 	}
 	

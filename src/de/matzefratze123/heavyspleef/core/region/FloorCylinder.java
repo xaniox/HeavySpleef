@@ -126,7 +126,7 @@ public class FloorCylinder extends Floor {
 		try {
 			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(id, data)), radiusEastWest, radiusNorthSouth, 1, true);
 		} catch (MaxChangedBlocksException e1) {
-			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't create circle floor...");
+			HeavySpleef.getInstance().getLogger().warning("Changing to much blocks once! Can't create circle floor...");
 		}
 	}
 
@@ -136,7 +136,7 @@ public class FloorCylinder extends Floor {
 		try {
 			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(0)), radiusEastWest, radiusNorthSouth, 1, true);
 		} catch (MaxChangedBlocksException e1) {
-			HeavySpleef.instance.getLogger().warning("Changing to much blocks once! Can't create remove floor...");
+			HeavySpleef.getInstance().getLogger().warning("Changing to much blocks once! Can't create remove floor...");
 		}
 	}
 

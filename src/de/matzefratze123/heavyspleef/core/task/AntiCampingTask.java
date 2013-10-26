@@ -29,7 +29,7 @@ public class AntiCampingTask implements Runnable {
 	private Map<String, Integer> antiCamping = new HashMap<String, Integer>();
 	
 	public AntiCampingTask() {
-		if (taskEnabled && isTaskRunning(HeavySpleef.instance.antiCampTid))
+		if (taskEnabled && isTaskRunning(HeavySpleef.getInstance().antiCampTid))
 			throw new IllegalStateException("Cannot start AntiCampingTask twice!");
 		
 		taskEnabled = true;

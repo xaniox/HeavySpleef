@@ -12,15 +12,15 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 public class Logger {
 	
 	public static void info(String msg) {
-		HeavySpleef.instance.getLogger().log(Level.INFO, msg);
+		HeavySpleef.getInstance().getLogger().log(Level.INFO, msg);
 	}
 	
 	public static void warn(String msg) {
-		HeavySpleef.instance.getLogger().log(Level.WARNING, msg);
+		HeavySpleef.getInstance().getLogger().log(Level.WARNING, msg);
 	}
 	
 	public static void severe(String msg) {
-		HeavySpleef.instance.getLogger().log(Level.SEVERE, msg);
+		HeavySpleef.getInstance().getLogger().log(Level.SEVERE, msg);
 	}
 	
 }

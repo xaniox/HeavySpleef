@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -35,7 +36,7 @@ public class GameManager {
 	
 	//Main list which contains all games
 	//Using LinkedList for more speed while iterating
-	public static List<Game> games = new LinkedList<Game>();
+	public static List<Game> games = new ArrayList<Game>();
 	
 	public static Location spleefHub = null;
 	public static List<HUBPortal> portals = new ArrayList<HUBPortal>();
@@ -70,7 +71,7 @@ public class GameManager {
 	}
 	
 	public static Game createCylinderGame(String id, Location center, int radiusEastWest, int radiusNorthSouth, int minY, int maxY) {
-		if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook())
+		if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook())
 			return null;
 		games.add(new GameCylinder(id, center, radiusEastWest, radiusNorthSouth, minY, maxY));
 		return getGame(id);
@@ -83,8 +84,8 @@ public class GameManager {
 	public static void deleteGame(String id) {
 		id = id.toLowerCase();
 		games.remove(getGame(id));
-		HeavySpleef.instance.database.db.set(id, null);
-		HeavySpleef.instance.database.saveConfig();
+		HeavySpleef.getInstance().getGameDatabase().db.set(id, null);
+		HeavySpleef.getInstance().getGameDatabase().saveConfig();
 	}
 	
 	public static boolean hasGame(String id) {
@@ -100,7 +101,9 @@ public class GameManager {
 	}
 	
 	public static boolean isActive(Player player) {
-		for (Game game : getGames()) {
+		for (int i = 0; i < games.size(); i++) {
+			Game game = games.get(i);
+			
 			Player[] players = game.getPlayers();
 			for (Player pl : players) {
 				if (pl.getName().equalsIgnoreCase(player.getName()))
@@ -155,7 +158,7 @@ public class GameManager {
 	public static void setSpleefHub(Location location) {
 		spleefHub = location;
 		if (location == null)
-			HeavySpleef.instance.database.globalDb.set("hub", null);
+			HeavySpleef.getInstance().getGameDatabase().globalDb.set("hub", null);
 		
 	}
 	

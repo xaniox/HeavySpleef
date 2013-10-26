@@ -77,7 +77,7 @@ public class YamlDatabase {
 	 * Constructs a new YamlDatabase
 	 */
 	public YamlDatabase() {
-		this.plugin = HeavySpleef.instance;
+		this.plugin = HeavySpleef.getInstance();
 		
 		File folder = new File(plugin.getDataFolder(), File.separator + "games");
 		File statsFolder = new File(plugin.getDataFolder(), File.separator + "stats");
@@ -202,7 +202,7 @@ public class YamlDatabase {
 				try {
 					id = Integer.parseInt(key);
 				} catch (NumberFormatException e) {
-					HeavySpleef.instance.getLogger().warning("Failed to load portal id for portal " + id + "! Ignoring portal...");
+					HeavySpleef.getInstance().getLogger().warning("Failed to load portal id for portal " + id + "! Ignoring portal...");
 					continue;
 				}
 				

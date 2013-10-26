@@ -18,7 +18,7 @@ public class SpleefLogger {
 	
 	static {
 		if (logFile == null) {
-			logFile = new File(HeavySpleef.instance.getDataFolder(), "spleef-log.txt");
+			logFile = new File(HeavySpleef.getInstance().getDataFolder(), "spleef-log.txt");
 			if (!logFile.exists()) {
 				try {
 					logFile.createNewFile();
@@ -67,7 +67,7 @@ public class SpleefLogger {
 	}
 	
 	private static void handleException(Exception e) {
-		HeavySpleef.instance.getLogger().severe("Exception: " + e.getMessage());
+		HeavySpleef.getInstance().getLogger().severe("Exception: " + e.getMessage());
 		e.printStackTrace();
 	}
 	

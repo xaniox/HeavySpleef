@@ -48,14 +48,14 @@ public class SelectionManager {
 		String wandType = HeavySpleef.getSystemConfig().getString("general.wandType");
 		
 		if (wandType == null || (!wandType.equalsIgnoreCase("HeavySpleef") && !wandType.equalsIgnoreCase("WorldEdit"))) {
-			HeavySpleef.instance.getLogger().info("Invalid wand type found! " + wandType + " is not permitted! Setting to HeavySpleef selection...");
+			HeavySpleef.getInstance().getLogger().info("Invalid wand type found! " + wandType + " is not permitted! Setting to HeavySpleef selection...");
 			this.type = WandType.HEAVYSPLEEF;
 			return;
 		}
 		
 		if (wandType.equalsIgnoreCase("WorldEdit")) {
-			if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
-				HeavySpleef.instance.getLogger().info("WorldEdit wand in the config was found, but no WorldEdit?! Setting to HeavySpleef...");
+			if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
+				HeavySpleef.getInstance().getLogger().info("WorldEdit wand in the config was found, but no WorldEdit?! Setting to HeavySpleef...");
 				this.type = WandType.HEAVYSPLEEF;
 				return;
 			}
@@ -67,7 +67,7 @@ public class SelectionManager {
 	public Selection getSelection(Player player) {
 		Selection s = getRawSelection(player);
 		
-		if (s == null && HeavySpleef.hooks.getService(WorldEditHook.class).hasHook() && getWandType() == WandType.WORLDEDIT)
+		if (s == null && HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook() && getWandType() == WandType.WORLDEDIT)
 			s = new SelectionWorldEdit(player.getName());
 		
 		if (s == null) {

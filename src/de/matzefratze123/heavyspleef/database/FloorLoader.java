@@ -49,7 +49,7 @@ public class FloorLoader {
 			o.flush();
 			o.close();
 		} catch (IOException e) {
-			HeavySpleef.instance.getLogger().severe("Could not save floor #" + f.getId() + " from the game " + game.getName() + " to the database! IOException?!");
+			HeavySpleef.getInstance().getLogger().severe("Could not save floor #" + f.getId() + " from the game " + game.getName() + " to the database! IOException?!");
 			e.printStackTrace();
 		}
 	}
@@ -72,7 +72,7 @@ public class FloorLoader {
 			floor.givenFloorList = list;
 			o.close();
 		} catch (IOException e) {
-			HeavySpleef.instance.getLogger().severe("Could not load floor #" + floor.getId() + " from the game " + gameName + " from the database! IOException?!");
+			HeavySpleef.getInstance().getLogger().severe("Could not load floor #" + floor.getId() + " from the game " + gameName + " from the database! IOException?!");
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

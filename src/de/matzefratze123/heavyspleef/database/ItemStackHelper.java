@@ -57,7 +57,7 @@ public class ItemStackHelper {
 			amount = Integer.parseInt(split[1]);
 			data = Byte.parseByte(split[2]);
 		} catch (NumberFormatException e) {
-			HeavySpleef.instance.getLogger().warning("Could not read itemstack reward!");
+			HeavySpleef.getInstance().getLogger().warning("Could not read itemstack reward!");
 		}
 		
 		ItemStack item = new ItemStack(type, amount);

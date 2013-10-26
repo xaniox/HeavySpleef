@@ -75,7 +75,7 @@ public class InventoryMenu implements Listener {
 		}
 		
 		player.closeInventory();
-		Bukkit.getScheduler().runTask(HeavySpleef.instance, new Runnable() {
+		Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), new Runnable() {
 			
 			@Override
 			public void run() {

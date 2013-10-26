@@ -99,8 +99,12 @@ public class PlayerListener implements Listener {
 			return;
 		}
 			
-		for (LoseZone loseZone : game.getLoseZones()) {
-			if (loseZone.contains(to)) {
+		List<LoseZone> loseZones = game.getLoseZones();
+		
+		for (int i = 0; i < loseZones.size(); i++) {
+			LoseZone zone = loseZones.get(i);
+			
+			if (zone.contains(to)) {
 				out(p, game);
 				return;
 			}
@@ -116,7 +120,7 @@ public class PlayerListener implements Listener {
 		game.leave(player, LoseCause.LOSE);
 		isCheckOut.add(player.getName());
 		
-		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 				isCheckOut.remove(player.getName());
@@ -277,7 +281,7 @@ public class PlayerListener implements Listener {
 		    
 		    game.addBrokenBlock(player, hitBlock);
 		    FallingBlock block = arrow.getWorld().spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());
-		    block.setMetadata("bowspleef", new FixedMetadataValue(HeavySpleef.instance, true));
+		    block.setMetadata("bowspleef", new FixedMetadataValue(HeavySpleef.getInstance(), true));
 		    hitBlock.setType(Material.AIR);
 		    arrow.remove();
 		} else if (projectile instanceof Egg) {
@@ -318,7 +322,7 @@ public class PlayerListener implements Listener {
 		
 		List<MetadataValue> metadatas = e.getEntity().getMetadata("bowspleef");
 		for (MetadataValue metadata : metadatas) {
-			if (metadata.getOwningPlugin() != HeavySpleef.instance)
+			if (metadata.getOwningPlugin() != HeavySpleef.getInstance())
 				continue;
 			
 			if (metadata.asBoolean()) {
@@ -452,7 +456,7 @@ public class PlayerListener implements Listener {
 			return;
 		
 		//Player died while spleefing, restore his inventory
-		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.getInstance(), new Runnable() {
 			
 			@Override
 			public void run() {

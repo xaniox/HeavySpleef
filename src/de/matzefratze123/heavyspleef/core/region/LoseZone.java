@@ -55,6 +55,8 @@ public class LoseZone extends RegionBase implements Info {
 
 	@Override
 	public boolean contains(Location toCheck) {
+		int x, y, z;
+		
 		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
 		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
 		
@@ -64,14 +66,19 @@ public class LoseZone extends RegionBase implements Info {
 		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
 		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
 		
+		x = toCheck.getBlockX();
+		y = toCheck.getBlockY();
+		z = toCheck.getBlockZ();
+		
 		if (!toCheck.getWorld().getName().equalsIgnoreCase(getFirstCorner().getWorld().getName()))
 			return false;
-		if (toCheck.getBlockX() > maxX || toCheck.getBlockX() < minX)
+		if (x > maxX || x < minX)
 			return false;
-		if (toCheck.getBlockY() > maxY || toCheck.getBlockY() < minY)
+		if (y > maxY || y < minY)
 			return false;
-		if (toCheck.getBlockZ() > maxZ || toCheck.getBlockZ() < minZ)
+		if (z > maxZ || z < minZ)
 			return false;
+		
 		return true;
 	}
 

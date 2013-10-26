@@ -226,12 +226,12 @@ public abstract class Game {
 		
 		prepareGame();
 		Bukkit.getPluginManager().callEvent(new SpleefStartEvent(new GameData(this))); //Call our spleef start event
-		this.tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new StartCountdownTask(countdown, this), 20L, 20L);//Let the countdown begin
+		this.tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), new StartCountdownTask(countdown, this), 20L, 20L);//Let the countdown begin
 		
 		createSidebarScoreboard();
 		
 		teleportTask = new PlayerTeleportTask(this);
-		Bukkit.getScheduler().runTask(HeavySpleef.instance, teleportTask);
+		Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
 		
 		setGameState(GameState.COUNTING);//Set our gamestate to counting
 		updateScoreBoards();
@@ -317,13 +317,13 @@ public abstract class Game {
 		int entryFee = getFlag(ENTRY_FEE);
 		
 		if (timeout > 0)
-			this.timeoutTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new TimeoutTask(timeout, this), 0L, 20L);
+			this.timeoutTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), new TimeoutTask(timeout, this), 0L, 20L);
 		
 		//Withdraw jackpot money
-		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook() && entryFee > 0) {
+		if (HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).hasHook() && entryFee > 0) {
 			for (Player player : getPlayers()) {
-				HeavySpleef.hooks.getService(VaultHook.class).getHook().withdrawPlayer(player.getName(), jackpot);
-				player.sendMessage(_("paidIntoJackpot", HeavySpleef.hooks.getService(VaultHook.class).getHook().format(entryFee)));
+				HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).getHook().withdrawPlayer(player.getName(), jackpot);
+				player.sendMessage(_("paidIntoJackpot", HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).getHook().format(entryFee)));
 				this.jackpot += entryFee;
 			}
 		}
@@ -345,7 +345,7 @@ public abstract class Game {
 		int regeneration = getFlag(REGEN_INTERVALL);
 		
 		if (regeneration > 0)
-			this.floorRegenTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new RegenerationTask(this), regeneration * 20L, regeneration * 20L);
+			this.floorRegenTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), new RegenerationTask(this), regeneration * 20L, regeneration * 20L);
 		
 		tellAll(_("gameHasStarted"));
 		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast("game-start-info"));
@@ -728,7 +728,7 @@ public abstract class Game {
 			boolean countdown = HeavySpleef.getSystemConfig().getBoolean("general.countdownBetweenRound", true);
 			
 			teleportTask = new PlayerTeleportTask(this);
-			Bukkit.getScheduler().runTask(HeavySpleef.instance, teleportTask);
+			Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
 			
 			broadcast(_("roundsRemaining", String.valueOf(rounds - roundsPlayed)), ConfigUtil.getBroadcast("win"));//Broadcast how many rounds remaining
 			updateScoreBoards();
@@ -736,7 +736,7 @@ public abstract class Game {
 			updateSidebarScoreboard();
 			if (countdown) {//Do a countdown if it was so defined
 				int start = HeavySpleef.getSystemConfig().getInt("general.countdownBetweenRoundLength", 5);
-				this.roundTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.instance, new RoundsCountdownTask(start, this), 0L, 20L);
+				this.roundTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), new RoundsCountdownTask(start, this), 0L, 20L);
 			}
 			
 			return;
@@ -1107,7 +1107,7 @@ public abstract class Game {
 		boolean previousTask = multiKnockoutTaskIds.containsKey(player);
 		int previousTaskId = previousTask ? multiKnockoutTaskIds.get(player) : -1;
 		
-		int task = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, new MultiKnockoutTask(player), 100L);//Run a new task
+		int task = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.getInstance(), new MultiKnockoutTask(player), 100L);//Run a new task
 		if (previousTask)//Cancel our previous task
 			Bukkit.getScheduler().cancelTask(previousTaskId);
 		multiKnockoutTaskIds.put(player, task);//Add the task id to our map
@@ -1424,7 +1424,7 @@ public abstract class Game {
 	public void regen() {
 		for (Floor floor : getFloors()) {
 			if (!regen(floor.getId()))
-				HeavySpleef.instance.getLogger().warning(getName() + ": Could not regenerate floor " + floor.getId() + "!");
+				HeavySpleef.getInstance().getLogger().warning(getName() + ": Could not regenerate floor " + floor.getId() + "!");
 		}
 	}
 	
@@ -1465,10 +1465,10 @@ public abstract class Game {
 		if (GameManager.hasGame(newName))
 			return false;
 		
-		HeavySpleef.instance.database.db.set(getName(), null);
+		HeavySpleef.getInstance().getGameDatabase().db.set(getName(), null);
 		this.name = newName;
 		
-		HeavySpleef.instance.database.save();
+		HeavySpleef.getInstance().getGameDatabase().save();
 		return true;
 	}
 	
@@ -1909,7 +1909,7 @@ public abstract class Game {
 				sender.sendMessage(_("gameIsDisabled"));
 			return false;
 		}
-		if (getType() == GameType.CYLINDER && !HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+		if (getType() == GameType.CYLINDER && !HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
 			if (sender != null)
 				sender.sendMessage(_("noWorldEdit"));
 			return false;
@@ -2057,8 +2057,8 @@ public abstract class Game {
 			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.toFriendlyString(stack.getType().name())));
 		}
 		
-		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook()) {
-			Economy econ = HeavySpleef.hooks.getService(VaultHook.class).getHook();
+		if (HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).hasHook()) {
+			Economy econ = HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).getHook();
 			if (this.jackpot > 0) {
 				//Split the reward between the winning teams
 				double prize;

@@ -24,7 +24,7 @@ public class PvPTimerManager {
 			cancelTimerTask(player);
 		}
 		
-		int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.instance, target, Math.abs(pvptimer) * 20L);
+		int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.getInstance(), target, Math.abs(pvptimer) * 20L);
 		
 		pvpTimerTasks.put(player.getName(), taskId);
 	}

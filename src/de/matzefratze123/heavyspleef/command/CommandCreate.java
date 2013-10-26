@@ -55,7 +55,7 @@ public class CommandCreate extends HSCommand {
 		
 		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
 			//Create a new cylinder game
-			if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+			if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
 				player.sendMessage(_("noWorldEdit"));
 				return;
 			}
@@ -87,7 +87,7 @@ public class CommandCreate extends HSCommand {
 			player.sendMessage(_("gameCreated"));
 		} else if (args[1].equalsIgnoreCase("oval") || args[1].equalsIgnoreCase("ellipse"))  {
 			//Create a new ellipse game
-			if (!HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+			if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
 				player.sendMessage(_("noWorldEdit"));
 				return;
 			}
@@ -120,7 +120,7 @@ public class CommandCreate extends HSCommand {
 			player.sendMessage(_("gameCreated"));
 		} else if (args[1].equalsIgnoreCase("cuboid") || args[1].equalsIgnoreCase("cub")) {
 			//Create a new cuboid game
-			Selection s = HeavySpleef.instance.getSelectionManager().getSelection(player);
+			Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 			if (!s.has()) {
 				player.sendMessage(_("needSelection"));
 				return;

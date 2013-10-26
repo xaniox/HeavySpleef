@@ -51,7 +51,7 @@ public class CommandRemoveFloor extends HSCommand {
 			return;
 		}
 		for (Game game : GameManager.getGames()) {
-			if (game.getType() == GameType.CYLINDER && !HeavySpleef.hooks.getService(WorldEditHook.class).hasHook())
+			if (game.getType() == GameType.CYLINDER && !HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook())
 				continue;
 			for (Floor floor : game.getFloors()) {
 				if (floor.contains(block)) {

@@ -26,7 +26,7 @@ public class I18N {
 	private static boolean dynamic;
 
 	private static final File langFolder = new File(
-			HeavySpleef.instance.getDataFolder(), "language");
+			HeavySpleef.getInstance().getDataFolder(), "language");
 	private static final String[] languages = new String[] { "en", "de", "fr",
 			"ru" };
 

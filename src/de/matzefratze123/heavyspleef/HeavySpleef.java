@@ -42,6 +42,7 @@ import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.listener.QueuesListener;
 import de.matzefratze123.heavyspleef.listener.ReadyListener;
 import de.matzefratze123.heavyspleef.listener.SignWallListener;
+import de.matzefratze123.heavyspleef.listener.StatisticAccountListener;
 import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.listener.UpdateListener;
 import de.matzefratze123.heavyspleef.selection.SelectionListener;
@@ -66,16 +67,15 @@ import de.matzefratze123.heavyspleef.util.ViPManager;
 public class HeavySpleef extends JavaPlugin {
 		
 	//Object instances start
-	public static FileConfig config;
-	public static HookManager hooks;
-	public YamlDatabase database;
-	public IStatisticDatabase statisticDatabase;
+	private static HookManager hooks;
+	private YamlDatabase database;
+	private IStatisticDatabase statisticDatabase;
 	private SelectionManager selectionManager;
 	private InventoryMenu menu;
 	
 	//Main-Instance
-	public static HeavySpleef instance;
-	
+	private static HeavySpleef instance;
+
 	//Other stuff
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
 	public static final String[] commands = new String[] {"spleef", "spl", "hs", "hspleef"};
@@ -94,7 +94,7 @@ public class HeavySpleef extends JavaPlugin {
 		//Set the instance first
 		instance = this;
 		
-		config = new FileConfig(this);
+		new FileConfig(this);
 		hooks = HookManager.getInstance();
 		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
@@ -110,7 +110,7 @@ public class HeavySpleef extends JavaPlugin {
 		menu = new InventoryMenu(LanguageHandler._("inventory"), this);
 		
 		setupStatisticDatabase();
-		statisticDatabase.load();
+		//statisticDatabase.load();
 		SpleefLogger.logRaw("Starting plugin version " + getDescription().getVersion() + "!");
 		
 		//Start metrics
@@ -137,13 +137,27 @@ public class HeavySpleef extends JavaPlugin {
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
 		this.database.save();
-		this.statisticDatabase.save();
+		this.statisticDatabase.saveAccounts();
 		SpleefLogger.logRaw("Stopping plugin!");
 		
 		this.getLogger().info("HeavySpleef disabled!");
 	}
 	
+	public static HeavySpleef getInstance() {
+		return instance;
+	}
 	
+	public HookManager getHookManager() {
+		return hooks;
+	}
+	
+	public YamlDatabase getGameDatabase() {
+		return database;
+	}
+	
+	public synchronized IStatisticDatabase getStatisticDatabase() {
+		return statisticDatabase;
+	}
 	
 	private void registerEvents() {
 		PluginManager pm = this.getServer().getPluginManager();
@@ -156,6 +170,7 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new PVPTimerListener(), this);
 		pm.registerEvents(new HUBPortalListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
+		pm.registerEvents(new StatisticAccountListener(), this);
 		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
 		
 		Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);

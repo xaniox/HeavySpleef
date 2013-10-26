@@ -55,7 +55,7 @@ public class LanguageHandler {
 		boolean fromFile = HeavySpleef.getSystemConfig().getBoolean("language.editable");
 		if (fromFile)
 			copyLanguageFiles();
-		File languageFolder = new File(HeavySpleef.instance.getDataFolder().getPath() + "/language");
+		File languageFolder = new File(HeavySpleef.getInstance().getDataFolder().getPath() + "/language");
 		languageFolder.mkdirs();
 		
 		String language = HeavySpleef.getSystemConfig().getString("language.language", "en");
@@ -122,7 +122,7 @@ public class LanguageHandler {
 	 */
 	private static void copyLanguageFiles() {
 		String[] languageFiles = new String[] {"de", "en", "fr", "ru"};
-		File dataFolder = new File(HeavySpleef.instance.getDataFolder().getPath() + "/language");
+		File dataFolder = new File(HeavySpleef.getInstance().getDataFolder().getPath() + "/language");
 		dataFolder.mkdirs();
 		
 		for (String lFile : languageFiles) {

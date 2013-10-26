@@ -38,8 +38,8 @@ public class CommandSave extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		long millis = System.currentTimeMillis();
-		HeavySpleef.instance.database.save();
-		HeavySpleef.instance.statisticDatabase.save();
+		HeavySpleef.getInstance().getGameDatabase().save();
+		HeavySpleef.getInstance().getStatisticDatabase().saveAccounts();
 		sender.sendMessage(_("gamesSaved"));
 		sender.sendMessage(__(ChatColor.GRAY + "Took " + (System.currentTimeMillis() - millis) + "ms"));
 	}

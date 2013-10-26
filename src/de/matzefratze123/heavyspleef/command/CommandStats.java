@@ -69,14 +69,7 @@ public class CommandStats extends HSCommand {
 				}
 			}
 
-			String[] leaderBoard = StatisticManager.retrieveLeaderboard(page);
-			p.sendMessage("--- " + ChatColor.GREEN + "Top Players"
-					+ ChatColor.WHITE + " ---");
-			for (String str : leaderBoard) {
-				if (str == null)
-					continue;
-				p.sendMessage(str);
-			}	
+			StatisticManager.showLeaderboard(p, page);
 		} else if (args.length == 1) {
 			if (!p.hasPermission(Permissions.STATS_OTHERS.getPerm())) {
 				p.sendMessage(_("noPermission"));

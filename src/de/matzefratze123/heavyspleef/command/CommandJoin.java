@@ -64,7 +64,7 @@ public class CommandJoin extends HSCommand {
 				return;
 			}
 			
-			HeavySpleef.instance.getInventoryMenu().open(player);
+			HeavySpleef.getInstance().getInventoryMenu().open(player);
 			return;
 		}
 		
@@ -121,13 +121,13 @@ public class CommandJoin extends HSCommand {
 			player.sendMessage(_("isntReadyToPlay"));
 			return;
 		}
-		if (game.getType() == GameType.CYLINDER && !HeavySpleef.hooks.getService(WorldEditHook.class).hasHook()) {
+		if (game.getType() == GameType.CYLINDER && !HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
 			player.sendMessage(_("noWorldEdit"));
 			return;
 		}
 		
-		if (HeavySpleef.hooks.getService(VaultHook.class).hasHook()) {
-			if (HeavySpleef.hooks.getService(VaultHook.class).getHook().getBalance(player.getName()) < jackpotToPay) {
+		if (HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).hasHook()) {
+			if (HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).getHook().getBalance(player.getName()) < jackpotToPay) {
 				player.sendMessage(_("notEnoughMoneyToJoin"));
 				return;
 			}
