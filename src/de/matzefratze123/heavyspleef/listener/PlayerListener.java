@@ -278,6 +278,8 @@ public class PlayerListener implements Listener {
 		    
 		    if (!game.canSpleef(hitBlock, player))
 		    	return;
+		    if (hitBlock.getType() == Material.TNT)
+		    	return;
 		    
 		    game.addBrokenBlock(player, hitBlock);
 		    FallingBlock block = arrow.getWorld().spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());

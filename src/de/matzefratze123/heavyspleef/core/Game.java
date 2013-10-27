@@ -332,7 +332,8 @@ public abstract class Game {
 			ItemStack bow = new ItemStack(Material.BOW);
 			ItemStack arrow = new ItemStack(Material.ARROW);
 			
-			bow.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+			bow.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 10);
+			bow.addUnsafeEnchantment(Enchantment.ARROW_FIRE, 10);
 			
 			for (Player player : getPlayers()) {
 				player.getInventory().addItem(bow);
