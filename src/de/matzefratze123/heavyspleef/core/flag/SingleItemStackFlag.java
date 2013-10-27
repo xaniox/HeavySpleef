@@ -74,7 +74,7 @@ public class SingleItemStackFlag extends Flag<ItemStack> {
 
 	@Override
 	public FlagType getType() {
-		return FlagType.SINGLE_ITEMsTACK_FLAG;
+		return FlagType.SINGLE_ITEMSTACK_FLAG;
 	}
 
 }

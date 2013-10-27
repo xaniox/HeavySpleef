@@ -32,22 +32,13 @@ import de.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 
 public enum FlagType {
 
-	INTEGER_FLAG(0),
-	LOCATION_FLAG(1),
-	BOOLEAN_FLAG(2),
-	ARRAY_ITEMSTACK_FLAG(3),
-	ENUM_FLAG(4),
-	SINGLE_ITEMsTACK_FLAG(5);
-	
-	private int internalId;
-	
-	private FlagType(int internalId) {
-		this.internalId = internalId;
-	}
-	
-	public int getInternalId() {
-		return this.internalId;
-	}
+	INTEGER_FLAG,
+	LOCATION_FLAG,
+	BOOLEAN_FLAG,
+	ARRAY_ITEMSTACK_FLAG,
+	ENUM_FLAG,
+	SINGLE_ITEMSTACK_FLAG,
+	LISTFLAG;
 	
 	public static Set<Flag<?>> customFlags = new HashSet<Flag<?>>();
 	

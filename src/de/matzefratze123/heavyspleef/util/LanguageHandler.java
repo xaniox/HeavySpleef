@@ -59,14 +59,14 @@ public class LanguageHandler {
 		languageFolder.mkdirs();
 		
 		String language = HeavySpleef.getSystemConfig().getString("language.language", "en");
-		setLanguage(language, fromFile);
+		setLocale(language, fromFile);
 	}
 	
-	private static void setLanguage(String lang, boolean fromFile) {
+	private static void setLocale(String locale, boolean fromFile) {
 		File langFile = null;
 		
 		if (fromFile) {
-			langFile = new File("plugins/HeavySpleef/language/" + lang + ".lang");
+			langFile = new File("plugins/HeavySpleef/language/" + locale + ".lang");
 			if (!langFile.exists())
 				langFile = null;
 		}
@@ -74,16 +74,21 @@ public class LanguageHandler {
 		try {
 			InputStream stream;
 			if (langFile == null || !fromFile) {
-				stream = HeavySpleef.class.getResourceAsStream("/resource/" + lang + ".lang");
-			} else
+				stream = HeavySpleef.class.getResourceAsStream("/resource/" + locale + ".lang");
+			} else {
 				stream = new FileInputStream(langFile);
+			}
 			
-			if (stream == null)
-				stream = HeavySpleef.class.getResourceAsStream("/resource/en.lang");
+			if (stream == null) {
+				HeavySpleef.debug("Debug");
+				stream = LanguageHandler.class.getResourceAsStream("/resource/en.lang");
+			}
+			
 			
 			InputStreamReader streamReader = new InputStreamReader(stream, Charset.forName("UTF-8"));
 			BufferedReader reader = new BufferedReader(streamReader);
-			String read = "";
+			
+			String read;
 			
 			while ((read = reader.readLine()) != null) {
 				read = read.trim();
