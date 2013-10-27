@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -42,7 +43,7 @@ public class PlayerStateManager {
 		if (!HeavySpleef.getSystemConfig().getBoolean("general.savePlayerState", true)) {
 			p.setGameMode(GameMode.SURVIVAL);//Set to survival
 			p.setFoodLevel(20);
-			p.setHealth(20);
+			p.setHealth(20.0);
 			p.setAllowFlight(false);//Disable fly mode (Essentials etc.)
 			p.setFireTicks(0);
 			
@@ -55,7 +56,7 @@ public class PlayerStateManager {
 
 		p.setGameMode(GameMode.SURVIVAL);//Set to survival
 		p.setFoodLevel(20);
-		p.setHealth(20);
+		p.setHealth(20.0);
 		p.setAllowFlight(false);//Disable fly mode (Essentials etc.)
 		p.setFireTicks(0);
 		p.getInventory().clear();
