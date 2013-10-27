@@ -19,9 +19,9 @@
  */
 package de.matzefratze123.heavyspleef;
 
-import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -59,6 +59,7 @@ import de.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
 import de.matzefratze123.heavyspleef.util.InventoryMenu;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Updater;
@@ -83,10 +84,7 @@ public class HeavySpleef extends JavaPlugin {
 	public int antiCampTid = -1;
 	
 	/* Updater stuff start */
-	public static boolean updateAvaible = false;
-	public static String updateName = "";
-	public static long updateSize = 0L;
-	public static File pluginFile = null;
+	private Updater updater;
 	/* Updater stuff end */
 	
 	@Override
@@ -99,7 +97,6 @@ public class HeavySpleef extends JavaPlugin {
 		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
-		pluginFile = this.getFile();
 		
 		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", PREFIX));
 		
@@ -145,6 +142,10 @@ public class HeavySpleef extends JavaPlugin {
 	
 	public static HeavySpleef getInstance() {
 		return instance;
+	}
+	
+	public Updater getUpdater() {
+		return updater;
 	}
 	
 	public HookManager getHookManager() {
@@ -208,11 +209,20 @@ public class HeavySpleef extends JavaPlugin {
 		if (!getConfig().getBoolean("auto-update"))
 			return;
 		
-		Updater updater = new Updater(this, "heavyspleef", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+		this.updater = new Updater();
 		
-		updateAvaible = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE;
-		updateName = updater.getLatestVersionString();
-		updateSize = updater.getFileSize();
+		//Makes sure the updater thread has completed its work
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			
+			@Override
+			public void run() {
+				if (updater.isUpdateAvailable()) {
+					Logger.info("A new version of HeavySpleef is available: " + updater.getFileTitle());
+					Logger.info("If you wish to update type /spleef update");
+				}
+			}
+		}, 50L);
+		
 	}
 	
 	private void startMetrics() {

@@ -19,17 +19,12 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import java.io.File;
-
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Updater;
-import de.matzefratze123.heavyspleef.util.Updater.UpdateType;
 
 public class CommandUpdate extends HSCommand {
 
@@ -44,21 +39,22 @@ public class CommandUpdate extends HSCommand {
 			sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Auto-Updater is disabled!");
 			return;
 		}
-		if (!HeavySpleef.updateAvaible) {
+		if (!HeavySpleef.getInstance().getUpdater().isUpdateAvailable()) {
 			sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " There is no new update avaible!");
 			return;
 		}
 		
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Updating plugin, please wait...");
-		long start = System.currentTimeMillis();
+		HeavySpleef.getInstance().getUpdater().update(sender);
+		//long start = System.currentTimeMillis();
 		
-		new Updater(plugin, "heavyspleef", HeavySpleef.pluginFile, UpdateType.NO_VERSION_CHECK, true);
+		/*new Updater(plugin, "heavyspleef", HeavySpleef.pluginFile, UpdateType.NO_VERSION_CHECK, true);
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Done! Took " + (System.currentTimeMillis() - start) + "ms!");
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " You find the HeavySpleef.jar in the folder \"plugins/" + YamlConfiguration.loadConfiguration(new File("bukkit.yml")).getString("settings.update-folder") + "/HeavySpleef.jar\"");
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " You may have to" + ChatColor.UNDERLINE + " delete " + ChatColor.RESET + ChatColor.DARK_PURPLE + "your config.yml!");
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Visit http://dev.bukkit.org/server-mods/heavyspleef/ for more information!");
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Version will be auto-installed with the next server reload/restart");
-		HeavySpleef.updateAvaible = false;
+		HeavySpleef.updateAvaible = false;*/
 	}
 
 	

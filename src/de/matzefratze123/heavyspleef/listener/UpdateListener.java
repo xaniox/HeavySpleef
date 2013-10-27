@@ -23,6 +23,7 @@ package de.matzefratze123.heavyspleef.listener;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -31,18 +32,19 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class UpdateListener implements Listener {
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
 		
-		if(!player.hasPermission(Permissions.CREATE_GAME.getPerm()))
+		if(!player.hasPermission(Permissions.UPDATE_PLUGIN.getPerm()))
 			return;
-		if (!HeavySpleef.updateAvaible)
+		if (!HeavySpleef.getInstance().getUpdater().isUpdateAvailable())
 			return;
 		
-		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Your spleef version is outdated! New version: " + ChatColor.GOLD + HeavySpleef.updateName + ChatColor.DARK_PURPLE + " (" + HeavySpleef.updateSize + " bytes)");
-		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " If you want to download a new version of HeavySpleef type /spleef update");
-		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " You may have to" + ChatColor.UNDERLINE + " delete " + ChatColor.RESET + ChatColor.DARK_PURPLE + "your config.yml for a new one!");
+		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Your version of spleef is outdated! New version: " + ChatColor.GOLD + HeavySpleef.getInstance().getUpdater().getFileTitle());
+		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " If you wish to download the new version of HeavySpleef type /spleef update");
+		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " You may have to " + ChatColor.UNDERLINE + "delete" + ChatColor.RESET + ChatColor.DARK_PURPLE + " your config.yml for a new one.");
+		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Please visit http://dev.bukkit.org/bukkit-plugins/heavyspleef/ for more information.");
 	}
 
 	
