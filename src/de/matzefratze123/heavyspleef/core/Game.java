@@ -2120,7 +2120,7 @@ public abstract class Game {
 			String str = HeavySpleef.getSystemConfig().getString("flag-defaults." + flag.getName());
 			if (str == null)
 				return flag.getAbsoluteDefault();
-			return flag.parse(null, str);
+			return flag.parse(null, str, null);
 		} else
 			value = (V)o;
 		

@@ -13,7 +13,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-public class ListFlag<T> extends Flag<List<T>> {
+public abstract class ListFlag<T> extends Flag<List<T>> {
 
 	private static final String ELEMENT_SEPERATOR = ";";
 
@@ -46,13 +46,19 @@ public class ListFlag<T> extends Flag<List<T>> {
 			}
 		}
 		
-		return builder.toString();
+		return getName() + ":" + builder.toString();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> deserialize(String str) {
-		String[] elements = str.split(ELEMENT_SEPERATOR);
+		String[] parts = str.split(":");
+		
+		if (parts.length < 2) {
+			return null;
+		}
+		
+		String[] elements = parts[1].split(ELEMENT_SEPERATOR);
 		
 		List<T> list = new ArrayList<T>();
 		
@@ -63,26 +69,28 @@ public class ListFlag<T> extends Flag<List<T>> {
 			list.add(element);
 		}
 		
+		this.name = parts[0];
 		return list;
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<T> parse(Player player, String input) {
-		// TODO Automatisch generierter Methodenstub
-		return null;
+	public List<T> parse(Player player, String input, Object previousObject) {
+		List<T> previousList;
+		
+		if (previousObject == null) {
+			previousList = new ArrayList<T>();
+		} else {
+			//Create a copy of the list as we don't want to modificate the list directly (just parse and return it)
+			previousList = new ArrayList<T>((List<T>) previousObject);
+		}
+		
+		putElement(player, input, previousList);
+		
+		return previousList;
 	}
-
-	@Override
-	public String toInfo(Object value) {
-		// TODO Automatisch generierter Methodenstub
-		return null;
-	}
-
-	@Override
-	public String getHelp() {
-		// TODO Automatisch generierter Methodenstub
-		return null;
-	}
+	
+	public abstract void putElement(Player player, String input, List<T> existing);
 
 	@Override
 	public FlagType getType() {

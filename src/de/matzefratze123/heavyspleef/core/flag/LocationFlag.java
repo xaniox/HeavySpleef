@@ -34,7 +34,7 @@ public class LocationFlag extends Flag<Location> {
 	}
 
 	@Override
-	public Location parse(Player player, String input) {
+	public Location parse(Player player, String input, Object previousObject) {
 		if (player == null)
 			return null;
 		

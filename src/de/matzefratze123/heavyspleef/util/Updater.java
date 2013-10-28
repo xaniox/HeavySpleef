@@ -208,7 +208,6 @@ public class Updater {
 						writer.write(buffer, 0, read);
 						
 						int percent = (int) ((downloaded / (double)size) * 100);
-						System.out.println(downloaded);
 						if (percent % 10 == 0 && announceTo != null && percent != lastPercentPrinted) {
 							announceTo.sendMessage(ChatColor.GREEN + "Progress: " + percent + "%");
 							lastPercentPrinted = percent;

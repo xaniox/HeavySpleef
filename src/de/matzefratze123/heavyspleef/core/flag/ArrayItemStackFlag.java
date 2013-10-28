@@ -41,7 +41,7 @@ public class ArrayItemStackFlag extends Flag<ItemStack[]> {
 	}
 
 	@Override
-	public ItemStack[] parse(Player player, String input) {
+	public ItemStack[] parse(Player player, String input, Object previousObject) {
 		String[] parts = input.split(" ");
 		ItemStack[] stacks = new ItemStack[parts.length / 2];
 		

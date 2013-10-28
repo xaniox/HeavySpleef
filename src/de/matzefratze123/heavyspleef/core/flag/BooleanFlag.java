@@ -31,7 +31,7 @@ public class BooleanFlag extends Flag<Boolean> {
 	}
 
 	@Override
-	public Boolean parse(Player player, String input) {
+	public Boolean parse(Player player, String input, Object previousObject) {
 		input = input.split(" ")[0];
 		if (input.equalsIgnoreCase("true")
 			|| input.equalsIgnoreCase("on")

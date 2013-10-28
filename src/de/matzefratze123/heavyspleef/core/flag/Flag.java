@@ -67,7 +67,7 @@ public abstract class Flag<T> implements DatabaseSerializeable<T> {
 		return this.aliases;
 	}
 	
-	public abstract T parse(Player player, String input);
+	public abstract T parse(Player player, String input, Object previousObject);
 	
 	public abstract String toInfo(Object value);
 	

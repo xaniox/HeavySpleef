@@ -330,44 +330,6 @@ public class YamlDatabase {
 				game.addWall(SignWall.fromString(wall, game));
 		}
 		
-		//Old flag system
-		if (section.getString("winPoint") != null)
-			game.setFlag(WIN, convertStringtoLocation(section.getString("winPoint")));
-		if (section.getString("losePoint") != null)
-			game.setFlag(LOSE, convertStringtoLocation(section.getString("losePoint")));
-		if (section.getString("preGamePoint") != null)
-			game.setFlag(LOBBY, convertStringtoLocation(section.getString("preGamePoint")));
-		if (section.getString("spawnPoint1") != null)
-			game.setFlag(SPAWNPOINT1, convertStringtoLocation(section.getString("spawnPoint1")));
-		if (section.getString("spawnPoint2") != null)
-			game.setFlag(SPAWNPOINT2, convertStringtoLocation(section.getString("spawnPoint2")));
-		if (section.getString("queuesPoint") != null)
-			game.setFlag(QUEUELOBBY, convertStringtoLocation(section.getString("queuesPoint")));
-		
-		if (section.contains("reward"))
-			game.setFlag(REWARD, section.getInt("reward"));
-		if (section.contains("minPlayers"))
-			game.setFlag(MINPLAYERS, section.getInt("minPlayers"));
-		if (section.contains("maxPlayers"))
-			game.setFlag(MAXPLAYERS, section.getInt("maxPlayers"));
-		if (section.contains("chances"))
-			game.setFlag(CHANCES, section.getInt("chances"));
-		if (section.contains("autostart"))
-			game.setFlag(AUTOSTART, section.getInt("autostart"));
-		if (section.contains("countdown"))
-			game.setFlag(COUNTDOWN, section.getInt("countdown"));
-		if (section.contains("rounds"))
-			game.setFlag(ROUNDS, section.getInt("rounds"));
-		if (section.contains("timeout"))
-			game.setFlag(MINPLAYERS, section.getInt("timeout"));
-		if (section.contains("shovels"))
-			game.setFlag(SHOVELS, section.getBoolean("shovels"));
-		if (section.contains("1vs1"))
-			game.setFlag(ONEVSONE, section.getBoolean("1vs1"));
-		if (section.contains("timeout"))
-			game.setFlag(TIMEOUT, section.getInt("timeout"));
-		//Old flag system end
-		
 		loadFlags(game, section);
 		
 		if (section.contains("scoreboards")) {

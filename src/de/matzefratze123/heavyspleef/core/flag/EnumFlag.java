@@ -58,7 +58,7 @@ public class EnumFlag<E extends Enum<E>> extends Flag<E> {
 	}
 
 	@Override
-	public E parse(Player player, String input) {
+	public E parse(Player player, String input, Object previousObject) {
 		if (input != null) {
 			input = input.toUpperCase();
 			input = input.trim();

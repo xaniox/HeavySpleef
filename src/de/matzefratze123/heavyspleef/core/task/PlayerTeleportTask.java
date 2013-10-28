@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
+import de.matzefratze123.heavyspleef.core.flag.ListFlagLocation.SerializeableLocation;
 import de.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 public class PlayerTeleportTask implements Runnable {
@@ -25,42 +26,33 @@ public class PlayerTeleportTask implements Runnable {
 
 	@Override
 	public void run() {
+		Location defaultSpawnpoint = game.getFlag(FlagType.SPAWNPOINT);
+		List<SerializeableLocation> spawnpoints = game.getFlag(FlagType.NEXTSPAWNPOINT);
 		
-		boolean firstSpawnGenerated = false;
-
-		Location firstSpawnpoint = game.getFlag(FlagType.SPAWNPOINT1);
-		Location secondSpawnpoint = game.getFlag(FlagType.SPAWNPOINT2);
+		Player[] players = game.getPlayers();
 		
-		for (Player player : game.getPlayers()) {
-			if (game.getFlag(FlagType.ONEVSONE)) {
-				//Check if first spawn has been generated and spawnpoint is not null
-				Location defaultSpawnpoint = game.getFlag(FlagType.SPAWNPOINT);
+		for (int i = 0; i < players.length; i++) {
+			Player player = players[i];
+			Location teleportTo;
+			
+			if (spawnpoints != null && i < spawnpoints.size()) {
+				Location bukkitLocation = spawnpoints.get(i).getBukkitLocation();
 				
-				if (!firstSpawnGenerated && firstSpawnpoint != null) {
-					generateBox(firstSpawnpoint);
-					player.teleport(firstSpawnpoint);
-					
-					firstSpawnGenerated = true;
-				} else if (secondSpawnpoint != null) {
-					generateBox(secondSpawnpoint);
-					player.teleport(secondSpawnpoint);
-				} else if (defaultSpawnpoint != null) {
-					player.teleport(defaultSpawnpoint);
-				} else {
-					player.teleport(game.getRandomLocation());
-				}
-				
+				teleportTo = bukkitLocation;
+			} else if (defaultSpawnpoint != null) {
+				teleportTo = defaultSpawnpoint;
 			} else {
-				Location spawnPoint = game.getFlag(FlagType.SPAWNPOINT);
-
-				if (spawnPoint != null) {
-					// Spawnpoint flag not null, teleport player to the flag destination
-					player.teleport(spawnPoint);
-				} else {
-					// No spawnpoint flag, randomly teleport player into the arena
-					player.teleport(game.getRandomLocation());
-				}
+				Location randomLocation = game.getRandomLocation();
+				
+				teleportTo = randomLocation;
 			}
+			
+			if (game.getFlag(FlagType.BOXES)) {
+				generateBox(teleportTo);
+			}
+			
+			//We have to teleport the player after the boxes were build. Reason: Otherwise players can glitch out
+			player.teleport(teleportTo);
 		}
 	}
 

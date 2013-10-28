@@ -126,7 +126,9 @@ public class CommandFlag extends HSCommand {
 			}
 			
 			try {
-				Object value = flag.parse(player, buildArgs.toString());
+				Object previousValue = game.getFlag(flag);
+				
+				Object value = flag.parse(player, buildArgs.toString(), previousValue);
 				
 				if (value == null) {
 					player.sendMessage(_("invalidFlagFormat"));
@@ -134,7 +136,8 @@ public class CommandFlag extends HSCommand {
 					return;
 				}
 				
-				setFlag(game, flag, player, buildArgs.toString());
+				setFlag(game, flag, value);
+				player.sendMessage(_("flagSet", flag.getName()));
 			} catch (Exception e) {
 				player.sendMessage(_("invalidFlagFormat"));
 				player.sendMessage(flag.getHelp());
@@ -142,9 +145,9 @@ public class CommandFlag extends HSCommand {
 		}
 	}
 	
-	public <V> void setFlag(Game game, Flag<V> flag, Player player, String context) {
-		game.setFlag(flag, flag.parse(player, context));
-		player.sendMessage(_("flagSet", flag.getName()));
+	@SuppressWarnings("unchecked")
+	public <V> void setFlag(Game game, Flag<V> flag, Object value) {
+		game.setFlag(flag, (V)value);
 	} 
 	
 }

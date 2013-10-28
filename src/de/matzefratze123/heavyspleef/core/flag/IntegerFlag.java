@@ -31,7 +31,7 @@ public class IntegerFlag extends Flag<Integer> {
 	}
 
 	@Override
-	public Integer parse(Player player, String input) {
+	public Integer parse(Player player, String input, Object previousObject) {
 		String[] parts = input.split(" ");
 		
 		try {

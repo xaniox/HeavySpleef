@@ -28,6 +28,7 @@ import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import de.matzefratze123.heavyspleef.core.flag.ListFlagLocation.SerializeableLocation;
 import de.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 
 public enum FlagType {
@@ -54,6 +55,8 @@ public enum FlagType {
 	public static final BooleanFlag BOWSPLEEF = new BooleanFlag("bowspleef", false);
 	@FlagData
 	public static final BooleanFlag SPLEGG = new BooleanFlag("splegg", false);
+	@FlagData
+	public static final BooleanFlag BOXES = new BooleanFlag("boxes", true);
 	
 	@FlagData(aliases = {"winpoint"})
 	public static final LocationFlag WIN = new LocationFlag("win");
@@ -63,14 +66,12 @@ public enum FlagType {
 	public static final LocationFlag LOBBY = new LocationFlag("lobby");
 	@FlagData
 	public static final LocationFlag QUEUELOBBY = new LocationFlag("queuelobby");
-	@FlagData
-	public static final LocationFlag SPAWNPOINT1 = new LocationFlag("spawnpoint1");
-	@FlagData
-	public static final LocationFlag SPAWNPOINT2 = new LocationFlag("spawnpoint2");
 	@FlagData(aliases = {"spectatepoint"})
 	public static final LocationFlag SPECTATE = new LocationFlag("spectate");
 	@FlagData(aliases = {"spawn"})
 	public static final LocationFlag SPAWNPOINT = new LocationFlag("spawnpoint");
+	@FlagData
+	public static final ListFlag<SerializeableLocation> NEXTSPAWNPOINT = new ListFlagLocation("nextspawnpoint", null);
 	
 	@FlagData(aliases = {"min"})
 	public static final IntegerFlag MINPLAYERS = new IntegerFlag("minplayers", 2);
@@ -93,8 +94,6 @@ public enum FlagType {
 	@FlagData(aliases = {"regeneration-intervall", "regeneration", "regen-intervall"})
 	public static final IntegerFlag REGEN_INTERVALL = new IntegerFlag("regen", -1);
 	
-	
-	
 	@FlagData
 	public static final ArrayItemStackFlag ITEMREWARD = new ArrayItemStackFlag("itemreward", new ItemStack[]{});
 	@FlagData
@@ -114,8 +113,7 @@ public enum FlagType {
 		BOWSPLEEF.setConflictingFlags(SHOVELS, SPLEGG, SHEARS);
 		SHEARS.setConflictingFlags(SHOVELS, SPLEGG, BOWSPLEEF);
 		
-		SPAWNPOINT1.setRequiredFlags(ONEVSONE);
-		SPAWNPOINT2.setRequiredFlags(ONEVSONE);
+		BOXES.setRequiredFlags(ONEVSONE);
 		CHANCES.setConflictingFlags(ONEVSONE);
 		ROUNDS.setRequiredFlags(ONEVSONE);
 	}
