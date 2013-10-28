@@ -80,7 +80,6 @@ public class LanguageHandler {
 			}
 			
 			if (stream == null) {
-				HeavySpleef.debug("Debug");
 				stream = LanguageHandler.class.getResourceAsStream("/resource/en.lang");
 			}
 			
