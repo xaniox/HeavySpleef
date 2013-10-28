@@ -47,7 +47,7 @@ public class PlayerTeleportTask implements Runnable {
 				teleportTo = randomLocation;
 			}
 			
-			if (game.getFlag(FlagType.BOXES)) {
+			if (game.getFlag(FlagType.BOXES) && game.getFlag(FlagType.ONEVSONE)) {
 				generateBox(teleportTo);
 			}
 			
