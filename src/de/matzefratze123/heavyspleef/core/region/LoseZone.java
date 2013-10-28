@@ -22,10 +22,9 @@ package de.matzefratze123.heavyspleef.core.region;
 
 import org.bukkit.Location;
 
-import de.matzefratze123.heavyspleef.util.Info;
 import de.matzefratze123.heavyspleef.util.LocationHelper;
 
-public class LoseZone extends RegionBase implements Info {
+public class LoseZone extends RegionBase {
 
 	private Location firstCorner;
 	private Location secondCorner;
@@ -82,9 +81,8 @@ public class LoseZone extends RegionBase implements Info {
 		return true;
 	}
 
-	@Override
 	public String asInfo() {
-		return "ID: " + getId() + ", " + LocationHelper.locationToFriendlyString(firstCorner) + "; " + LocationHelper.locationToFriendlyString(secondCorner);
+		return "ID: " + getId() + ", " + LocationHelper.toFriendlyString(firstCorner) + "; " + LocationHelper.toFriendlyString(secondCorner);
 	}
 	
 }

@@ -23,9 +23,11 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
+import de.matzefratze123.heavyspleef.util.ViPManager;
 
 public class CommandDisable extends HSCommand {
 
@@ -53,14 +55,16 @@ public class CommandDisable extends HSCommand {
 				return;
 			}
 			
-			game.disable(player.getName());
+			game.disable();
+			game.broadcast(_("gameDisabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-disable"));
 			player.sendMessage(_("gameDisabledToPlayer", game.getName()));
 		} else if (args.length == 0) {
 			for (Game game : GameManager.getGames()) {
 				if (game.isDisabled())
 					continue;
 				
-				game.disable(player.getName());
+				game.disable();
+				game.broadcast(_("gameDisabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-disable"));
 			}
 			
 			player.sendMessage(_("allGamesDisabledToPlayer"));

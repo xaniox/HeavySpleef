@@ -122,22 +122,18 @@ public class FloorCylinder extends Floor {
 			return;
 		}
 		
-		EditSession e = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), 6000);
+		EditSession e = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), -1);
 		try {
 			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(id, data)), radiusEastWest, radiusNorthSouth, 1, true);
-		} catch (MaxChangedBlocksException e1) {
-			HeavySpleef.getInstance().getLogger().warning("Changing to much blocks once! Can't create circle floor...");
-		}
+		} catch (MaxChangedBlocksException mcbe) {}
 	}
 
 	@Override
 	public void remove() {
-		EditSession e = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), 6000);
+		EditSession e = new EditSession(BukkitUtil.getLocalWorld(center.getWorld()), -1);
 		try {
 			e.makeCylinder(BukkitUtil.toVector(center), new SingleBlockPattern(new BaseBlock(0)), radiusEastWest, radiusNorthSouth, 1, true);
-		} catch (MaxChangedBlocksException e1) {
-			HeavySpleef.getInstance().getLogger().warning("Changing to much blocks once! Can't create remove floor...");
-		}
+		} catch (MaxChangedBlocksException mcbe) {}
 	}
 
 	@Override
@@ -209,7 +205,7 @@ public class FloorCylinder extends Floor {
 	public String asInfo() {
 		String base = super.asInfo();
 		
-		base += "\n" + LocationHelper.locationToFriendlyString(center) + ", radius1: " + radiusEastWest + ", radius2: " + radiusNorthSouth;
+		base += "\n" + LocationHelper.toFriendlyString(center) + ", radius1: " + radiusEastWest + ", radius2: " + radiusNorthSouth;
 		
 		return base;
 	}

@@ -34,7 +34,7 @@ public class SpleefSignJoin implements SpleefSign {
 			}
 			
 			//Open up Join GUI
-			HeavySpleef.getInstance().getInventoryMenu().open(player);
+			HeavySpleef.getInstance().getJoinGUI().open(player);
 		} else {
 			//Check if the game exists
 			if (!GameManager.hasGame(lines[2])) {

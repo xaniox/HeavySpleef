@@ -67,7 +67,7 @@ public class SpleefLogger {
 	}
 	
 	private static void handleException(Exception e) {
-		HeavySpleef.getInstance().getLogger().severe("Exception: " + e.getMessage());
+		Logger.severe("Exception: " + e.getMessage());
 		e.printStackTrace();
 	}
 	

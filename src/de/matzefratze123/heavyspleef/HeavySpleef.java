@@ -57,7 +57,7 @@ import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignVote;
 import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
-import de.matzefratze123.heavyspleef.util.InventoryMenu;
+import de.matzefratze123.heavyspleef.util.JoinGUI;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
@@ -72,20 +72,22 @@ public class HeavySpleef extends JavaPlugin {
 	private YamlDatabase database;
 	private IStatisticDatabase statisticDatabase;
 	private SelectionManager selectionManager;
-	private InventoryMenu menu;
+	private JoinGUI menu;
+	//Object instances end
 	
-	//Main-Instance
+	//Main instance
 	private static HeavySpleef instance;
 
-	//Other stuff
+	//Other utility stuff
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
 	public static final String[] commands = new String[] {"spleef", "spl", "hs", "hspleef"};
+	
+	//Task id's
 	public int saverTid = -1;
 	public int antiCampTid = -1;
 	
-	/* Updater stuff start */
+	// Updater
 	private Updater updater;
-	/* Updater stuff end */
 	
 	@Override
 	public void onEnable() {
@@ -104,7 +106,7 @@ public class HeavySpleef extends JavaPlugin {
 		LanguageHandler.loadLanguageFiles();
 		ViPManager.initVips();
 		
-		menu = new InventoryMenu(LanguageHandler._("inventory"), this);
+		menu = new JoinGUI(LanguageHandler._("inventory"), this);
 		
 		setupStatisticDatabase();
 		//statisticDatabase.load();
@@ -127,7 +129,7 @@ public class HeavySpleef extends JavaPlugin {
 		CommandHandler.setPluginInstance(this);
 		CommandHandler.setConfigInstance(this);
 		
-		this.getLogger().info("HeavySpleef v" + getDescription().getVersion() + " activated!");
+		Logger.info("HeavySpleef v" + getDescription().getVersion() + " activated!");
 	}
 
 	@Override
@@ -137,7 +139,7 @@ public class HeavySpleef extends JavaPlugin {
 		this.statisticDatabase.saveAccounts();
 		SpleefLogger.logRaw("Stopping plugin!");
 		
-		this.getLogger().info("HeavySpleef disabled!");
+		Logger.info("HeavySpleef disabled!");
 	}
 	
 	public static HeavySpleef getInstance() {
@@ -199,7 +201,7 @@ public class HeavySpleef extends JavaPlugin {
 		} else if (type.equalsIgnoreCase("mysql")) {
 			this.statisticDatabase = new MySQLStatisticDatabase();
 		} else {
-			this.getLogger().warning("Invalid statistic database type! Setting to YAML...");
+			Logger.warning("Invalid statistic database type! Setting to YAML...");
 			this.statisticDatabase = new YamlStatisticDatabase();
 		}
 	}
@@ -230,7 +232,7 @@ public class HeavySpleef extends JavaPlugin {
 			Metrics m = new Metrics(HeavySpleef.this);
 			m.start();
 		} catch (IOException e) {
-			HeavySpleef.this.getLogger().info("An error occured while submitting stats to metrics...");
+			Logger.info("An error occured while submitting stats to metrics...");
 		}
 	}
 	
@@ -257,7 +259,7 @@ public class HeavySpleef extends JavaPlugin {
 		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AntiCampingTask(), 0L, 20L);
 	}
 	
-	public InventoryMenu getInventoryMenu() {
+	public JoinGUI getJoinGUI() {
 		return menu;
 	}
 	

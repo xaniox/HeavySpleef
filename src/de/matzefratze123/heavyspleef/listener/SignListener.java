@@ -165,7 +165,7 @@ public class SignListener implements Listener {
 					return;
 				}
 				
-				HeavySpleef.getInstance().getInventoryMenu().open(p);
+				HeavySpleef.getInstance().getJoinGUI().open(p);
 				return;
 			} else {
 				if (!GameManager.hasGame(line3)) {

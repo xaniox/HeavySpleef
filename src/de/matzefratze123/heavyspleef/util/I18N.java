@@ -60,17 +60,17 @@ public class I18N {
 	private static void loadLanguage(boolean dynamic) {
 		InputStream inStream;
 		try {
-			File dynamicFile = new File(langFolder, locale + ".lang");
+			File dynamicFile = new File(langFolder, locale + ".yml");
 
 			if (dynamic && dynamicFile.exists()) {
 				inStream = new FileInputStream(dynamicFile);
 			} else {
-				inStream = I18N.class.getResourceAsStream("/resource/" + locale + ".lang");
+				inStream = I18N.class.getResourceAsStream("/resource/" + locale + ".yml");
 			}
 			
 			if (inStream == null) {
 				//File is null; there is no language resource; try to load english language file
-				inStream = I18N.class.getResourceAsStream("/resource/en.lang");
+				inStream = I18N.class.getResourceAsStream("/resource/en.yml");
 			}
 			
 			if (inStream == null) {
@@ -100,7 +100,7 @@ public class I18N {
 			OutputStream outStream = null;
 
 			try {
-				final String realFilename = lang + ".lang";
+				final String realFilename = lang + ".yml";
 
 				inStream = I18N.class.getResourceAsStream("/resource/"
 						+ realFilename);

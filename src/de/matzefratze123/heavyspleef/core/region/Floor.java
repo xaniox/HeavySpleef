@@ -27,10 +27,9 @@ import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.database.Parser;
-import de.matzefratze123.heavyspleef.util.Info;
 import de.matzefratze123.heavyspleef.util.SimpleBlockData;
 
-public abstract class Floor extends RegionBase implements Comparable<Floor>, Info {
+public abstract class Floor extends RegionBase implements Comparable<Floor> {
 
 	protected int m;
 	protected byte data;
@@ -58,7 +57,6 @@ public abstract class Floor extends RegionBase implements Comparable<Floor>, Inf
 	
 	public abstract GameType getType();
 	
-	@Override
 	public String asInfo() {
 		return "ID: " + getId() + ", shape: " + getType().name() + ", type: " + getFloorType();
 	}

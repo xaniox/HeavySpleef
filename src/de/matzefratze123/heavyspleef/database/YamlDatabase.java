@@ -19,7 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.database;
 
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.*;
 import static de.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
 import static de.matzefratze123.heavyspleef.database.Parser.convertLoseZoneToString;
 import static de.matzefratze123.heavyspleef.database.Parser.convertStringToLosezone;
@@ -57,6 +56,7 @@ import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import de.matzefratze123.heavyspleef.core.region.HUBPortal;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
+import de.matzefratze123.heavyspleef.util.Logger;
 
 /**
  * Provides a database manager for the plugin
@@ -112,7 +112,7 @@ public class YamlDatabase {
 			inStream.close();
 			outStream.close();
 		} catch (IOException e) {
-			Bukkit.getLogger().severe("Could not create spleef database! IOException?");
+			Logger.severe("Could not create spleef database! IOException?");
 			e.printStackTrace();
 		}
 	}
@@ -135,7 +135,7 @@ public class YamlDatabase {
 			HeavySpleef.debug("Loaded " + key + "!");
 		}
 		
-		plugin.getLogger().info("Loaded " + count + " games!");
+		Logger.info("Loaded " + count + " games!");
 		loadGlobalSettings();
 		saveConfig();
 	}
@@ -202,7 +202,7 @@ public class YamlDatabase {
 				try {
 					id = Integer.parseInt(key);
 				} catch (NumberFormatException e) {
-					HeavySpleef.getInstance().getLogger().warning("Failed to load portal id for portal " + id + "! Ignoring portal...");
+					Logger.warning("Failed to load portal id for portal " + id + "! Ignoring portal...");
 					continue;
 				}
 				

@@ -28,7 +28,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 
-public class InventoryMenu implements Listener {
+public class JoinGUI implements Listener {
 	
 	private static final String infinity = "\u221E";
 	private boolean unregistered;
@@ -36,7 +36,7 @@ public class InventoryMenu implements Listener {
 	
 	private Set<String> viewing = new HashSet<String>();
 	
-	public InventoryMenu(String title, Plugin plugin) {
+	public JoinGUI(String title, Plugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		
 		this.title = title;

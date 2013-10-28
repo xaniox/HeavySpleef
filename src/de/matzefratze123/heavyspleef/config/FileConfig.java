@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.util.Logger;
 
 public class FileConfig {
 
@@ -41,7 +42,7 @@ public class FileConfig {
 		dataFolder.mkdirs();
 		configFile = new File(dataFolder, "config.yml");
 		if (!configFile.exists()) {
-			this.t.getLogger().log(Level.INFO, "Could not find a config file! Creating a new...");
+			Logger.info("Could not find a config file! Creating a new...");
 			this.createDefaultConfigFile();
 			this.t.getConfig().setDefaults(YamlConfiguration.loadConfiguration(HeavySpleef.class.getResourceAsStream("/default/defaultconfig.yml")));
 		}
@@ -61,12 +62,12 @@ public class FileConfig {
 
 			configIn.close();
 			configOut.close();
-			this.t.getLogger().log(Level.INFO, "Config File successfully created!");
+			Logger.info("Config File successfully created!");
 		} catch (final IOException ioe) {
-			this.t.getLogger().log(Level.WARNING, "Could not create config file! IOException? Using normal values!", ioe);
+			Logger.warning("Could not create config file! IOException? Using normal values!");
 			return;
 		} catch (final NullPointerException npe) {
-			this.t.getLogger().log(Level.WARNING, "Could not create config file! NullPointerException? Deleting config file and using normal values!", npe);
+			Logger.warning("Could not create config file! NullPointerException? Deleting config file and using normal values!");
 			configFile.delete();
 		}
 	}

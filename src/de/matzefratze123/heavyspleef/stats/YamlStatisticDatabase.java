@@ -30,6 +30,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.util.Logger;
 
 
 public class YamlStatisticDatabase implements IStatisticDatabase {
@@ -77,7 +78,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 		try {
 			db.save(databaseFile);
 		} catch (Exception e) {
-			plugin.getLogger().warning("Could not save stats to " + databaseFile.getName() + "! IOException?");
+			Logger.warning("Could not save stats to " + databaseFile.getName() + "! IOException?");
 		}
 	}
 
@@ -100,7 +101,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 			}
 		}
 		
-		HeavySpleef.getInstance().getLogger().info("Loaded " + count + " statistics!");
+		Logger.info("Loaded " + count + " statistics!");
 	}
 
 	@Override

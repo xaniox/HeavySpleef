@@ -22,10 +22,8 @@ package de.matzefratze123.heavyspleef.util;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -50,11 +48,12 @@ public class PlayerStateManager {
 			return;
 		}
 		
+		p.setGameMode(GameMode.SURVIVAL);//Set to survival
+		
 		states.put(p.getName(), new PlayerState(p.getInventory().getContents(), p.getInventory().getHelmet(), p.getInventory().getChestplate(),
 				  p.getInventory().getLeggings(), p.getInventory().getBoots(),p.getExhaustion(), p.getSaturation(),
 				  p.getFoodLevel(), p.getHealth(),p.getGameMode(), p.getActivePotionEffects(), p.getExp(), p.getLevel(), p.getAllowFlight()));
 
-		p.setGameMode(GameMode.SURVIVAL);//Set to survival
 		p.setFoodLevel(20);
 		p.setHealth(20.0);
 		p.setAllowFlight(false);//Disable fly mode (Essentials etc.)
@@ -104,8 +103,9 @@ public class PlayerStateManager {
 		p.setLevel(state.getLevel());
 		p.setExp(state.getExp());
 		
-		if (p.getGameMode() != GameMode.CREATIVE)
+		if (p.getGameMode() != GameMode.CREATIVE) {
 			p.setHealth(state.getHealth());
+		}
 		
 		p.setFoodLevel(state.getFoodLevel());
 		p.addPotionEffects(state.getPotioneffects());

@@ -181,7 +181,7 @@ public class FloorCuboid extends Floor {
 	public String asInfo() {
 		String base = super.asInfo();
 		
-		base += "\n" + LocationHelper.locationToFriendlyString(firstCorner) + "; " + LocationHelper.locationToFriendlyString(secondCorner);
+		base += "\n" + LocationHelper.toFriendlyString(firstCorner) + "; " + LocationHelper.toFriendlyString(secondCorner);
 		
 		return base;
 	}

@@ -297,14 +297,14 @@ public class GameData {
 	 * Disables this game
 	 */
 	public void disable() {
-		game.disable(null);
+		game.disable();
 	}
 	
 	/**
 	 * Enables this game
 	 */
 	public void enable() {
-		game.enable(null);
+		game.enable();
 	}
 	
 	/**

@@ -64,7 +64,7 @@ public class CommandJoin extends HSCommand {
 				return;
 			}
 			
-			HeavySpleef.getInstance().getInventoryMenu().open(player);
+			HeavySpleef.getInstance().getJoinGUI().open(player);
 			return;
 		}
 		

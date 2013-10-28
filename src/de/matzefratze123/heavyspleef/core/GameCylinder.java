@@ -44,6 +44,7 @@ import de.matzefratze123.heavyspleef.core.region.Floor;
 import de.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import de.matzefratze123.heavyspleef.core.region.FloorType;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
+import de.matzefratze123.heavyspleef.util.Logger;
 
 public class GameCylinder extends Game {
 
@@ -202,7 +203,7 @@ public class GameCylinder extends Game {
 		try {
 			eSession.makeCylinder(new Vector(x, y, z), new SingleBlockPattern(new BaseBlock(typeAbove, dataAbove)), radiusEastWest, radiusNorthSouth, 1, false);
 		} catch (MaxChangedBlocksException e) {
-			HeavySpleef.getInstance().getLogger().warning("Changing to much blocks once! Can't clear floor...");
+			Logger.warning("Changing to much blocks once! Can't clear floor...");
 		}
 	}
 	

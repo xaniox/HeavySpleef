@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
+import de.matzefratze123.heavyspleef.util.Logger;
 
 /**
  * Contains selections for players
@@ -48,14 +49,14 @@ public class SelectionManager {
 		String wandType = HeavySpleef.getSystemConfig().getString("general.wandType");
 		
 		if (wandType == null || (!wandType.equalsIgnoreCase("HeavySpleef") && !wandType.equalsIgnoreCase("WorldEdit"))) {
-			HeavySpleef.getInstance().getLogger().info("Invalid wand type found! " + wandType + " is not permitted! Setting to HeavySpleef selection...");
+			Logger.info("Invalid wand type found! " + wandType + " is not permitted! Setting to HeavySpleef selection...");
 			this.type = WandType.HEAVYSPLEEF;
 			return;
 		}
 		
 		if (wandType.equalsIgnoreCase("WorldEdit")) {
 			if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
-				HeavySpleef.getInstance().getLogger().info("WorldEdit wand in the config was found, but no WorldEdit?! Setting to HeavySpleef...");
+				Logger.info("WorldEdit wand in the config was found, but no WorldEdit?! Setting to HeavySpleef...");
 				this.type = WandType.HEAVYSPLEEF;
 				return;
 			}

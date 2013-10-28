@@ -62,7 +62,8 @@ public class CommandEnable extends HSCommand {
 				if (!game.isDisabled())
 					continue;
 				
-				game.enable(player.getName());
+				game.enable();
+				game.broadcast(_("gameEnabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-enable"));
 			}
 			
 			player.sendMessage(_("allGamesEnabledToPlayer"));

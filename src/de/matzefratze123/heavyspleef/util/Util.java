@@ -104,7 +104,7 @@ public class Util {
 	}
 	
 	/**
-	 * Gets the transparent materials for the method player.getTargetBlock(HashSet<Byte> transparent, int lenth)
+	 * Gets the transparent materials for the method getTargetBlock(HashSet<Byte>, int) in the type Player
 	 * 
 	 * @return A HashSet containing air, water and lava
 	 */

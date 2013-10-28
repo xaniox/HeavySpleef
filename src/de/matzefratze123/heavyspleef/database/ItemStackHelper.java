@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.util.Logger;
 
 /**
  * Provides a simple parser for itemstacks
@@ -57,7 +58,7 @@ public class ItemStackHelper {
 			amount = Integer.parseInt(split[1]);
 			data = Byte.parseByte(split[2]);
 		} catch (NumberFormatException e) {
-			HeavySpleef.getInstance().getLogger().warning("Could not read itemstack reward!");
+			Logger.warning("Could not read itemstack reward!");
 		}
 		
 		ItemStack item = new ItemStack(type, amount);

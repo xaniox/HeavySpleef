@@ -81,6 +81,7 @@ import de.matzefratze123.heavyspleef.stats.StatisticManager;
 import de.matzefratze123.heavyspleef.util.ArrayHelper;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.LocationKeeper;
+import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.PlayerStateManager;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Util;
@@ -390,10 +391,8 @@ public abstract class Game {
 	
 	/**
 	 * Disables this game
-	 * 
-	 * @param disabler The disabler of this game (can be null) 
 	 */
-	public void disable(String disabler) {//TODO Disabler arg weg
+	public void disable() {
 		if (isDisabled())
 			return;
 		if (hasActivity())
@@ -401,23 +400,17 @@ public abstract class Game {
 		
 		setGameState(GameState.DISABLED);
 		updateWalls();
-		
-		if (disabler != null)
-			broadcast(_("gameDisabled", getName(), ViPManager.colorName(disabler)), ConfigUtil.getBroadcast("game-disable"));
 	}
 	
 	/**
 	 * Enables this game
 	 */
-	public void enable(String enabler) {//TODO Enabler Arg weg
+	public void enable() {
 		if (!isDisabled())
 			return;
 		
 		setGameState(GameState.JOINABLE);
 		updateWalls();
-		
-		if (enabler != null)
-			broadcast(_("gameEnabled", getName(), ViPManager.colorName(enabler)), ConfigUtil.getBroadcast("game-enable"));
 	}
 	
 	public void spectate(Player player) {
@@ -539,29 +532,6 @@ public abstract class Game {
 	public void join(Player player) {
 		join(player, null);
 	}
-	
-	/*public void leave(Player player, LoseCause cause) {
-		if (player == null)
-			return;
-		if (cause == null)
-			cause = LoseCause.UNKNOWN;
-		
-		if (!players.contains(player.getName()))
-			return;
-		
-		if (cause == LoseCause.LOSE) {
-			//Check 1vs1 and chances first
-			
-			boolean is1vs1 = getFlag(ONEVSONE);
-			int chances = getFlag(CHANCES);
-			
-			if (is1vs1) {
-				
-			} else if (chances > 0) {
-				
-			}
-		}
-	}*/
 	
 	/**
 	 * <b>Trys</b> to remove a player from this game with the given cause
@@ -1425,7 +1395,7 @@ public abstract class Game {
 	public void regen() {
 		for (Floor floor : getFloors()) {
 			if (!regen(floor.getId()))
-				HeavySpleef.getInstance().getLogger().warning(getName() + ": Could not regenerate floor " + floor.getId() + "!");
+				Logger.warning(getName() + ": Could not regenerate floor " + floor.getId() + "!");
 		}
 	}
 	

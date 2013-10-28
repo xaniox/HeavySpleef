@@ -15,7 +15,7 @@ public class Logger {
 		HeavySpleef.getInstance().getLogger().log(Level.INFO, msg);
 	}
 	
-	public static void warn(String msg) {
+	public static void warning(String msg) {
 		HeavySpleef.getInstance().getLogger().log(Level.WARNING, msg);
 	}
 	
