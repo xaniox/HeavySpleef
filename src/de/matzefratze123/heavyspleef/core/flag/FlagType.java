@@ -57,6 +57,8 @@ public enum FlagType {
 	public static final BooleanFlag SPLEGG = new BooleanFlag("splegg", false);
 	@FlagData
 	public static final BooleanFlag BOXES = new BooleanFlag("boxes", true);
+	@FlagData
+	public static final BooleanFlag BLOCKBREAKEFFECT = new BooleanFlag("blockbreakeffect", false);
 	
 	@FlagData(aliases = {"winpoint"})
 	public static final LocationFlag WIN = new LocationFlag("win");

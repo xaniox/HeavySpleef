@@ -26,9 +26,11 @@ import java.util.List;
 
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
@@ -158,6 +160,11 @@ public class PlayerListener implements Listener {
 		if (game.getFlag(FlagType.SPLEGG))
 		
 		game.addBrokenBlock(p, block);
+		
+		if (game.getFlag(FlagType.BLOCKBREAKEFFECT)) {
+			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
+		}
+		
 		block.setType(Material.AIR);
 	}
 	
@@ -221,9 +228,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		e.getBlock().setType(Material.AIR);
 		game.addBrokenBlock(p, block);
-		
 	}
 	
 	private void fixBlockGlitch(Player p, Block b) {
@@ -279,14 +284,22 @@ public class PlayerListener implements Listener {
 		    
 		    if (!game.canSpleef(hitBlock, player))
 		    	return;
-		    if (hitBlock.getType() == Material.TNT)
+		    
+		    World world = arrow.getWorld();
+		    
+		    arrow.remove();
+		    if (hitBlock.getType() == Material.TNT) {
 		    	return;
+		    }
 		    
 		    game.addBrokenBlock(player, hitBlock);
-		    FallingBlock block = arrow.getWorld().spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());
+		    FallingBlock block = world.spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());
 		    block.setMetadata("bowspleef", new FixedMetadataValue(HeavySpleef.getInstance(), true));
+		    
+		    if (game.getFlag(FlagType.BLOCKBREAKEFFECT)) {
+		    	world.playEffect(hitBlock.getLocation(), Effect.STEP_SOUND, hitBlock.getType());
+		    }
 		    hitBlock.setType(Material.AIR);
-		    arrow.remove();
 		} else if (projectile instanceof Egg) {
 			Egg egg = (Egg) projectile;
 			
