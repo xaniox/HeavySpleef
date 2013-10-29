@@ -49,7 +49,7 @@ noGameRunning: &cThere is no game running on this arena!
 
 noWorldEdit: &cCan't use this function! WorldEdit wasn't found on this server!
 
-not1vs1: &cThis is not a 1vs1 game! Type /spleef set1vs1 %a true to make it to an 1vs1 game 
+not1vs1: &cThis is not a 1vs1 game! Type /spleef flag %a 1vs1 true to transform it to an 1vs1 game 
 onlyOneLayer: &cThe size of a floor in the y-coordinate can only be one layer!
 maxPlayersReached: &cThe maximum count of players in this arena is reached!
 
