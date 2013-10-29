@@ -19,31 +19,26 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
-public abstract class HSCommand implements TabCompleter {
+public abstract class HSCommand {
 
 	private Permissions permission = null;
 	private int minArgs = 0;
 	private int maxArgs = -1;
 	private boolean onlyIngame = false;
+	private String help;
+	private String usage;
+	
 	public static HeavySpleef plugin;
 	public static FileConfiguration config;
-	protected String usage;
-	protected List<String> tabArgsComplete = new ArrayList<String>();
+	
 
 	public abstract void execute(CommandSender sender, String[] args);
 	
@@ -76,7 +71,7 @@ public abstract class HSCommand implements TabCompleter {
 	}
 	
 	String getUsage() {
-		return HeavySpleef.PREFIX + " " + usage;
+		return HeavySpleef.PREFIX + ChatColor.RED + " " + usage;
 	}
 	
 	String getExactUsage() {
@@ -91,8 +86,12 @@ public abstract class HSCommand implements TabCompleter {
 		this.onlyIngame = ingame;
 	}
 	
-	void setTabHelp(String[] help) {
-		this.tabArgsComplete = Arrays.asList(help);
+	void setHelp(String description) {
+		this.help = description;
+	}
+	
+	String getHelp() {
+		return help;
 	}
 	
 	public static String _(String... key) {
@@ -111,8 +110,4 @@ public abstract class HSCommand implements TabCompleter {
 		config = c;
 	}
 	
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-		return this.tabArgsComplete;
-	}
 }

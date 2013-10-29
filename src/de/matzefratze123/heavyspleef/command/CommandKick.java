@@ -24,12 +24,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
+@UserType(Type.ADMIN)
 public class CommandKick extends HSCommand {
 
 	public CommandKick() {
@@ -37,7 +39,7 @@ public class CommandKick extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.KICK);
 		setUsage("/spleef kick <Player> [Reason]");
-		setTabHelp(new String[]{"<player>", "<player> [reason]"});
+		setHelp("Kicks a player from a game");
 	}
 	
 	@Override

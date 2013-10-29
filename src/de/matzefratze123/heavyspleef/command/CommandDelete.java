@@ -22,10 +22,12 @@ package de.matzefratze123.heavyspleef.command;
 
 import org.bukkit.command.CommandSender;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandDelete extends HSCommand {
 
 	public CommandDelete() {
@@ -33,7 +35,7 @@ public class CommandDelete extends HSCommand {
 		setMinArgs(1);
 		setPermission(Permissions.DELETE_GAME);
 		setUsage("/spleef delete <name>");
-		setTabHelp(new String[]{"<name>"});
+		setHelp("Deletes a game");
 	}
 	
 	@Override

@@ -24,20 +24,22 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
+@UserType(Type.ADMIN)
 public class CommandRemoveTeam extends HSCommand {
 	
 	public CommandRemoveTeam() {
 		setMinArgs(2);
 		setUsage("/spleef removeteam <arena> <red|blue|green|yellow|gray>");
-		setTabHelp(new String[]{"<arena> <red|blue|green|yellow|gray>"});
 		setPermission(Permissions.REMOVE_TEAM);
 		setOnlyIngame(true);
+		setHelp("Removes a team from a game");
 	}
 	
 	@Override

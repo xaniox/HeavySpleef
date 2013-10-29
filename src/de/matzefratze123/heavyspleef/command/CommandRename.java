@@ -22,19 +22,21 @@ package de.matzefratze123.heavyspleef.command;
 
 import org.bukkit.command.CommandSender;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandRename extends HSCommand {
 
 	public CommandRename() {
 		setMinArgs(2);
 		setMaxArgs(2);
 		setUsage("/spleef rename <arena> <newName>");
-		setTabHelp(new String[]{"<arena> <newName>"});
 		setOnlyIngame(true);
 		setPermission(Permissions.RENAME);
+		setHelp("Renames a game");
 	}
 	
 	@Override

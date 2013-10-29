@@ -24,10 +24,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandAddScoreBoard extends HSCommand {
 
 	public CommandAddScoreBoard() {
@@ -36,7 +38,7 @@ public class CommandAddScoreBoard extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_SCOREBOARD);
 		setUsage("/spleef addscoreboard <name> <EAST|WEST|SOUTH|NORTH>");
-		setTabHelp(new String[]{"<name> <EAST|WEST|SOUTH|NORTH>"});
+		setHelp("Adds a scoreboard to the game (only 1vs1)");
 	}
 
 	@Override

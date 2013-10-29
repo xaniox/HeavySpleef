@@ -23,18 +23,21 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.PvPTimerManager;
 
+@UserType(Type.PLAYER)
 public class CommandHub extends HSCommand {
 
 	public CommandHub() {
 		setPermission(Permissions.TELEPORT_HUB);
 		setUsage("/spleef hub");
 		setOnlyIngame(true);
+		setHelp("Teleports to the spleef hub");
 	}
 	
 	@Override

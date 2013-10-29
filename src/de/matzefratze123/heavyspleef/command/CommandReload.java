@@ -19,23 +19,24 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
-import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandReload extends HSCommand {
 
 	public CommandReload() {
 		setPermission(Permissions.RELOAD);
 		setUsage("/spleef reload");
+		setHelp("Reloads the entire spleef plugin");
 	}
 	
 	@Override

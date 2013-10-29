@@ -23,16 +23,18 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.PLAYER)
 public class CommandStart extends HSCommand {
 
 	public CommandStart() {
 		setPermission(Permissions.START_GAME);
-		setUsage("/spleef start <Name>");
-		setTabHelp(new String[]{"<name>"});
+		setUsage("/spleef start [name]");
+		setHelp("Starts a game");
 	}
 	
 	@Override

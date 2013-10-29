@@ -24,11 +24,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandTeamFlag extends HSCommand {
 	
 	public CommandTeamFlag() {
@@ -36,6 +38,7 @@ public class CommandTeamFlag extends HSCommand {
 		setPermission(Permissions.SET_TEAMFLAG);
 		setUsage("/spleef setteamflag <arena> <team> <maxplayers|minplayers> <number>");
 		setOnlyIngame(true);
+		setHelp("Adds a flag to a team");
 	}
 	
 	@Override

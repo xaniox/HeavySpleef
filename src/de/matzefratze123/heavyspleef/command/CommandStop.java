@@ -23,10 +23,12 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandStop extends HSCommand {
 
 	public CommandStop() {
@@ -34,8 +36,8 @@ public class CommandStop extends HSCommand {
 		setMaxArgs(1);
 		setPermission(Permissions.STOP);
 		setUsage("/spleef stop <Name>");
-		setTabHelp(new String[]{"<name>"});
 		setOnlyIngame(true);
+		setHelp("Stops a game");
 	}
 	
 	@Override

@@ -20,11 +20,18 @@
 package de.matzefratze123.heavyspleef.command;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.PLAYER)
 public class CommandHelp extends HSCommand {
 
 	private String[] firstPage = new String[] {ChatColor.DARK_BLUE + "   -----   HeavySpleef Help - Page 1/6  -----   ",
@@ -75,48 +82,47 @@ public class CommandHelp extends HSCommand {
 		setMaxArgs(1);
 		setMinArgs(0);
 		setUsage("/spleef help [page]");
-		setTabHelp(new String[]{"[page]"});
+		setHelp("Shows Spleef help");
 	}
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		if (sender.hasPermission(Permissions.HELP_ADMIN.getPerm())) {
-			if (args.length != 1) {
-				sender.sendMessage(firstPage);
-				return;
+		Map<String, HSCommand> commands = CommandHandler.getCommands();
+		
+		sender.sendMessage(ChatColor.DARK_BLUE + "   -----   HeavySpleef Help   -----   ");
+		
+		//We don't want to print aliases again...
+		List<Class<?>> printedCommands = new ArrayList<Class<?>>();
+		
+		for (HSCommand cmd : commands.values()) {
+			if (printedCommands.contains(cmd.getClass())) {
+				continue;
 			}
-			int page;
-			try {
-				page = Integer.parseInt(args[0]);
-			} catch (NumberFormatException e) {
-				sender.sendMessage(firstPage);
-				return;
+			
+			if (!cmd.getClass().isAnnotationPresent(UserType.class)) {
+				continue;
 			}
-			switch(page) {
-			case 1:
-				sender.sendMessage(firstPage);
-				break;
-			case 2:
-				sender.sendMessage(secondPage);
-				break;
-			case 3:
-				sender.sendMessage(thirdPage);
-				break;
-			case 4:
-				sender.sendMessage(fourthPage);
-				break;
-			case 5:
-				sender.sendMessage(fifthPage);
-				break;
-			case 6:
-				sender.sendMessage(sixthPage);
-				break;
-			default:
-				sender.sendMessage(_("pageDoesntExists"));
+			
+			UserType userType = cmd.getClass().getAnnotation(UserType.class);
+			Type type = userType.value();
+			
+			boolean isPermitted = false;
+			
+			if (type == Type.ADMIN) {
+				isPermitted = sender.hasPermission(Permissions.HELP_ADMIN.getPerm());
 			}
-		} else if (sender.hasPermission(Permissions.HELP_USER.getPerm())) {
-			sender.sendMessage(userHelp);
-		} else sender.sendMessage(_("noPermission"));
+			
+			if (type == Type.PLAYER) {
+				isPermitted = sender.hasPermission(Permissions.HELP_USER.getPerm());
+			}
+			
+			if (isPermitted) {
+				String msg = ChatColor.GOLD + cmd.getExactUsage() + ChatColor.RED + " - " + ChatColor.YELLOW + cmd.getHelp();
+				
+				sender.sendMessage(msg);
+				printedCommands.add(cmd.getClass());
+			}
+		}
 	}
 
 }

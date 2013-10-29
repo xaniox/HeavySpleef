@@ -1,16 +1,17 @@
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandAddWall extends HSCommand {
 	
 	public CommandAddWall() {
@@ -19,7 +20,7 @@ public class CommandAddWall extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_WALL);
 		setUsage("/spleef addwall <name>");
-		setTabHelp(new String[]{"<arena>"});
+		setHelp("Adds a self updating wall to a game");
 	}
 
 	@Override

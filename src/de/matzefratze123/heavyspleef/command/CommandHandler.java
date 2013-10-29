@@ -85,6 +85,10 @@ public class CommandHandler implements CommandExecutor {
 		return commands.get(name.toLowerCase());
 	}
 	
+	protected static Map<String, HSCommand> getCommands() {
+		return commands;
+	}
+	
 	public static void initCommands() {
 		//Add all commands
 		addSubCommand("flag", new CommandFlag());

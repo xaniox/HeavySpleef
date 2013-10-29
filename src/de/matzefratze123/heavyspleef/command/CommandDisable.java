@@ -23,12 +23,14 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
+@UserType(Type.ADMIN)
 public class CommandDisable extends HSCommand {
 
 	public CommandDisable() {
@@ -36,7 +38,7 @@ public class CommandDisable extends HSCommand {
 		setPermission(Permissions.DISABLE);
 		setUsage("/spleef disable [Name]");
 		setOnlyIngame(true);
-		setTabHelp(new String[]{"[name]"});
+		setHelp("Disables a game");
 	}
 
 	@Override

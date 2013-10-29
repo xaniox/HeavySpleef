@@ -25,6 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameType;
@@ -32,6 +33,7 @@ import de.matzefratze123.heavyspleef.core.region.Floor;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandRemoveFloor extends HSCommand {
 
 	public CommandRemoveFloor() {
@@ -40,6 +42,7 @@ public class CommandRemoveFloor extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.REMOVE_FLOOR);
 		setUsage("/spleef removefloor");
+		setHelp("Removes a floor from a game where you currently looking");
 	}
 	
 	@Override

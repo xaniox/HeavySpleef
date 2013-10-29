@@ -26,6 +26,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameCylinder;
 import de.matzefratze123.heavyspleef.core.GameManager;
@@ -37,6 +38,7 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.SimpleBlockData;
 import de.matzefratze123.heavyspleef.util.Util;
 
+@UserType(Type.ADMIN)
 public class CommandAddFloor extends HSCommand {
 
 	public CommandAddFloor() {
@@ -44,7 +46,7 @@ public class CommandAddFloor extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_FLOOR);
 		setUsage("/spleef addfloor <randomwool|given|block[:subdata]>]");
-		setTabHelp(new String[]{"randomwool", "given", "block[:subdata]"});
+		setHelp("Adds a floor to the game");
 	}
 	
 	@Override

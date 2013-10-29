@@ -24,17 +24,20 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.region.HUBPortal;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
+@UserType(Type.ADMIN)
 public class CommandRemovePortal extends HSCommand {
 	
 	public CommandRemovePortal() {
 		setPermission(Permissions.REMOVE_PORTAL);
 		setUsage("/spleef removeportal");
 		setOnlyIngame(true);
+		setHelp("Removes a hub portal");
 	}
 	
 	@Override

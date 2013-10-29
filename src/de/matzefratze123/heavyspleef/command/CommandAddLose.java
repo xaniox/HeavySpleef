@@ -25,11 +25,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandAddLose extends HSCommand {
 
 	public CommandAddLose() {
@@ -38,7 +40,7 @@ public class CommandAddLose extends HSCommand {
 		setPermission(Permissions.ADD_LOSEZONE);
 		setOnlyIngame(true);
 		setUsage("/spleef addlose <name>");
-		setTabHelp(new String[]{"<arena>"});
+		setHelp("Adds a losezone to the game with the bounds of your WorldEdit selection");
 	}
 	
 	@Override

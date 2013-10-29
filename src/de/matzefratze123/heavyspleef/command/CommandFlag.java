@@ -27,6 +27,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.BooleanFlag;
@@ -36,15 +37,16 @@ import de.matzefratze123.heavyspleef.util.ArrayHelper;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
+@UserType(Type.ADMIN)
 public class CommandFlag extends HSCommand {
 
 	public CommandFlag() {
 		setMinArgs(2);
 		setOnlyIngame(true);
 		setUsage("/spleef flag <name> <flag> [state]\n" +
-				__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.getFlagList(), true)));
+				ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.getFlagList(), true));
 		setPermission(Permissions.SET_FLAG);
-		setTabHelp(new String[]{"<name> <flag> [value]"});
+		setHelp("Sets a flag for this game");
 	}
 	
 	@Override

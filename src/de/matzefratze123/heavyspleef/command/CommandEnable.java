@@ -23,6 +23,7 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
@@ -30,6 +31,7 @@ import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
+@UserType(Type.ADMIN)
 public class CommandEnable extends HSCommand {
 
 	public CommandEnable() {
@@ -37,7 +39,7 @@ public class CommandEnable extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.ENABLE);
 		setUsage("/spleef enable <Name>");
-		setTabHelp(new String[]{"<name>"});
+		setHelp("Enables a game");
 	}
 
 	@Override

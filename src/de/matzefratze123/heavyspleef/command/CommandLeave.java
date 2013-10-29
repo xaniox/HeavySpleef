@@ -23,12 +23,14 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.core.QueuesManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.PLAYER)
 public class CommandLeave extends HSCommand {
 
 	public CommandLeave() {
@@ -37,6 +39,7 @@ public class CommandLeave extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.LEAVE_GAME);
 		setUsage("/spleef leave");
+		setHelp("Leaves the game/queue/spectate mode");
 	}
 	
 	@Override

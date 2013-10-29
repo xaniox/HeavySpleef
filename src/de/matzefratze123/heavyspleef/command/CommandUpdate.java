@@ -23,14 +23,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
-import de.matzefratze123.heavyspleef.util.Updater;
 
+@UserType(Type.ADMIN)
 public class CommandUpdate extends HSCommand {
 
 	public CommandUpdate() {
 		setPermission(Permissions.UPDATE_PLUGIN);
 		setUsage("/spleef update");
+		setHelp("Updates the plugin");
 	}
 	
 	@Override

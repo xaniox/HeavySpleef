@@ -23,12 +23,13 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
-
+@UserType(Type.ADMIN)
 public class CommandRemoveScoreBoard extends HSCommand {
 
 	public CommandRemoveScoreBoard() {
@@ -37,6 +38,7 @@ public class CommandRemoveScoreBoard extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.REMOVE_SCOREBOARD);
 		setUsage("/spleef removescoreboard");
+		setHelp("Removes the scoreboard where you currently looking");
 	}
 
 	@Override

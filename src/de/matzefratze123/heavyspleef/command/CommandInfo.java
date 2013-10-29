@@ -28,6 +28,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -35,6 +36,7 @@ import de.matzefratze123.heavyspleef.core.region.Floor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandInfo extends HSCommand {
 
 	public CommandInfo() {
@@ -43,7 +45,7 @@ public class CommandInfo extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.INFO);
 		setUsage("/spleef info <name>");
-		setTabHelp(new String[]{"<name>"});
+		setHelp("Prints out information about this game");
 	}
 	
 	@Override

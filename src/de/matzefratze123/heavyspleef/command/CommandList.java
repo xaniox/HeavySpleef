@@ -27,11 +27,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.ArrayHelper;
 import de.matzefratze123.heavyspleef.util.Permissions;
+import de.matzefratze123.heavyspleef.util.Util;
 
+@UserType(Type.ADMIN)
 public class CommandList extends HSCommand {
 
 	public CommandList() {
@@ -40,7 +43,7 @@ public class CommandList extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.LIST);
 		setUsage("/spleef list [name]");
-		setTabHelp(new String[]{"[name]"});
+		setHelp("Lists all spleef games");
 	}
 
 	@Override
@@ -52,9 +55,9 @@ public class CommandList extends HSCommand {
 				Game game = GameManager.fromPlayer(player);
 				printList(game, player);
 			} else {
-				Set<String> games = ArrayHelper.asSet(GameManager.getGamesAsString());
+				String[] games = GameManager.getGamesAsString();
 				
-				player.sendMessage(ChatColor.GRAY + "All games: " + games.toString());
+				player.sendMessage(ChatColor.GRAY + "All games: " + Util.toFriendlyString(games, ", "));
 			}
 		} else if (args.length > 0) {
 			if (!GameManager.hasGame(args[0])) {

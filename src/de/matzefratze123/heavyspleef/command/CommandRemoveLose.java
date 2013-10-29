@@ -23,10 +23,12 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandRemoveLose extends HSCommand {
 
 	public CommandRemoveLose() {
@@ -35,7 +37,7 @@ public class CommandRemoveLose extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.REMOVE_LOSEZONE);
 		setUsage("/spleef removelose <Name> <ID>");
-		setTabHelp(new String[]{"<name> <id>"});
+		setHelp("Removes a losezone from a game");
 	}
 	
 	@Override

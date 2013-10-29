@@ -24,12 +24,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandCreate extends HSCommand {
 
 	public CommandCreate() {
@@ -37,12 +39,9 @@ public class CommandCreate extends HSCommand {
 		setOnlyIngame(true);
 		setPermission(Permissions.CREATE_GAME);
 		setUsage("/spleef create <name> cuboid\n" +
-		         "Creates a new cuboid game within your selection\n\n" + 
 				 "/spleef create <name> cylinder <radius> <height>\n" +
-				 "Creates a new cylinder arena with the radius and height\n\n" +
-				 "/spleef create <name> ellipse <radiusEastWest> <radiusNorthSouth> <height>\n" +
-				 "Creates a new ellipse game with the given two radians and the height");
-		setTabHelp(new String[]{"<name> cuboid", "<name> cylinder <radius> <height>", "<name> ellipse <radiusEastWest> <radiusNorthSouth> <height>"});
+				 "/spleef create <name> ellipse <radiusEastWest> <radiusNorthSouth> <height>");
+		setHelp("Creates a new spleef game");
 	}
 	
 	@Override

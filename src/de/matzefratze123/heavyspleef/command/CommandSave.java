@@ -24,8 +24,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
+@UserType(Type.ADMIN)
 public class CommandSave extends HSCommand {
 
 	public CommandSave() {
@@ -33,6 +35,7 @@ public class CommandSave extends HSCommand {
 		setMaxArgs(0);
 		setPermission(Permissions.SAVE);
 		setUsage("/spleef save");
+		setHelp("Saves all games to the database");
 	}
 	
 	@Override
