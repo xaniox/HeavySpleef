@@ -62,7 +62,7 @@ public class GameCuboid extends Game {
 		this.secondCorner = secondCorner;
 	}
 	
-	public Location[] get4Points() {
+	private Location[] get4Points() {
 		Location[] locs = new Location[4];
 	
 		int y = getFirstCorner().getBlockY();

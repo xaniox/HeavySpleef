@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -25,10 +24,8 @@ public class I18N {
 	private static String locale;
 	private static boolean dynamic;
 
-	private static final File langFolder = new File(
-			HeavySpleef.getInstance().getDataFolder(), "language");
-	private static final String[] languages = new String[] { "en", "de", "fr",
-			"ru" };
+	private static final File langFolder = new File(HeavySpleef.getInstance().getDataFolder(), "language");
+	private static final String[] languages = new String[] { "en", "de", "fr", "ru" };
 
 	static {
 		if (!langFolder.exists()) {
@@ -37,10 +34,8 @@ public class I18N {
 	}
 
 	public static void setupLocale() {
-		dynamic = HeavySpleef.getSystemConfig().getBoolean(
-				"language.editable");
-		locale = HeavySpleef.getSystemConfig().getString("language.language",
-				"en");
+		dynamic = HeavySpleef.getSystemConfig().getBoolean("language.editable");
+		locale = HeavySpleef.getSystemConfig().getString("language.language", "en");
 
 		if (dynamic) {
 			copyLangFiles();

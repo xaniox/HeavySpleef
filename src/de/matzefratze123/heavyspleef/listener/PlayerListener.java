@@ -44,6 +44,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -476,6 +477,19 @@ public class PlayerListener implements Listener {
 			return;
 		
 		e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onEntityExplode(EntityExplodeEvent e) {
+		if (!HeavySpleef.getSystemConfig().getBoolean("general.protectArena", true))
+			return;
+		
+		for (Game game : GameManager.getGames()) {
+			if (game.contains(e.getLocation())) {
+				e.blockList().clear();
+				return;
+			}
+		}
 	}
 	
 	private void handleQuit(PlayerEvent e) {

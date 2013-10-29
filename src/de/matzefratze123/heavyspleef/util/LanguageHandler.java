@@ -28,8 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.InflaterInputStream;
 
 
 import org.bukkit.ChatColor;
@@ -83,6 +87,20 @@ public class LanguageHandler {
 				stream = LanguageHandler.class.getResourceAsStream("/resource/en.lang");
 			}
 			
+			/* Debug start */
+			
+			/*JarFile jar = new JarFile("plugins/HeavySpleef.jar");
+			Enumeration<JarEntry> entries = jar.entries();
+			
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				
+				System.out.println(entry.getName());
+			}
+			
+			jar.close();*/
+			
+			/* Debug end */
 			
 			InputStreamReader streamReader = new InputStreamReader(stream, Charset.forName("UTF-8"));
 			BufferedReader reader = new BufferedReader(streamReader);

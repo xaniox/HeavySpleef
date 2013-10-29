@@ -194,6 +194,7 @@ public class SignWall extends RegionBase {
 		String maxPlayers = String.valueOf(game.getFlag(FlagType.MAXPLAYERS) < 2 ? infinity : game.getFlag(FlagType.MAXPLAYERS));
 		
 		Sign joinSign = (Sign)locations[0].getBlock().getState();
+		
 		if (joinSign.getType() != Material.WALL_SIGN)
 			joinSign.setType(Material.WALL_SIGN);
 		joinSign.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
