@@ -1,185 +1,219 @@
-# Error messages 
+# Error messages
 
-noPermission: &cVous n'avez pas la permission! 
-onlyIngame: &cCette commande ne peut être utilisée que pendant une partie! 
+noPermission: &cVous n'avez pas la permission!
+onlyIngame: &cCette commande ne peut être utilisée que pendant une partie!
 unknownCommand: &cCommande introuvable! Tapez &6/spleef help [page] &cpour l'aide!
-selectionCantTroughWorlds: &cVotre selection ne peux pas être multi-monde 
-needSelection: &cVeuillez faire une selection avant! 
-notInsideArena: &cCette selection n'est pas dans une arène! 
+
+selectionCantTroughWorlds: &cVotre selection ne peux pas être multi-monde
+needSelection: &cVeuillez faire une selection avant!
+notInsideArena: &cCette selection n'est pas dans une arène!
 invalidBlock: &cCe blockdata est invalide!
-arenaAlreadyExists: &cCette arène existe déj� ! 
-arenaDoesntExists: &cCette arène n'éxiste pas! 
-arenaCantBeInsideAnother: &cUne arène ne peut pas être dans une autre arène! 
-cantDeleteGameWhileIngame: &cVous ne pouvez pas supprimer cette partie alors qu'elle est en cours! 
-gameIsAlreadyDisabled: &cCette partie est déj�  désactivée! 
-gameIsAlreadyEnabled: &cCette partie est déj�  activée!
-pageDoesntExists: &cCette page n'éxiste pas! 
-gameIsDisabled: &cCette partie est désactivée! 
-isntReadyToPlay: &cCette arène n'est pas encore prête! 
-notEnoughMoneyToJoin: &cVous n'avez pas assez d'argent pour rejoindre! 
-playerNotOnline: &cJoueur introuvable... 
-targetHasntEnoughMoney: &cCe joueur n'a pas assez d'argent pour rejoindre cette partie! 
-gameAlreadyRunning: &cIl y a déj�  une partie en cours! 
-cantJoinMultipleGames: &cVous ne pouvez pas rejoindre plusieurs parties en même temps! 
-playerIsntInAnyGame: &cCe joueur est dans aucune partie! 
-playerIsntInAnyGameToPlayer: &cVous êtes dans aucune partie! 
-minimumToLow: &cLe nombre de joueurs minimum ne peut pas être en dessous de 2! 
-notANumber: &c%a n'est pas un nombre! 
-notLookingAtABlock: &cVous ne regardez pas un bloc! 
-notLookingAtFloor: &cVous ne regardez pas un sol! 
-cantRemoveFloorWhileRunning: &cVous ne pouvez pas supprimer un sol pendant la partie! 
-loseZoneWithIDDoesntExists: &cUne zone de mort avec cet ID n'existe pas! 
-cantRemoveLoseWhileRunning: &cVous ne pouvez pas supprimer une zone de mort en pleine partie! 
-noVault: &cVault n'est pas installé sur ce serveur ou il ne fonctionne pas correctement! 
-cantStartGameWhileRunning: &cVous ne pouvez pas démarrer une partie déj�  en cours! 
+
+arenaAlreadyExists: &cCette arène existe déj�!
+arenaDoesntExists: &cCette arène n'éxiste pas!
+arenaCantBeInsideAnother: &cUne arène ne peut pas être dans une autre arène!
+cantDeleteGameWhileIngame: &cVous ne pouvez pas supprimer cette partie alors qu'elle est en cours!
+gameIsAlreadyDisabled: &cCette partie est déj� désactivée!
+gameIsAlreadyEnabled: &cCette partie est déj� activée!
+
+pageDoesntExists: &cCette page n'éxiste pas!
+gameIsDisabled: &cCette partie est désactivée!
+isntReadyToPlay: &cCette arène n'est pas encore prête!
+notEnoughMoneyToJoin: &cVous n'avez pas assez d'argent pour rejoindre!
+playerNotOnline: &cJoueur introuvable...
+targetHasntEnoughMoney: &cCe joueur n'a pas assez d'argent pour rejoindre cette partie!
+gameAlreadyRunning: &cIl y a déj� une partie en cours!
+cantJoinMultipleGames: &cVous ne pouvez pas rejoindre plusieurs parties en même temps!
+playerIsntInAnyGame: &cCe joueur est dans aucune partie!
+playerIsntInAnyGameToPlayer: &cVous êtes dans aucune partie!
+minimumToLow: &cLe nombre de joueurs minimum ne peut pas être en dessous de 2!
+notANumber: &c%a n'est pas un nombre!
+notLookingAtABlock: &cVous ne regardez pas un bloc!
+notLookingAtFloor: &cVous ne regardez pas un sol!
+cantRemoveFloorWhileRunning: &cVous ne pouvez pas supprimer un sol pendant la partie!
+loseZoneWithIDDoesntExists: &cUne zone de mort avec cet ID n'existe pas!
+cantRemoveLoseWhileRunning: &cVous ne pouvez pas supprimer une zone de mort en pleine partie!
+noVault: &cVault n'est pas installé sur ce serveur ou il ne fonctionne pas correctement!
+cantStartGameWhileRunning: &cVous ne pouvez pas démarrer une partie déj� en cours!
 notEnoughPlayers: &cPas assez de joueurs! Il en faut au moins %a!
-notAllowedToBuild: &cVous ne pouvez pas construire ici! 
-notAllowedToBreakSpecified: &cVous n'avez pas le droit de casser un(e) %a! 
-cantChangeGamemode: &cVous ne pouvez pas changer votre gamemode en partie! 
-cantUseCommands: &cVous n'avez pas le droit de faire cette commande en spleef! 
-loginAfterServerShutdown: &cVous avez perdu la partie %a car le serveur a été eteind en pleine partie! 
+
+notAllowedToBuild: &cVous ne pouvez pas construire ici!
+notAllowedToBreakSpecified: &cVous n'avez pas le droit de casser un(e) %a!
+cantChangeGamemode: &cVous ne pouvez pas changer votre gamemode en partie!
+cantUseCommands: &cVous n'avez pas le droit de faire cette commande en spleef!
+loginAfterServerShutdown: &cVous avez perdu la partie %a car le serveur a été eteind en pleine partie!
 notAllowedToCreateSpleefSigns: &cVous n'avez pas le droit de créer des panneaux spleef!
-errorOnState: &cUne erreur est survenue pendant le chargement de votre inventaire, contactez un admin! 
+
+errorOnState: &cUne erreur est survenue pendant le chargement de votre inventaire, contactez un admin!
 noGameRunning: &cAucune partie n'est en cours sur cette arène!
+
 noWorldEdit: &cImpossible d'utiliser cette fonction! WorldEdit est introuvable!
-not1vs1: &cCe n'est pas une partie 1vs1! Tapez /spleef flag %a 1vs1 true pour en faire un partie 1vs1 
-onlyOneLayer: &cLa taille du sol ne peux faire qu'une couche! maxPlayersReached: &cLe nombre maximum de joueurs sur cette partie a été atteind!
-invalidBlockFace: &cCette direction est invalide notLookingAtScoreBoard: &cVous ne regardez pas de scoreboard!
-didntSelectWall: &cVous n'avez pas selectionné un mur! 
-yMustBeSame: &cLa couche y doit être la même! 
-notLookingAtWall: &cVous ne regardez pas un mur! 
-cannotDestroyWallAdmin: &cVous ne pouvez pas détruire ce panneau! Pour détruire un mur, regardez le et tapez: /spleef removewall 
-cannotDestroyWallUser: &cVous ne pouvez pas détruire ce panneau! 
+
+not1vs1: &cCe n'est pas une partie 1vs1! Tapez /spleef flag %a 1vs1 true pour en faire un partie 1vs1
+onlyOneLayer: &cLa taille du sol ne peux faire qu'une couche!
+maxPlayersReached: &cLe nombre maximum de joueurs sur cette partie a été atteind!
+
+invalidBlockFace: &cCette direction est invalide
+notLookingAtScoreBoard: &cVous ne regardez pas de scoreboard!
+
+didntSelectWall: &cVous n'avez pas selectionné un mur!
+yMustBeSame: &cLa couche y doit être la même!
+notLookingAtWall: &cVous ne regardez pas un mur!
+cannotDestroyWallAdmin: &cVous ne pouvez pas détruire ce panneau! Pour détruire un mur, regardez le et tapez: /spleef removewall
+cannotDestroyWallUser: &cVous ne pouvez pas détruire ce panneau!
 lengthMustBeOver1: &cLa longeur du mur doit faire 2 blocs minmum!
+
 noCommandsInQueue: &cVous ne pouvez pas utiliser de commandes dans la file d'attente!
-invalidFlag: &cFlag invalide! 
-invalidFlagFormat: &cFormat du flag invalide! 
+
+invalidFlag: &cFlag invalide!
+invalidFlagFormat: &cFormat du flag invalide!
 onlyLobby: &cVous pouvez utiliser cette commande uniquement dans un lobby!
-votesDisabled: &6Les vtes sont désactivés ici! 
-alreadyVoted: &6Vous avez déjé  voté!
-alreadyInTeam: &cVous êtes déj�  dans la team %a&c! 
-notInThisTeam: &cVous n'êtes pas dans cette team! 
-invalidColor: &cCette couleur de team est invalide! 
-specifieTeam: &cVeuillez choisir une team! Teams disponibles: %a 
+
+votesDisabled: &6Les vtes sont désactivés ici!
+alreadyVoted: &6Vous avez déj� voté!
+
+alreadyInTeam: &cVous êtes déj� dans la team %a&c!
+notInThisTeam: &cVous n'êtes pas dans cette team!
+invalidColor: &cCette couleur de team est invalide!
+specifieTeam: &cVeuillez choisir une team! Teams disponibles: %a
 notASign: &cCertains blocs de cette selections ne sont pas des panneaux!!
-noSpleefHubSet: &cLe Spleef-HUB n'est pas défini! 
+
+noSpleefHubSet: &cLe Spleef-HUB n'est pas défini!
 notLookingAtPortal: &cVous ne regardez pas un portail!
-teamNeedMorePlayers: &cLa team %a a besoin d'au moins %a joueurs! 
-maxPlayersInTeam: &cLe nombre maximum de joueurs dans cette team est atteind! Choisissez en une autre! 
-minimumTwoTeams: &cIl faut au moins 2 team pour commencer la partie! 
-invalidTeam: &cCette team est invalide! 
+
+teamNeedMorePlayers: &cLa team %a a besoin d'au moins %a joueurs!
+maxPlayersInTeam: &cLe nombre maximum de joueurs dans cette team est atteind! Choisissez en une autre!
+minimumTwoTeams: &cIl faut au moins 2 team pour commencer la partie!
+invalidTeam: &cCette team est invalide!
 unknownSpleefType: &cCe type de spleef est invalide! (%a) Types disponibles: CUBOID, CYLINDER, ELLIPSE
-notIngame: &cVous devez être en jeu pour faire cette commande! 
-noSpectatePoint: &7Vous ne pouvez pas regarder cette partie! 
-cannotSpectateWhilePlaying: &7Vous ne pouvez pas regarder une partie pendant que vous jouez! 
-alreadySpectating: &7Vous regardez déj�  une partie!
+
+notIngame: &cVous devez être en jeu pour faire cette commande!
+noSpectatePoint: &7Vous ne pouvez pas regarder cette partie!
+cannotSpectateWhilePlaying: &7Vous ne pouvez pas regarder une partie pendant que vous jouez!
+alreadySpectating: &7Vous regardez déj� une partie!
 
 requiringFlags: &cCe flag a besoin de ces autres flag pour fonctionner: %a 
 conflictingFlags: &cCe flag n'est pas compatible avec les flags suivants: %a
 
-# Success messages 
+# Success messages
 
-floorCreated: &7Un sol avec l'ID #%a a été ajouté! 
-loseZoneCreated: &7La zone de mort pour cette partie est définis! (ID: %a)\nSi vous voulez la retirer, tapez /spleef removelosezone %a %a) 
-gameCreated: &7Partie ajoutée avec succès! 
-gameDeleted: &7Partie supprimée avec succès! 
-gameDisabledToPlayer: &7Vous avez désactiver la partie %a 
-gameEnabledToPlayer: &7Vous avez activer la partie %a 
-allGamesDisabledToPlayer: &7Toutes les parties ont été désactivées! 
-allGamesEnabledToPlayer: &7Toutes les parties ont été activées! 
-targetHasJoined: &7Le joueur %a a rejoint la partie %a ! 
-targetAddedToQueue: &7Joueur %a ajouté �  la file d'attente! 
-playerJoinedToPlayer: &7Vous avez rejoint la partie %a 
-kickedOfToPlayer: &7Vous avez été kické par %a&7%a 
-kickedOfToKicker: &7Vous avez kické %a&7 de la partie %a%a 
-left: &cVous avez quitter la partie... 
-floorRemoved: &7Le sol a été supprimé! 
-loseZoneRemoved: &7La zone de mort avec l'ID %a a été supprimé! 
-gamesSaved: &7Toutes les parties ont été sauvegardées dans la base de donnée!! 
-gameStarted: &7Partie démarée! 
-win: &6Vous avez gagner la partie! 
-jackpotReceived: &7Vous avez gagner %a en jackpot pour avoir gagné! 
+floorCreated: &7Un sol avec l'ID #%a a été ajouté!
+loseZoneCreated: &7La zone de mort pour cette partie est définis! (ID: %a)\nSi vous voulez la retirer, tapez /spleef removelosezone %a %a)
+gameCreated: &7Partie ajoutée avec succès!
+gameDeleted: &7Partie supprimée avec succès!
+gameDisabledToPlayer: &7Vous avez désactiver la partie %a
+gameEnabledToPlayer: &7Vous avez activer la partie %a
+allGamesDisabledToPlayer: &7Toutes les parties ont été désactivées!
+allGamesEnabledToPlayer: &7Toutes les parties ont été activées!
+targetHasJoined: &7Le joueur %a a rejoint la partie %a !
+targetAddedToQueue: &7Joueur %a ajouté � la file d'attente!
+playerJoinedToPlayer: &7Vous avez rejoint la partie %a
+kickedOfToPlayer: &7Vous avez été kické par %a&7%a
+kickedOfToKicker: &7Vous avez kické %a&7 de la partie %a%a
+left: &cVous avez quitter la partie...
+floorRemoved: &7Le sol a été supprimé!
+loseZoneRemoved: &7La zone de mort avec l'ID %a a été supprimé!
+gamesSaved: &7Toutes les parties ont été sauvegardées dans la base de donnée!!
+gameStarted: &7Partie démarée!
+win: &6Vous avez gagner la partie!
+jackpotReceived: &7Vous avez gagner %a en jackpot pour avoir gagné!
 rewardReceived: &7Vous avez gagner %a pour avoir gagné la partie!
-antiCampWarn: &4AntiCampeurs&c: Vous avez &4%a &csecondes pour bouger... 
+
+antiCampWarn: &4AntiCampeurs&c: Vous avez &4%a &csecondes pour bouger...
 antiCampTeleport: &4AntiCampeurs&c: Vous avez été tué pour avoir camper!
-paidIntoJackpot: &7Vous avez payer %a dans le jackpot de cette partie! 
+
+paidIntoJackpot: &7Vous avez payer %a dans le jackpot de cette partie!
 yourKnockOuts: &aVotre nombre de kills: %a
-noLongerInQueue: &7Vous n'êtes plus dans la file d'attente pour la partie &6%a&7! 
-leftQueue: &7Vous avez quitté la file d'attente pour la partie %a 
-addedToQueue: &7Vous êtes maintenant dans la file d'attente pour la partie &6%a&7. 
+
+noLongerInQueue: &7Vous n'êtes plus dans la file d'attente pour la partie &6%a&7!
+leftQueue: &7Vous avez quitté la file d'attente pour la partie %a
+addedToQueue: &7Vous êtes maintenant dans la file d'attente pour la partie &6%a&7.
 notInQueue: &7Vous n'êtes pas dans une file d'attente!
-outOfGame: &cVous avez perdu... 
-spleefSignCreated: &7Panneau de spleef créer avec succès! 
-stateSaved: &7Votre inventaire a été sauvegardé! 
-stateRestored: &7Votre inventaire a été restauré! 
+
+outOfGame: &cVous avez perdu...
+spleefSignCreated: &7Panneau de spleef créer avec succès!
+stateSaved: &7Votre inventaire a été sauvegardé!
+stateRestored: &7Votre inventaire a été restauré!
 gameStopped: &cCette partie a été stoppée!
-chancesLeft: &cIl vous restes encore %a vies! 
+
+chancesLeft: &cIl vous restes encore %a vies!
 chancesLeftBroadcast: &c%a possède encore %a vies!
-scoreBoardAdded: &7Le scoreboard a été ajouté! 
+
+scoreBoardAdded: &7Le scoreboard a été ajouté!
 scoreBoardRemoved: &7Le scoreboard a été supprimé!
+
 wallRemoved: &7Le mur a été supprimé!
 signWallAdded: &7Le mur a été ajouté!
+
 inventory: &6&lParties:
-flagCleared: &7Flag %a nettoyé! 
+
+flagCleared: &7Flag %a nettoyé!
 flagSet: &7Flag %a définis!
+
 pluginReloaded: &7HeavySpleef version %a rechargé! Temps: %ams
-itemRewardReceived: &7Vous avez recu %a %a en prix! 
+
+itemRewardReceived: &7Vous avez recu %a %a en prix!
 loserewardReceived: &7Vous avez recu %a %a as en lot de consolation!
+
 successfullyVoted: &6Vous avez voté!
-teleportWillCommence: &6Vous avez rejoint la partie %a. Le TP commence dans %a secondes... 
-dontMove: &6Ne bougez pas! 
+
+teleportWillCommence: &6Vous avez rejoint la partie %a. Le TP commence dans %a secondes...
+dontMove: &6Ne bougez pas!
 pvpTimerCancelled: &4TP annulé car vous avez bougé!
-addedToTeam: &7Vous avez rejoint la team %a 
-removedFromTeam: &7Vous avez quitté la team %a 
-teamAdded: &7La couleur de team %a &7a été ajoutée! 
+
+addedToTeam: &7Vous avez rejoint la team %a
+removedFromTeam: &7Vous avez quitté la team %a
+teamAdded: &7La couleur de team %a &7a été ajoutée!
 teamRemoved: &7La team avec la couleur %a &7a été retirée!
+
 gameRenamed: &7Partie &6%a &7renomée en &5%a &7!
-welcomeToHUB: &7Bienvenue dans le &4&lSpleef-HUB&r&7! 
-spleefHubSet: &7Global Spleef HUB définis! 
-portalRemoved: &7Le portail a été supprimé! 
+
+welcomeToHUB: &7Bienvenue dans le &4&lSpleef-HUB&r&7!
+spleefHubSet: &7Global Spleef HUB définis!
+portalRemoved: &7Le portail a été supprimé!
 portalAdded: &7Portal ajouté!
 
-taggedAsReady: &7Vous êtes prêt! 
-teleportingToHub: &7Téléportation au Spleef-HUB... 
+taggedAsReady: &7Vous êtes prêt!
+teleportingToHub: &7Téléportation au Spleef-HUB...
 welcomeToSpectate: &7Vous êtes en spectateur. Tapez &l/spleef leave &7pour quitter le mode spectateur!
 
-# Broadcast Messages 
+# Broadcast Messages
 
-gameDisabled: &cLa partie &6%a &ca été désactivée par %a&c 
-gameEnabled: &aLa partie &6%a &aa été activée par %a&a 
-gameHasStarted: &1La partie commence! Bonne chance... 
-gameOnArenaHasStarted: &6La partie sur l'arène %a a commencée! 
-startedGameWith: &6Partie démarrée avec %a joueurs! 
-gameIsStarting: &1La partie commence dans %a secondes... 
-gameStopped: &cLa partie a été stoppée! 
-playerJoinedGame: &a%a&a a rejoint la partie! 
-hasWon: &a%a &1a gagné la partie sur la map &6%a&1! 
-teamWin: &aLa team %a &aa gagné la partie sur la map %a&7! 
-playerJoinedTeam: &a%a rejoint la partie dans la team %a! 
-teamEliminated: &aLa team %a &aa été éliminée! 
+gameDisabled: &cLa partie &6%a &ca été désactivée par %a&c
+gameEnabled: &aLa partie &6%a &aa été activée par %a&a
+gameHasStarted: &a&lLa partie commence! Bonne chance...
+gameOnArenaHasStarted: &6La partie sur l'arène &e%a&6 a commencée!
+startedGameWith: &6Partie démarrée avec &e%a&6 joueurs!
+gameIsStarting: &6&lLa partie commence dans &r&e&l%a&r&6&l secondes...
+gameStopped: &cLa partie a été stoppée!
+playerJoinedGame: &e%a&a a rejoint la partie!
+hasWon: &e%a &aa gagné la partie sur l'arène &e%a&a!
+teamWin: &aLa team %a &aa gagné la partie sur la map %a&7!
+playerJoinedTeam: &a%a rejoint la partie dans la team %a!
+teamEliminated: &aLa team %a &aa été éliminée!
 floorsRegenerated: &aLes sols ont été regénérés.
 
-remaining: &1%a joueurs restants! 
-doubleKnockout: &7%a &7est impréssionant! (DOUBLE-KILL!) 
-tripleKnockout: &9%a &9est incroyable! (TRIPLE-KILL!) 
-superKnockout: &5%a &5est un DIEU! (QUADRA-KILL!) 
+remaining: &e&l%a&r&6&l joueurs restants!
+doubleKnockout: &7%a &7est impréssionant! (DOUBLE-KILL!)
+tripleKnockout: &9%a &9est incroyable! (TRIPLE-KILL!)
+superKnockout: &5%a &5est un DIEU! (QUADRA-KILL!)
 unbelievableKnockout: &5%est LEGENDAIRE!!!!! (&6&lPENTA-KILL!&r&5)
 
-wonRound: &a%a &ca gagné le round &6%a &csur &6%a&c! 
-roundsRemaining: &1%a rounds restants! 
-wonThe1vs1: &a%a&a a gagné la partie contre %a! Bravo! 
+wonRound: &a%a &ca gagné le round &6%a &csur &6%a&c!
+roundsRemaining: &1%a rounds restants!
+wonThe1vs1: &a%a&a a gagné la partie contre %a! Bravo!
 endedDraw: &aLa partie sur l'arène %a s'est terminée en match nul...
 
-roundStarted: &aLe round &6%a &asur &6%a &aa commencé! 
+roundStarted: &aLe round &6%a &asur &6%a &aa commencé!
 roundStartsIn: &1Le round commence dans %a secondes...
 
-timeLeftSeconds: &1%a seconde(s) avant la fin de la partie! 
-timeLeftMinutes: &1%a minute(s) et %a seconde(s) avant la fin de la partie! 
+timeLeftSeconds: &1%a seconde(s) avant la fin de la partie!
+timeLeftMinutes: &1%a minute(s) et %a seconde(s) avant la fin de la partie!
 timeoutReached: &1Chrono terminé!
 
-loseCause_kick: &6%a&6 &ca été kické de la partie! 
-loseCause_leave: &6%a&6 &ca quitté la partie sur l'arène %a! 
-loseCause_lose: &6%a&6 &ca été tué(e) par &4%a&c! 
-loseCause_lose_unknown: &6%a &ca été tué(e)! 
-loseCause_quit: &6%a&6 &ca quitté la partie! 
-loseCause_unknown: &6%a&6 &ca quitté la partie pour une raison inconnue...
+loseCause_kick: &6%a&6 &ca été kické de la partie!
+loseCause_leave: &6%a&6 &ca quitté la partie sur l'arène %a!
+loseCause_lose: &e%a&6 a été tué(e) par &e%a&6!
+loseCause_lose_unknown: &e%a &6a été tué(e)!
+loseCause_quit: &e%a &6a quitté la partie!
+loseCause_unknown: &e%a&6 a quitté la partie pour une raison inconnue...
