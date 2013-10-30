@@ -62,6 +62,11 @@ public class SimpleBlockData implements Serializable {
 		this.data = data;
 	}
 	
+	public SimpleBlockData(int id, byte data) {
+		this.mat = Material.getMaterial(id);
+		this.data = data;
+	}
+	
 	public SimpleBlockData(String fromString) {
 		String[] parts = fromString.split(",");
 		this.mat = Material.getMaterial(Integer.parseInt(parts[0]));
@@ -75,7 +80,7 @@ public class SimpleBlockData implements Serializable {
 	public SimpleBlockData(Block block) {
 		this(block.getType(), block.getData(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ(), block.getWorld().getName());
 	}
-	
+
 	public Material getMaterial() {
 		return this.mat;
 	}

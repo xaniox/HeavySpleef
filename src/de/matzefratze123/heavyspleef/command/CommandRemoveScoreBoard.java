@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
+import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)

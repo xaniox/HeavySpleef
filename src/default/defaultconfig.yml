@@ -163,11 +163,11 @@ queues:
 scoreboards:
   # Which id should numbers of scoreboards have?
   # Please use ''
-  numberID: '35:14' # Red wool
+  fontID: '35:14' # Red wool
   
   # Which id should the other blocks of the scoreboard have?
   # Please use ''
-  otherID: '35:15' # Black wool
+  baseID: '35:15' # Black wool
 
 language:
 

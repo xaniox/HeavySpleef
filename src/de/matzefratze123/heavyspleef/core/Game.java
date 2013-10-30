@@ -686,14 +686,17 @@ public abstract class Game {
 			return;
 		
 		roundsPlayed++;//One round higher
-		for (Player p : getPlayers()) {
-			if (p.getName().equalsIgnoreCase(loser.getName()))//If p.getName() is the same as the loser: continue;
+		for (Player player : getPlayers()) {
+			HeavySpleef.getInstance().getAntiCampingTask().resetTimer(player);
+			
+			if (player.getName().equalsIgnoreCase(loser.getName()))//If p.getName() is the same as the loser: continue;
 				continue;
 				
-			add1vs1Win(p);//Add the win
-			addKnockout(p.getName());
-			broadcast(_("wonRound", ViPManager.colorName(p.getName()), String.valueOf(roundsPlayed), String.valueOf(rounds)), ConfigUtil.getBroadcast("win"));//Broadcast the winner of the round
+			add1vs1Win(player);//Add the win
+			addKnockout(player.getName());
+			broadcast(_("wonRound", ViPManager.colorName(player.getName()), String.valueOf(roundsPlayed), String.valueOf(rounds)), ConfigUtil.getBroadcast("win"));//Broadcast the winner of the round
 		}
+		
 		if (roundsPlayed < rounds) {//Next round?
 			regen();//Regenerate floors
 			boolean countdown = HeavySpleef.getSystemConfig().getBoolean("general.countdownBetweenRound", true);
@@ -702,9 +705,11 @@ public abstract class Game {
 			Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
 			
 			broadcast(_("roundsRemaining", String.valueOf(rounds - roundsPlayed)), ConfigUtil.getBroadcast("win"));//Broadcast how many rounds remaining
+			
 			updateScoreBoards();
 			updateWalls();
 			updateSidebarScoreboard();
+			
 			if (countdown) {//Do a countdown if it was so defined
 				int start = HeavySpleef.getSystemConfig().getInt("general.countdownBetweenRoundLength", 5);
 				this.roundTid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), new RoundsCountdownTask(start, this), 0L, 20L);
@@ -1463,44 +1468,7 @@ public abstract class Game {
 		return this.roundsPlayed + 1;//Add one
 	}
 	
-	/**
-	 * Internal method.</br></br>
-	 * 
-	 * Gets an array containing the 1vs1 wins of the current game
-	 */
-	protected int[] getWins() {
-		int[] wins = new int[2];
-		
-		for (int i = 0; i < 2; i++) {
-			if (i >= this.wins.size()) {
-				wins[i] = 0;
-				continue;
-			}
-			Win w = this.wins.get(i);
-			wins[i] = w.getWins();
-		}
-		
-		return wins;
-	}
 	
-	/**
-	 * Adds a realtime scoreboard to the game
-	 * A realtime scoreboard has a size of 19x7 blocks
-	 * and only works on 1vs1 games
-	 * 
-	 * @param loc The location of the right upper corner
-	 * @param face The direction of this scoreboard
-	 */
-	public void addScoreBoard(Location loc, BlockFace face) {
-		int id = 0;
-		while (hasScoreBoard(id))
-			id++;
-		
-		ScoreBoard board = new ScoreBoard(loc, id, this, face);
-		scoreboards.add(board);
-		
-		board.draw();
-	}
 	
 	/**
 	 * Adds a realtime scoreboard to this game from the given ScoreBoard Object
@@ -1508,10 +1476,15 @@ public abstract class Game {
 	 * @param board The ScoreBoard object to add
 	 */
 	public void addScoreBoard(ScoreBoard board) {
-		if (hasScoreBoard(board.getId()))
-			return;
+		if (board.getId() < 0 || hasScoreBoard(board.getId())) {
+			int id = 0;
+			while (hasScoreBoard(id))
+				id++;
+			
+			board.setId(id);
+		}
+		
 		scoreboards.add(board);
-		board.draw();
 	}
 	
 	/**
@@ -1591,8 +1564,49 @@ public abstract class Game {
 	
 	private void updateScoreBoards() {
 		for (ScoreBoard board : getScoreBoards()) {
-			board.draw();
+			if (!getFlag(FlagType.ONEVSONE)) {
+				board.generate('0', '0', '0', '0');
+			} else {
+				board.generate(getWins());
+			}
 		}
+	}
+	
+	/**
+	 * Internal method.</br></br>
+	 * 
+	 * Gets an character array containing the 1vs1 wins of the current game
+	 */
+	protected char[] getWins() {
+		int[] digits = new int[4];
+		
+		for (int i = 1; i <= 2; i++) {
+			if (i > wins.size()) {
+				continue;
+			}
+			
+			int wins = this.wins.get(i - 1).getWins();
+			int lastDigit = i * 2;
+			
+			if (wins > 0) {
+				while (wins > 0) {
+					digits[--lastDigit] = wins % 10;
+					wins /= 10;
+				}
+			}
+		}
+		
+		char[] chars = new char[digits.length];
+		
+		for (int i = 0; i < digits.length; i++) {
+			chars[i] = asCharDigit(digits[i]);
+		}
+		
+		return chars;
+	}
+	
+	private char asCharDigit(int i) {
+		return (char)(i + '0');
 	}
 	
 	protected void cancelTasks() {
@@ -1827,8 +1841,8 @@ public abstract class Game {
 		}
 		
 		if (getFlag(ONEVSONE)) {
-			int[] wins = getWins();
-			scoreboard.getObjective("showKnockouts").setDisplayName(ChatColor.GREEN + "Status " + wins[0] + ":" + wins[1]);
+			char[] wins = getWins();
+			scoreboard.getObjective("showKnockouts").setDisplayName(ChatColor.GREEN + "Status " + wins[0] + wins[1] + ":" + wins[2] + wins[3]);
 		}
 	}
 	

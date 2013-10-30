@@ -24,7 +24,7 @@ import org.bukkit.block.Block;
 
 public abstract class RegionBase {
 
-	private int id = -1;
+	protected int id = -1;
 	
 	protected RegionBase(int id) {
 		this.setId(id);

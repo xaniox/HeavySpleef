@@ -47,6 +47,7 @@ import de.matzefratze123.heavyspleef.core.GameCylinder;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
+import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -332,7 +333,7 @@ public class YamlDatabase {
 		
 		if (section.contains("scoreboards")) {
 			for (String board : section.getStringList("scoreboards")) {
-				ScoreBoard scoreBoard = new ScoreBoard(board, game);
+				ScoreBoard scoreBoard = ScoreBoard.fromString(board);
 				game.addScoreBoard(scoreBoard);
 			}
 		}

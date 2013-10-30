@@ -1,519 +1,465 @@
-/**
- *   HeavySpleef - The simple spleef plugin for bukkit
- *   
- *   Copyright (C) 2013 matzefratze123
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package de.matzefratze123.heavyspleef.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.region.RegionBase;
 import de.matzefratze123.heavyspleef.database.Parser;
-import de.matzefratze123.heavyspleef.util.ArrayHelper;
+import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.SimpleBlockData;
-import de.matzefratze123.heavyspleef.util.Util;
 
-/**
- * Represents a scoreboard for a game
- * 
- * @author matzefratze123
- */
-public class ScoreBoard {
-
-	/* The firstCorner of this scoreboard */
-	private Location firstCorner;
-	/* The secondCorner of this scoreboard*/
-	private Location secondCorner;
+public class ScoreBoard extends RegionBase {
 	
-	/* The digit block id */
-	private static int digitID = 35;
-	/* The digit block data */
-	private static byte digitData = 14;
+	/*
+	 * Defines the segments of a character
+	 */
+	private static Map<Character, String> charCodes;
 	
-	/* The block id of the frame */
-	private static int frameID = 35;
-	/* The block data of the frame */
-	private static byte frameData = 15;
-	
-	/* The first base point where numbers are generated */
-	private Location firstNumberPoint;
-	/* The second base point where numbers are generated */
-	private Location secondNumberPoint;
-	
-	/* The direction in which this scoreboard points */
-	private BlockFace face;
-	/* The game holding this scoreboard */
-	private Game game;
-	/* The id of this scoreboard */
-	private int id = -1;
-	
-	public ScoreBoard(Location loc, int id, Game game, BlockFace face) {
-		/* Rotate the user blockface */
-		this.face = RotatedBlockFace.byBlockFace(face).getTechnicalBlockFace();
-		this.game = game;
-		this.id = id;
-		
-		//Calculate the secondcorner
-		//Go in the direction of the blockface
-		Block xOrZ = getRelative(loc.getBlock(), this.face, 18);
-		//And go down
-		Block xOrZAndY = getRelative(xOrZ, BlockFace.DOWN, 6);
-		
-		this.firstCorner = Parser.roundLocation(loc);
-		this.secondCorner = Parser.roundLocation(xOrZAndY.getLocation());
-		
-		//Refresh block id's and datas
-		refreshData();
-		
-		//Calculate the base number points
-		calculateNumberPoints();
-	}
-	
-	public ScoreBoard(String fromString, Game game) {
-		String[] parts = fromString.split(";");
-		if (parts.length < 3)
-			return;
-		
-		try {
-			int id = Integer.parseInt(parts[0]);
-			Location firstCorner = Parser.convertStringtoLocation(parts[1]);
-			BlockFace face = BlockFace.valueOf(parts[2].toUpperCase());
+	/*
+	 * Static initialisator. Define character segments 
+	 */
+	static {
+		if (charCodes == null) {
+			charCodes = new HashMap<Character, String>();
 			
-			this.id = id;
-			this.firstCorner = firstCorner;
-			this.face = face;
-			this.game = game;
+			charCodes.put('0', "abcdef");
+			charCodes.put('1', "bc");
+			charCodes.put('2', "abged");
+			charCodes.put('3', "abgcd");
+			charCodes.put('4', "bcgf");
+			charCodes.put('5', "afgcd");
+			charCodes.put('6', "afedcg");
+			charCodes.put('7', "abc");
+			charCodes.put('8', "abcdefg");
+			charCodes.put('9', "abcdfg");
+		}
+	}
+	
+	private SegmentDisplay[] displays;
+	private Location[] colon;
+	
+	private Location corner;
+	private Location oppositeCorner;
+	
+	private BlockFace direction;
+	
+	/**
+	 * Creates a new scoreboard
+	 * 
+	 * @param cornerLocation The upper-left corner of this scoreboard
+	 * @param direction The orentation blockface of this scoreboard
+	 */
+	public ScoreBoard(Location cornerLocation, BlockFace direction) {
+		super(-1);
+		
+		this.corner = cornerLocation;
+		this.direction = direction;
+		
+		calculateColons();
+		calculateDisplays();
+		
+		oppositeCorner = move(corner, direction, 18, BlockFace.DOWN, 6);
+	}
+	
+	public static ScoreBoard fromString(String str) {
+		String[] parts = str.split(";");
+		
+		if (parts.length < 3) {
+			return null;
+		}
+		
+		int id = Integer.parseInt(parts[0]);
+		Location corner = Parser.convertStringtoLocation(parts[1]);
+		BlockFace direction = BlockFace.valueOf(parts[2]);
+		
+		ScoreBoard board = new ScoreBoard(corner, direction);
+		board.setId(id);
+		
+		return board;
+	}
+	
+	private void calculateColons() {
+		colon = new Location[2];
+		
+		Location corner = this.corner.clone();
+		
+		colon[0] = move(corner, direction, 9, BlockFace.DOWN, 2);
+		colon[1] = move(corner, direction, 9, BlockFace.DOWN, 4);
+	}
+	
+	private void calculateDisplays() {
+		//             Display
+		//   -->   -->         -->   -->
+		//   [0]   [1]         [2]   [3]
+		//   ___   ___         ___   ___  
+		//  / _ \ / _ \   _   / _ \ / _ \ 
+		// | | | | | | | (_) | | | | | | |
+		// | |_| | |_| |  _  | |_| | |_| |
+		//  \___/ \___/  (_)  \___/ \___/ 
+		//
+		
+		
+		displays = new SegmentDisplay[4];
+		
+		Location corner = this.corner.clone();
+		
+		corner = move(corner, BlockFace.DOWN, 1, direction, 1);
+		displays[0] = new SegmentDisplay(corner, direction);
+		
+		corner = move(corner, direction, 4);
+		displays[1] = new SegmentDisplay(corner, direction);
+		
+		corner = move(corner, direction, 6);
+		displays[2] = new SegmentDisplay(corner, direction);
+		
+		corner = move(corner, direction, 4);
+		displays[3] = new SegmentDisplay(corner, direction);
+	}
+	
+	/**
+	 * Generates the scoreboard
+	 * 
+	 * @param characters An array with the length of 4; filled with characters 0 - 9
+	 */
+	public void generate(char... characters) {
+		if (characters.length < 4) {
+			throw new IllegalArgumentException("characters length less than 4");
+		}
+		
+		generateBlankBoard();
+		generateColons();
+		
+		for (int i = 0; i < 4; i++) {
+			char character = characters[i];
 			
-			Block xOrZ = getRelative(firstCorner.getBlock(), face, 18);
-			Block xOrZAndY = getRelative(xOrZ, BlockFace.DOWN, 6);
+			String segmentCode = charCodes.get(character);
 			
-			this.secondCorner = xOrZAndY.getLocation();
-			
-			calculateNumberPoints();
-			refreshData();
-		} catch (NumberFormatException e) {}
+			for (char segment : SegmentDisplay.SEGMENTS) {
+				String segmentAsString = String.valueOf(segment);
+				
+				if (segmentCode.contains(segmentAsString)) {
+					displays[i].setSegment(segment, true);
+				}
+			}
+		}
 	}
 	
-	private void calculateNumberPoints() {
-		Block b1_1 = getRelative(firstCorner.getBlock(), BlockFace.DOWN, 1);
-		Block b1_2 = getRelative(b1_1, face, 1);
+	private void generateColons() {
+		for (Location colonPart : colon) {
+			colonPart.getBlock().setType(SegmentDisplay.fontData.getMaterial());
+			colonPart.getBlock().setData(SegmentDisplay.fontData.getData());
+		}
+	}
+	
+	private void generateBlankBoard(SimpleBlockData data) {
+		int minX, maxX, minY, maxY, minZ, maxZ;
 		
-		this.firstNumberPoint = b1_2.getLocation();
-		this.secondNumberPoint = getRelative(b1_2, face, 10).getLocation();
-	}
-	
-	public static int getNumberId() {
-		return digitID;
-	}
-	
-	public static byte getNumberData() {
-		return digitData;
-	}
-	
-	public static int getOtherId() {
-		return frameID;
-	}
-	
-	public static byte getOtherData() {
-		return frameData;
-	}
-	
-	public static void refreshData() {
-		SimpleBlockData numberData = Util.getMaterialFromString(HeavySpleef.getSystemConfig().getString("scoreboards.numberID"), true);
-		SimpleBlockData otherData = Util.getMaterialFromString(HeavySpleef.getSystemConfig().getString("scoreboards.otherID"), true);
+		minX = Math.min(corner.getBlockX(), oppositeCorner.getBlockX());
+		maxX = Math.max(corner.getBlockX(), oppositeCorner.getBlockX());
 		
-		ScoreBoard.digitID = numberData.getMaterial().getId();
-		ScoreBoard.frameID = otherData.getMaterial().getId();
+		minY = Math.min(corner.getBlockY(), oppositeCorner.getBlockY());
+		maxY = Math.max(corner.getBlockY(), oppositeCorner.getBlockY());
 		
-		ScoreBoard.digitData = numberData.getData();
-		ScoreBoard.frameData = otherData.getData();
-	}
-	
-	public void draw() {
-		int[] wins = game.getWins();
-		NumberData data = new NumberData();
+		minZ = Math.min(corner.getBlockZ(), oppositeCorner.getBlockZ());
+		maxZ = Math.max(corner.getBlockZ(), oppositeCorner.getBlockZ());
 		
-		int minX = Math.min(firstCorner.getBlockX(), secondCorner.getBlockX());
-		int maxX = Math.max(firstCorner.getBlockX(), secondCorner.getBlockX());
-		
-		int minY = Math.min(firstCorner.getBlockY(), secondCorner.getBlockY());
-		int maxY = Math.max(firstCorner.getBlockY(), secondCorner.getBlockY());
-		
-		int minZ = Math.min(firstCorner.getBlockZ(), secondCorner.getBlockZ());
-		int maxZ = Math.max(firstCorner.getBlockZ(), secondCorner.getBlockZ());
+		Block current;
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					Block b = firstCorner.getWorld().getBlockAt(x, y, z);
+					current = corner.getWorld().getBlockAt(x, y, z);
 					
-					b.setTypeId(frameID);
-					b.setData(frameData);
+					current.setType(data.getMaterial());
+					current.setData(data.getData());
 				}
 			}
 		}
-		
-		Location[] loc1 = data.getLocations(firstNumberPoint, wins[0]);
-		Location[] loc2 = data.getLocations(secondNumberPoint, wins[1]);
-		
-		ArrayList<Location> allLocation = ArrayHelper.mergeArrays(loc1, loc2);
-		
-		Location firstColon_1 = getRelative(firstCorner.getBlock(), BlockFace.DOWN, 2).getLocation();
-		Location firstColon_2 = getRelative(firstColon_1.getBlock(), face, 9).getLocation();
-		
-		Location secondColon_2 = getRelative(firstColon_2.getBlock(), BlockFace.DOWN, 2).getLocation();
-		
-		allLocation.add(secondColon_2);
-		allLocation.add(firstColon_2);
-		
-		for (Location loc : allLocation) {
-			loc.getBlock().setTypeId(digitID);
-			loc.getBlock().setData(digitData);
-		}
+	}
+	
+	private void generateBlankBoard() {
+		generateBlankBoard(SegmentDisplay.baseData);
 	}
 	
 	public void remove() {
-		int minX = Math.min(firstCorner.getBlockX(), secondCorner.getBlockX());
-		int maxX = Math.max(firstCorner.getBlockX(), secondCorner.getBlockX());
-		
-		int minY = Math.min(firstCorner.getBlockY(), secondCorner.getBlockY());
-		int maxY = Math.max(firstCorner.getBlockY(), secondCorner.getBlockY());
-		
-		int minZ = Math.min(firstCorner.getBlockZ(), secondCorner.getBlockZ());
-		int maxZ = Math.max(firstCorner.getBlockZ(), secondCorner.getBlockZ());
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int y = minY; y <= maxY; y++) {
-				for (int z = minZ; z <= maxZ; z++) {
-					Block b = firstCorner.getWorld().getBlockAt(x, y, z);
-					
-					b.setTypeId(0);
-				}
-			}
-		}
-	}
-	
-	public boolean contains(Location l) {
-		return RegionBase.contains(firstCorner, secondCorner, l);
+		generateBlankBoard(new SimpleBlockData(0, (byte)0));
 	}
 	
 	@Override
 	public String toString() {
-		return id + ";" + Parser.convertLocationtoString(firstCorner) + ";" + face.name();
+		return id + ";" + Parser.convertLocationtoString(corner) + ";" + direction.name();
 	}
 	
-	public int getId() {
-		return this.id;
-	}
-	
-	private Block getRelative(Block b, BlockFace face, int length) {
-		Block block = null;
+	@Override
+	public boolean contains(Location location) {
+		int x, y, z;
+		int minX, maxX, minY, maxY, minZ, maxZ;
 		
-		for (int i = 0; i < length; i++) {
-			if (block == null) {
-				block = b.getRelative(face);
-				continue;
-			}
-			
-			block = block.getRelative(face);
-		}
+		x = location.getBlockX();
+		y = location.getBlockY();
+		z = location.getBlockZ();
 		
-		return block;
-	}
-	
-	private enum RotatedBlockFace {
-	
-		SOUTH(BlockFace.EAST),
-		NORTH(BlockFace.WEST),
-		WEST(BlockFace.SOUTH),
-		EAST(BlockFace.NORTH);
+		minX = Math.min(corner.getBlockX(), oppositeCorner.getBlockX());
+		maxX = Math.max(corner.getBlockX(), oppositeCorner.getBlockX());
 		
-		private BlockFace technicalBlockFace;
+		minY = Math.min(corner.getBlockY(), oppositeCorner.getBlockY());
+		maxY = Math.max(corner.getBlockY(), oppositeCorner.getBlockY());
 		
-		private RotatedBlockFace(BlockFace technicalBlockFace) {
-			this.technicalBlockFace = technicalBlockFace;
-		}
+		minZ = Math.min(corner.getBlockZ(), oppositeCorner.getBlockZ());
+		maxZ = Math.max(corner.getBlockZ(), oppositeCorner.getBlockZ());
 		
-		public BlockFace getTechnicalBlockFace() {
-			return this.technicalBlockFace;
-		}
-		
-		public static RotatedBlockFace byBlockFace(BlockFace face) {
-			for (RotatedBlockFace rFace : RotatedBlockFace.values()) {
-				if (face.name().equalsIgnoreCase(rFace.name()))
-					return RotatedBlockFace.valueOf(face.name());
-			}
-			
-			return null;
-		}
-		
+		return x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ; 
 	}
 	
 	/**
-	 * Contains methods for numbers and other stuff
+	 * Moves a location
 	 * 
-	 * @author matzefratze123
+	 * @param base Base location
+	 * @param directions Directions; even indexes has to be a blockface, uneven indexes a Integer
+	 * @return The moved location
 	 */
-	public class NumberData {
-		
-		public Location[] getLocations(Location loc, int number) {
-			List<Location> locations = new ArrayList<Location>();
+	private static Location move(Location base, Object... directions) {
+		for (int i = 0; i + 1 < directions.length; i += 2) {
+			BlockFace face = (BlockFace) directions[i];
+			Integer length = (Integer) directions[i + 1];
 			
-			String s = String.valueOf(number);
-			if (s.length() > 2)
-				s = s.substring(0, 2);
-			char[] numbers = s.toCharArray();
-			
-			if (numbers.length == 1) {
-				Location[] zero = getLocation(0, loc);
-				Location[] num = getLocation(Integer.parseInt(String.valueOf(numbers[0])), loc.getBlock().getRelative(face, 4).getLocation());
-				
-				ArrayList<Location> mergedArray = ArrayHelper.mergeArrays(zero, num);
-				locations.addAll(mergedArray);
-				
-				return locations.toArray(new Location[locations.size()]);
-			} else if (numbers.length == 2) {
-				Location[] num1 = getLocation(Integer.parseInt(String.valueOf(numbers[0])), loc);
-				Location[] num2 = getLocation(Integer.parseInt(String.valueOf(numbers[1])), loc.getBlock().getRelative(face, 4).getLocation());
-				
-				ArrayList<Location> mergedArray = ArrayHelper.mergeArrays(num1, num2);
-				locations.addAll(mergedArray);
-				return locations.toArray(new Location[locations.size()]);
+			for (int a = 0; a < length; a++) {
+				base = base.getBlock().getRelative(face).getLocation();
 			}
-			
-			//Should not happen
-			return null;
 		}
 		
-		public Location[] getLocation(int i, Location loc) {
-			switch(i) {
-			case 0:
-				return zero(loc);
-			case 1:
-				return one(loc);
-			case 2:
-				return two(loc);
-			case 3:
-				return three(loc);
-			case 4:
-				return four(loc);
-			case 5:
-				return five(loc);
-			case 6:
-				return six(loc);
-			case 7:
-				return seven(loc);
-			case 8:
-				return eight(loc);
-			case 9:
-				return nine(loc);
+		return base;
+	}
+	
+	public static class SegmentDisplay {
+		
+		private static final char[] SEGMENTS = new char[] {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
+		
+		private static SimpleBlockData fontData = new SimpleBlockData(Material.WOOL, (byte)14);
+		private static SimpleBlockData baseData = new SimpleBlockData(Material.WOOL, (byte)15);
+		private static boolean dataInitialized = false;
+		
+		private Location cornerLocation;
+		
+		private BlockFace direction;
+		
+		static {
+			if (!dataInitialized) {
+				dataInitialized = true;
+				
+				try {
+					String[] fontParts = HeavySpleef.getSystemConfig().getString("scoreboards.fontID").split(":");
+					String[] baseParts = HeavySpleef.getSystemConfig().getString("scoreboards.baseID").split(":");
+					
+					byte data = 0;
+					
+					if (fontParts.length > 1) {
+						data = Byte.parseByte(fontParts[1]);
+					}
+					
+					fontData = new SimpleBlockData(Integer.parseInt(fontParts[0]), data);
+					
+					data = 0;
+					
+					if (baseParts.length > 1) {
+						data = Byte.parseByte(baseParts[1]);
+					}
+					
+					baseData = new SimpleBlockData(Integer.parseInt(baseParts[0]), data);
+				} catch (Exception e) {
+					Logger.warning("Could not read scoreboard id and data. Changing to default!");
+				}
+			}
+		}
+		
+		public SegmentDisplay(Location cornerLocation, BlockFace direction) {
+			this.direction = direction;
+			this.cornerLocation = cornerLocation;
+			
+			
+		}
+		
+		public void setSegment(char segment, boolean state) {
+			if (segment < 'a') {
+				throw new IllegalArgumentException("segment " + segment + " is less than a");
+			}
+			
+			if (segment > 'g') {
+				throw new IllegalArgumentException("segment " + segment + " is greater than g");
+			}
+			
+			switch(segment) {
+			
+			case 'a':
+				setA(state);
+				break;
+			case 'b':
+				setB(state);
+				break;
+			case 'c': 
+				setC(state);
+				break;
+			case 'd':
+				setD(state);
+				break;
+			case 'e':
+				setE(state);
+				break;
+			case 'f':
+				setF(state);
+				break;
+			case 'g':
+				setG(state);
+				break;
 			default:
-				return new Location[1];
+				break;
+			
 			}
 		}
 		
-		private Location[] zero(Location loc) {
-			List<Location> list = new ArrayList<Location>();
+		private void setA(boolean state) {
+			Block currentBlock = cornerLocation.getBlock();
 			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if (y > 0 && y < 4 && i == 1)
-						continue;
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
+			for (int i = 0; i < 3; i++) {
+				if (state) {
+					currentBlock.setType(fontData.getMaterial());
+					currentBlock.setData(fontData.getData());
+				} else {
+					currentBlock.setType(baseData.getMaterial());
+					currentBlock.setData(baseData.getData());
 				}
-			}
-			
-			return list.toArray(new Location[list.size()]);
-		}
-		
-		private Location[] one(Location loc) {
-			List<Location> list = new ArrayList<Location>();
-			
-			for (int y = 0; y <= 4; y++) {
-				Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
 				
-				list.add(b1.getLocation());
+				currentBlock = currentBlock.getRelative(direction);
 			}
-			
-			return list.toArray(new Location[list.size()]);
 		}
 		
-		private Location[] two(Location loc) {
-			List<Location> list = new ArrayList<Location>();
+		private void setB(boolean state) {
+			Block currentBlock = cornerLocation.getBlock();
 			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if (y == 1 && i < 2)
-						continue;
-					if (y == 3 && i > 0)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
-				}
+			//Offset
+			for (int i = 0; i < 2; i++) {
+				currentBlock = currentBlock.getRelative(direction);
 			}
 			
-			return list.toArray(new Location[list.size()]);
+			for (int i = 0; i < 3; i++) {
+				if (state) {
+					currentBlock.setType(fontData.getMaterial());
+					currentBlock.setData(fontData.getData());
+				} else {
+					currentBlock.setType(baseData.getMaterial());
+					currentBlock.setData(baseData.getData());
+				}
+				
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
+			}
 		}
 		
-		private Location[] three(Location loc) {
-			List<Location> list = new ArrayList<Location>();
+		private void setC(boolean state) {
+			Block currentBlock = cornerLocation.getBlock();
 			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if ((y == 1 || y == 3) && i < 2)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
-				}
+			//Offset
+			for (int i = 0; i < 2; i++) {
+				currentBlock = currentBlock.getRelative(direction);
 			}
 			
-			return list.toArray(new Location[list.size()]);
+			for (int i = 0; i < 2; i++) {
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
+			}
+			
+			for (int i = 0; i < 3; i++) {
+				if (state) {
+					currentBlock.setType(fontData.getMaterial());
+					currentBlock.setData(fontData.getData());
+				} else {
+					currentBlock.setType(baseData.getMaterial());
+					currentBlock.setData(baseData.getData());
+				}
+				
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
+			}
 		}
 		
-		private Location[] four(Location loc) {
-			List<Location> list = new ArrayList<Location>();
+		private void setD(boolean state) {
+			Block currentBlock = cornerLocation.getBlock();
 			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if (y < 2 && i == 1)
-						continue;
-					if (y > 2 && i < 2)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
-				}
+			//Offset
+			for (int i = 0; i < 4; i++) {
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
 			}
 			
-			return list.toArray(new Location[list.size()]);
+			for (int i = 0; i < 3; i++) {
+				if (state) {
+					currentBlock.setType(fontData.getMaterial());
+					currentBlock.setData(fontData.getData());
+				} else {
+					currentBlock.setType(baseData.getMaterial());
+					currentBlock.setData(baseData.getData());
+				}
+				
+				currentBlock = currentBlock.getRelative(direction);
+			}
 		}
 		
-		private Location[] five(Location loc) {
-			List<Location> list = new ArrayList<Location>();
+		private void setE(boolean state) {
+			Block currentBlock = cornerLocation.getBlock();
 			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if (y == 1 && i > 0)
-						continue;
-					if (y == 3 && i < 2)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
-				}
+			for (int i = 0; i < 2; i++) {
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
 			}
 			
-			return list.toArray(new Location[list.size()]);
+			for (int i = 0; i < 3; i++) {
+				if (state) {
+					currentBlock.setType(fontData.getMaterial());
+					currentBlock.setData(fontData.getData());
+				} else {
+					currentBlock.setType(baseData.getMaterial());
+					currentBlock.setData(baseData.getData());
+				}
+				
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
+			}
 		}
 		
-		private Location[] six(Location loc) {
-			List<Location> list = new ArrayList<Location>();
+		private void setF(boolean state) {
+			Block currentBlock = cornerLocation.getBlock();
 			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if (y == 1 && i > 0)
-						continue;
-					if (y == 3 && i == 1)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
+			for (int i = 0; i < 3; i++) {
+				if (state) {
+					currentBlock.setType(fontData.getMaterial());
+					currentBlock.setData(fontData.getData());
+				} else {
+					currentBlock.setType(baseData.getMaterial());
+					currentBlock.setData(baseData.getData());
 				}
+				
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
 			}
-			
-			return list.toArray(new Location[list.size()]);
 		}
 		
-		private Location[] seven(Location loc) {
-			List<Location> list = new ArrayList<Location>();
+		private void setG(boolean state) {
+			Block currentBlock = cornerLocation.getBlock();
 			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if (y > 0 && i < 2)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
-				}
+			for (int i = 0; i < 2; i++) {
+				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
 			}
 			
-			return list.toArray(new Location[list.size()]);
-		}
-		
-		private Location[] eight(Location loc) {
-			List<Location> list = new ArrayList<Location>();
-			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if ((y == 1 || y == 3) && i == 1)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
+			for (int i = 0; i < 3; i++) {
+				if (state) {
+					currentBlock.setType(fontData.getMaterial());
+					currentBlock.setData(fontData.getData());
+				} else {
+					currentBlock.setType(baseData.getMaterial());
+					currentBlock.setData(baseData.getData());
 				}
+				
+				currentBlock = currentBlock.getRelative(direction);
 			}
-			
-			return list.toArray(new Location[list.size()]);
-		}
-		
-		private Location[] nine(Location loc) {
-			List<Location> list = new ArrayList<Location>();
-			
-			for (int y = 0; y <= 4; y++) {
-				for (int i = 0; i <= 2; i++) {
-					if (y == 1 && i == 1)
-						continue;
-					if (y == 3 && i < 2)
-						continue;
-					
-					Block b1 = loc.getBlock().getRelative(BlockFace.DOWN, y);
-					Block b2 = b1.getRelative(face, i);
-					
-					list.add(b2.getLocation());
-				}
-			}
-			
-			return list.toArray(new Location[list.size()]);
 		}
 		
 	}

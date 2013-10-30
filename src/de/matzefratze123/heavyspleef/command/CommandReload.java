@@ -26,7 +26,6 @@ import org.bukkit.command.CommandSender;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.config.FileConfig;
-import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -57,7 +56,6 @@ public class CommandReload extends HSCommand {
 		
 		plugin.startAntiCampingTask();//Restart the tasks
 		
-		ScoreBoard.refreshData();//Refresh scoreboard data
 		LanguageHandler.loadLanguageFiles();//Reload languages files
 		
 		plugin.getSelectionManager().setup();//Reload selection
