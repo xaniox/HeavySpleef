@@ -40,6 +40,13 @@ public class AntiCampingTask implements Runnable {
 		teleportAt = HeavySpleef.getSystemConfig().getInt("anticamping.teleportAt", 6);
 	}
 	
+	/**
+	 * Resets the anticamping timer for a player
+	 */
+	public void resetTimer(Player player) {
+		antiCamping.remove(player.getName());
+	}
+	
 	@Override
 	public void run() {
 		//Check every player
@@ -112,6 +119,7 @@ public class AntiCampingTask implements Runnable {
 		
 		if (nearestFloor == null)
 			return;
+		
 		Collections.sort(floors);
 		for (int i = 0; i < floors.size(); i++) {
 			//Check if the player is at the last floor

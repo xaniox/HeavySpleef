@@ -82,9 +82,10 @@ public class HeavySpleef extends JavaPlugin {
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
 	public static final String[] commands = new String[] {"spleef", "spl", "hs", "hspleef"};
 	
-	//Task id's
+	//Tasks
 	public int saverTid = -1;
 	public int antiCampTid = -1;
+	private AntiCampingTask antiCampTask;
 	
 	// Updater
 	private Updater updater;
@@ -256,7 +257,12 @@ public class HeavySpleef extends JavaPlugin {
 		if (!getConfig().getBoolean("anticamping.enabled"))
 			return;
 		
-		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new AntiCampingTask(), 0L, 20L);
+		this.antiCampTask = new AntiCampingTask();
+		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, antiCampTask, 0L, 20L);
+	}
+	
+	public AntiCampingTask getAntiCampingTask() {
+		return antiCampTask;
 	}
 	
 	public JoinGUI getJoinGUI() {
