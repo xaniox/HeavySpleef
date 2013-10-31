@@ -615,6 +615,8 @@ public abstract class Game {
 			player.teleport(getFlag(LOSE));
 		
 		player.setFireTicks(0);
+		player.setFallDistance(0);
+		
 		voted.remove(player.getName());
 		updateSidebarScoreboard();
 		

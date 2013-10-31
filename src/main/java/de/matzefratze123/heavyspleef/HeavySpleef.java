@@ -217,7 +217,6 @@ public class HeavySpleef extends JavaPlugin {
 		//Makes sure the updater thread has completed its work
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			
-			@Override
 			public void run() {
 				if (updater.isUpdateAvailable()) {
 					Logger.info("A new version of HeavySpleef is available: " + updater.getFileTitle());
