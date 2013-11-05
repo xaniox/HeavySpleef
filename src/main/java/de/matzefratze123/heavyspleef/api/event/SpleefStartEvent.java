@@ -19,15 +19,17 @@
  */
 package de.matzefratze123.heavyspleef.api.event;
 
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-import de.matzefratze123.heavyspleef.api.GameData;
+import de.matzefratze123.heavyspleef.api.IGame;
 
-public class SpleefStartEvent extends SpleefEvent {
+public class SpleefStartEvent extends SpleefEvent implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
+	private boolean cancelled;
 	
-	public SpleefStartEvent(GameData game) {
+	public SpleefStartEvent(IGame game) {
 		super(game);
 	}
 
@@ -38,6 +40,16 @@ public class SpleefStartEvent extends SpleefEvent {
 	
 	public HandlerList getHandlerList() {
 		return handlers;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	@Override
+	public void setCancelled(boolean cancel) {
+		this.cancelled = cancel;
 	}
 	
 }

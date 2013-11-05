@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-import de.matzefratze123.heavyspleef.api.GameData;
+import de.matzefratze123.heavyspleef.api.IGame;
 
 public class SpleefJoinEvent extends SpleefEvent implements Cancellable {
 
@@ -32,7 +32,7 @@ public class SpleefJoinEvent extends SpleefEvent implements Cancellable {
 	
 	private boolean cancel = false;
 	
-	public SpleefJoinEvent(GameData game, Player player) {
+	public SpleefJoinEvent(IGame game, Player player) {
 		super(game);
 		this.player = player;
 	}

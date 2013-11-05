@@ -25,8 +25,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
@@ -63,8 +63,8 @@ public class CommandRemoveTeam extends HSCommand {
 			return;
 		}
 		
-		game.removeTeam(color);
-		player.sendMessage(_("teamRemoved", color + Util.toFriendlyString(color.name())));
+		game.getComponents().removeTeam(color);
+		player.sendMessage(_("teamRemoved", color + Util.formatMaterialName(color.name())));
 	}
 
 }

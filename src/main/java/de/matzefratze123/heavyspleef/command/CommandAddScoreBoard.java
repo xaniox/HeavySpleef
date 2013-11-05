@@ -19,14 +19,13 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -54,37 +53,16 @@ public class CommandAddScoreBoard extends HSCommand {
 		BlockFace face = getBlockFace(player.getLocation().getYaw());
 		face = rotateBlockFaceLeft(face);
 		
-		ScoreBoard scoreboard = new ScoreBoard(player.getLocation(), face);
+		int id = 0;
+		while (game.getComponents().hasScoreBoard(id)) {
+			id++;
+		}
+		
+		ScoreBoard scoreboard = new ScoreBoard(id, player.getLocation(), face);
 		scoreboard.generate('0', '0', '0', '0');
 		
-		game.addScoreBoard(scoreboard);
+		game.getComponents().addScoreBoard(scoreboard);
 		
-		/*args[1] = args[1].toUpperCase();
-		
-		if (!GameManager.hasGame(args[0])) {
-			sender.sendMessage(_("arenaDoesntExists"));
-			return;
-		}
-		
-		if (!args[1].equalsIgnoreCase("EAST") && !args[1].equalsIgnoreCase("WEST") && !args[1].equalsIgnoreCase("NORTH") && !args[1].equalsIgnoreCase("SOUTH")) {
-			player.sendMessage(_("invalidBlockFace"));
-			return;
-		}
-			
-		BlockFace face = null;
-		
-		try {
-			face = BlockFace.valueOf(args[1]);
-		} catch (NullPointerException npe) {}
-		
-		if (face == null) {
-			player.sendMessage(_("invalidBlockFace"));
-			return;
-		}
-		
-		Game game = GameManager.getGame(args[0]);
-		game.addScoreBoard(player.getLocation(), face);
-		player.sendMessage(_("scoreBoardAdded"));*/
 	}
 	
 	private BlockFace getBlockFace(float yaw) {

@@ -6,16 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
-import de.matzefratze123.heavyspleef.core.region.Floor;
+import de.matzefratze123.heavyspleef.core.region.IFloor;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 
 public class AntiCampingTask implements Runnable {
 	
@@ -50,32 +50,35 @@ public class AntiCampingTask implements Runnable {
 	@Override
 	public void run() {
 		//Check every player
-		for (Player player : Bukkit.getOnlinePlayers()) {
+		for (Player bukkitPlayer : Bukkit.getOnlinePlayers()) {
+			SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
+			
 			//Goto the next player when he is not ingame
-			if (!GameManager.isActive(player))
+			if (!player.isActive())
 				continue;
 			
-			Game game = GameManager.fromPlayer(player);
-			if (game.getGameState() != GameState.INGAME)
+			Game game = player.getGame();
+			if (game == null || game.getGameState() != GameState.INGAME) {
 				continue;
+			}
 			
 			//Get the base value
 			int current = antiCamping.containsKey(player.getName()) ? antiCamping.get(player.getName()) : 0;
 			
 			if (lastLocation.containsKey(player.getName())) {
 				Location last = lastLocation.get(player.getName());
-				Location now = player.getLocation();
+				Location now = player.getBukkitPlayer().getLocation();
 				
 				//Compare the differences of the last location
 				double differenceX = last.getX() < now.getX() ? now.getX() - last.getX() : last.getX() - now.getX();
 				double differenceZ = last.getZ() < now.getZ() ? now.getZ() - last.getZ() : last.getZ() - now.getZ();
 				
-				if ((differenceX < 1.0 && differenceZ < 1.0) || player.isSneaking()) {
+				if ((differenceX < 1.0 && differenceZ < 1.0) || player.getBukkitPlayer().isSneaking()) {
 					//Add one second to map
 					current++;
 					
 					if (current == warnAt && warnUser)
-						player.sendMessage(Game._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
+						player.sendMessage(LanguageHandler._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
 					
 					if (current >= teleportAt) {
 						teleportDown(player);
@@ -89,22 +92,22 @@ public class AntiCampingTask implements Runnable {
 				
 			}
 			
-			lastLocation.put(player.getName(), player.getLocation());
+			lastLocation.put(player.getName(), player.getBukkitPlayer().getLocation());
 		}
 	}
 	
-	private void teleportDown(Player player) {
-		Location location = player.getLocation();
+	private void teleportDown(SpleefPlayer player) {
+		Location location = player.getBukkitPlayer().getLocation();
 		
-		Game game = GameManager.fromPlayer(player);
+		Game game = player.getGame();
 		if (game == null)
 			return;
 		
-		List<Floor> floors = new ArrayList<Floor>(game.getFloors());
-		Floor nearestFloor = null;
+		List<IFloor> floors = new ArrayList<IFloor>(game.getComponents().getFloors());
+		IFloor nearestFloor = null;
 		
 		//Calculate the nearest floor
-		for (Floor floor : floors) {
+		for (IFloor floor : floors) {
 			if (floor.getY() >= location.getY())
 				continue;
 			
@@ -124,15 +127,15 @@ public class AntiCampingTask implements Runnable {
 		for (int i = 0; i < floors.size(); i++) {
 			//Check if the player is at the last floor
 			if (i == 0 && nearestFloor.getY() == floors.get(i).getY()) {
-				player.teleport(player.getLocation().clone().add(0, -1, 0));
-				player.sendMessage(Game._("antiCampTeleport"));
+				player.getBukkitPlayer().teleport(player.getBukkitPlayer().getLocation().clone().add(0, -1, 0));
+				player.sendMessage(LanguageHandler._("antiCampTeleport"));
 				return;
 			} else if (floors.get(i).getY() == nearestFloor.getY()){
-				Location cloned = player.getLocation();
+				Location cloned = player.getBukkitPlayer().getLocation().clone();
 				cloned.setY(floors.get(i - 1).getY() + 1.25);
 				
-				player.teleport(cloned);
-				player.sendMessage(Game._("antiCampTeleport"));
+				player.getBukkitPlayer().teleport(cloned);
+				player.sendMessage(LanguageHandler._("antiCampTeleport"));
 				return;
 			}
 			

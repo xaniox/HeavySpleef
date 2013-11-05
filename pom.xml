@@ -38,6 +38,10 @@
             <addMavenDescriptor>false</addMavenDescriptor>
           </archive>
           <finalName>${project.name}</finalName>
+          <includes>
+          	<include>**/*.yml</include>
+          	<include>**/*.lang</include>
+          </includes>
         </configuration>
       </plugin>
     </plugins>

@@ -25,8 +25,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -57,7 +57,7 @@ public class CommandTeamFlag extends HSCommand {
 				color = c;
 		}
 		
-		if (color == null || !game.hasTeam(color)) {
+		if (color == null || !game.getComponents().hasTeam(color)) {
 			player.sendMessage(getUsage());
 			return;
 		}
@@ -76,21 +76,21 @@ public class CommandTeamFlag extends HSCommand {
 		
 		if (args[2].equalsIgnoreCase("maxplayers")) {
 			if (clear) {
-				game.getTeam(color).setMaxPlayers(0);
+				game.getComponents().getTeam(color).setMaxPlayers(0);
 				player.sendMessage(_("flagCleared", "maxplayers"));
 				return;
 			}
 			
-			game.getTeam(color).setMaxPlayers(number);
+			game.getComponents().getTeam(color).setMaxPlayers(number);
 			player.sendMessage(_("flagSet", "maxplayers"));
 		} else if (args[2].equalsIgnoreCase("minplayers")) {
 			if (clear) {
-				game.getTeam(color).setMinPlayers(0);
+				game.getComponents().getTeam(color).setMinPlayers(0);
 				player.sendMessage(_("flagCleared", "minplayers"));
 				return;
 			}
 			
-			game.getTeam(color).setMinPlayers(number);
+			game.getComponents().getTeam(color).setMinPlayers(number);
 			player.sendMessage(_("flagSet", "minplayers"));
 		} else player.sendMessage(getUsage());
 	}

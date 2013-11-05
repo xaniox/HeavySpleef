@@ -19,8 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.listener;
 
-
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -29,31 +27,28 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.QueuesManager;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 
 public class QueuesListener implements Listener {
 	
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
-		Player p = e.getPlayer();
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 		
-		if (p == null)
+		if (player == null)
 			return;
-		if (!QueuesManager.hasQueue(p))
+		if (!QueuesManager.hasQueue(player))
 			return;
 		if (HeavySpleef.getSystemConfig().getBoolean("queues.commandsInQueue", false))
 			return;
 		
-		String[] split = e.getMessage().split(" ");
-		String cmd = split[0];
-		for (String command : HeavySpleef.commands) {
-			if (cmd.equalsIgnoreCase(command))
-				return;
-		}
+		if (e.getMessage().equalsIgnoreCase("/spleef leave") || e.getMessage().equalsIgnoreCase("/spl leave"))
+			return;
 		
 		e.setCancelled(true);
-		p.sendMessage(Game._("noCommandsInQueue"));
+		player.sendMessage(LanguageHandler._("noCommandsInQueue"));
 	}
 	
 	@EventHandler
@@ -67,15 +62,15 @@ public class QueuesListener implements Listener {
 	}
 	
 	private void handleQuit(PlayerEvent e) {
-		Player p = e.getPlayer();
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 		
-		if (p == null)
+		if (player == null)
 			return;
-		if (!QueuesManager.hasQueue(p))
+		if (!QueuesManager.hasQueue(player))
 			return;
 		
 		//Remove the player from the queue if he quits
-		QueuesManager.removeFromQueue(p);
+		QueuesManager.removeFromQueue(player);
 	}
 
 }

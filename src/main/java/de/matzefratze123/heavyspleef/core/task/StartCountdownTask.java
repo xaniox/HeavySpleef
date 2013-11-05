@@ -20,14 +20,16 @@
 package de.matzefratze123.heavyspleef.core.task;
 
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 
 public class StartCountdownTask extends AbstractCountdown {
 
+	public static final String TASK_ID_KEY = "startCountdown";
 	private Game game;
 	
 	public StartCountdownTask(int start, Game game) {
@@ -42,22 +44,24 @@ public class StartCountdownTask extends AbstractCountdown {
 	}
 	
 	@Override
-	public void onInterrupt() {
-		game.cancelStartCountdownTask();
+	public void onCorrupt() {
+		game.cancelTask(TASK_ID_KEY);
 	}
 	
 	@Override
 	public void onCount() {
-		game.setCurrentCount(getTimeRemaining());
+		game.setCountLeft(getTimeRemaining());
+		
 		if (getTimeRemaining() <= 5){//Do improved countdown
 			if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
-				for (Player p : game.getPlayers())
-					p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+				for (SpleefPlayer player : game.getIngamePlayers()) {
+					player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+				}
 			}
-			game.broadcast(Game._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
+			game.broadcast(LanguageHandler._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
 		} else {//Do pre countdown
 			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
-				game.broadcast(Game._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
+				game.broadcast(LanguageHandler._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
 		}
 	}
 

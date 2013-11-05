@@ -1,16 +1,15 @@
 package de.matzefratze123.heavyspleef.api.event;
 
-
 import org.bukkit.event.Event;
 
-import de.matzefratze123.heavyspleef.api.GameData;
+import de.matzefratze123.heavyspleef.api.IGame;
 
 public abstract class SpleefEvent extends Event {
 
-	private GameData data;
+	private IGame data;
 	
-	protected SpleefEvent(GameData data) {
-		this.data = data;
+	protected SpleefEvent(IGame game) {
+		this.data = game;
 	}
 	
 	/**
@@ -18,7 +17,7 @@ public abstract class SpleefEvent extends Event {
 	 * 
 	 * @return The gamedata of the game
 	 */
-	public GameData getGame() {
+	public IGame getGame() {
 		return data;
 	}
 

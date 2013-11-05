@@ -19,15 +19,15 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -66,7 +66,14 @@ public class CommandAddLose extends HSCommand {
 		Location loc1 = s.getFirst();
 		Location loc2 = s.getSecond();
 	
-		int id = g.addLoseZone(loc1, loc2);
+		int id = 0;
+		while (g.getComponents().hasLoseZone(id)) {
+			id++;
+		}
+		
+		LoseZone loseZone = new LoseZone(loc1, loc2, id);
+		g.getComponents().addLoseZone(loseZone);
+		
 		player.sendMessage(_("loseZoneCreated", String.valueOf(id), g.getName(), String.valueOf(id)));
 	}
 

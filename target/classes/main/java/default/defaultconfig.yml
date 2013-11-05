@@ -50,12 +50,8 @@ general:
   # Should players be able to join the game while it's counting?
   joinAtCountdown: true
   
-  # Should there be a countdown between a round of a 1vs1 game?
-  countdownBetweenRound: true
-  
   # How long should the countdown between a round be?
-  # Only works if countdownBetweenRounds is set to true!
-  countdownBetweenRoundLength: 5
+  countdownBetweenRound: 5
   
   # Should the autostart-vote feature be enabled?
   autostart-vote-enabled: true

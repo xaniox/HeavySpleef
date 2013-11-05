@@ -23,11 +23,20 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 
 public class Util {
 
-	public static String toFriendlyString(String str) {
+	public static String formatMaterialName(String str) {
 		str = str.toLowerCase();
 		
 		String[] parts = str.split("_");
@@ -147,6 +156,26 @@ public class Util {
 		}
 		
 		return builder.toString();
+	}
+	
+	public static Vector toWorldEditVector(Location location) {
+		int x, y, z;
+		
+		x = location.getBlockX();
+		y = location.getBlockY();
+		z = location.getBlockZ();
+		
+		return new Vector(x, y, z);
+	}
+	
+	public static Location toBukkitLocation(LocalWorld world, Vector vector) {
+		int x, y, z;
+		
+		x = vector.getBlockX();
+		y = vector.getBlockY();
+		z = vector.getBlockZ();
+		
+		return new Location(BukkitUtil.toWorld(world), x, y, z);
 	}
 
 }

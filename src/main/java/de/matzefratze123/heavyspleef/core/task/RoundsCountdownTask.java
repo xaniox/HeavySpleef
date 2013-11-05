@@ -21,19 +21,21 @@ package de.matzefratze123.heavyspleef.core.task;
 
 import static de.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.HSCommand;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
+import de.matzefratze123.heavyspleef.core.BroadcastType;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 
 public class RoundsCountdownTask extends AbstractCountdown {
 
+	public static final String TASK_ID_KEY = "roundsTask";
 	private Game game;
 	
 	public RoundsCountdownTask(int start, Game game) {
@@ -46,13 +48,14 @@ public class RoundsCountdownTask extends AbstractCountdown {
 	public void onCount() {
 		if (getTimeRemaining() <= 5){//Do every second countdown
 			if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
-				for (Player p : game.getPlayers())
-					p.playSound(p.getLocation(), Sound.NOTE_PLING, 4.0F, p.getLocation().getPitch());
+				for (SpleefPlayer player : game.getIngamePlayers())
+					player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, player.getBukkitPlayer().getLocation().getPitch());
 			}
-			game.tellAll(Game._("roundStartsIn", String.valueOf(getTimeRemaining())));
+			
+			game.broadcast(LanguageHandler._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
 		} else {//Do pre countdown
 			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
-				game.tellAll(Game._("roundStartsIn", String.valueOf(getTimeRemaining())));
+				game.broadcast(LanguageHandler._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
 		}
 	}
 	
@@ -61,10 +64,10 @@ public class RoundsCountdownTask extends AbstractCountdown {
 		int rounds = game.getFlag(ROUNDS);
 		
 		game.setGameState(GameState.INGAME);
-		game.broadcast(HSCommand.__(ChatColor.DARK_BLUE + "GO!"), ConfigUtil.getBroadcast("game-countdown"));
-		game.broadcast(Game._("roundStarted", String.valueOf(game.getCurrentRound()), String.valueOf(rounds)), ConfigUtil.getBroadcast("game-start-info"));
+		game.broadcast(HSCommand.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast("game-countdown"));
+		game.broadcast(LanguageHandler._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast("game-start-info"));
 		game.removeBoxes();
-		Bukkit.getScheduler().cancelTask(game.getRoundTaskId());
+		game.cancelTask(TASK_ID_KEY);
 	}
 
 }

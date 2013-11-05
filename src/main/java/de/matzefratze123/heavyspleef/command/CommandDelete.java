@@ -19,12 +19,13 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.StopCause;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -44,14 +45,14 @@ public class CommandDelete extends HSCommand {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
+		
 		Game game = GameManager.getGame(args[0]);
-		if (game.isIngame() || game.isCounting() || game.isPreLobby()) {
-			sender.sendMessage(_("cantDeleteGameWhileIngame"));
-			return;
+		if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING || game.getGameState() == GameState.LOBBY) {
+			game.stop(StopCause.STOP);
 		}
 		
-		game.removeAllFromQueue();
-		GameManager.deleteGame(args[0].toLowerCase());
+		game.getQueue().clear();
+		GameManager.deleteGame(args[0]);
 		sender.sendMessage(_("gameDeleted"));
 	}
 

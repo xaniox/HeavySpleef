@@ -13,6 +13,8 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import de.matzefratze123.heavyspleef.util.Base64Helper;
+
 public abstract class ListFlag<T> extends Flag<List<T>> {
 
 	private static final String ELEMENT_SEPERATOR = ";";
@@ -37,7 +39,7 @@ public abstract class ListFlag<T> extends Flag<List<T>> {
 			T element = iterator.next();
 			
 			Serializable s = (Serializable) element;
-			String base64String = toBase64(s);
+			String base64String = Base64Helper.toBase64(s);
 			
 			builder.append(base64String);
 			
@@ -63,7 +65,7 @@ public abstract class ListFlag<T> extends Flag<List<T>> {
 		List<T> list = new ArrayList<T>();
 		
 		for (String e : elements) {
-			Object fromBase64 = fromBase64(e);
+			Object fromBase64 = Base64Helper.fromBase64(e);
 			
 			T element = (T) fromBase64;
 			list.add(element);
@@ -95,42 +97,6 @@ public abstract class ListFlag<T> extends Flag<List<T>> {
 	@Override
 	public FlagType getType() {
 		return FlagType.LISTFLAG;
-	}
-
-	/** Read the object from Base64 string. */
-	private Object fromBase64(String s) {
-		byte[] data = Base64Coder.decode(s);
-		
-		ObjectInputStream ois;
-		Object o = null;
-		
-		try {
-			ois = new ObjectInputStream(new ByteArrayInputStream(data));
-			o = ois.readObject();
-			ois.close();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		} catch (final ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		return o;
-	}
-
-	/** Write the object to a Base64 string. */
-	private String toBase64(Serializable o) {
-		
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(o);
-			oos.close();
-			return new String(Base64Coder.encode(baos.toByteArray()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
 	}
 
 }

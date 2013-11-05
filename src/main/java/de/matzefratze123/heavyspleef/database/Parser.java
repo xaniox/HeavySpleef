@@ -118,10 +118,10 @@ public class Parser {
 	public static String convertLoseZoneToString(LoseZone z) {
 		
 		int id = z.getId();
-		String firstCorner = convertLocationtoString(z.getFirstCorner());
-		String secondCorner = convertLocationtoString(z.getSecondCorner());
+		String firstPoint = convertLocationtoString(z.getFirstPoint());
+		String secondPoint = convertLocationtoString(z.getSecondPoint());
 		
-		return id + ";" + firstCorner + ";" + secondCorner;
+		return id + ";" + firstPoint + ";" + secondPoint;
 	}
 
 }

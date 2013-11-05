@@ -7,10 +7,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.bukkit.entity.Player;
-
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class SpleefLogger {
 	
@@ -29,7 +28,7 @@ public class SpleefLogger {
 		}
 	}
 	
-	public static void log(LogType type, Game game, Player player) {
+	public static void log(LogType type, Game game, SpleefPlayer player) {
 		String msg = String.format(type.getMessage(), player.getName());	
 		logRaw("Game " + game.getName() + ": " + msg);
 	}

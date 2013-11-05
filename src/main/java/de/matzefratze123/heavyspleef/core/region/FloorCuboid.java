@@ -1,239 +1,238 @@
-/**
- *   HeavySpleef - The simple spleef plugin for bukkit
- *   
- *   Copyright (C) 2013 matzefratze123
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package de.matzefratze123.heavyspleef.core.region;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.MemorySection;
 
-import de.matzefratze123.heavyspleef.core.GameType;
-import de.matzefratze123.heavyspleef.database.FloorLoader;
 import de.matzefratze123.heavyspleef.database.Parser;
-import de.matzefratze123.heavyspleef.util.LocationHelper;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
+import de.matzefratze123.heavyspleef.objects.RegionCuboid;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
+import de.matzefratze123.heavyspleef.util.Base64Helper;
+import de.matzefratze123.heavyspleef.util.Logger;
 
-public class FloorCuboid extends Floor {
+public class FloorCuboid extends RegionCuboid implements IFloor {
 	
-	private Location firstCorner;
-	private Location secondCorner;
-	
-	public FloorCuboid(int id, int y, Location corner1, Location corner2, int blockID, byte data, FloorType type) {
-		super(id, blockID, data, type, y);
-		
-		this.setFirstCorner(corner1);
-		this.setSecondCorner(corner2);
-		
-		if (isGivenFloor())
-			initFloor();
-	}
-	
-	public static FloorCuboid fromString(String fromString, String gameName) {
-		String[] split = fromString.split(";");
-		
-		int id = Integer.parseInt(split[0]);
-		Location firstCorner = Parser.convertStringtoLocation(split[1]);
-		Location secondCorner = Parser.convertStringtoLocation(split[2]);
-		
-		int blockID = Integer.parseInt(split[3]);
-		byte data = Byte.parseByte(split[4]);
-		int y = firstCorner.getBlockY();
-		
-		if (split.length < 6) {//Just for converting old floors...
-			if (blockID == 0)
-				return new FloorCuboid(id, y, firstCorner, secondCorner, 35, data, FloorType.RANDOMWOOL);
-			else if (blockID == -1) {
-				FloorCuboid floor =  new FloorCuboid(id, y, firstCorner, secondCorner, -1, data, FloorType.GIVENFLOOR);
-				FloorLoader.loadFloor(floor, gameName);
-				return floor;
-			}
-			return new FloorCuboid(id, y, firstCorner, secondCorner, blockID, data, FloorType.SPECIFIEDID);
+	private FloorType type;
+	private SimpleBlockData blockData;
+
+	/*
+	 * This list is used when the game has a given floor It saves all blockdatas
+	 * and their location into this list
+	 */
+	private List<SimpleBlockData> blockDatas = new ArrayList<SimpleBlockData>();
+
+	private Random random = new Random();
+
+	public FloorCuboid(int id, Location firstPoint, Location secondPoint, FloorType type) {
+		super(id, firstPoint, secondPoint);
+
+		this.type = type;
+
+		if (type == FloorType.GIVENFLOOR) {
+			initGivenFloor();
 		}
-		
-		FloorType type = FloorType.valueOf(split[5]);
-		return new FloorCuboid(id, y, firstCorner, secondCorner, blockID, data, type);
 	}
-	
-	@Override
-	public void initFloor() {
-		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		
-		int minY = Math.min(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		int maxY = Math.max(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		
-		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		
-		Block b;
+
+	private void initGivenFloor() {
+		int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
+		int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
+
+		int minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
+		int maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
+
+		int minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
+		int maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					b = getFirstCorner().getWorld().getBlockAt(x, y, z);
-					givenFloorList.add(new SimpleBlockData(b.getType(), b.getData(), x, y, z, getFirstCorner().getWorld().getName()));
+					Block block = firstPoint.getWorld().getBlockAt(x, y, z);
+					blockDatas.add(new SimpleBlockData(block));
 				}
 			}
 		}
 	}
-	
+
 	@Override
-	public void create() {
-		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		
-		int minY = Math.min(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		int maxY = Math.max(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		
-		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		
-		if (isGivenFloor()) {
-			for (SimpleBlockData sData : givenFloorList) {
-				if (sData == null)
-					continue;
-				Block block = sData.getWorld().getBlockAt(sData.getLocation());
+	public int compareTo(IFloor o) {
+		return Integer.valueOf(getY()).compareTo(o.getY());
+	}
+
+	@Override
+	public SimpleBlockData getBlockData() {
+		return blockData;
+	}
+
+	@Override
+	public void setBlockData(SimpleBlockData data) {
+		this.blockData = data;
+	}
+
+	@Override
+	public FloorType getType() {
+		return type;
+	}
+
+	@Override
+	public void generate() {
+		if (type == FloorType.GIVENFLOOR) {
+			for (SimpleBlockData data : blockDatas) {
+				Block block = data.getWorld().getBlockAt(data.getLocation());
 				
-				if (block.getType() == sData.getMaterial() && block.getData() == sData.getData())
-					continue;
-				
-				int id = sData.getMaterial().getId();
-				byte data = sData.getData();
-				
-				block.setTypeId(id);
-				block.setData(data);
+				block.setType(data.getMaterial());
+				block.setData(data.getData());
 			}
-			
-			return;
-		}
-		
-		Block currentBlock;
-		byte data = 0;
-		
-		if (isWoolFloor())
-			data = (byte)(random.nextInt(17) - 1);
-		else if (getData() > 0)
-			data = getData();
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int y = minY; y <= maxY; y++) {
-				for (int z = minZ; z <= maxZ; z++) {
-					currentBlock = getFirstCorner().getWorld().getBlockAt(x, y, z);
-					
-					if (isWoolFloor()) {
-						if (currentBlock.getType() == Material.WOOL && currentBlock.getData() == data)
-							continue;
-						currentBlock.setType(Material.WOOL);
-						currentBlock.setData(data);
-					} else {
-						if (currentBlock.getTypeId() == getBlockID() && currentBlock.getData() == getData())
-							continue;
-						currentBlock.setTypeId(getBlockID());
-						currentBlock.setData(getData());
+		} else {
+			int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
+			int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
+	
+			int minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
+			int maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
+	
+			int minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
+			int maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
+	
+			Block current;
+	
+			Material material = Material.SNOW;
+			byte data = (byte)0;
+	
+			if (type == FloorType.SPECIFIEDID) {
+				if (blockData == null) {
+					Logger.warning("Could not load for floor " + id + "! Using default snow floor...");
+					blockData = new SimpleBlockData(Material.SNOW_BLOCK, (byte) 0);
+				}
+	
+				material = blockData.getMaterial();
+				data = blockData.getData();
+			} else if (type == FloorType.RANDOMWOOL) {
+				material = Material.WOOL;
+				data = (byte) (random.nextInt(16) + 1);
+			}
+	
+			for (int x = minX; x <= maxX; x++) {
+				for (int y = minY; y <= maxY; y++) {
+					for (int z = minZ; z <= maxZ; z++) {
+						current = firstPoint.getWorld().getBlockAt(x, y, z);
+						current.setType(material);
+						current.setData(data);
 					}
 				}
 			}
 		}
-		
 	}
-	
+
 	@Override
 	public void remove() {
-		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		
-		int minY = Math.min(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		int maxY = Math.max(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		
-		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		
-		Block currentBlock;
+		int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
+		int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
+
+		int minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
+		int maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
+
+		int minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
+		int maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					currentBlock = getFirstCorner().getWorld().getBlockAt(x, y, z);
-					currentBlock.setType(Material.AIR);
+					Block block = firstPoint.getWorld().getBlockAt(x, y, z);
+					block.setType(Material.AIR);
 				}
 			}
 		}
 	}
-	
+
 	@Override
-	public String asInfo() {
-		String base = super.asInfo();
-		
-		base += "\n" + LocationHelper.toFriendlyString(firstCorner) + "; " + LocationHelper.toFriendlyString(secondCorner);
-		
-		return base;
-	}
+	public int getY() {
+		int y = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
 
-	public Location getFirstCorner() {
-		return firstCorner;
-	}
-
-	public void setFirstCorner(Location firstCorner) {
-		this.firstCorner = firstCorner;
-	}
-
-	public Location getSecondCorner() {
-		return secondCorner;
-	}
-
-	public void setSecondCorner(Location secondCorner) {
-		this.secondCorner = secondCorner;
+		return y;
 	}
 
 	@Override
-	public GameType getType() {
-		return GameType.CUBOID;
+	public String asPlayerInfo() {
+		return "ID: " + getId() + ", shape: CUBOID" + ", type: " + getType();
 	}
 
 	@Override
-	public String toString() {
-		int id = getId();
-		String base = id + ";" + Parser.convertLocationtoString(getFirstCorner()) + ";" + Parser.convertLocationtoString(getSecondCorner());
-		return base + ";" + getBlockID() + ";" + getData() + ";" + getFloorType().name();
-	}
-
-	@Override
-	public boolean contains(Location toCheck) {
-		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
+	public ConfigurationSection serialize() {
+		MemorySection section = new MemoryConfiguration();
 		
-		int minY = Math.min(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		int maxY = Math.max(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
+		section.set("id", id);
+		section.set("shape", "CUBOID");
+		section.set("type", type.name());
+		section.set("first", Parser.convertLocationtoString(firstPoint));
+		section.set("second", Parser.convertLocationtoString(secondPoint));
 		
-		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
+		if (type == FloorType.SPECIFIEDID) {
+			section.set("block", blockData.getMaterial().name());
+			section.set("data", blockData.getData());
+		} else if (type == FloorType.GIVENFLOOR) {
+			section.set("blocks", toBase64(blockDatas));
+		}
 		
-		if (!toCheck.getWorld().getName().equalsIgnoreCase(getFirstCorner().getWorld().getName()))
-			return false;
-		if (toCheck.getBlockX() > maxX || toCheck.getBlockX() < minX)
-			return false;
-		if (toCheck.getBlockY() > maxY || toCheck.getBlockY() < minY)
-			return false;
-		if (toCheck.getBlockZ() > maxZ || toCheck.getBlockZ() < minZ)
-			return false;
-		return true;
+		return section;
 	}
 	
+	public static String toBase64(List<SimpleBlockData> blockDatas) {
+		StringBuilder builder = new StringBuilder();
+		
+		Iterator<SimpleBlockData> iterator = blockDatas.iterator();
+		while (iterator.hasNext()) {
+			SimpleBlockData data = iterator.next();
+			
+			String base64String = Base64Helper.toBase64(data);
+			builder.append(base64String);
+			
+			if (iterator.hasNext()) {
+				builder.append("@");
+			}
+		}
+		
+		return builder.toString();
+	}
+	
+	public static List<SimpleBlockData> fromBase64(String str) {
+		String[] parts = str.split("@");
+		List<SimpleBlockData> datas = new ArrayList<SimpleBlockData>();
+		
+		for (String part : parts) {
+			SimpleBlockData data = (SimpleBlockData) Base64Helper.fromBase64(part);
+			
+			datas.add(data);
+		}
+		
+		return datas;
+	}
+	
+	public static FloorCuboid deserialize(ConfigurationSection section) {
+		int id = section.getInt("id");
+		FloorType type = FloorType.valueOf(section.getString("type"));
+		Location first = Parser.convertStringtoLocation(section.getString("first"));
+		Location second = Parser.convertStringtoLocation(section.getString("second"));
+		
+		FloorCuboid floor = new FloorCuboid(id, first, second, type);
+		
+		if (type == FloorType.SPECIFIEDID) {
+			Material block = Material.valueOf(section.getString("block"));
+			byte data = (byte) section.getInt("data");
+			
+			floor.setBlockData(new SimpleBlockData(block, data));
+		} else if (type == FloorType.GIVENFLOOR) {
+			List<SimpleBlockData> blocks = fromBase64(section.getString("blocks"));
+			floor.blockDatas = blocks;
+		}
+		
+		return floor;
+	}
+
 }

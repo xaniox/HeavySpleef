@@ -23,10 +23,12 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.LoseCause;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.PvPTimerManager;
 
@@ -43,26 +45,26 @@ public class CommandHub extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		tpToHub(player);
+		tpToHub(HeavySpleef.getInstance().getSpleefPlayer(player));
 	}
 	
-	public static void tpToHub(final Player player) {
+	public static void tpToHub(final SpleefPlayer player) {
 		if (GameManager.getSpleefHub() == null) {
 			player.sendMessage(_("noSpleefHubSet"));
 			return;
 		}
 		
-		if (GameManager.isActive(player)) {
-			Game game = GameManager.fromPlayer(player);
+		if (player.isActive()) {
+			Game game = player.getGame();
 			game.leave(player, LoseCause.QUIT);
 		}
 		
-		PvPTimerManager.addToTimer(player, new Runnable() {
+		PvPTimerManager.addToTimer(player.getBukkitPlayer(), new Runnable() {
 			
 			@Override
 			public void run() {
-				PvPTimerManager.cancelTimerTask(player);
-				player.teleport(GameManager.getSpleefHub());
+				PvPTimerManager.cancelTimerTask(player.getBukkitPlayer());
+				player.getBukkitPlayer().teleport(GameManager.getSpleefHub());
 				player.sendMessage(_("welcomeToHUB"));
 			}
 		});

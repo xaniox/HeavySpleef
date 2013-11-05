@@ -19,13 +19,19 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.GameType;
+import de.matzefratze123.heavyspleef.core.Team;
+import de.matzefratze123.heavyspleef.core.flag.FlagType;
+import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
@@ -35,60 +41,88 @@ public class CommandStart extends HSCommand {
 		setPermission(Permissions.START_GAME);
 		setUsage("/spleef start [name]");
 		setHelp("Starts a game");
+		setOnlyIngame(true);
 	}
-	
+
 	@Override
 	public void execute(CommandSender sender, String[] args) {
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer((Player)sender);
 		Game game;
-		
+
 		if (args.length <= 0) {
-			if (!(sender instanceof Player)) {
-				sender.sendMessage(_("onlyIngame"));
-				return;
-			}
-			
-			Player player = (Player)sender;
-			
-			if (!GameManager.isActive(player)) {
+			if (!player.isActive()) {
 				player.sendMessage(_("notIngame"));
 				return;
 			}
-			
-			game = GameManager.fromPlayer(player);
+
+			game = player.getGame();
 		} else {
-			if (!GameManager.hasGame(args[0].toLowerCase())) {
-				sender.sendMessage(_("arenaDoesntExists"));
+			if (!GameManager.hasGame(args[0])) {
+				player.sendMessage(_("arenaDoesntExists"));
 				return;
 			}
-			
-			if (sender instanceof Player) {
-				Player player = (Player)sender;
-				
-				permissionsCheck: {
-					Game playerGame = GameManager.fromPlayer(player);
-					
-					if (playerGame != null && playerGame.getName().equalsIgnoreCase(args[0]))
-						break permissionsCheck;
-					if (sender.hasPermission(Permissions.START_GAME_OTHER.getPerm()))
-						break permissionsCheck;
-					
-					sender.sendMessage(_("noPermission"));
-					return;
-				}
+
+			permissionsCheck: {
+				Game playerGame = player.getGame();
+
+				if (playerGame != null && playerGame.getName().equalsIgnoreCase(args[0]))
+					break permissionsCheck;
+				if (player.getBukkitPlayer().hasPermission(Permissions.START_GAME_OTHER.getPerm()))
+					break permissionsCheck;
+
+				player.sendMessage(_("noPermission"));
+				return;
 			}
-			
+
 			game = GameManager.getGame(args[0]);
 		}
-		
-		start(sender, game);
+
+		start(player, game);
 	}
 
-	public static void start(CommandSender sender, Game game) {
-		if (!game.isAbleToStart(sender))
+	public static void start(SpleefPlayer player, Game game) {
+		if (game.getGameState() == GameState.DISABLED) {
+			player.sendMessage(_("gameIsDisabled"));
 			return;
-		
+		}
+		if (game.getType() == GameType.CYLINDER
+				&& !HeavySpleef.getInstance().getHookManager()
+						.getService(WorldEditHook.class).hasHook()) {
+			player.sendMessage(_("noWorldEdit"));
+			return;
+		}
+		if (game.getGameState() == GameState.COUNTING || game.getGameState() == GameState.INGAME) {
+			player.sendMessage(_("cantStartGameWhileRunning"));
+			return;
+		}
+
+		int minplayers = game.getFlag(FlagType.MINPLAYERS);
+
+		if (game.getIngamePlayers().size() < minplayers || game.getIngamePlayers().size() < 2) {
+			player.sendMessage(_("notEnoughPlayers", String.valueOf(minplayers)));
+			return;
+		}
+		if (game.getFlag(FlagType.TEAM)) {
+			int c = 0;
+			for (Team team : game.getComponents().getTeams()) {
+				if (team.hasPlayersLeft())
+					c++;
+				if (team.getPlayers().length < team.getMinPlayers()) {
+					player.sendMessage(_("teamNeedMorePlayers", team.getColor()
+							.name().toLowerCase(),
+							String.valueOf(team.getMinPlayers())));
+
+				}
+			}
+
+			// Check if there is only one team
+			if (c <= 1) {
+				player.sendMessage(_("minimumTwoTeams"));
+			}
+		}
+
 		game.countdown();
-		sender.sendMessage(_("gameStarted"));
+		player.sendMessage(_("gameStarted"));
 	}
-	
+
 }

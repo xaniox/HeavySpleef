@@ -23,7 +23,7 @@ package de.matzefratze123.heavyspleef.api.event;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-import de.matzefratze123.heavyspleef.api.GameData;
+import de.matzefratze123.heavyspleef.api.IGame;
 import de.matzefratze123.heavyspleef.core.StopCause;
 
 public class SpleefFinishEvent extends SpleefEvent {
@@ -32,7 +32,7 @@ public class SpleefFinishEvent extends SpleefEvent {
 	private Player winner;
 	private StopCause cause;
 	
-	public SpleefFinishEvent(GameData game, StopCause cause, Player winner) {
+	public SpleefFinishEvent(IGame game, StopCause cause, Player winner) {
 		super(game);
 		this.cause = cause;
 		this.winner = winner;

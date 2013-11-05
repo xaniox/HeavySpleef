@@ -20,17 +20,19 @@
 package de.matzefratze123.heavyspleef.command;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.util.ArrayHelper;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
@@ -48,16 +50,22 @@ public class CommandList extends HSCommand {
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
+		Player bukkitPlayer = (Player)sender;
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
 		
 		if (args.length == 0) {
-			if (GameManager.isActive(player)) {
-				Game game = GameManager.fromPlayer(player);
+			if (player.isActive()) {
+				Game game = player.getGame();
 				printList(game, player);
 			} else {
-				String[] games = GameManager.getGamesAsString();
+				List<Game> games = GameManager.getGames();
+				Set<String> gameNameList = new HashSet<String>();
 				
-				player.sendMessage(ChatColor.GRAY + "All games: " + Util.toFriendlyString(games, ", "));
+				for (Game game : games) {
+					gameNameList.add(game.getName());
+				}
+				
+				player.sendMessage(ChatColor.GRAY + "All games: " + Util.toFriendlyString(gameNameList, ", "));
 			}
 		} else if (args.length > 0) {
 			if (!GameManager.hasGame(args[0])) {
@@ -70,20 +78,23 @@ public class CommandList extends HSCommand {
 		}
 	}
 	
-	private void printList(Game game, Player player) {
-		Set<Player> active = ArrayHelper.asSet(game.getPlayers());
-		Set<Player> out = ArrayHelper.asSet(game.getOutPlayers());
+	private void printList(Game game, SpleefPlayer player) {
+		List<SpleefPlayer> active = game.getIngamePlayers();
+		List<OfflinePlayer> out = game.getOutPlayers();
 		
 		Set<String> activeString = new HashSet<String>();
 		Set<String> outString = new HashSet<String>();
 		
-		for (Player activePlayer : active)
+		for (SpleefPlayer activePlayer : active) {
 			activeString.add(activePlayer.getName());
-		for (Player outPlayer : out)
-			outString.add(outPlayer.getName());
+		}
 		
-		player.sendMessage(ChatColor.AQUA + "Active: " + activeString.toString());
-		player.sendMessage(ChatColor.RED + "Out: " + outString.toString());
+		for (OfflinePlayer outPlayer : out) {
+			outString.add(outPlayer.getName());
+		}
+		
+		player.sendMessage(ChatColor.AQUA + "Active: " + Util.toFriendlyString(activeString, ", "));
+		player.sendMessage(ChatColor.RED + "Out: " + Util.toFriendlyString(outString, ", "));
 	}
 	
 }

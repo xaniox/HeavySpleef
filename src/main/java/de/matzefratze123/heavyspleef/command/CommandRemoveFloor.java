@@ -26,10 +26,11 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.GameType;
-import de.matzefratze123.heavyspleef.core.region.Floor;
+import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -53,18 +54,19 @@ public class CommandRemoveFloor extends HSCommand {
 			player.sendMessage(_("notLookingAtABlock"));
 			return;
 		}
+		
 		for (Game game : GameManager.getGames()) {
 			if (game.getType() == GameType.CYLINDER && !HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook())
 				continue;
-			for (Floor floor : game.getFloors()) {
-				if (floor.contains(block)) {
-					if (game.isIngame() || game.isCounting()) {
+			for (IFloor floor : game.getComponents().getFloors()) {
+				if (floor.contains(block.getLocation())) {
+					if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING) {
 						player.sendMessage(_("cantRemoveFloorWhileRunning"));
 						return;
 					}
 					
 					int id = floor.getId();
-					game.removeFloor(id);
+					game.getComponents().removeFloor(id);
 					player.sendMessage(_("floorRemoved"));
 					return;
 				}

@@ -19,10 +19,11 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import static de.matzefratze123.heavyspleef.core.GameManager.getGames;
 
-import static de.matzefratze123.heavyspleef.core.GameManager.*;
+import org.bukkit.ChatColor;
+
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 /**
  * Provides a global queue manager for all games
@@ -31,36 +32,40 @@ import static de.matzefratze123.heavyspleef.core.GameManager.*;
  */
 public class QueuesManager {
 
-	public static boolean hasQueue(Player player) {
+	public static boolean hasQueue(SpleefPlayer player) {
 		boolean has = false;
 		
 		for (Game game : getGames()) {
-			has = game.hasQueue(player);
-			if (has) break;
+			has = game.getQueue().contains(player);
+			if (has) { 
+				break;
+			}
 		}
 		
 		return has;
 	}
 	
-	public static void removeFromQueue(Player player) {
-		for (Game game : getGames())
-			game.removeFromQueue(player);
+	public static void removeFromQueue(SpleefPlayer player) {
+		for (Game game : getGames()) {
+			game.getQueue().removePlayer(player);
+		}
 	}
 	
-	public static Game getQueue(Player player) {
+	public static Game getQueue(SpleefPlayer player) {
 		for (Game game : getGames()) {
-			if (game.getQueue(player) != null)
+			if (game.getQueue().contains(player)) {
 				return game;
+			}
 		}
 		
 		return null;
 	}
 	
-	public static void addToQueue(Player player, Game game, ChatColor color) {
+	public static void addToQueue(SpleefPlayer player, Game game, ChatColor color) {
 		if (game == null)
 			return;
 		
-		game.addToQueue(player, color);
+		game.getQueue().addPlayer(player);
 	}
 	
 }

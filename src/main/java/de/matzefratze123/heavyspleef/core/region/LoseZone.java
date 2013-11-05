@@ -21,68 +21,42 @@ package de.matzefratze123.heavyspleef.core.region;
 
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.MemorySection;
 
+import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
+import de.matzefratze123.heavyspleef.database.Parser;
+import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.util.LocationHelper;
 
-public class LoseZone extends RegionBase {
-
-	private Location firstCorner;
-	private Location secondCorner;
+public class LoseZone extends RegionCuboid implements DatabaseSerializeable {
 	
 	public LoseZone(Location loc1, Location loc2, int id) {
-		super(id);
-		
-		this.firstCorner = loc1;
-		this.secondCorner = loc2;
-	}
-
-	public Location getFirstCorner() {
-		return firstCorner;
-	}
-
-	public void setFirstCorner(Location firstCorner) {
-		this.firstCorner = firstCorner;
-	}
-
-	public Location getSecondCorner() {
-		return secondCorner;
-	}
-
-	public void setSecondCorner(Location secondCorner) {
-		this.secondCorner = secondCorner;
-	}
-
-	@Override
-	public boolean contains(Location toCheck) {
-		int x, y, z;
-		
-		int minX = Math.min(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		int maxX = Math.max(getFirstCorner().getBlockX(), getSecondCorner().getBlockX());
-		
-		int minY = Math.min(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		int maxY = Math.max(getFirstCorner().getBlockY(), getSecondCorner().getBlockY());
-		
-		int minZ = Math.min(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		int maxZ = Math.max(getFirstCorner().getBlockZ(), getSecondCorner().getBlockZ());
-		
-		x = toCheck.getBlockX();
-		y = toCheck.getBlockY();
-		z = toCheck.getBlockZ();
-		
-		if (!toCheck.getWorld().getName().equalsIgnoreCase(getFirstCorner().getWorld().getName()))
-			return false;
-		if (x > maxX || x < minX)
-			return false;
-		if (y > maxY || y < minY)
-			return false;
-		if (z > maxZ || z < minZ)
-			return false;
-		
-		return true;
+		super(id, loc1, loc2);
 	}
 
 	public String asInfo() {
-		return "ID: " + getId() + ", " + LocationHelper.toFriendlyString(firstCorner) + "; " + LocationHelper.toFriendlyString(secondCorner);
+		return "ID: " + getId() + ", " + LocationHelper.toFriendlyString(firstPoint) + "; " + LocationHelper.toFriendlyString(secondPoint);
+	}
+
+	@Override
+	public ConfigurationSection serialize() {
+		MemorySection section = new MemoryConfiguration();
+		
+		section.set("id", id);
+		section.set("first", Parser.convertLocationtoString(firstPoint));
+		section.set("second", Parser.convertLocationtoString(secondPoint));
+		
+		return section;
+	}
+	
+	public static LoseZone deserialize(ConfigurationSection section) {
+		int id = section.getInt("id");
+		Location first = Parser.convertStringtoLocation(section.getString("first"));
+		Location second = Parser.convertStringtoLocation(section.getString("second"));
+		
+		return new LoseZone(first, second, id);
 	}
 	
 }

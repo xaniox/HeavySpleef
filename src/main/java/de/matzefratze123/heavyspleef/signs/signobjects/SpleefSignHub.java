@@ -2,18 +2,18 @@ package de.matzefratze123.heavyspleef.signs.signobjects;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 
 import de.matzefratze123.heavyspleef.command.CommandHub;
-import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefSignHub implements SpleefSign {
 
 	@Override
-	public void onClick(Player player, Sign sign) {
+	public void onClick(SpleefPlayer player, Sign sign) {
 		CommandHub.tpToHub(player);
 	}
 
@@ -38,7 +38,7 @@ public class SpleefSignHub implements SpleefSign {
 
 	@Override
 	public void onPlace(SignChangeEvent e) {
-		e.getPlayer().sendMessage(Game._("spleefSignCreated"));
+		e.getPlayer().sendMessage(LanguageHandler._("spleefSignCreated"));
 		
 		e.setLine(1, ChatColor.DARK_GRAY + "[" + ChatColor.RESET + ChatColor.BOLD + "HUB" + ChatColor.DARK_GRAY + "]");
 	}

@@ -24,8 +24,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.StopCause;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -49,11 +51,12 @@ public class CommandStop extends HSCommand {
 		}
 		
 		Game game = GameManager.getGame(args[0].toLowerCase());
-		if (!game.isIngame() && !game.isCounting()) {
+		if (game.getGameState() != GameState.INGAME && game.getGameState() != GameState.COUNTING) {
 			player.sendMessage(_("noGameRunning"));
 			return;
 		}
-		game.stop();
+		
+		game.stop(StopCause.STOP);
 	}
 
 }

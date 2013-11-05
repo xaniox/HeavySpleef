@@ -28,8 +28,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.BooleanFlag;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
@@ -57,6 +57,7 @@ public class CommandFlag extends HSCommand {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
+		
 		Game game = GameManager.getGame(args[0]);
 		
 		boolean found = false;

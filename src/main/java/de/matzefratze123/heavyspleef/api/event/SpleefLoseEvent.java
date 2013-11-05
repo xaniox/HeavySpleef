@@ -19,11 +19,10 @@
  */
 package de.matzefratze123.heavyspleef.api.event;
 
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-import de.matzefratze123.heavyspleef.api.GameData;
+import de.matzefratze123.heavyspleef.api.IGame;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 
 public class SpleefLoseEvent extends SpleefEvent {
@@ -33,7 +32,7 @@ public class SpleefLoseEvent extends SpleefEvent {
 	private Player loser = null;
 	private LoseCause cause = null;
 	
-	public SpleefLoseEvent(GameData game, Player player, LoseCause cause) {
+	public SpleefLoseEvent(IGame game, Player player, LoseCause cause) {
 		super(game);
 		this.loser = player;
 		this.cause = cause;

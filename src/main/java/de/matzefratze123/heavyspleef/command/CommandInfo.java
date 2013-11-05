@@ -23,16 +23,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
-import de.matzefratze123.heavyspleef.core.region.Floor;
+import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -55,6 +55,7 @@ public class CommandInfo extends HSCommand {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
+		
 		Game game = GameManager.getGame(args[0]);
 		
 		player.sendMessage(ChatColor.YELLOW + "Name: " + game.getName() + ChatColor.GRAY + ", type: " + game.getType().name());
@@ -62,11 +63,11 @@ public class CommandInfo extends HSCommand {
 			player.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Flags: " + ChatColor.BLUE + parseFlags(game));
 		
 		player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Floors:");
-		for (Floor floor : game.getFloors()) {
-			player.sendMessage(ChatColor.LIGHT_PURPLE + "# " + floor.asInfo());
+		for (IFloor floor : game.getComponents().getFloors()) {
+			player.sendMessage(ChatColor.LIGHT_PURPLE + "# " + floor.asPlayerInfo());
 		}
 		player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "Losezones:");
-		for (LoseZone zone : game.getLoseZones()) {
+		for (LoseZone zone : game.getComponents().getLoseZones()) {
 			player.sendMessage(ChatColor.YELLOW + "# " + zone.asInfo());
 		}
 	}

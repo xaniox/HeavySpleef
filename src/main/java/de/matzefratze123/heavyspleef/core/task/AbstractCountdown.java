@@ -35,7 +35,7 @@ public abstract class AbstractCountdown implements Runnable {
 			onCount();
 			remaining--;
 		} else if (remaining < 0) {//Call the interrupt method, something is going false...
-			onInterrupt();
+			onCorrupt();
 		}
 	}
 	
@@ -43,7 +43,7 @@ public abstract class AbstractCountdown implements Runnable {
 	
 	public void onCount() {}
 	
-	public void onInterrupt() {}
+	public void onCorrupt() {}
 	
 	public int getTimeRemaining() {
 		return this.remaining;

@@ -2,37 +2,37 @@ package de.matzefratze123.heavyspleef.signs.signobjects;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 
-import de.matzefratze123.heavyspleef.command.HSCommand;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefSignVote implements SpleefSign {
 
 	@Override
-	public void onClick(Player player, Sign sign) {
-		if (!GameManager.isActive(player)) {
-			player.sendMessage(Game._("onlyLobby"));
+	public void onClick(SpleefPlayer player, Sign sign) {
+		if (!player.isActive()) {
+			player.sendMessage(LanguageHandler._("onlyLobby"));
 			return;
 		}
 		
-		Game game = GameManager.fromPlayer(player);
+		Game game = player.getGame();
 		
-		if (!game.isPreLobby()) {
-			player.sendMessage(Game._("onlyLobby"));
+		if (game.getGameState() != GameState.LOBBY) {
+			player.sendMessage(LanguageHandler._("onlyLobby"));
 			return;
 		}
-		if (game.hasVote(player)) {
-			player.sendMessage(Game._("alreadyVoted"));
+		if (player.isReady()) {
+			player.sendMessage(LanguageHandler._("alreadyVoted"));
 			return;
 		}
 		
-		game.addVote(player);
-		player.sendMessage(HSCommand._("successfullyVoted"));
+		player.setReady(true);
+		player.sendMessage(LanguageHandler._("successfullyVoted"));
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class SpleefSignVote implements SpleefSign {
 
 	@Override
 	public void onPlace(SignChangeEvent e) {
-		e.getPlayer().sendMessage(Game._("spleefSignCreated"));
+		e.getPlayer().sendMessage(LanguageHandler._("spleefSignCreated"));
 		
 		e.setLine(1, ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Vote" + ChatColor.DARK_GRAY + "]");
 	}

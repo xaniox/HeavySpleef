@@ -21,9 +21,11 @@ package de.matzefratze123.heavyspleef.core.task;
 
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 
 public class RegenerationTask implements Runnable {
 	
+	public static final String TASK_ID_KEY = "regenTask";
 	private Game game;
 	
 	public RegenerationTask(Game game) {
@@ -32,8 +34,8 @@ public class RegenerationTask implements Runnable {
 	
 	@Override
 	public void run() {
-		game.regen();
-		game.broadcast(Game._("floorsRegenerated"), ConfigUtil.getBroadcast("floor-regeneration"));
+		game.getComponents().regenerateFloors();
+		game.broadcast(LanguageHandler._("floorsRegenerated"), ConfigUtil.getBroadcast("floor-regeneration"));
 	}
 	
 }

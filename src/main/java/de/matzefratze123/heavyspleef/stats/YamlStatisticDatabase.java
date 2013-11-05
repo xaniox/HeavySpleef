@@ -22,14 +22,16 @@ package de.matzefratze123.heavyspleef.stats;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 
@@ -55,11 +57,10 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	
 	@Override
 	public void saveAccounts() {
-		List<StatisticModule> statistics = new ArrayList<StatisticModule>(StatisticManager.getStatistics());
-		Collections.sort(statistics);
-		
 		synchronized (db) {
-			for (StatisticModule stat : statistics) {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				StatisticModule stat = HeavySpleef.getInstance().getSpleefPlayer(player).getStatistic();
+				
 				ConfigurationSection section = null;
 				
 				if (!db.contains(stat.getName()))
@@ -83,36 +84,38 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	}
 
 	@Override
-	public void loadAccount(String holder) {
-		int count = 0;
+	public StatisticModule loadAccount(String holder) {
+		StatisticModule module;
 		
 		synchronized (db) {
-			for (String owner : db.getKeys(false)) {
-				ConfigurationSection section = db.getConfigurationSection(owner);
-				
-				int wins = section.getInt("wins");
-				int loses = section.getInt("loses");
-				int knockouts = section.getInt("knockouts");
-				int games = section.getInt("games");
-				
-				StatisticModule stat = new StatisticModule(owner, loses, wins, knockouts, games);
-				StatisticManager.addExistingStatistic(stat);
-				count++;
+			ConfigurationSection section = db.getConfigurationSection(holder);
+			
+			if (section == null) {
+				return null;
 			}
+			
+			int wins = section.getInt("wins");
+			int loses = section.getInt("loses");
+			int knockouts = section.getInt("knockouts");
+			int games = section.getInt("games");
+			
+			module = new StatisticModule(holder, loses, wins, knockouts, games);
 		}
 		
-		Logger.info("Loaded " + count + " statistics!");
+		return module;
 	}
 
 	@Override
-	public void unloadAccount(StatisticModule module) {
+	public void unloadAccount(SpleefPlayer player) {
 		ConfigurationSection section = null;
+		StatisticModule module = player.getStatistic();
 		
 		synchronized (db) {
-			if (!db.contains(module.getName()))
+			if (!db.contains(module.getName())) {
 				section = db.createSection(module.getName());
-			else
+			} else {
 				section = db.getConfigurationSection(module.getName());
+			}
 			
 			section.set("wins", module.getWins());
 			section.set("loses", module.getLoses());
@@ -124,7 +127,6 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public List<StatisticModule> loadAccounts() {
-		
 		List<StatisticModule> list = new ArrayList<StatisticModule>();
 	
 		synchronized (db) {

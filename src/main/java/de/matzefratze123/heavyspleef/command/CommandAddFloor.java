@@ -19,23 +19,30 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.regions.CylinderRegion;
+
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameCylinder;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameType;
+import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
+import de.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import de.matzefratze123.heavyspleef.core.region.FloorType;
-import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
+import de.matzefratze123.heavyspleef.core.region.IFloor;
+import de.matzefratze123.heavyspleef.objects.RegionCylinder;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
 import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
@@ -51,145 +58,121 @@ public class CommandAddFloor extends HSCommand {
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		Block block = player.getTargetBlock(null, 100);
+		Player player = (Player) sender;
+		Block looking = player.getTargetBlock(Util.getTransparentMaterials(), 100);
 		
-		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
-		Location loc1 = s.getFirst();
-		Location loc2 = s.getSecond();
+		Selection selection = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 		
-		if (args[0].equalsIgnoreCase("randomwool")) { //Wool floor
-			if (HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
-				for (Game game : GameManager.getGames()) {
-					if (game.contains(player.getLocation()) && game.getType() == GameType.CYLINDER) {
-						GameCylinder gameC = (GameCylinder)game; //Cast the game to a GameCylinder because we can be sure that it is one...
-						
-						Location center = gameC.getCenter();
-							
-						addWoolFloor(game, player, new Location(center.getWorld(), center.getBlockX(), player.getLocation().getBlockY(), center.getBlockZ()));
-						return;
-					}
-				}
-			}
-			if (!s.has()) {
-				player.sendMessage(_("needSelection"));
-				return;
-			}
-			if (s.isTroughWorlds()) {
-				player.sendMessage(_("selectionCantTroughWorlds"));
-				return;
-			}
-			Game game = getFromLocation(loc1, loc2);
-			if (game == null) {
-				player.sendMessage(_("notInsideArena"));
-				return;
-			}
-			
-			addWoolFloor(game, player, loc1, loc2);
-			return;
-			
-		} else if (args[0].equalsIgnoreCase("given")) { //Given floor
-			if (HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
-				for (Game game : GameManager.getGames()) {
-					if (!game.contains(block))
-						continue;
-					if (game.getType() != GameType.CYLINDER) 
-						continue;
-					GameCylinder cylGame = (GameCylinder) game;
-					Location center = cylGame.getCenter();
-					
-					addGivenFloor(game, player, new Location(center.getWorld(), center.getBlockX(), block.getLocation().getBlockY(), center.getBlockZ()));
-					return;
-				}
-			} 
-			
-			if (!s.has()) {
-				player.sendMessage(_("needSelection"));
-				return;
-			}
-			if (s.isTroughWorlds()) {
-				player.sendMessage(_("selectionCantTroughWorlds"));
-				return;
-			}
-			Game game = getFromLocation(loc1, loc2);
-			if (game == null) {
-				player.sendMessage(_("notInsideArena"));
-				return;
-			}
-			
-			addGivenFloor(game, player, loc1, loc2);
-			return;
-		} else {//Specified floor!
-			SimpleBlockData data = Util.getMaterialFromString(args[0], true);
-			if (data == null) {
-				player.sendMessage(_("invalidBlock"));
-				return;
-			}
-			
-			if (HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
-				for (Game game : GameManager.getGames()) {
-					if (!game.contains(player.getLocation()))
-						continue;
-					if (game.getType() != GameType.CYLINDER)
-						continue;
-					GameCylinder cylGame = (GameCylinder) game;
-					Location center = cylGame.getCenter();
-					
-					addSpecifiedFloor(game, player, data, new Location(center.getWorld(), center.getBlockX(), player.getLocation().getBlockY(), center.getBlockZ()));
-					return;
-				}
-			}
-			if (!s.has()) {
-				player.sendMessage(_("needSelection"));
-				return;
-			}
-			if (s.isTroughWorlds()) {
-				player.sendMessage(_("selectionCantTroughWorlds"));
-				return;
-			}
-			Game game = getFromLocation(loc1, loc2);
-			if (game == null) {
-				player.sendMessage(_("notInsideArena"));
-				return;
-			}
-			
-			addSpecifiedFloor(game, player, data, loc1, loc2);
-			return;
-			
-		}
-	}
-	
-	private void addWoolFloor(Game game, Player p, Location... locations) {
-		int id = game.addFloor(35, (byte)0, FloorType.RANDOMWOOL, locations);
-		p.sendMessage(_("floorCreated", String.valueOf(id + 1)));
-	}
-	
-	private void addSpecifiedFloor(Game game, Player p, SimpleBlockData data, Location... locations) {
-		int id = game.addFloor(data.getMaterial().getId(), data.getData(), FloorType.SPECIFIEDID, locations);
-		p.sendMessage(_("floorCreated", String.valueOf(id + 1)));
-	}
-	
-	private void addGivenFloor(Game game, Player p, Location... locations) {
-		int id = game.addFloor(0, (byte)0, FloorType.GIVENFLOOR, locations);
-		p.sendMessage(_("floorCreated", String.valueOf(id + 1)));
-	}
-	
-	private Game getFromLocation(Location... locations) {
-		Game g = null;
+		Location firstPoint = selection.getFirst();
+		Location secondPoint = selection.getSecond();
+		
+		Game foundGame = null;
+		
+		//Search games using player position and selection position
 		for (Game game : GameManager.getGames()) {
-			boolean is = true;
-			for (Location l : locations) {
-				if (!game.contains(l))
-					is = false;
-			}
-			
-			if (is) {
-				g = game;
-				break;
+			if (game.contains(player.getLocation()) || (firstPoint != null && game.contains(firstPoint) || (secondPoint != null && game.contains(secondPoint)))) {
+				foundGame = game;
 			}
 		}
 		
-		return g;
+		if (foundGame == null) {
+			//FIXME stehengeblieben...
+			player.sendMessage(_("notInsideArena"));
+			return;
+		}
+		
+		SimpleBlockData blockData = null;
+		FloorType type = null;
+		Location[] locations = null;
+		
+		if (args[0].equalsIgnoreCase("randomwool")) {
+			type = FloorType.RANDOMWOOL;
+		} else if (args[0].equalsIgnoreCase("given")) {
+			type = FloorType.GIVENFLOOR;
+		} else {
+			blockData = Util.getMaterialFromString(args[0], false);
+			
+			if (blockData == null) {
+				//Failed to parse blockdata
+				player.sendMessage(getUsage());
+				return;
+			}
+			
+			type = FloorType.SPECIFIEDID;
+			
+		}
+		
+		if (foundGame.getType() == GameType.CUBOID) {
+			if (!selection.has()) {
+				player.sendMessage(_("needSelection"));
+				return;
+			}
+			
+			if (selection.isTroughWorlds()) {
+				player.sendMessage(_("selectionCantTroughWorlds"));
+				return;
+			}
+			
+			locations = new Location[2];
+			
+			locations[0] = firstPoint;
+			locations[1] = secondPoint;
+		} else if (foundGame.getType() == GameType.CYLINDER) {
+			GameCylinder cylGame = (GameCylinder) foundGame;
+			RegionCylinder region = (RegionCylinder)cylGame.getRegion();
+			
+			Location center = Util.toBukkitLocation(region.getWorldEditRegion().getWorld(), region.getWorldEditRegion().getCenter());
+			
+			locations = new Location[1];
+			int y;
+			
+			if (type == FloorType.GIVENFLOOR) {
+				y = looking.getLocation().getBlockY();
+			} else {
+				y = player.getLocation().getBlockY();
+			}
+			
+			locations[0] = new Location(center.getWorld(), center.getBlockX(), y, center.getBlockZ());
+		}
+		
+		addFloor(foundGame, player, type, blockData, locations);
+	}
+	
+	private void addFloor(Game game, Player player, FloorType type, SimpleBlockData blockData, Location... locations) {
+		Material material = Material.SNOW;
+		byte data = (byte) 0;
+		
+		if (type == FloorType.RANDOMWOOL) {
+			material = Material.WOOL;
+		} else if (type == FloorType.SPECIFIEDID) {
+			material = blockData.getMaterial();
+			data = blockData.getData();
+		}
+		
+		IFloor floor = null;
+		int id = 0;
+		
+		while (game.getComponents().hasFloor(id)) {
+			id++;
+		}
+		
+		if (game.getType() == GameType.CUBOID) {
+			floor = new FloorCuboid(id, locations[0], locations[1], type);
+			floor.setBlockData(new SimpleBlockData(material, data));
+		} else if (game.getType() == GameType.CYLINDER) {
+			GameCylinder cylinderGame = (GameCylinder) game;
+			RegionCylinder region = (RegionCylinder) cylinderGame.getRegion();
+			CylinderRegion weRegion = region.getWorldEditRegion();
+			
+			Location floorCenter = new Location(BukkitUtil.toWorld(weRegion.getWorld()), weRegion.getCenter().getX(), locations[0].getBlockY(), weRegion.getCenter().getZ());
+			
+			floor = new FloorCylinder(id, floorCenter, weRegion.getRadius().getBlockX(), locations[0].getBlockY(), locations[0].getBlockY(), type);
+			floor.setBlockData(new SimpleBlockData(material, data));
+		}
+		
+		floor.generate();
+		game.getComponents().addFloor(floor);
+		player.sendMessage(_("floorCreated", String.valueOf(id + 1)));
 	}
 	
 } 

@@ -7,14 +7,18 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.MemorySection;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.region.RegionBase;
+import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.database.Parser;
+import de.matzefratze123.heavyspleef.objects.RegionCuboid;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.util.Logger;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
 
-public class ScoreBoard extends RegionBase {
+public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 	
 	/*
 	 * Defines the segments of a character
@@ -44,53 +48,36 @@ public class ScoreBoard extends RegionBase {
 	private SegmentDisplay[] displays;
 	private Location[] colon;
 	
-	private Location corner;
-	private Location oppositeCorner;
-	
 	private BlockFace direction;
 	
 	/**
 	 * Creates a new scoreboard
 	 * 
-	 * @param cornerLocation The upper-left corner of this scoreboard
+	 * @param firstPointLocation The upper-left firstPoint of this scoreboard
 	 * @param direction The orentation blockface of this scoreboard
 	 */
-	public ScoreBoard(Location cornerLocation, BlockFace direction) {
-		super(-1);
+	public ScoreBoard(int id, Location firstPointLocation, BlockFace direction) {
+		super(id, firstPointLocation, null);
 		
-		this.corner = cornerLocation;
 		this.direction = direction;
 		
 		calculateColons();
 		calculateDisplays();
 		
-		oppositeCorner = move(corner, direction, 18, BlockFace.DOWN, 6);
+		secondPoint = move(firstPoint, direction, 18, BlockFace.DOWN, 6);
 	}
 	
-	public static ScoreBoard fromString(String str) {
-		String[] parts = str.split(";");
-		
-		if (parts.length < 3) {
-			return null;
-		}
-		
-		int id = Integer.parseInt(parts[0]);
-		Location corner = Parser.convertStringtoLocation(parts[1]);
-		BlockFace direction = BlockFace.valueOf(parts[2]);
-		
-		ScoreBoard board = new ScoreBoard(corner, direction);
-		board.setId(id);
-		
-		return board;
+	protected void setId(int id) {
+		super.id = id;
 	}
 	
 	private void calculateColons() {
 		colon = new Location[2];
 		
-		Location corner = this.corner.clone();
+		Location firstPoint = this.firstPoint.clone();
 		
-		colon[0] = move(corner, direction, 9, BlockFace.DOWN, 2);
-		colon[1] = move(corner, direction, 9, BlockFace.DOWN, 4);
+		colon[0] = move(firstPoint, direction, 9, BlockFace.DOWN, 2);
+		colon[1] = move(firstPoint, direction, 9, BlockFace.DOWN, 4);
 	}
 	
 	private void calculateDisplays() {
@@ -107,19 +94,19 @@ public class ScoreBoard extends RegionBase {
 		
 		displays = new SegmentDisplay[4];
 		
-		Location corner = this.corner.clone();
+		Location firstPoint = this.firstPoint.clone();
 		
-		corner = move(corner, BlockFace.DOWN, 1, direction, 1);
-		displays[0] = new SegmentDisplay(corner, direction);
+		firstPoint = move(firstPoint, BlockFace.DOWN, 1, direction, 1);
+		displays[0] = new SegmentDisplay(firstPoint, direction);
 		
-		corner = move(corner, direction, 4);
-		displays[1] = new SegmentDisplay(corner, direction);
+		firstPoint = move(firstPoint, direction, 4);
+		displays[1] = new SegmentDisplay(firstPoint, direction);
 		
-		corner = move(corner, direction, 6);
-		displays[2] = new SegmentDisplay(corner, direction);
+		firstPoint = move(firstPoint, direction, 6);
+		displays[2] = new SegmentDisplay(firstPoint, direction);
 		
-		corner = move(corner, direction, 4);
-		displays[3] = new SegmentDisplay(corner, direction);
+		firstPoint = move(firstPoint, direction, 4);
+		displays[3] = new SegmentDisplay(firstPoint, direction);
 	}
 	
 	/**
@@ -160,21 +147,21 @@ public class ScoreBoard extends RegionBase {
 	private void generateBlankBoard(SimpleBlockData data) {
 		int minX, maxX, minY, maxY, minZ, maxZ;
 		
-		minX = Math.min(corner.getBlockX(), oppositeCorner.getBlockX());
-		maxX = Math.max(corner.getBlockX(), oppositeCorner.getBlockX());
+		minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
+		maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
 		
-		minY = Math.min(corner.getBlockY(), oppositeCorner.getBlockY());
-		maxY = Math.max(corner.getBlockY(), oppositeCorner.getBlockY());
+		minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
+		maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
 		
-		minZ = Math.min(corner.getBlockZ(), oppositeCorner.getBlockZ());
-		maxZ = Math.max(corner.getBlockZ(), oppositeCorner.getBlockZ());
+		minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
+		maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
 		
 		Block current;
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					current = corner.getWorld().getBlockAt(x, y, z);
+					current = firstPoint.getWorld().getBlockAt(x, y, z);
 					
 					current.setType(data.getMaterial());
 					current.setData(data.getData());
@@ -192,11 +179,6 @@ public class ScoreBoard extends RegionBase {
 	}
 	
 	@Override
-	public String toString() {
-		return id + ";" + Parser.convertLocationtoString(corner) + ";" + direction.name();
-	}
-	
-	@Override
 	public boolean contains(Location location) {
 		int x, y, z;
 		int minX, maxX, minY, maxY, minZ, maxZ;
@@ -205,14 +187,14 @@ public class ScoreBoard extends RegionBase {
 		y = location.getBlockY();
 		z = location.getBlockZ();
 		
-		minX = Math.min(corner.getBlockX(), oppositeCorner.getBlockX());
-		maxX = Math.max(corner.getBlockX(), oppositeCorner.getBlockX());
+		minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
+		maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
 		
-		minY = Math.min(corner.getBlockY(), oppositeCorner.getBlockY());
-		maxY = Math.max(corner.getBlockY(), oppositeCorner.getBlockY());
+		minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
+		maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
 		
-		minZ = Math.min(corner.getBlockZ(), oppositeCorner.getBlockZ());
-		maxZ = Math.max(corner.getBlockZ(), oppositeCorner.getBlockZ());
+		minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
+		maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
 		
 		return x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ; 
 	}
@@ -237,6 +219,28 @@ public class ScoreBoard extends RegionBase {
 		return base;
 	}
 	
+	@Override
+	public ConfigurationSection serialize() {
+		MemorySection section = new MemoryConfiguration();
+		
+		section.set("id", id);
+		section.set("first", Parser.convertLocationtoString(firstPoint));
+		section.set("second", Parser.convertLocationtoString(secondPoint));
+		section.set("direction", direction.name());
+		
+		return section;
+	}
+	
+	public static ScoreBoard deserialize(ConfigurationSection section) {
+		int id = section.getInt("id");
+		Location first = Parser.convertStringtoLocation(section.getString("first"));
+		BlockFace direction = BlockFace.valueOf(section.getString("direction"));
+		
+		ScoreBoard board = new ScoreBoard(id, first, direction);
+		
+		return board;
+	}
+	
 	public static class SegmentDisplay {
 		
 		private static final char[] SEGMENTS = new char[] {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
@@ -245,7 +249,7 @@ public class ScoreBoard extends RegionBase {
 		private static SimpleBlockData baseData = new SimpleBlockData(Material.WOOL, (byte)15);
 		private static boolean dataInitialized = false;
 		
-		private Location cornerLocation;
+		private Location firstPointLocation;
 		
 		private BlockFace direction;
 		
@@ -278,9 +282,9 @@ public class ScoreBoard extends RegionBase {
 			}
 		}
 		
-		public SegmentDisplay(Location cornerLocation, BlockFace direction) {
+		public SegmentDisplay(Location firstPointLocation, BlockFace direction) {
 			this.direction = direction;
-			this.cornerLocation = cornerLocation;
+			this.firstPointLocation = firstPointLocation;
 			
 			
 		}
@@ -324,7 +328,7 @@ public class ScoreBoard extends RegionBase {
 		}
 		
 		private void setA(boolean state) {
-			Block currentBlock = cornerLocation.getBlock();
+			Block currentBlock = firstPointLocation.getBlock();
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
@@ -340,7 +344,7 @@ public class ScoreBoard extends RegionBase {
 		}
 		
 		private void setB(boolean state) {
-			Block currentBlock = cornerLocation.getBlock();
+			Block currentBlock = firstPointLocation.getBlock();
 			
 			//Offset
 			for (int i = 0; i < 2; i++) {
@@ -361,7 +365,7 @@ public class ScoreBoard extends RegionBase {
 		}
 		
 		private void setC(boolean state) {
-			Block currentBlock = cornerLocation.getBlock();
+			Block currentBlock = firstPointLocation.getBlock();
 			
 			//Offset
 			for (int i = 0; i < 2; i++) {
@@ -386,7 +390,7 @@ public class ScoreBoard extends RegionBase {
 		}
 		
 		private void setD(boolean state) {
-			Block currentBlock = cornerLocation.getBlock();
+			Block currentBlock = firstPointLocation.getBlock();
 			
 			//Offset
 			for (int i = 0; i < 4; i++) {
@@ -407,7 +411,7 @@ public class ScoreBoard extends RegionBase {
 		}
 		
 		private void setE(boolean state) {
-			Block currentBlock = cornerLocation.getBlock();
+			Block currentBlock = firstPointLocation.getBlock();
 			
 			for (int i = 0; i < 2; i++) {
 				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
@@ -427,7 +431,7 @@ public class ScoreBoard extends RegionBase {
 		}
 		
 		private void setF(boolean state) {
-			Block currentBlock = cornerLocation.getBlock();
+			Block currentBlock = firstPointLocation.getBlock();
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
@@ -443,7 +447,7 @@ public class ScoreBoard extends RegionBase {
 		}
 		
 		private void setG(boolean state) {
-			Block currentBlock = cornerLocation.getBlock();
+			Block currentBlock = firstPointLocation.getBlock();
 			
 			for (int i = 0; i < 2; i++) {
 				currentBlock = currentBlock.getRelative(BlockFace.DOWN);

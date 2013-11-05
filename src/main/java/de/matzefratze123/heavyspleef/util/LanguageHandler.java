@@ -28,13 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.zip.InflaterInputStream;
-
 
 import org.bukkit.ChatColor;
 
@@ -173,13 +168,34 @@ public class LanguageHandler {
 	}
 	
 	public static String _(String... parts) {
+		if (parts.length == 0) {
+			return null;
+		}
 		
-		if (parts.length == 0) return null;
 		String message = messages.get(parts[0]);
 		
 		for (int i = 1; i < parts.length; i++) {
-			if (parts[i].contains("$"))
+			if (parts[i].contains("$")) {
 				parts[i] = parts[i].replace("$", "\\$");
+			}
+			
+			message = message.replaceFirst("%a", parts[i]);
+		}
+		return HeavySpleef.PREFIX + ChatColor.RESET + " " + message;
+	}
+
+	public static String __(String... parts) {
+		if (parts.length == 0) {
+			return null;
+		}
+		
+		String message = messages.get(parts[0]);
+		
+		for (int i = 1; i < parts.length; i++) {
+			if (parts[i].contains("$")) {
+				parts[i] = parts[i].replace("$", "\\$");
+			}
+			
 			message = message.replaceFirst("%a", parts[i]);
 		}
 		return message;

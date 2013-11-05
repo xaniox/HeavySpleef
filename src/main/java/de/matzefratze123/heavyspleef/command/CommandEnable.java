@@ -19,14 +19,13 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.ViPManager;
@@ -52,7 +51,7 @@ public class CommandEnable extends HSCommand {
 			}
 			
 			Game game = GameManager.getGame(args[0].toLowerCase());
-			if (!game.isDisabled()) {
+			if (game.getGameState() != GameState.DISABLED) {
 				player.sendMessage(_("gameIsAlreadyEnabled"));
 				return;
 			}
@@ -61,7 +60,7 @@ public class CommandEnable extends HSCommand {
 			player.sendMessage(_("gameEnabledToPlayer", game.getName()));
 		} else if (args.length == 0) {
 			for (Game game : GameManager.getGames()) {
-				if (!game.isDisabled())
+				if (game.getGameState() != GameState.DISABLED)
 					continue;
 				
 				game.enable();

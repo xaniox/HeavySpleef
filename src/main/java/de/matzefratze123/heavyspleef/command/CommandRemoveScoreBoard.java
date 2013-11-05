@@ -24,9 +24,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.core.ScoreBoard;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -50,12 +49,12 @@ public class CommandRemoveScoreBoard extends HSCommand {
 		int id = -1;
 		
 		for (Game game : GameManager.getGames()) {
-			for (ScoreBoard board : game.getScoreBoards()) {
+			for (ScoreBoard board : game.getComponents().getScoreBoards()) {
 				if (board.contains(targetBlock.getLocation())) {
 					id = board.getId();
 					
 					board.remove();
-					game.removeScoreBoard(id);
+					game.getComponents().removeScoreBoard(id);
 					p.sendMessage(_("scoreBoardRemoved"));
 					return;
 				}

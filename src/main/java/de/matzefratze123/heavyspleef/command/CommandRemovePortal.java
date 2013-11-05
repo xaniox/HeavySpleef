@@ -47,7 +47,7 @@ public class CommandRemovePortal extends HSCommand {
 		
 		HUBPortal port = null;
 		for (HUBPortal portal : GameManager.getPortals()) {
-			if (portal.contains(targetBlock)) {
+			if (portal.contains(targetBlock.getLocation())) {
 				port = portal;
 			}
 		}

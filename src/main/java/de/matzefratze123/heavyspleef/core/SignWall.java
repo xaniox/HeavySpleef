@@ -25,36 +25,41 @@ import static de.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.MemorySection;
 
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
-import de.matzefratze123.heavyspleef.core.region.RegionBase;
+import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.database.Parser;
+import de.matzefratze123.heavyspleef.objects.RegionCuboid;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
-public class SignWall extends RegionBase {
-	
-	private Location loc1;
-	private Location loc2;
+public class SignWall extends RegionCuboid implements DatabaseSerializeable {
 	
 	private Location[] locations;
 	private Game game;
 	
 	public SignWall(Location firstCorner, Location secondCorner, Game game, int id) {
-		super(id);
+		super(id, firstCorner, secondCorner);
+		
 		this.game = game;
-		this.loc1 = firstCorner;
-		this.loc2 = secondCorner;
 		
 		calculateSigns(firstCorner, secondCorner);
 		overrideOtherWalls();
 		update();
+	}
+	
+	protected void setGame(Game game) {
+		this.game = game;
 	}
 	
 	public static SignWall fromString(String fromString, Game game) {
@@ -77,14 +82,14 @@ public class SignWall extends RegionBase {
 		//Loop around every game
 		for (Game game : GameManager.getGames()) {
 			//Loop around there walls
-			for (SignWall wall : game.getWalls()) {
+			for (SignWall wall : game.getComponents().getSignWalls()) {
 				//Loop around the signs of the wall
 				for (Location location : wall.locations) {
 					//Loop around the signs of this wall
 					for (Location thisLocation : this.locations) {
 						//And check if it equals
 						if (location.equals(thisLocation))
-							game.removeWall(wall.getId());//Remove the wall, because it overlaps an other
+							game.getComponents().removeSignWall(wall.getId());//Remove the wall, because it overlaps an other
 					}
 				}
 			}
@@ -187,40 +192,49 @@ public class SignWall extends RegionBase {
 	}
 	
 	public void update() {
-		List<String> inPlayers = game.players;
-		List<String> outPlayers = game.outPlayers;
+		if (game == null) {
+			return;
+		}
+		
+		List<SpleefPlayer> inPlayers = game.getIngamePlayers();
+		List<OfflinePlayer> outPlayers = game.getOutPlayers();
 		
 		String infinity = new String("\u221E");
 		String maxPlayers = String.valueOf(game.getFlag(FlagType.MAXPLAYERS) < 2 ? infinity : game.getFlag(FlagType.MAXPLAYERS));
 		
 		Sign joinSign = (Sign)locations[0].getBlock().getState();
 		
-		if (joinSign.getType() != Material.WALL_SIGN)
+		if (joinSign.getType() != Material.WALL_SIGN) {
 			joinSign.setType(Material.WALL_SIGN);
+		}
+		
 		joinSign.setLine(0, ChatColor.DARK_BLUE + "[Spleef]");
 		joinSign.setLine(1, ChatColor.DARK_RED + "[Join]");
 		joinSign.setLine(2, game.getName());
 		joinSign.update();
 		
 		Sign infoSign = (Sign)locations[1].getBlock().getState();
-		if (infoSign.getType() != Material.WALL_SIGN)
+		if (infoSign.getType() != Material.WALL_SIGN) {
 			infoSign.setType(Material.WALL_SIGN);
+		}
+		
 		infoSign.setLine(0, ChatColor.RED + game.getName());
 		infoSign.setLine(1, game.getGameState().name());
 		infoSign.setLine(2, inPlayers.size() + "/" + ChatColor.GRAY + outPlayers.size() + ChatColor.RESET + "/" + maxPlayers);
 		boolean is1vs1 = game.getFlag(ONEVSONE);
 		
-		if (game.isCounting())
-			infoSign.setLine(3, ChatColor.DARK_RED + "Start in " + ChatColor.BOLD + game.getCurrentCount());
-		else if (is1vs1 && (game.isIngame() || game.isCounting())) {
+		if (game.getGameState() == GameState.COUNTING)
+			infoSign.setLine(3, ChatColor.DARK_RED + "Start in " + ChatColor.BOLD + game.getCountLeft());
+		else if (is1vs1 && (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING)) {
 			int rounds = game.getFlag(ROUNDS);
-			infoSign.setLine(3, ChatColor.DARK_GREEN + "Round " + game.getCurrentRound() + "/" + rounds);
+			infoSign.setLine(3, ChatColor.DARK_GREEN + "Round " + (game.getRoundsPlayed() + 1) + "/" + rounds);
 		} else
 			infoSign.setLine(3, "");
+		
 		infoSign.update();
 		
-		Iterator<String> inIterator = inPlayers.iterator();
-		Iterator<String> outIterator = outPlayers.iterator();
+		Iterator<SpleefPlayer> inIterator = inPlayers.iterator();
+		Iterator<OfflinePlayer> outIterator = outPlayers.iterator();
 		
 		for (int i = 2; i < locations.length; i++) {
 			for (int line = 0; line < 4; line++) {
@@ -230,14 +244,15 @@ public class SignWall extends RegionBase {
 				Sign sign = (Sign)locations[i].getBlock().getState();
 				
 				if (inIterator.hasNext()) {
-					String name = inIterator.next();
+					String name = inIterator.next().getName();
 					
-					Team team = game.getTeam(Bukkit.getPlayer(name));
+					Team team = game.getComponents().getTeam(Bukkit.getPlayer(name));
 					String prefix = team == null ? name.equalsIgnoreCase("matzefratze123") ? ChatColor.DARK_RED.toString() : "" : team.getColor().toString();
 					sign.setLine(line, prefix + (name.equalsIgnoreCase("matzefratze123") ? "matzefratze" : prefix + name));
 					sign.update();
 				} else if (outIterator.hasNext()) {
-					String name = outIterator.next();
+					String name = outIterator.next().getName();
+					
 					if (name.length() > 15)
 						name = name.substring(0, 15);
 					sign.setLine(line, ChatColor.GRAY + name);
@@ -262,7 +277,7 @@ public class SignWall extends RegionBase {
 	
 	@Override
 	public String toString() {
-		return getId() + ";" + Parser.convertLocationtoString(loc1) + ";" + Parser.convertLocationtoString(loc2); 
+		return getId() + ";" + Parser.convertLocationtoString(firstPoint) + ";" + Parser.convertLocationtoString(secondPoint); 
 	}
 	
 	public static boolean oneCoordSame(Location loc1, Location loc2) {
@@ -327,6 +342,25 @@ public class SignWall extends RegionBase {
 	
 	public static boolean isSign(Block block) {
 		return block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST;
+	}
+
+	@Override
+	public ConfigurationSection serialize() {
+		MemorySection section = new MemoryConfiguration();
+		
+		section.set("id", id);
+		section.set("first", Parser.convertLocationtoString(firstPoint));
+		section.set("second", Parser.convertLocationtoString(secondPoint));
+		
+		return section;
+	}
+	
+	public static SignWall deserialize(ConfigurationSection section) {
+		int id = section.getInt("id");
+		Location first = Parser.convertStringtoLocation(section.getString("first"));
+		Location second = Parser.convertStringtoLocation(section.getString("second"));
+		
+		return new SignWall(first, second, null, id);
 	}
 	
 }

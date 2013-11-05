@@ -15,7 +15,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.HSCommand;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefSignExecutor implements Listener {
@@ -97,7 +99,8 @@ public class SpleefSignExecutor implements Listener {
 			return;
 		}
 
-		matching.onClick(player, sign);
+		SpleefPlayer spleefPlayer = HeavySpleef.getInstance().getSpleefPlayer(player);
+		matching.onClick(spleefPlayer, sign);
 	}
 
 	@EventHandler

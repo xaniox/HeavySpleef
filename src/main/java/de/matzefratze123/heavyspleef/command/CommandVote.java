@@ -19,14 +19,14 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
@@ -41,29 +41,30 @@ public class CommandVote extends HSCommand {
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
+		Player bukkitPlayer = (Player)sender;
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
 		
 		if (!HeavySpleef.getSystemConfig().getBoolean("general.autostart-vote-enabled", true)) {
 			player.sendMessage(_("votesDisabled"));
 			return;
 		}
 		
-		if (!GameManager.isActive(player)) {
+		if (!player.isActive()) {
 			player.sendMessage(_("onlyLobby"));
 			return;
 		}
 		
-		Game game = GameManager.fromPlayer(player);
-		if (!game.isPreLobby()) {
+		Game game = player.getGame();
+		if (game.getGameState() != GameState.LOBBY) {
 			player.sendMessage(_("onlyLobby"));
 			return;
 		}
-		if (game.hasVote(player)) {
+		if (player.isReady()) {
 			player.sendMessage(_("alreadyVoted"));
 			return;
 		}
 		
-		game.addVote(player);
+		player.setReady(true);
 		player.sendMessage(_("successfullyVoted"));
 	}
 

@@ -19,12 +19,11 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -48,8 +47,13 @@ public class CommandRename extends HSCommand {
 		
 		Game game = GameManager.getGame(args[0]);
 		
-		String message = game.rename(args[1]) ? _("gameRenamed", args[0], args[1]) : _("arenaAlreadyExists");
-		sender.sendMessage(message);
+		if (GameManager.hasGame(args[1])) {
+			sender.sendMessage(_("arenaAlreadyExists"));
+		} else {
+			game.rename(args[1]);
+			sender.sendMessage(_("gameRenamed", args[0], args[1]));
+		}
+		
 	}
 
 }

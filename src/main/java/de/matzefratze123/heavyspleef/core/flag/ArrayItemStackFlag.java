@@ -24,14 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.database.ItemStackHelper;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class ArrayItemStackFlag extends Flag<ItemStack[]> {
@@ -53,7 +52,7 @@ public class ArrayItemStackFlag extends Flag<ItemStack[]> {
 			try {
 				amount = Integer.parseInt(parts[i + 1]);
 			} catch (NumberFormatException e) {
-				player.sendMessage(Game._("notANumber", parts[i + 1]));
+				player.sendMessage(LanguageHandler._("notANumber", parts[i + 1]));
 				return null;
 			}
 			if (datas == null)
@@ -122,7 +121,7 @@ public class ArrayItemStackFlag extends Flag<ItemStack[]> {
 		ItemStack[] stacks = (ItemStack[])value;
 		
 		for (ItemStack stack : stacks) {
-			list.add(stack.getAmount() + " " + Util.toFriendlyString(stack.getType().name()));
+			list.add(stack.getAmount() + " " + Util.formatMaterialName(stack.getType().name()));
 		}
 		
 		Set<String> asSet = new HashSet<String>(list);

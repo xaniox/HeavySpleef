@@ -7,7 +7,7 @@ import org.bukkit.material.MaterialData;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.database.ItemStackHelper;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class SingleItemStackFlag extends Flag<ItemStack> {
@@ -64,7 +64,7 @@ public class SingleItemStackFlag extends Flag<ItemStack> {
 	public String toInfo(Object value) {
 		ItemStack stack = (ItemStack) value;
 		
-		return getName() + ":" + stack.getAmount() + " " + Util.toFriendlyString(stack.getType().name());
+		return getName() + ":" + stack.getAmount() + " " + Util.formatMaterialName(stack.getType().name());
 	}
 
 	@Override

@@ -19,36 +19,36 @@
  */
 package de.matzefratze123.heavyspleef.listener;
 
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class ReadyListener implements Listener {
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
-		Player player = e.getPlayer();
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 		Block block = e.getClickedBlock();
 		
 		if (player == null)
 			return;
 		if (block == null)
 			return;
-		if (!GameManager.isActive(player))
+		if (!player.isActive())
 			return;
 		
-		Game game = GameManager.fromPlayer(player);
-		if (!game.isPreLobby())
+		Game game = player.getGame();
+		if (game.getGameState() != GameState.LOBBY)
 			return;
 		
 		SimpleBlockData readyBlock = Util.getMaterialFromString(HeavySpleef.getSystemConfig().getString("general.ready-block"), false);
@@ -63,9 +63,12 @@ public class ReadyListener implements Listener {
 		if (data != block.getData())
 			return;
 		
-		boolean success = game.addVote(player);
-		String message = success ? Game._("taggedAsReady") : Game._("alreadyVoted");
-		player.sendMessage(message);
+		if (player.isReady()) {
+			player.sendMessage(LanguageHandler._("alreadyVoted"));
+		} else {
+			player.setReady(true);
+			player.sendMessage(LanguageHandler._("taggedAsReady"));
+		}
 	}
 	
 }

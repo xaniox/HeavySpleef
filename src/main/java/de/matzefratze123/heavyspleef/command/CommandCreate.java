@@ -25,9 +25,13 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameCuboid;
+import de.matzefratze123.heavyspleef.core.GameCylinder;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
+import de.matzefratze123.heavyspleef.objects.RegionCuboid;
+import de.matzefratze123.heavyspleef.objects.RegionCylinder;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -77,40 +81,9 @@ public class CommandCreate extends HSCommand {
 				int minY = center.getBlockY();
 				int maxY = center.getBlockY() + height;
 				
-				GameManager.createCylinderGame(args[0].toLowerCase(), center, radius, minY, maxY);
-			} catch (NumberFormatException e) {
-				player.sendMessage(_("notANumber", args[2]));
-				return;
-			}
-			
-			player.sendMessage(_("gameCreated"));
-		} else if (args[1].equalsIgnoreCase("oval") || args[1].equalsIgnoreCase("ellipse"))  {
-			//Create a new ellipse game
-			if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
-				player.sendMessage(_("noWorldEdit"));
-				return;
-			}
-			if (args.length < 5) {
-				player.sendMessage(getUsage());
-				return;
-			}
-			for (Game game : GameManager.getGames()) {
-				if (game.contains(player.getLocation())) {
-					player.sendMessage(_("arenaCantBeInsideAnother"));
-					return;
-				}
-			}
-			try {
-				int radiusEastWest = Integer.parseInt(args[3]);
-				int radiusNorthSouth = Integer.parseInt(args[2]);
-				int height = Integer.parseInt(args[4]);
-				
-				Location center = player.getLocation();
-				
-				int minY = center.getBlockY();
-				int maxY = center.getBlockY() + height;
-				
-				GameManager.createCylinderGame(args[0].toLowerCase(), center, radiusEastWest, radiusNorthSouth, minY, maxY);
+				RegionCylinder region = new RegionCylinder(-1, center, radius, minY, maxY);
+				Game game = new GameCylinder(args[0], region);
+				GameManager.addGame(game);
 			} catch (NumberFormatException e) {
 				player.sendMessage(_("notANumber", args[2]));
 				return;
@@ -136,7 +109,10 @@ public class CommandCreate extends HSCommand {
 				}
 			}
 			
-			GameManager.createCuboidGame(args[0].toLowerCase(), s.getFirst(), s.getSecond());
+			RegionCuboid region = new RegionCuboid(-1, s.getFirst(), s.getSecond());
+			Game game = new GameCuboid(args[0], region);
+			
+			GameManager.addGame(game);
 			player.sendMessage(_("gameCreated"));
 		} else {
 			player.sendMessage(_("unknownSpleefType"));

@@ -1,0 +1,227 @@
+package de.matzefratze123.heavyspleef.objects;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.stats.StatisticModule;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
+
+public class SpleefPlayer {
+
+	private Player bukkitPlayer;
+	private boolean isOnline;
+	
+	private Game game;
+	private boolean ready = false;
+	private List<Block> brokenBlocks = new ArrayList<Block>();
+	private int knockouts;
+	private int wins;
+	
+	private PlayerState state;
+	private Location lastLocation;
+	private StatisticModule statistic;
+	
+	public SpleefPlayer(Player bukkitPlayer) {
+		this.bukkitPlayer = bukkitPlayer;
+		this.isOnline = true;
+	}
+	
+	public Player getBukkitPlayer() {
+		return bukkitPlayer;
+	}
+	
+	public String getName() {
+		return bukkitPlayer.getName();
+	}
+	
+	public void sendMessage(String message) {
+		bukkitPlayer.sendMessage(message);
+	}
+	
+	public Game getGame() {
+		return game;
+	}
+	
+	public void setGame(Game game) {
+		this.game = game;
+	}
+	
+	public boolean isActive() {
+		return game != null && game.hasPlayer(this);
+	}
+	
+	public boolean isIngame() {
+		return game != null && game.hasPlayer(this) && game.getGameState() == GameState.INGAME;
+	}
+	
+	public boolean isSpectating() {
+		return game != null && game.isSpectating(this);
+	}
+
+	public boolean isReady() {
+		return ready;
+	}
+
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
+	
+	public void addBrokenBlock(Block block) {
+		brokenBlocks.add(block);
+	}
+	
+	public List<Block> getBrokenBlocks() {
+		return brokenBlocks;
+	}
+
+	public int getKnockouts() {
+		return knockouts;
+	}
+
+	public void setKnockouts(int knockouts) {
+		this.knockouts = knockouts;
+	}
+	
+	public void addKnockout() {
+		this.knockouts += 1;
+	}
+	
+	public void clearGameData() {
+		game = null;
+		ready = false;
+		brokenBlocks.clear();
+		knockouts = 0;
+		wins = 0;
+	}
+	
+	public boolean isOnline() {
+		return isOnline;
+	}
+	
+	public void setOnline(boolean online) {
+		this.isOnline = online;
+	}
+	
+	public void setLastLocation(Location location) {
+		this.lastLocation = location;
+	}
+	
+	public void saveLocation() {
+		this.lastLocation = bukkitPlayer.getLocation();
+	}
+	
+	public Location getLastLocation() {
+		return lastLocation;
+	}
+	
+	public StatisticModule getStatistic() {
+		if (statistic == null) {
+			statistic = new StatisticModule(getName());
+		}
+		
+		return statistic;
+	}
+	
+	public void setStatistic(StatisticModule module) {
+		this.statistic = module;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void saveState() {
+		bukkitPlayer.setGameMode(GameMode.SURVIVAL);//Set to survival
+		
+		//Define player states variables
+		ItemStack[] contents = bukkitPlayer.getInventory().getContents();
+		
+		ItemStack helmet = bukkitPlayer.getInventory().getHelmet();
+		ItemStack chestplate = bukkitPlayer.getInventory().getChestplate();
+		ItemStack leggings = bukkitPlayer.getInventory().getLeggings();
+		ItemStack boots = bukkitPlayer.getInventory().getBoots();
+		
+		float exhaustion = bukkitPlayer.getExhaustion();
+		float saturation = bukkitPlayer.getSaturation();
+		
+		int foodLevel = bukkitPlayer.getFoodLevel();
+		double health = bukkitPlayer.getHealth();
+		
+		GameMode gm = bukkitPlayer.getGameMode();
+		Collection<PotionEffect> potionEffects = bukkitPlayer.getActivePotionEffects();
+		
+		float exp = bukkitPlayer.getExp();
+		int level = bukkitPlayer.getLevel();
+		
+		boolean fly = bukkitPlayer.getAllowFlight();
+		
+		//Save state
+		state = new PlayerState(contents, helmet, chestplate, leggings, boots, exhaustion, saturation, foodLevel, health, gm, potionEffects, exp, level, fly);
+		
+		//Set to default state
+		bukkitPlayer.setFoodLevel(20);
+		bukkitPlayer.setHealth(20.0);
+		bukkitPlayer.setAllowFlight(false);//Disable fly mode (Essentials etc.)
+		bukkitPlayer.setFireTicks(0);
+		bukkitPlayer.getInventory().clear();
+		bukkitPlayer.getInventory().setArmorContents(new ItemStack[4]);
+		bukkitPlayer.setLevel(0);
+		bukkitPlayer.setExp(0);
+		
+		for (PotionEffect effect : bukkitPlayer.getActivePotionEffects()) {
+			bukkitPlayer.removePotionEffect(effect.getType());
+		}
+		
+		bukkitPlayer.sendMessage(LanguageHandler._("stateSaved"));
+		bukkitPlayer.updateInventory();
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void restoreState() {
+		if (state == null) {
+			return;
+		}
+		
+		bukkitPlayer.getInventory().setContents(state.getContents());
+		bukkitPlayer.getInventory().setHelmet(state.getHelmet());
+		bukkitPlayer.getInventory().setChestplate(state.getChestplate());
+		bukkitPlayer.getInventory().setLeggings(state.getLeggings());
+		bukkitPlayer.getInventory().setBoots(state.getBoots());
+		
+		bukkitPlayer.setExhaustion(state.getExhaustion());
+		bukkitPlayer.setSaturation(state.getSaturation());
+		
+		bukkitPlayer.setFoodLevel(state.getFoodLevel());
+		bukkitPlayer.setHealth(state.getHealth());
+		
+		bukkitPlayer.addPotionEffects(state.getPotioneffects());
+		
+		bukkitPlayer.setLevel(state.getLevel());
+		bukkitPlayer.setExp(state.getExp());
+		bukkitPlayer.setAllowFlight(state.isFly());
+		
+		sendMessage(LanguageHandler._("stateRestored"));
+		bukkitPlayer.updateInventory();
+		state = null;
+	}
+
+	public int getWins() {
+		return wins;
+	}
+
+	public void setWins(int wins) {
+		this.wins = wins;
+	}
+	
+	public void addWin() {
+		this.wins += 1;
+	}
+
+}

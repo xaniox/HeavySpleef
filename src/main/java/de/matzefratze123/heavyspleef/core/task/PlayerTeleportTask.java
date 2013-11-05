@@ -7,12 +7,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.flag.ListFlagLocation.SerializeableLocation;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class PlayerTeleportTask implements Runnable {
 
@@ -29,18 +29,18 @@ public class PlayerTeleportTask implements Runnable {
 		Location defaultSpawnpoint = game.getFlag(FlagType.SPAWNPOINT);
 		List<SerializeableLocation> spawnpoints = game.getFlag(FlagType.NEXTSPAWNPOINT);
 		
-		Player[] players = game.getPlayers();
+		List<SpleefPlayer> players = game.getIngamePlayers();
 		
-		for (int i = 0; i < players.length; i++) {
-			Player player = players[i];
+		for (int i = 0; i < players.size(); i++) {
+			SpleefPlayer player = players.get(i);
 			Location teleportTo;
 			
 			if (spawnpoints != null && i < spawnpoints.size()) {
 				Location bukkitLocation = spawnpoints.get(i).getBukkitLocation();
 				
-				teleportTo = bukkitLocation;
+				teleportTo = bukkitLocation.clone();
 			} else if (defaultSpawnpoint != null) {
-				teleportTo = defaultSpawnpoint;
+				teleportTo = defaultSpawnpoint.clone();
 			} else {
 				Location randomLocation = game.getRandomLocation();
 				
@@ -49,10 +49,14 @@ public class PlayerTeleportTask implements Runnable {
 			
 			if (game.getFlag(FlagType.BOXES) && game.getFlag(FlagType.ONEVSONE)) {
 				generateBox(teleportTo);
+				
+				//Add a half block to prevent box glitches
+				teleportTo = new Location(teleportTo.getWorld(), teleportTo.getBlockX(), teleportTo.getBlockY(), teleportTo.getBlockZ());
+				teleportTo.add(0.5, 0, 0.5);
 			}
 			
 			//We have to teleport the player after the boxes were build. Reason: Otherwise players can glitch out
-			player.teleport(teleportTo);
+			player.getBukkitPlayer().teleport(teleportTo);
 		}
 	}
 

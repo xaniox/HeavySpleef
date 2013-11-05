@@ -24,8 +24,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -55,16 +56,19 @@ public class CommandRemoveLose extends HSCommand {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		Game game = GameManager.getGame(args[0].toLowerCase());
-		if (!game.hasLoseZone(id)) {
+		
+		Game game = GameManager.getGame(args[0]);
+		
+		if (!game.getComponents().hasLoseZone(id)) {
 			player.sendMessage(_("loseZoneWithIDDoesntExists"));
 			return;
 		}
-		if (game.isIngame() || game.isCounting()) {
+		if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING) {
 			player.sendMessage(_("cantRemoveLoseWhileRunning"));
 			return;
 		}
-		game.removeLoseZone(id);
+		
+		game.getComponents().removeLoseZone(id);
 		player.sendMessage(_("loseZoneRemoved", String.valueOf(id)));
 		return;
 				

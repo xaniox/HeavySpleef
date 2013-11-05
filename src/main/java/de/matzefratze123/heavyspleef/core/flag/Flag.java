@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
+import de.matzefratze123.heavyspleef.database.FlagSerializeable;
 
 /**
  * This class represents a flag of a game</br>
@@ -41,7 +41,7 @@ import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
  *
  * @param <T> The value of this flag
  */
-public abstract class Flag<T> implements DatabaseSerializeable<T> {
+public abstract class Flag<T> implements FlagSerializeable<T> {
 
 	T defaulte;
 	String[] aliases;

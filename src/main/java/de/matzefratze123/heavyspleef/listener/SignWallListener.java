@@ -19,17 +19,17 @@
  */
 package de.matzefratze123.heavyspleef.listener;
 
-
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.database.Parser;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SignWallListener implements Listener {
@@ -39,12 +39,12 @@ public class SignWallListener implements Listener {
 		Player p = e.getPlayer();
 		
 		for (Game game : GameManager.getGames()) {
-			for (SignWall wall : game.getWalls()) {
-				if (wall.contains(e.getBlock())) {
+			for (SignWall wall : game.getComponents().getSignWalls()) {
+				if (wall.contains(e.getBlock().getLocation())) {
 					if (p.hasPermission(Permissions.REMOVE_WALL.getPerm())) {
-						p.sendMessage(Game._("cannotDestroyWallAdmin"));
+						p.sendMessage(LanguageHandler._("cannotDestroyWallAdmin"));
 					} else {
-						p.sendMessage(Game._("cannotDestroyWallUser"));
+						p.sendMessage(LanguageHandler._("cannotDestroyWallUser"));
 					}
 					
 					e.setCancelled(true);

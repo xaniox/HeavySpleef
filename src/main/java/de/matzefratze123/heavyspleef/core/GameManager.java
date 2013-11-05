@@ -20,138 +20,63 @@
 package de.matzefratze123.heavyspleef.core;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.api.IGame;
 import de.matzefratze123.heavyspleef.core.region.HUBPortal;
-import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 
 public class GameManager {
 	
 	//Main list which contains all games
-	//Using LinkedList for more speed while iterating
 	public static List<Game> games = new ArrayList<Game>();
 	
 	public static Location spleefHub = null;
 	public static List<HUBPortal> portals = new ArrayList<HUBPortal>();
 	
-	public static Game getGame(String id) {
-		id = id.toLowerCase();
-		for (Game game : getGames()) {
-			if (id.equalsIgnoreCase(game.getName()))
-				return game;
+	public static void addGame(Game game) {
+		if (hasGame(game.getName())) {
+			throw new IllegalStateException("Game " + game.getName() + " already exist!");
 		}
 		
-		return null;
-	}
-	
-	public static Game[] getGames() {
-		return games.toArray(new Game[games.size()]);
-	}
-	
-	public static String[] getGamesAsString() {
-		String[] array = new String[getGames().length];
-		
-		for (int i = 0; i < games.size(); i++) {
-			array[i] = games.get(i).getName();
-		}
-		
-		return array;
-	}
-	
-	public static Game createCuboidGame(String id, Location firstCorner, Location secondCorner) {
-		games.add(new GameCuboid(firstCorner, secondCorner, id));
-		return getGame(id);
-	}
-	
-	public static Game createCylinderGame(String id, Location center, int radiusEastWest, int radiusNorthSouth, int minY, int maxY) {
-		if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook())
-			return null;
-		games.add(new GameCylinder(id, center, radiusEastWest, radiusNorthSouth, minY, maxY));
-		return getGame(id);
-	}
-	
-	public static Game createCylinderGame(String id, Location center, int radius, int minY, int maxY) {
-		return createCylinderGame(id, center, radius, radius, minY, maxY);
-	}
-	
-	public static void deleteGame(String id) {
-		id = id.toLowerCase();
-		games.remove(getGame(id));
-		HeavySpleef.getInstance().getGameDatabase().db.set(id, null);
-		HeavySpleef.getInstance().getGameDatabase().saveConfig();
-	}
-	
-	public static boolean hasGame(String id) {
-		id = id.toLowerCase();
-		boolean has = false;
-		
-		for (Game game : getGames()) {
-			if (game.getName().equalsIgnoreCase(id))
-				has = true;
-		}
-		
-		return has;
-	}
-	
-	public static boolean isActive(Player player) {
-		for (int i = 0; i < games.size(); i++) {
-			Game game = games.get(i);
-			
-			Player[] players = game.getPlayers();
-			for (Player pl : players) {
-				if (pl.getName().equalsIgnoreCase(player.getName()))
-					return true;
-			}
-		}
-		return false;
-	}
-	
-	public static boolean isSpectating(Player player) {
-		for (Game game : getGames()) {
-			List<Player> players = game.getSpectating();
-			for (Player pl : players) {
-				if (pl.getName().equalsIgnoreCase(player.getName()))
-					return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	public static Game fromPlayer(Player p) {
-		for (Game game : getGames()) {
-			Player[] players = game.getPlayers();
-			for (Player pl : players) {
-				if (pl.getName().equalsIgnoreCase(p.getName()))
-					return game;
-			}
-			
-			for (Player spectating : game.getSpectating()) {
-				if (spectating.getName().equalsIgnoreCase(p.getName()))
-					return game;
-			}
-		}
-		return null;
+		games.add(game);
 	}
 
-	public static boolean isActiveIngame(Player p) {
-		for (Game game : getGames()) {
-			if (!game.isIngame())
-				continue;
-			Player[] players = game.getPlayers();
-			for (Player pl : players) {
-				if (pl.getName().equalsIgnoreCase(p.getName()))
-					return true;
+	public static void deleteGame(String name) {
+		IGame game = getGame(name);
+		
+		if (game == null) {
+			return;
+		}
+		
+		games.remove(game);
+		HeavySpleef.getInstance().getGameDatabase().db.set(name, null);
+	}
+
+	public static boolean hasGame(String name) {
+		for (Game game : games) {
+			if (game.getName().equalsIgnoreCase(name)) {
+				return true;
 			}
 		}
+		
 		return false;
+	}
+
+	public static Game getGame(String name) {
+		for (Game game : games) {
+			if (game.getName().equalsIgnoreCase(name)) {
+				return game;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static List<Game> getGames() {
+		return games;
 	}
 	
 	/* Spleef HUB Start */
@@ -167,7 +92,7 @@ public class GameManager {
 	}
 	
 	public static void addPortal(HUBPortal portal) {
-		if (portal.isInterruptedId()) {
+		if (portal.isIllegalId()) {
 			int newlyId = getValidId();
 			portal.setId(newlyId);
 		}

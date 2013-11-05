@@ -95,7 +95,7 @@ public abstract class HSCommand {
 	}
 	
 	public static String _(String... key) {
-		return HeavySpleef.PREFIX + ChatColor.RESET + " " + LanguageHandler._(key);
+		return LanguageHandler._(key);
 	}
 	
 	public static String __(String str) {

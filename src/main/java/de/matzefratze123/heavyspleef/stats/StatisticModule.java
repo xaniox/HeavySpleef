@@ -19,6 +19,7 @@
  */
 package de.matzefratze123.heavyspleef.stats;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
@@ -165,8 +166,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addWin() {
 		wins++;
-		if (StatisticManager.pushOnChange)
-			StatisticManager.push(true);
+		
 	}
 	
 	/**
@@ -174,8 +174,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addLose() {
 		loses++;
-		if (StatisticManager.pushOnChange)
-			StatisticManager.push(true);
+		saveAsync();
 	}
 	
 	/**
@@ -183,8 +182,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addKnockout() {
 		knockouts++;
-		if (StatisticManager.pushOnChange)
-			StatisticManager.push(true);
+		saveAsync();
 	}
 	
 	/**
@@ -192,8 +190,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addGame() {
 		gamesPlayed++;
-		if (StatisticManager.pushOnChange)
-			StatisticManager.push(true);
+		saveAsync();
 	}
 	
 	/**
@@ -219,6 +216,16 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		d *= 10000;
 		d = Math.round(d);
 		return d / 10000.0D;
+	}
+	
+	private static void saveAsync() {
+		Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new Runnable() {
+			
+			@Override
+			public void run() {
+				HeavySpleef.getInstance().getStatisticDatabase().saveAccounts();
+			}
+		});
 	}
 	
 }

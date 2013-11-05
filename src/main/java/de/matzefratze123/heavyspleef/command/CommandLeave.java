@@ -19,15 +19,15 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.core.QueuesManager;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
@@ -45,16 +45,16 @@ public class CommandLeave extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		leave(player);
+		leave(HeavySpleef.getInstance().getSpleefPlayer(player));
 	}
 	
-	public static void leave(Player player) {
-		if (GameManager.isSpectating(player)) {
-			GameManager.fromPlayer(player).leaveSpectate(player);
+	public static void leave(SpleefPlayer player) {
+		if (player.isSpectating()) {
+			player.getGame().leaveSpectate(player);
 			return;
 		}
 		
-		if (!GameManager.isActive(player)) {
+		if (!player.isActive()) {
 			if (!QueuesManager.hasQueue(player)) {
 				player.sendMessage(_("notInQueue"));
 				return;
@@ -63,7 +63,8 @@ public class CommandLeave extends HSCommand {
 			QueuesManager.removeFromQueue(player);
 			return;
 		}
-		Game game = GameManager.fromPlayer(player);
+		
+		Game game = player.getGame();
 		
 		game.leave(player, LoseCause.LEAVE);
 		player.sendMessage(_("left"));

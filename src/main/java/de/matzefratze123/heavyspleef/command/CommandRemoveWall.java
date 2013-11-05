@@ -5,8 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -28,10 +28,10 @@ public class CommandRemoveWall extends HSCommand {
 		
 		Block blockLocation = p.getTargetBlock(null, 50);
 		for (Game game : GameManager.getGames()) {
-			for (SignWall wall : game.getWalls()) {
+			for (SignWall wall : game.getComponents().getSignWalls()) {
 				if (!wall.contains(blockLocation.getLocation()))
 					continue;
-				game.removeWall(wall.getId());
+				game.getComponents().removeSignWall(wall.getId());
 				p.sendMessage(_("wallRemoved"));
 				return;
 			}

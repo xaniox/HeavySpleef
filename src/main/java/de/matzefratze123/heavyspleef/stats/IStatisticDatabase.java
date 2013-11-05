@@ -21,13 +21,15 @@ package de.matzefratze123.heavyspleef.stats;
 
 import java.util.List;
 
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+
 public interface IStatisticDatabase {
 	
 	public void saveAccounts();
 	
-	public void loadAccount(String holder);
+	public StatisticModule loadAccount(String holder);
 	
-	public void unloadAccount(StatisticModule module);
+	public void unloadAccount(SpleefPlayer player);
 	
 	public List<StatisticModule> loadAccounts();
 	

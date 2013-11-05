@@ -20,15 +20,25 @@
 package de.matzefratze123.heavyspleef;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.tag.TagAPI;
 
-import de.matzefratze123.heavyspleef.api.GameAPI;
+import de.matzefratze123.heavyspleef.api.GameManagerAPI;
+import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.CommandHandler;
 import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
@@ -42,9 +52,10 @@ import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.listener.QueuesListener;
 import de.matzefratze123.heavyspleef.listener.ReadyListener;
 import de.matzefratze123.heavyspleef.listener.SignWallListener;
-import de.matzefratze123.heavyspleef.listener.StatisticAccountListener;
 import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.listener.UpdateListener;
+import de.matzefratze123.heavyspleef.objects.JoinGUI;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.selection.SelectionListener;
 import de.matzefratze123.heavyspleef.selection.SelectionManager;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
@@ -56,8 +67,8 @@ import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignStart;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignVote;
 import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
+import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
-import de.matzefratze123.heavyspleef.util.JoinGUI;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
@@ -65,7 +76,7 @@ import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Updater;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
-public class HeavySpleef extends JavaPlugin {
+public class HeavySpleef extends JavaPlugin implements Listener {
 		
 	//Object instances start
 	private static HookManager hooks;
@@ -90,6 +101,8 @@ public class HeavySpleef extends JavaPlugin {
 	// Updater
 	private Updater updater;
 	
+	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
+	
 	@Override
 	public void onEnable() {
 		//Set the instance first
@@ -107,7 +120,7 @@ public class HeavySpleef extends JavaPlugin {
 		LanguageHandler.loadLanguageFiles();
 		ViPManager.initVips();
 		
-		menu = new JoinGUI(LanguageHandler._("inventory"), this);
+		menu = new JoinGUI(LanguageHandler.__("inventory"), this);
 		
 		setupStatisticDatabase();
 		//statisticDatabase.load();
@@ -163,9 +176,34 @@ public class HeavySpleef extends JavaPlugin {
 		return statisticDatabase;
 	}
 	
+	public static FileConfiguration getSystemConfig() {
+		return instance.getConfig();
+	}
+	
+	public static IGameManager getAPI() {
+		return GameManagerAPI.getInstance();
+	}
+	
+	public static void debug(String msg) {
+		System.out.println("[HeavySpleef] [Debug] " + msg);
+	}
+	
+	public SelectionManager getSelectionManager() {
+		return selectionManager;
+	}
+	
+	public AntiCampingTask getAntiCampingTask() {
+		return antiCampTask;
+	}
+	
+	public JoinGUI getJoinGUI() {
+		return menu;
+	}
+	
 	private void registerEvents() {
 		PluginManager pm = this.getServer().getPluginManager();
 		
+		pm.registerEvents(this, this);
 		pm.registerEvents(new SelectionListener(this), this);
 		pm.registerEvents(new PlayerListener(), this);
 		pm.registerEvents(new UpdateListener(), this);
@@ -174,7 +212,6 @@ public class HeavySpleef extends JavaPlugin {
 		pm.registerEvents(new PVPTimerListener(), this);
 		pm.registerEvents(new HUBPortalListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
-		pm.registerEvents(new StatisticAccountListener(), this);
 		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
 		
 		Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
@@ -236,22 +273,6 @@ public class HeavySpleef extends JavaPlugin {
 		}
 	}
 	
-	public static FileConfiguration getSystemConfig() {
-		return instance.getConfig();
-	}
-	
-	public static GameAPI getAPI() {
-		return GameAPI.getInstance();
-	}
-	
-	public static void debug(String msg) {
-		System.out.println("[HeavySpleef] [Debug] " + msg);
-	}
-	
-	public SelectionManager getSelectionManager() {
-		return selectionManager;
-	}
-	
 	public void startAntiCampingTask() {
 		if (!getConfig().getBoolean("anticamping.enabled"))
 			return;
@@ -260,12 +281,51 @@ public class HeavySpleef extends JavaPlugin {
 		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, antiCampTask, 0L, 20L);
 	}
 	
-	public AntiCampingTask getAntiCampingTask() {
-		return antiCampTask;
+	public SpleefPlayer getSpleefPlayer(Object base) {
+		Player bukkitPlayer = null;
+		
+		if (base instanceof Player) {
+			bukkitPlayer = (Player) base;
+		} else if (base instanceof String) {
+			bukkitPlayer = Bukkit.getPlayer((String)base);
+		}
+		
+		if (bukkitPlayer == null) {
+			return null;
+		}
+		
+		SpleefPlayer player;
+		
+		for (SpleefPlayer pl : players) {
+			if (pl.getBukkitPlayer() == bukkitPlayer) {
+				return pl;
+			}
+		}
+		
+		//Player isn't registered yet
+		player = new SpleefPlayer(bukkitPlayer);
+		StatisticModule module = statisticDatabase.loadAccount(player.getName());
+		player.setStatistic(module);
+		
+		players.add(player);
+		
+		return player;
 	}
 	
-	public JoinGUI getJoinGUI() {
-		return menu;
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onLeave(PlayerQuitEvent e) {
+		handleQuit(e);
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onKick(PlayerKickEvent e) {
+		handleQuit(e);
+	}
+	
+	private void handleQuit(PlayerEvent e) {
+		SpleefPlayer player = getSpleefPlayer(e.getPlayer());
+		player.setOnline(false);
+		players.remove(player);
 	}
 	
 }

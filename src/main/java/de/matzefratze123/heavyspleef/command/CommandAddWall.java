@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
@@ -31,6 +31,7 @@ public class CommandAddWall extends HSCommand {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
+		
 		Game game = GameManager.getGame(args[0]);
 		
 		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(p);
@@ -59,7 +60,13 @@ public class CommandAddWall extends HSCommand {
 			return;
 		}
 		
-		game.addWall(s.getFirst(), s.getSecond());
+		int id = 0;
+		while (game.getComponents().hasSignWall(id)) {
+			id++;
+		}
+		
+		SignWall wall = new SignWall(s.getFirst(), s.getSecond(), game, id);
+		game.getComponents().addSignWall(wall);
 		p.sendMessage(_("signWallAdded"));
 	}
 

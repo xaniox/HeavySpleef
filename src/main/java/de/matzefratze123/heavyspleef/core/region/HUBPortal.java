@@ -19,17 +19,17 @@
  */
 package de.matzefratze123.heavyspleef.core.region;
 
-
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.objects.RegionCuboid;
+import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
-import de.matzefratze123.heavyspleef.util.SimpleBlockData;
 
 /**
  * Represents a portal in a world which points to the spleef hub
@@ -37,33 +37,22 @@ import de.matzefratze123.heavyspleef.util.SimpleBlockData;
  * @author matzefratze123
  *
  */
-public class HUBPortal extends RegionBase {
+public class HUBPortal extends RegionCuboid {
 
-	private Location firstCorner;
-	private Location secondCorner;
-	
 	public HUBPortal(int id, Location firstCorner, Location secondCorner) {
-		super(id);
-		
-		this.firstCorner = firstCorner;
-		this.secondCorner = secondCorner;
+		super(id, firstCorner, secondCorner);
 	}
 	
 	public HUBPortal(Location firstCorner, Location secondCorner) {
 		this(-1, firstCorner, secondCorner);
 	}
-
-	@Override
-	public boolean contains(Location location) {
-		return RegionBase.contains(firstCorner, secondCorner, location);
+	
+	public boolean isIllegalId() {
+		return id < 0;
 	}
 	
-	public Location getFirstCorner() {
-		return this.firstCorner;
-	}
-	
-	public Location getSecondCorner() {
-		return this.secondCorner;
+	public void setId(int id) {
+		super.id = id;
 	}
 	
 	public void onMove(PlayerMoveEvent e) {
@@ -82,22 +71,22 @@ public class HUBPortal extends RegionBase {
 			return;
 		
 		player.teleport(GameManager.getSpleefHub());
-		player.sendMessage(Game._("welcomeToHUB"));
+		player.sendMessage(LanguageHandler._("welcomeToHUB"));
 		
 		//Effect
-		int minX = Math.min(firstCorner.getBlockX(), secondCorner.getBlockX());
-		int maxX = Math.max(firstCorner.getBlockX(), secondCorner.getBlockX());
+		int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
+		int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
 		
-		int minY = Math.min(firstCorner.getBlockY(), secondCorner.getBlockY());
-		int maxY = Math.max(firstCorner.getBlockY(), secondCorner.getBlockY());
+		int minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
+		int maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
 		
-		int minZ = Math.min(firstCorner.getBlockZ(), secondCorner.getBlockZ());
-		int maxZ = Math.max(firstCorner.getBlockZ(), secondCorner.getBlockZ());
+		int minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
+		int maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					Block currentBlock = firstCorner.getWorld().getBlockAt(x, y, z);
+					Block currentBlock = firstPoint.getWorld().getBlockAt(x, y, z);
 					
 					if (SimpleBlockData.isSolid(currentBlock.getTypeId()))
 						continue;

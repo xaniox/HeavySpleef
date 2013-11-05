@@ -5,40 +5,40 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.CommandJoin;
 import de.matzefratze123.heavyspleef.command.HSCommand;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.core.Team;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class SpleefSignJoin implements SpleefSign {
 
 	@Override
-	public void onClick(Player player, Sign sign) {
+	public void onClick(SpleefPlayer player, Sign sign) {
 		String[] lines = SpleefSignExecutor.stripSign(sign);
 		
 		//Check wether there is no game on the third line
 		if (lines[2].isEmpty()) {
-			if (!player.hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
-				player.sendMessage(Game._("noPermission"));
+			if (!player.getBukkitPlayer().hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
+				player.sendMessage(LanguageHandler._("noPermission"));
 				return;
 			}
 			
 			//Open up Join GUI
-			HeavySpleef.getInstance().getJoinGUI().open(player);
+			HeavySpleef.getInstance().getJoinGUI().open(player.getBukkitPlayer());
 		} else {
 			//Check if the game exists
 			if (!GameManager.hasGame(lines[2])) {
-				player.sendMessage(Game._("arenaDoesntExists"));
+				player.sendMessage(LanguageHandler._("arenaDoesntExists"));
 				return;
 			}
 			
@@ -49,7 +49,7 @@ public class SpleefSignJoin implements SpleefSign {
 				try {
 					color = ChatColor.valueOf(lines[3].toUpperCase());
 				} catch (Exception ex) {
-					player.sendMessage(Game._("invalidTeam"));
+					player.sendMessage(LanguageHandler._("invalidTeam"));
 					return;
 				}
 			} else {
@@ -104,12 +104,12 @@ public class SpleefSignJoin implements SpleefSign {
 			}
 			
 			if (color == null) {
-				e.getPlayer().sendMessage(Game._("invalidColor"));
+				e.getPlayer().sendMessage(LanguageHandler._("invalidColor"));
 				e.getBlock().breakNaturally();
 				return;
 			}
 			
-			e.setLine(3, color + Util.toFriendlyString(e.getLine(3)));
+			e.setLine(3, color + Util.formatMaterialName(e.getLine(3)));
 		}
 		
 		e.getPlayer().sendMessage(HSCommand._("spleefSignCreated"));

@@ -19,15 +19,14 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.LoseCause;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
@@ -45,14 +44,14 @@ public class CommandKick extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		Player target = Bukkit.getPlayer(args[0]);
+		SpleefPlayer target = HeavySpleef.getInstance().getSpleefPlayer(args[0]);
 		
 		if (target == null) {
 			player.sendMessage(_("playerNotOnline"));
 			return;
 		}
 		
-		if (!GameManager.isActive(target)) {
+		if (!target.isActive()) {
 			player.sendMessage(_("playerIsntInAnyGame"));
 			return;
 		}
@@ -63,7 +62,7 @@ public class CommandKick extends HSCommand {
 			reasonBuilder.append(args[i]).append(" ");
 		reasonMessage += reasonBuilder.toString();
 		
-		Game game = GameManager.fromPlayer(target);
+		Game game = target.getGame();
 		game.leave(target, LoseCause.KICK);
 		target.sendMessage(_("kickedOfToPlayer", ViPManager.colorName(player.getName()), reasonMessage));
 		player.sendMessage(_("kickedOfToKicker", ViPManager.colorName(target.getName()), game.getName(), reasonMessage));

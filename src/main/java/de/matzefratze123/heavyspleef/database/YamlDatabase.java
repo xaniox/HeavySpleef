@@ -20,43 +20,25 @@
 package de.matzefratze123.heavyspleef.database;
 
 import static de.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
-import static de.matzefratze123.heavyspleef.database.Parser.convertLoseZoneToString;
-import static de.matzefratze123.heavyspleef.database.Parser.convertStringToLosezone;
 import static de.matzefratze123.heavyspleef.database.Parser.convertStringtoLocation;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameCuboid;
-import de.matzefratze123.heavyspleef.core.GameCylinder;
 import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.core.GameType;
-import de.matzefratze123.heavyspleef.core.ScoreBoard;
-import de.matzefratze123.heavyspleef.core.ScoreBoard;
-import de.matzefratze123.heavyspleef.core.SignWall;
-import de.matzefratze123.heavyspleef.core.Team;
-import de.matzefratze123.heavyspleef.core.flag.Flag;
-import de.matzefratze123.heavyspleef.core.flag.FlagType;
-import de.matzefratze123.heavyspleef.core.region.Floor;
-import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
-import de.matzefratze123.heavyspleef.core.region.FloorCylinder;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.StopCause;
 import de.matzefratze123.heavyspleef.core.region.HUBPortal;
-import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 /**
@@ -89,10 +71,13 @@ public class YamlDatabase {
 		this.databaseFile = new File(folder, "games.yml");
 		this.globalDatabaseFile = new File(folder, "global-settings.yml");
 		
-		if (!databaseFile.exists())
+		if (!databaseFile.exists()) {
 			createDefaultDatabaseFile(databaseFile);
-		if (!globalDatabaseFile.exists())
+		}
+		
+		if (!globalDatabaseFile.exists()) {
 			createDefaultDatabaseFile(globalDatabaseFile);
+		}
 		
 		this.db = YamlConfiguration.loadConfiguration(databaseFile);
 		this.globalDb = YamlConfiguration.loadConfiguration(globalDatabaseFile);
@@ -127,12 +112,12 @@ public class YamlDatabase {
 		for (String key : db.getKeys(false)) {
 			ConfigurationSection section = db.getConfigurationSection(key);
 			
-			if (section.getString("type") == null || GameType.valueOf(section.getString("type")) == GameType.CUBOID)
-				loadCuboid(section);
-			else if (GameType.valueOf(section.getString("type")) == GameType.CYLINDER)
-				loadCylinder(section);
+			Game game = Game.deserialize(section);
+			GameManager.addGame(game);
+			
 			count++;
 		}
+		
 		
 		Logger.info("Loaded " + count + " games!");
 		loadGlobalSettings();
@@ -144,13 +129,12 @@ public class YamlDatabase {
 	 */
 	public void save() {
 		for (Game game : GameManager.getGames()) {
-			ConfigurationSection section = db.createSection(game.getName());
+			if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING || game.getGameState() == GameState.LOBBY) {
+				game.stop(StopCause.STOP);
+			}
 			
-			saveBasics(game, section);
-			if (game.getType() == GameType.CUBOID)
-				saveCuboid((GameCuboid) game, section);
-			else if (game.getType() == GameType.CYLINDER)
-				saveCylinder((GameCylinder) game, section);
+			ConfigurationSection serialized = game.serialize();
+			db.createSection(game.getName(), serialized.getValues(true));
 		}
 		
 		saveGlobalSettings();
@@ -172,8 +156,8 @@ public class YamlDatabase {
 		for (HUBPortal portal : GameManager.getPortals()) {
 			ConfigurationSection section = portalsSection.createSection(String.valueOf(portal.getId()));
 			
-			section.set("firstCorner", convertLocationtoString(portal.getFirstCorner()));
-			section.set("secondCorner", convertLocationtoString(portal.getSecondCorner()));
+			section.set("firstCorner", convertLocationtoString(portal.getFirstPoint()));
+			section.set("secondCorner", convertLocationtoString(portal.getSecondPoint()));
 		}
 	}
 	
@@ -211,187 +195,6 @@ public class YamlDatabase {
 		}
 	}
 
-	private void saveCuboid(GameCuboid game, ConfigurationSection section) {
-		if (game.getType() != GameType.CUBOID)
-			return;
-		section.set("firstCorner", convertLocationtoString(game.getFirstCorner()));
-		section.set("secondCorner", convertLocationtoString(game.getSecondCorner()));
-		
-		List<String> floorsAsList = new ArrayList<String>();
-		List<FloorCuboid> floors = new ArrayList<FloorCuboid>();
-		
-		for (Floor f : game.getFloors())
-			floors.add((FloorCuboid)f);
-		
-		for (FloorCuboid f : floors) {
-			floorsAsList.add(f.toString());
-			f.create();
-			
-			if (f.isGivenFloor())
-				FloorLoader.saveFloor(f, game);
-		}
-		
-		section.set("floors", floorsAsList);
-	}
-	
-	
-	private void saveCylinder(GameCylinder game, ConfigurationSection section) {
-		if (game.getType() != GameType.CYLINDER)
-			return;
-		section.set("center", convertLocationtoString(game.getCenter()));
-		section.set("radiusEastWest", game.getRadiusEastWest());
-		section.set("radiusNorthSouth", game.getRadiusNorthSouth());
-		section.set("minY", game.getMinY());
-		section.set("maxY", game.getMaxY());
-		
-		List<String> floorsAsList = new ArrayList<String>();
-		List<FloorCylinder> floors = new ArrayList<FloorCylinder>();
-		
-		for (Floor f : game.getFloors())
-			floors.add((FloorCylinder)f);
-		
-		for (FloorCylinder c : floors) {
-			floorsAsList.add(c.toString());
-			c.create();
-			
-			if (c.isGivenFloor())
-				FloorLoader.saveFloor(c, game);
-		}
-		
-		section.set("floors", floorsAsList);
-	}
-	
-	private void loadCuboid(ConfigurationSection section) {
-		String name = section.getName();
-		
-		Location firstCorner = convertStringtoLocation(section.getString("firstCorner"));
-		Location secondCorner = convertStringtoLocation(section.getString("secondCorner"));
-		
-		if (firstCorner == null)
-			return;
-		if (secondCorner == null)
-			return;
-		
-		Game game = GameManager.createCuboidGame(name, firstCorner, secondCorner);
-		
-		List<String> floorsAsStrings = section.getStringList("floors");
-		if (floorsAsStrings != null) {
-			for (String floor : floorsAsStrings)
-				game.addFloor(FloorCuboid.fromString(floor, game.getName()), true);
-		}
-		
-		loadBasics(section, game);
-	}
-	
-	private void loadCylinder(ConfigurationSection section) {
-		String name = section.getName();
-		
-		Location center = convertStringtoLocation(section.getString("center"));
-		
-		int radiusEastWest = 0;
-		int radiusNorthSouth = 0;
-		
-		if (section.getString("radius") != null) {
-			radiusEastWest = section.getInt("radius");
-			radiusNorthSouth = section.getInt("radius");
-		} else {
-			radiusEastWest = section.getInt("radiusEastWest");
-			radiusNorthSouth = section.getInt("radiusNorthSouth");
-		}
-		
-		int minY = section.getInt("minY");
-		int maxY = section.getInt("maxY");
-		
-		Game game = GameManager.createCylinderGame(name, center, radiusEastWest, radiusNorthSouth, minY, maxY);
-		if (game == null)//Just in case if no WorldEdit is installed
-			return;
-		
-		List<String> floorsAsStrings = section.getStringList("floors");
-		if (floorsAsStrings != null) {
-			for (String floor : floorsAsStrings)
-				game.addFloor(FloorCylinder.fromString(floor, game.getName()), true);
-		}
-		
-		loadBasics(section, game);
-	}
-	
-	private void loadBasics(ConfigurationSection section, Game game) {
-		
-		List<String> loseZonesAsString = section.getStringList("losezones");
-		if (loseZonesAsString != null) {
-			for (String loseZone : loseZonesAsString)
-				game.addLoseZone(convertStringToLosezone(loseZone));
-		}
-		
-		List<String> wallsAsList = section.getStringList("walls");
-		if (wallsAsList != null) {
-			for (String wall : wallsAsList)
-				game.addWall(SignWall.fromString(wall, game));
-		}
-		
-		loadFlags(game, section);
-		
-		if (section.contains("scoreboards")) {
-			for (String board : section.getStringList("scoreboards")) {
-				ScoreBoard scoreBoard = ScoreBoard.fromString(board);
-				game.addScoreBoard(scoreBoard);
-			}
-		}
-		
-		List<String> databaseTeams = section.getStringList("teams");
-		
-		for (String str : databaseTeams) {
-			String parts[] = str.split(";");
-			if (parts.length < 3)
-				continue;
-			
-			ChatColor color = ChatColor.valueOf(parts[0]);
-			int minplayers = Integer.parseInt(parts[1]);
-			int maxplayers = Integer.parseInt(parts[2]);
-			
-			Team team = new Team(color, game);
-			team.setMinPlayers(minplayers);
-			team.setMaxPlayers(maxplayers);
-			
-			game.addTeam(team);
-		}
-	}
-	
-	private void saveBasics(Game game, ConfigurationSection section) {
-		if (game.hasActivity())
-			game.stop();
-		section.set("type", game.getType().name());
-		
-		List<String> loseZonesAsList = new ArrayList<String>();
-		
-		for (LoseZone c : game.getLoseZones())
-			loseZonesAsList.add(convertLoseZoneToString(c));
-		
-		List<String> wallsAsList = new ArrayList<String>();
-		for (SignWall wall : game.getWalls())
-			wallsAsList.add(wall.toString());
-		
-		section.set("walls", wallsAsList);
-		section.set("losezones", loseZonesAsList);
-		
-		saveFlags(game, section);
-		
-		List<String> scoreBoardsAsList = new ArrayList<String>();
-		for (ScoreBoard board : game.getScoreBoards()) {
-			scoreBoardsAsList.add(board.toString());
-		}
-		
-		section.set("scoreboards", scoreBoardsAsList);
-		List<Team> teams = game.getTeams();
-		List<String> databaseTeams = new ArrayList<String>();
-		
-		for (Team team : teams) {
-			databaseTeams.add(team.getColor().name() + ";" + team.getMinPlayers() + ";" + team.getMaxPlayers());
-		}
-		
-		section.set("teams", databaseTeams);
-	}
-
 	/**
 	 * Gets a configuration section from the database file
 	 * 
@@ -412,38 +215,6 @@ public class YamlDatabase {
 			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
 			e.printStackTrace();
 		}
-	}
-	
-	private void saveFlags(Game game, ConfigurationSection section) {
-		Map<Flag<?>, Object> flags = game.getFlags();
-		List<String> flagsAsString = new ArrayList<String>();
-		
-		for (Flag<?> flag : flags.keySet()) {
-			String serialized = flag.serialize(flags.get(flag));
-			flagsAsString.add(serialized);
-		}
-		
-		section.set("flags", flagsAsString);
-	}
-	
-	private void loadFlags(Game game, ConfigurationSection section) {
-		List<String> flagsAsString = section.getStringList("flags");
-		
-		if (flagsAsString == null)
-			return;
-		
-		Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
-		
-		for (String str : flagsAsString) {
-			Flag<?> flag = FlagType.byDatabaseName(str);
-			if (flag == null)
-				continue;
-			
-			Object deserialized = flag.deserialize(str);
-			flags.put(flag, deserialized);
-		}
-		
-		game.setFlags(flags);
 	}
 	
 }

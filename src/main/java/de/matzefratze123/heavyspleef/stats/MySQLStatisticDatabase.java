@@ -22,16 +22,19 @@ package de.matzefratze123.heavyspleef.stats;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.stats.sql.Database;
 import de.matzefratze123.heavyspleef.stats.sql.Field;
-import de.matzefratze123.heavyspleef.stats.sql.Table;
 import de.matzefratze123.heavyspleef.stats.sql.Field.Type;
+import de.matzefratze123.heavyspleef.stats.sql.Table;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 
@@ -64,10 +67,8 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 				table.addColumn(columnName, columns.get(columnName));
 		}
 		
-		List<StatisticModule> statistics = new ArrayList<StatisticModule>(StatisticManager.getStatistics());
-		Collections.sort(statistics);
-		
-		for (StatisticModule stat : statistics) {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			StatisticModule stat = HeavySpleef.getInstance().getSpleefPlayer(player).getStatistic();
 			
 			int wins = stat.getWins();
 			int loses = stat.getLoses();
@@ -95,10 +96,10 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 	}
 
 	@Override
-	public void loadAccount(String holder) {
+	public StatisticModule loadAccount(String holder) {
 		Database database = new Database(HeavySpleef.getInstance());
 		if (!database.hasTable(tableName))
-			return;
+			return null;
 		
 		Table table = database.getTable(tableName);
 		for (String columnName : columns.keySet()) {
@@ -111,9 +112,12 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		where.put("owner", holder);
 		ResultSet result = table.select("*", where);
 		
+		StatisticModule module = null;
+		
 		try {
+			
 			if (!result.next()) {
-				StatisticManager.addNewStatistic(holder);
+				module = null;
 			} else {
 				String owner = result.getString("owner");
 				int wins = result.getInt("wins");
@@ -121,8 +125,7 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 				int knockouts = result.getInt("knockouts");
 				int games = result.getInt("games");
 				
-				StatisticModule module = new StatisticModule(owner, loses, wins, knockouts, games);
-				StatisticManager.addExistingStatistic(module);
+				module = new StatisticModule(owner, loses, wins, knockouts, games);
 			}
 			
 		} catch (SQLException e) {
@@ -131,10 +134,14 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		}
 		
 		database.close();
+		
+		return module;
 	}
 
 	@Override
-	public void unloadAccount(StatisticModule module) {
+	public void unloadAccount(SpleefPlayer player) {
+		StatisticModule module = player.getStatistic();
+		
 		Database database = new Database(HeavySpleef.getInstance());
 		if (!database.hasTable(tableName))
 			database.createTable(tableName, columns);
@@ -167,8 +174,6 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		table.insertOrUpdate(values, where);
 		
 		database.close();
-		
-		
 	}
 
 	@Override

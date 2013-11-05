@@ -29,7 +29,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import de.matzefratze123.heavyspleef.core.flag.ListFlagLocation.SerializeableLocation;
-import de.matzefratze123.heavyspleef.core.flag.enums.Difficulty;
 
 public enum FlagType {
 
@@ -88,8 +87,6 @@ public enum FlagType {
 	@FlagData
 	public static final IntegerFlag REWARD = new IntegerFlag("reward", 0);
 	@FlagData
-	public static final IntegerFlag CHANCES = new IntegerFlag("chances", 0);
-	@FlagData
 	public static final IntegerFlag TIMEOUT = new IntegerFlag("timeout", 0);
 	@FlagData
 	public static final IntegerFlag ROUNDS = new IntegerFlag("rounds", 3);
@@ -103,9 +100,6 @@ public enum FlagType {
 	@FlagData
 	public static final SingleItemStackFlag ICON = new SingleItemStackFlag("icon", new ItemStack(Material.DIAMOND_SPADE));
 	
-	@FlagData
-	public static final EnumFlag<Difficulty> DIFFICULTY = new EnumFlag<Difficulty> ("difficulty", Difficulty.class, Difficulty.MEDIUM);
-	
 	static {
 		ONEVSONE.setConflictingFlags(TEAM);
 		TEAM.setConflictingFlags(ONEVSONE);
@@ -116,7 +110,6 @@ public enum FlagType {
 		SHEARS.setConflictingFlags(SHOVELS, SPLEGG, BOWSPLEEF);
 		
 		BOXES.setRequiredFlags(ONEVSONE);
-		CHANCES.setConflictingFlags(ONEVSONE);
 		ROUNDS.setRequiredFlags(ONEVSONE);
 	}
 	
@@ -171,8 +164,4 @@ public enum FlagType {
 		return null;
 	}
 	
-	public static Flag<?> byDatabaseName(String dbString) {
-		String[] parts = dbString.split(":");
-		return byName(parts[0]);
-	}
 }
