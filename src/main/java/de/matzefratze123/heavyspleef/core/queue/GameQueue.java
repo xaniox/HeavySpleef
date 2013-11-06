@@ -2,6 +2,7 @@ package de.matzefratze123.heavyspleef.core.queue;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.LanguageHandler;
 
 public class GameQueue {
 	
@@ -17,7 +18,9 @@ public class GameQueue {
 		if (queue.contains(player))
 			return -1;
 		
-		return queue.add(player);
+		int place = queue.add(player);
+		player.sendMessage(LanguageHandler._("addedToQueue", game.getName(), String.valueOf(place + 1)));
+		return place;
 	}
 	
 	public void removePlayer(SpleefPlayer player) {

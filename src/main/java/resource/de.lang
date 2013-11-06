@@ -131,7 +131,7 @@ yourKnockOuts: &7Deine Knockouts: %a
 
 noLongerInQueue: &7Du bist nicht l\u00E4nger in der Warteschlange f\u00FCr wurde das Spiel &6%a&7!
 leftQueue: &7Du hast das die Warteschlange f\u00FCr das Spiel %a verlassen!
-addedToQueue: &7Du bist nun in der Warteschlange f\u00FCr das Spiel &6%a&7.
+addedToQueue: &7Du bist nun in der Warteschlange f\u00FCr das Spiel &6%a&7. Platz &l#%a
 notInQueue: &7Du bist in keiner Warteschlange!
 
 outOfGame: &cDu hast verloren!

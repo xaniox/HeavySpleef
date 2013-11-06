@@ -41,11 +41,11 @@ public class GameCuboid extends Game {
 		
 		FloorCuboid floor = (FloorCuboid)floors.get(floors.size() - 1);
 		
-		int minX = Math.min(floor.getFirstPoint().getBlockX(), floor.getSecondPoint().getBlockX());
-		int minZ = Math.min(floor.getFirstPoint().getBlockZ(), floor.getSecondPoint().getBlockZ());
+		int minX = Math.min(floor.getFirstPoint().getBlockX(), floor.getSecondPoint().getBlockX()) + 1;
+		int minZ = Math.min(floor.getFirstPoint().getBlockZ(), floor.getSecondPoint().getBlockZ()) + 1;
 		
-		int maxX = Math.max(floor.getFirstPoint().getBlockX(), floor.getSecondPoint().getBlockX());
-		int maxZ = Math.max(floor.getFirstPoint().getBlockZ(), floor.getSecondPoint().getBlockZ());
+		int maxX = Math.max(floor.getFirstPoint().getBlockX(), floor.getSecondPoint().getBlockX()) - 1;
+		int maxZ = Math.max(floor.getFirstPoint().getBlockZ(), floor.getSecondPoint().getBlockZ()) - 1;
 		
 		int differenceX, differenceZ;
 		

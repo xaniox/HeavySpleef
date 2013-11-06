@@ -491,6 +491,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			SpleefPlayer killer = detectKiller(player);
 			
 			if (cause == LoseCause.LOSE) {
+				player.sendMessage(_("outOfGame"));
 				player.getStatistic().addLose();
 				SpleefLogger.log(LogType.LOSE, this, player);
 				
@@ -514,7 +515,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				broadcast(_("remaining", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast("knockouts"));
 			}
 			
-			player.sendMessage(_("outOfGame"));
+			
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
 			player.getBukkitPlayer().setFallDistance(0);
@@ -652,7 +653,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	
 	public void cancelTask(String key) {
 		if (!tasks.containsKey(key)) {
-			throw new IllegalStateException("No task with key " + key + " registered!");
+			return;
 		}
 		
 		BukkitScheduler scheduler = Bukkit.getScheduler();
