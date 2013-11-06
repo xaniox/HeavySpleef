@@ -19,6 +19,8 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,6 +28,7 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -66,6 +69,32 @@ public class CommandVote extends HSCommand {
 		
 		player.setReady(true);
 		player.sendMessage(_("successfullyVoted"));
+		tryStart(game);
+	}
+	
+	private void tryStart(Game game) {
+		int percentNeeded = HeavySpleef.getSystemConfig().getInt("autostart-vote", 70);
+		int minPlayers = game.getFlag(FlagType.MINPLAYERS);
+		List<SpleefPlayer> ingame = game.getIngamePlayers();
+		
+		if (minPlayers >= 2 && ingame.size() < minPlayers) {
+			return;
+		}
+		
+		int voted = 0;
+		
+		for (SpleefPlayer player : ingame) {
+			if (player.isReady()) {
+				voted++;
+			}
+		}
+		
+		int percentVoted = (voted * 100)/ingame.size();
+		if (percentVoted < percentNeeded) {
+			return;
+		}
+		
+		game.countdown();
 	}
 
 }
