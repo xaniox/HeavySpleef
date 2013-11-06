@@ -127,19 +127,10 @@ public class FloorCylinder extends RegionCylinder implements IFloor {
 					height = 1;
 				}
 				
-				int affected = session.makeCylinder(region.getCenter(),
+				session.makeCylinder(region.getCenter(),
 						new SingleBlockPattern(new BaseBlock(material.getId(), data)),
 						region.getRadius().getBlockX(),
 						height, true);
-				System.out.println("Affected: " + affected);
-				System.out.println("Success...");
-				System.out.println(region.getCenter().getBlockX());
-				System.out.println(region.getCenter().getBlockY());
-				System.out.println(region.getCenter().getBlockZ());
-				System.out.println("-------");
-				System.out.println(region.getRadius().getBlockX());
-				System.out.println(region.getMinimumY());
-				System.out.println(region.getMaximumY());
 			} catch (MaxChangedBlocksException e) {
 				//Should not happen as the max blocks are -1
 				System.out.println("?:o");
