@@ -82,8 +82,9 @@ public class SpleefSignExecutor implements Listener {
 			return;
 
 		Sign sign = (Sign) block.getState();
+		String striped = ChatColor.stripColor(sign.getLine(0));
 		
-		if (!ChatColor.stripColor(sign.getLine(0)).equalsIgnoreCase("[Spleef]"))
+		if (!striped.equalsIgnoreCase("[Spleef]") && !striped.equalsIgnoreCase("[Splegg]"))
 			return;
 
 		SpleefSign matching = matchSign(sign.getLines());
@@ -105,8 +106,9 @@ public class SpleefSignExecutor implements Listener {
 
 	@EventHandler
 	public void onSignChange(SignChangeEvent e) {
-		if (!e.getLine(0).equalsIgnoreCase("[Spleef]"))
+		if (!e.getLine(0).equalsIgnoreCase("[Spleef]") && !e.getLine(0).equalsIgnoreCase("[Splegg]")) {
 			return;
+		}
 		
 		if (!e.getPlayer().hasPermission(Permissions.CREATE_SPLEEF_SIGN.getPerm())) {
 			e.getPlayer().sendMessage(HSCommand._("noPermission"));
@@ -116,11 +118,21 @@ public class SpleefSignExecutor implements Listener {
 		
 		SpleefSign matching = matchSign(e.getLines());
 		
-		if (matching == null)
+		if (matching == null) {
 			return;
+		}
 		
-		e.setLine(0, ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "Spleef" + ChatColor.DARK_GRAY + "]");
+		boolean containsSpleef = e.getLine(0).toLowerCase().contains("spleef");
+		boolean containsSplegg = e.getLine(0).toLowerCase().contains("splegg");
+		String str = null;
 		
+		if (containsSpleef) {
+			str = "Spleef";
+		} else if (containsSplegg) {
+			str = "Splegg";
+		}
+		
+		e.setLine(0, ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + str + ChatColor.DARK_GRAY + "]");
 		matching.onPlace(e);
 	}
 
