@@ -281,7 +281,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			
 			if (player == winner) {
 				giveRewards(player, true, 0);
-				
 			}
 			
 			safeTeleport(player, getFlag(FlagType.LOSE));
@@ -348,6 +347,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		player.saveLocation();
 		player.getBukkitPlayer().teleport(spectate);
 		player.sendMessage(_("welcomeToSpectate"));
+		player.setGame(this);
 		
 		spectating.add(player);
 	}
@@ -357,7 +357,12 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			return;
 		
 		spectating.remove(player);
+		player.clearGameData();
 		player.getBukkitPlayer().teleport(player.getLastLocation());
+	}
+	
+	public List<SpleefPlayer> getSpectating() {
+		return spectating;
 	}
 
 	@Override
@@ -393,7 +398,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (state == GameState.COUNTING || state == GameState.INGAME) {
 			Location spawnpoint = getFlag(FlagType.SPAWNPOINT) == null ? getRandomLocation(): getFlag(FlagType.SPAWNPOINT);
 			
-			giveItems(player);
 			player.getBukkitPlayer().teleport(spawnpoint);
 		} else {
 			Location lobby = getFlag(FlagType.LOBBY) == null ? getRandomLocation() : getFlag(FlagType.LOBBY);
