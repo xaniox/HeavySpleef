@@ -129,7 +129,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		return components;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void start() {
 		cancelTask(StartCountdownTask.TASK_ID_KEY);
@@ -164,6 +163,19 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			}
 		}
 		
+		for (SpleefPlayer player : inPlayers) {
+			giveItems(player);
+			player.getStatistic().addGame();
+		}
+		
+		broadcast(_("gameHasStarted"), BroadcastType.INGAME);
+		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast("game-start-info"));
+		broadcast(_("startedGameWith", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast("game-start-info"));
+		components.updateWalls();
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void giveItems(SpleefPlayer player) {
 		//Give items
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		
@@ -218,19 +230,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			items.add(arrow);
 		}
 		
-		for (SpleefPlayer player : inPlayers) {
-			for (ItemStack item : items) {
-				player.getBukkitPlayer().getInventory().addItem(item);
-			}
-			
-			player.getBukkitPlayer().updateInventory();
-			player.getStatistic().addGame();
+		for (ItemStack item : items) {
+			player.getBukkitPlayer().getInventory().addItem(item);
 		}
 		
-		broadcast(_("gameHasStarted"), BroadcastType.INGAME);
-		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast("game-start-info"));
-		broadcast(_("startedGameWith", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast("game-start-info"));
-		components.updateWalls();
+		player.getBukkitPlayer().updateInventory();
 	}
 
 	@Override
@@ -389,6 +393,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (state == GameState.COUNTING || state == GameState.INGAME) {
 			Location spawnpoint = getFlag(FlagType.SPAWNPOINT) == null ? getRandomLocation(): getFlag(FlagType.SPAWNPOINT);
 			
+			giveItems(player);
 			player.getBukkitPlayer().teleport(spawnpoint);
 		} else {
 			Location lobby = getFlag(FlagType.LOBBY) == null ? getRandomLocation() : getFlag(FlagType.LOBBY);
