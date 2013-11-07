@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -25,7 +25,6 @@ import static de.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
 import java.util.Iterator;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -244,9 +243,10 @@ public class SignWall extends RegionCuboid implements DatabaseSerializeable {
 				Sign sign = (Sign)locations[i].getBlock().getState();
 				
 				if (inIterator.hasNext()) {
-					String name = inIterator.next().getName();
+					SpleefPlayer player = inIterator.next();
+					String name = player.getName();
 					
-					Team team = game.getComponents().getTeam(Bukkit.getPlayer(name));
+					Team team = game.getComponents().getTeam(player);
 					String prefix = team == null ? name.equalsIgnoreCase("matzefratze123") ? ChatColor.DARK_RED.toString() : "" : team.getColor().toString();
 					sign.setLine(line, prefix + (name.equalsIgnoreCase("matzefratze123") ? "matzefratze" : prefix + name));
 					sign.update();

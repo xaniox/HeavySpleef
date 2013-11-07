@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -20,8 +20,6 @@
 package de.matzefratze123.heavyspleef.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class ArrayHelper {
 	
@@ -38,29 +36,6 @@ public class ArrayHelper {
 		}
 		
 		return list;
-	}
-	
-	public static <T> Set<T> asSet(T[] array) {
-		Set<T> set = new HashSet<T>();
-		
-		for (T value : array) {
-			set.add(value);
-		}
-		
-		return set;
-	}
-	
-	public static <T> Set<String> enumAsSet(Iterable<T> array, boolean lowerCase) {
-		Set<String> set = new HashSet<String>();
-		
-		for (T enumeration : array) {
-			String add = enumeration.toString();
-			if (lowerCase)
-				add = add.toLowerCase();
-			set.add(add);
-		}
-		
-		return set;
 	}
 	
 }

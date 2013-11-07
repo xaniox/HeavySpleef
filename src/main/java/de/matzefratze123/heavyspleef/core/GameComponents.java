@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package de.matzefratze123.heavyspleef.core;
 
 import java.util.ArrayList;
@@ -6,12 +25,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.api.IGameComponents;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class GameComponents implements IGameComponents {
@@ -308,7 +327,7 @@ public class GameComponents implements IGameComponents {
 			}
 		}
 		
-		Team team = new Team(color, game);
+		Team team = new Team(color);
 		teams.add(team);
 	}
 	@Override
@@ -327,9 +346,9 @@ public class GameComponents implements IGameComponents {
 	}
 	
 	@Override
-	public Team getTeam(Player player) {
+	public Team getTeam(SpleefPlayer player) {
 		for (Team team : teams) {
-			for (Player p : team.getPlayers()) {
+			for (SpleefPlayer p : team.getPlayers()) {
 				if (player.getName().equalsIgnoreCase(p.getName())) {
 					return team;
 				}
@@ -352,7 +371,7 @@ public class GameComponents implements IGameComponents {
 	}
 	
 	@Override
-	public boolean removePlayerFromTeam(Player player) {
+	public boolean removePlayerFromTeam(SpleefPlayer player) {
 		boolean removed = false;
 		
 		for (Team team : teams) {
@@ -375,6 +394,10 @@ public class GameComponents implements IGameComponents {
 		return false;
 	}
 	
+	public boolean hasTeam(Team team) {
+		return teams.contains(team);
+	}
+	
 	@Override
 	public List<Team> getTeams() {
 		return teams;
@@ -388,10 +411,17 @@ public class GameComponents implements IGameComponents {
 		return set;
 	}
 	
-	public void resetTeams() {
+	@Override
+	public List<Team> getActiveTeams() {
+		List<Team> active = new ArrayList<Team>();
+		
 		for (Team team : teams) {
-			team.resetKnockouts();
+			if (team.hasPlayersLeft()) {
+				active.add(team);
+			}
 		}
+		
+		return active;
 	}
 	
 	/* Teams end */

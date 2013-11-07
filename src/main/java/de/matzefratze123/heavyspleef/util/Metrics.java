@@ -1,6 +1,6 @@
 /*
  * Metrics class submitts stats to mcstats.org
- * All credits to this class going to Hidendra
+ * All credits to this class are going to Hidendra
  */
 package de.matzefratze123.heavyspleef.util;
 

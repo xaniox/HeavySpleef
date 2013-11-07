@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -23,7 +23,6 @@ package de.matzefratze123.heavyspleef.database;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 /**

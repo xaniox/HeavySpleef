@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *

@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -22,14 +22,10 @@ package de.matzefratze123.heavyspleef.core;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.kitteh.tag.TagAPI;
 
-import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
+import de.matzefratze123.heavyspleef.listener.TagListener;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Util;
 
@@ -37,73 +33,54 @@ public class Team {
 
 	public static ChatColor[] allowedColors = new ChatColor[] {ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.GRAY};
 	
-	private Game game;
-	private List<String> players = new ArrayList<String>();
+	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
 	private ChatColor color;
 	
 	private int maxplayers = -1;
 	private int minplayers = -1;
 	
-	private int currentKnockouts = 0;
-	
-	public Team(ChatColor color, Game game) {
+	public Team(ChatColor color) {
 		this.color = color;
-		this.game = game;
 	}
 	
 	public ChatColor getColor() {
 		return this.color;
 	}
 	
-	public void join(Player player) {
-		if (players.contains(player.getName())) {
+	public void join(SpleefPlayer player) {
+		if (players.contains(player)) {
 			player.sendMessage(LanguageHandler._("alreadyInTeam", color + Util.formatMaterialName(color.name())));
 			return;
 		}
 		
-		players.add(player.getName());
+		players.add(player);
 		player.sendMessage(LanguageHandler._("addedToTeam", color + Util.formatMaterialName(color.name())));
 		
-		if (HeavySpleef.getInstance().getHookManager().getService(TagAPIHook.class).hasHook())
-			TagAPI.refreshPlayer(player);
+		TagListener.setTag(player, color);
 	}
 	
-	public void leave(Player player) {
-		if (!players.contains(player.getName())) {
+	public void leave(SpleefPlayer player) {
+		if (!players.contains(player)) {
 			player.sendMessage(LanguageHandler._("notInThisTeam", color + Util.formatMaterialName(color.name())));
 			return;
 		}
 		
-		players.remove(player.getName());
+		players.remove(player);
 		player.sendMessage(LanguageHandler._("removedFromTeam", color + Util.formatMaterialName(color.name())));
 		
-		if (HeavySpleef.getInstance().getHookManager().getService(TagAPIHook.class).hasHook())
-			TagAPI.refreshPlayer(player);
+		TagListener.setTag(player, null);
 	}
 	
-	public boolean hasPlayer(Player player) {
-		return players.contains(player.getName());
+	public boolean hasPlayer(SpleefPlayer player) {
+		return players.contains(player);
 	}
 	
 	public boolean hasPlayersLeft() {
 		return players.size() > 0;
 	}
 	
-	public Player[] getPlayers() {
-		List<Player> players = new ArrayList<Player>();
-		for (String str : this.players) {
-			Player player = Bukkit.getPlayer(str);
-			if (player == null)
-				continue;
-			
-			players.add(player);
-		}
-		
-		return players.toArray(new Player[players.size()]);
-	}
-	
-	public Game getGame() {
-		return game;
+	public List<SpleefPlayer> getPlayers() {
+		return players;
 	}
 	
 	@Override
@@ -170,15 +147,13 @@ public class Team {
 	}
 	
 	public int getCurrentKnockouts() {
-		return this.currentKnockouts;
-	}
-	
-	public void resetKnockouts() {
-		this.currentKnockouts = 0;
-	}
-	
-	public void addKnockout() {
-		this.currentKnockouts += 1;
+		int knockouts = 0;
+		
+		for (SpleefPlayer player : players) {
+			knockouts += player.getKnockouts();
+		}
+		
+		return knockouts;
 	}
 	
 }

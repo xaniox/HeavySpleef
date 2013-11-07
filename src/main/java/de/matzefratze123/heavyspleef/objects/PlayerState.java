@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -41,7 +41,7 @@ public class PlayerState {
 	private float exp;
 	private int level;
 	private boolean fly;
-	
+
 	public PlayerState(ItemStack[] invContents, ItemStack helmet,
 			ItemStack chestplate, ItemStack leggings, ItemStack boots,
 			float exhaustion, float saturation, int foodLevel, double health,
@@ -166,13 +166,13 @@ public class PlayerState {
 	public void setChestplate(ItemStack chestplate) {
 		this.chestplate = chestplate;
 	}
-	
+
 	public void setFly(boolean fly) {
 		this.fly = fly;
 	}
-	
+
 	public boolean isFly() {
 		return this.fly;
 	}
-	
+
 }

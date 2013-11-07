@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -24,8 +24,8 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.Team;
@@ -103,11 +103,8 @@ public class CommandStart extends HSCommand {
 			return;
 		}
 		if (game.getFlag(FlagType.TEAM)) {
-			int c = 0;
 			for (Team team : game.getComponents().getTeams()) {
-				if (team.hasPlayersLeft())
-					c++;
-				if (team.getPlayers().length < team.getMinPlayers()) {
+				if (team.getPlayers().size() < team.getMinPlayers()) {
 					player.sendMessage(_("teamNeedMorePlayers", team.getColor()
 							.name().toLowerCase(),
 							String.valueOf(team.getMinPlayers())));
@@ -116,8 +113,9 @@ public class CommandStart extends HSCommand {
 			}
 
 			// Check if there is only one team
-			if (c <= 1) {
+			if (game.getComponents().getActiveTeams().size() < 2) {
 				player.sendMessage(_("minimumTwoTeams"));
+				return;
 			}
 		}
 

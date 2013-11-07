@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -25,11 +25,9 @@ import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;

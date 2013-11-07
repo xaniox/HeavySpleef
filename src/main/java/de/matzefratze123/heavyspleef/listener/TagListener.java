@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -23,34 +23,43 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
 import org.kitteh.tag.TagAPI;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+
 public class TagListener implements Listener {
 	
-	private static Map<String, ChatColor> tags = new HashMap<String, ChatColor>();
+	private static Map<SpleefPlayer, ChatColor> tags = new HashMap<SpleefPlayer, ChatColor>();
 	
-	public static void setTag(Player player, ChatColor tag) {
-		if (tag == null) {
-			tags.remove(player.getName());
-		} else {
-			tags.put(player.getName(), tag);
+	public static void setTag(SpleefPlayer player, ChatColor tag) {
+		if (!HeavySpleef.getInstance().getHookManager().getService(TagAPIHook.class).hasHook()) {
+			return;
 		}
 		
-		TagAPI.refreshPlayer(player);
+		if (tag == null) {
+			tags.remove(player);
+		} else {
+			tags.put(player, tag);
+		}
+		
+		TagAPI.refreshPlayer(player.getBukkitPlayer());
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onNameTagReceive(PlayerReceiveNameTagEvent e) {
-		if (!tags.containsKey(e.getNamedPlayer().getName())) {
+		SpleefPlayer namedPlayer = HeavySpleef.getInstance().getSpleefPlayer(e.getNamedPlayer());
+		
+		if (!tags.containsKey(namedPlayer)) {
 			return;
 		}
 		
-		String tag = tags.get(e.getNamedPlayer().getName()) + e.getNamedPlayer().getName();
+		String tag = tags.get(namedPlayer) + namedPlayer.getName();
 		if (tag.length() > 16)
 			tag = tag.substring(0, 16);
 		

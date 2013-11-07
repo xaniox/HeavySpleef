@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package de.matzefratze123.heavyspleef.api;
 
 import java.util.List;
@@ -5,14 +24,12 @@ import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.core.BroadcastType;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.core.StopCause;
-import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
@@ -83,14 +100,6 @@ public interface IGame {
 	 * @param player The player to join
 	 */
 	public void join(SpleefPlayer player);
-	
-	/**
-	 * Joins a game with the given team
-	 * 
-	 * @param player The player to join
-	 * @param team The players team
-	 */
-	public void join(SpleefPlayer player, Team team);
 	
 	/**
 	 * Leaves a game

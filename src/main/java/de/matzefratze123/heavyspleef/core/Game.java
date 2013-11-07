@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package de.matzefratze123.heavyspleef.core;
 
 import static de.matzefratze123.heavyspleef.core.flag.FlagType.ITEMREWARD;
@@ -135,8 +154,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		
 		state = GameState.INGAME;
 		removeBoxes();
-		
-		//Statistic add FIXME
 		
 		if (getFlag(FlagType.TIMEOUT) > 0) {
 			TimeoutTask timeoutTask = new TimeoutTask(getFlag(FlagType.TIMEOUT), this);
@@ -278,9 +295,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		while (iterator.hasNext()) {
 			SpleefPlayer player = iterator.next();
 			iterator.remove();
-			
-			if (player == winner) {
-				giveRewards(player, true, 0);
+			if (components.getTeam(player) != null) {
+				components.getTeam(player).leave(player);
 			}
 			
 			safeTeleport(player, getFlag(FlagType.LOSE));
@@ -294,6 +310,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			broadcast(_("hasWon", ViPManager.colorName(winner.getName()), this.getName()), ConfigUtil.getBroadcast("win"));
 			winner.sendMessage(_("win"));
 			winner.getStatistic().addWin();
+			giveRewards(winner, true, 0);
 			SpleefLogger.log(LogType.WIN, this, winner);
 		} else if (cause == StopCause.DRAW) {
 			broadcast(_("endedDraw", getName()), ConfigUtil.getBroadcast("win"));
@@ -305,9 +322,58 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		
 		components.updateScoreBoards();
 		components.updateWalls();
-		components.resetTeams();
 		components.regenerateFloors();
 		roundsPlayed = 0;
+		jackpot = 0;
+		
+		queue.processQueue();
+	}
+	
+	/* Extra method to stop the game per a winner team */
+	private void stop(Team winnerTeam) {
+		//Cancel all tasks
+		for (String task : tasks.keySet()) {
+			cancelTask(task);
+		}
+		
+		int teamSize = winnerTeam.getPlayers().size();
+		
+		SpleefFinishEvent event = new SpleefFinishEvent(this, StopCause.WIN, null);
+		Bukkit.getPluginManager().callEvent(event);
+		
+		Iterator<SpleefPlayer> iterator = inPlayers.iterator();
+		while (iterator.hasNext()) {
+			SpleefPlayer player = iterator.next();
+			
+			Team playerTeam = components.getTeam(player);
+			iterator.remove();
+			
+			if (playerTeam == winnerTeam) {
+				giveRewards(player, false, teamSize);
+				player.getStatistic().addWin();
+			}
+			
+			safeTeleport(player, getFlag(FlagType.LOSE));
+			player.restoreState();
+			
+			playerTeam.leave(player);
+			
+			player.clearGameData();
+			player.getBukkitPlayer().setFireTicks(0);
+			player.getBukkitPlayer().setFallDistance(0);
+		}
+		
+		broadcast(_("hasWon", "Team " + winnerTeam.getColor() + winnerTeam.getColor().name().toLowerCase() + ChatColor.GREEN, this.getName()), ConfigUtil.getBroadcast("win"));
+		
+		state = GameState.JOINABLE;
+		outPlayers.clear();
+		removeBoxes();
+		
+		components.updateScoreBoards();
+		components.updateWalls();
+		components.regenerateFloors();
+		roundsPlayed = 0;
+		jackpot = 0;
 		
 		queue.processQueue();
 	}
@@ -367,16 +433,10 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 	@Override
 	public void join(SpleefPlayer player) {
-		join(player, null);
-	}
-
-	@Override
-	public void join(SpleefPlayer player, Team team) {
-		//TODO Teams?
-		
 		if (player.isActive()) {
 			return;
 		}
+		
 		if (getFlag(FlagType.ONEVSONE) && inPlayers.size() >= 2) {
 			return;
 		}
@@ -490,6 +550,10 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			}
 		} else {
 			inPlayers.remove(player);
+			if (components.getTeam(player) != null) {
+				components.getTeam(player).leave(player);
+			}
+			
 			player.restoreState();
 			
 			SpleefPlayer killer = detectKiller(player);
@@ -527,19 +591,26 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			components.updateScoreBoards();
 			components.updateWalls();
 			
-			if (inPlayers.size() <= 1) {
+			if (inPlayers.size() <= 1 && !getFlag(FlagType.TEAM)) {
 				if (state == GameState.INGAME) {
 					stop(StopCause.WIN, inPlayers.get(0));
-				} else {
+				} else if (state != GameState.LOBBY) {
+					stop();
+				}
+			} else if (getFlag(FlagType.TEAM)) {
+				if (state == GameState.INGAME) {
+					List<Team> active = components.getActiveTeams();
+
+					if (active.size() <= 1) {
+						stop(active.get(0));
+					}
+				} else if (state != GameState.LOBBY) {
 					stop();
 				}
 			}
-			if (inPlayers.size() <= 1 && (state == GameState.INGAME || state == GameState.COUNTING)) {
-				stop(StopCause.WIN, inPlayers.get(0));
-			}
 		}
 	}
-	
+
 	private SpleefPlayer detectKiller(SpleefPlayer player) {
 		List<IFloor> floors = components.getFloors();
 		Collections.sort(floors);
@@ -896,7 +967,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			int minPlayers = teamSection.getInt("min-players");
 			int maxPlayers = teamSection.getInt("max-players");
 			
-			Team team = new Team(color, game);
+			Team team = new Team(color);
 			team.setMinPlayers(minPlayers);
 			team.setMaxPlayers(maxPlayers);
 			

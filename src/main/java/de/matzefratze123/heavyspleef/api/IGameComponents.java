@@ -1,15 +1,34 @@
+/**
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package de.matzefratze123.heavyspleef.api;
 
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public interface IGameComponents {
 
@@ -67,14 +86,16 @@ public interface IGameComponents {
 	
 	public Team getTeam(ChatColor color);
 	
-	public Team getTeam(Player player);
+	public Team getTeam(SpleefPlayer player);
 	
 	public boolean removeTeam(ChatColor color);
 	
-	public boolean removePlayerFromTeam(Player player);
+	public boolean removePlayerFromTeam(SpleefPlayer player);
 	
 	public boolean hasTeam(ChatColor color);
 	
 	public List<Team> getTeams();
+	
+	public List<Team> getActiveTeams();
 
 }

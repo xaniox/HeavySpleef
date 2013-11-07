@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -35,17 +35,14 @@ import org.bukkit.entity.Player;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
-import de.matzefratze123.heavyspleef.hooks.HookManager;
-import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
 import de.matzefratze123.heavyspleef.hooks.VaultHook;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
-import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.LanguageHandler;
 import de.matzefratze123.heavyspleef.util.Permissions;
@@ -175,7 +172,7 @@ public class CommandJoin extends HSCommand {
 				return;
 			}
 			
-			if (team.getMaxPlayers() > 0 && team.getPlayers().length >= team.getMaxPlayers()) {
+			if (team.getMaxPlayers() > 0 && team.getPlayers().size() >= team.getMaxPlayers()) {
 				player.sendMessage(_("maxPlayersInTeam"));
 				return;
 			}
@@ -194,11 +191,8 @@ public class CommandJoin extends HSCommand {
 				@Override
 				public void run() {
 					if (game.getFlag(TEAM)) {
-						team.join(player.getBukkitPlayer());
+						team.join(player);
 						game.broadcast(_("playerJoinedTeam", player.getName(), team.getColor() + Util.formatMaterialName(team.getColor().name())), ConfigUtil.getBroadcast("player-join"));
-						
-						if (HookManager.getInstance().getService(TagAPIHook.class).hasHook())
-							TagListener.setTag(player.getBukkitPlayer(), team.getColor());
 					}
 					
 					game.join(player);

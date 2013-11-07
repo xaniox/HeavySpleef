@@ -1,5 +1,5 @@
 /**
- *   HeavySpleef - The simple spleef plugin for bukkit
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013 matzefratze123
  *
@@ -28,23 +28,33 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.BooleanFlag;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
-import de.matzefratze123.heavyspleef.util.ArrayHelper;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
 public class CommandFlag extends HSCommand {
 
+	private final String[] flagNames;
+	
 	public CommandFlag() {
+		List<Flag<?>> flags = FlagType.getFlagList();
+		flagNames = new String[flags.size()];
+		
+		for (int i = 0; i < flags.size(); i++) {
+			Flag<?> flag = flags.get(i);
+			
+			flagNames[i] = flag.getName();
+		}
+		
 		setMinArgs(2);
 		setOnlyIngame(true);
 		setUsage("/spleef flag <name> <flag> [state]\n" +
-				ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.getFlagList(), true));
+				ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", "));
 		setPermission(Permissions.SET_FLAG);
 		setHelp("Sets a flag for this game");
 	}
@@ -86,7 +96,7 @@ public class CommandFlag extends HSCommand {
 		
 		if (!found || flag == null) {
 			player.sendMessage(_("invalidFlag"));
-			player.sendMessage(__(ChatColor.RED + "Available flags: " + ArrayHelper.enumAsSet(FlagType.getFlagList(), true)));
+			player.sendMessage(__(ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", ")));
 			return;
 		}
 		
