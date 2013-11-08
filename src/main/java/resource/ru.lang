@@ -178,13 +178,13 @@ welcomeToSpectate: &7Вы наблюдатель. Используйте &l/sple
 
 gameDisabled: &cИгру &6%a &cотключил %a
 gameEnabled: &aИгру &6%a &aвключил %a
-gameHasStarted: &1Игра началась! Удачи...
+gameHasStarted: &6&lИгра началась! &7Удачи...
 gameOnArenaHasStarted: &6Игра на арене %a началась!
 startedGameWith: &6Началась игра с %a игроками!
-gameIsStarting: &1Игра начнется через &4%a&1 секунд...
+gameIsStarting: &7Игра начнется через &6&l%a&7 секунд...
 gameStopped: &cИгра была остановлена!
 playerJoinedGame: &a%a присоединился к игре!
-hasWon: &a%a &1победил на арене &6%a&1!
+hasWon: &7%a &7победил на арене &6&l%a&7!
 teamWin: &aКоманда %a &aпобедила на арене %a&7!
 playerJoinedTeam: &a%a зашел за команду %a!
 teamEliminated: &aКоманда %a &aбыла исключена!
@@ -196,17 +196,17 @@ superKnockout: &5%a &5получил Super Knockout!
 unbelievableKnockout: &5%a получил &6&lUnbelievable Knockout&r&5!
 
 wonRound: &a%a &cвыиграл раунд &6%a &cна арене &6%a&c!
-roundsRemaining: &1%a раундов осталось!
+roundsRemaining: &6&l%a &7раундов осталось!
 wonThe1vs1: &a%a выиграл на арене против %a!
 endedDraw: &aTИгра на арене %a закончился в ничью...
-remaining: &1%a игроков осталось!
+remaining: &6&l%a &7игроков осталось!
 
 roundStarted: &aРаунд &6%a &aна арене &6%a &aначат!
-roundStartsIn: &1Раунд начнется через &4%a&1 секунд...
+roundStartsIn: &7Раунд начнется через &6&l%a&7 секунд...
 
-timeLeftSeconds: &1%a сек. до завершения игры!
-timeLeftMinutes: &1%a минут и %a секунд до конца игры!
-timeoutReached: &1Время вышло! Игра закончена...
+timeLeftSeconds: &6&l%a &7сек. до завершения игры!
+timeLeftMinutes: &6&l%a &7минут и &6&l%a&7 секунд до конца игры!
+timeoutReached: &6&lВремя вышло! &7Игра закончена...
 
 loseCause_kick: &6%a &cизгнан из игры!
 loseCause_leave: &6%a &cвышел из игры на арене %a!

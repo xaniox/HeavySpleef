@@ -185,19 +185,19 @@ welcomeToSpectate: &7Du beobachtest jetzt das Spiel. Benutze &l/spleef leave &7u
 
 gameDisabled: &cDas Spiel &6%a &cwurde von %a&c deaktiviert!
 gameEnabled: &aDas Spiel &6%a &awurde von %a&c aktiviert!
-gameHasStarted: &1Spiel gestartet! Viel Gl\u00FCck...
+gameHasStarted: &6&lSpiel gestartet! &7Viel Gl\u00FCck...
 gameOnArenaHasStarted: &6Das Spiel in Arena %a hat gestartet!
 startedGameWith: &6Das Spiel wurde mit %a Spielern gestartet!
-gameIsStarting: &1Spiel startet in %a Sekunden...
+gameIsStarting: &7Spiel startet in &6&l%a &7Sekunden...
 gameStopped: &cDas Spiel wurde gestoppt!
 playerJoinedGame: &a%a&a ist dem Spiel beigetreten!
-hasWon: &a%a&a &1hat das Spiel in Arena %a gewonnen!
+hasWon: &7%a&7 hat das Spiel in Arena &6&l%a &7gewonnen!
 teamWin: &aTeam %a &ahat das Spiel in Arena %a &7gewonnen!
 playerJoinedTeam: &a%a ist dem %a &aTeam beigetreten!
 teamEliminated: &aDas %a&a Team ist ausgeschieden!
 floorsRegenerated: &aAlle Ebenen wurden neu generiert.
 
-remaining: &1%a Spieler verbleiben!
+remaining: &6&l%a &7Spieler verbleiben!
 
 doubleKnockout: &7%a: &7Doppel-Knockout!
 tripleKnockout: &9%a: &9Trippel-Knockout!
@@ -205,16 +205,16 @@ superKnockout: &5%a: &5Super-Knockout!
 unbelievableKnockout: &5%a: &6&lUnglaublicher-Knockout&r&5!
 
 wonRound: &a%a &chat Runde &6%a &cvon &6%a &cgewonnen!
-roundsRemaining: &1%a Runden verbleiben!
+roundsRemaining: &6&l%a &7Runden verbleiben!
 wonThe1vs1: &a%a &ahat das Spiel gegen %a gewonnen! Gl\u00FCckwunsch!
 endedDraw: &aDas Spiel in Arena %a ist unentschieden ausgegangen...
 
 roundStarted: &aRunde &6%a &avon &6%a &agestartet!
-roundStartsIn: &1Round starts in %a seconds...
+roundStartsIn: &7Round starts in &6&l%a &7seconds...
 
-timeLeftSeconds: &1%a Sekunden \u00FCbrig bis das Spiel endet!
-timeLeftMinutes: &1%a Minuten und %a Sekunden \u00FCbrig bis das Spiel endet!
-timeoutReached: &1Timeout erreicht! Beende Spiel...
+timeLeftSeconds: &6&l%a &7Sekunden \u00FCbrig bis das Spiel endet!
+timeLeftMinutes: &6&l%a &7Minuten und &6&l%a &7Sekunden \u00FCbrig bis das Spiel endet!
+timeoutReached: &6&lTimeout erreicht! &7Spiel beendet.
 
 loseCause_kick: &6%a&6 &cwurde aus dem Spiel gekickt!
 loseCause_leave: &6%a&6 &chat das Spiel %a verlassen!

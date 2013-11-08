@@ -200,16 +200,16 @@ superKnockout: &5%a &5est un DIEU! (QUADRA-KILL!)
 unbelievableKnockout: &5%est LEGENDAIRE!!!!! (&6&lPENTA-KILL!&r&5)
 
 wonRound: &a%a &ca gagné le round &6%a &csur &6%a&c!
-roundsRemaining: &1%a rounds restants!
+roundsRemaining: &6&l%a &7rounds restants!
 wonThe1vs1: &a%a&a a gagné la partie contre %a! Bravo!
 endedDraw: &aLa partie sur l'arène %a s'est terminée en match nul...
 
 roundStarted: &aLe round &6%a &asur &6%a &aa commencé!
-roundStartsIn: &1Le round commence dans %a secondes...
+roundStartsIn: &7Le round commence dans &6&l%a &7secondes...
 
-timeLeftSeconds: &1%a seconde(s) avant la fin de la partie!
-timeLeftMinutes: &1%a minute(s) et %a seconde(s) avant la fin de la partie!
-timeoutReached: &1Chrono terminé!
+timeLeftSeconds: &6&l%a &7seconde(s) avant la fin de la partie!
+timeLeftMinutes: &6&l%a &7minute(s) et &6&l%a &7seconde(s) avant la fin de la partie!
+timeoutReached: &6&lChrono terminé!
 
 loseCause_kick: &6%a&6 &ca été kické de la partie!
 loseCause_leave: &6%a&6 &ca quitté la partie sur l'arène %a!
