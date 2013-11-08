@@ -71,12 +71,12 @@ public class FloorCylinder extends RegionCylinder implements IFloor {
 		int radius = region.getRadius().getBlockX();
 
 		/*
-		 * Make a cuboid which covers all of the cylinder Then go trough this
+		 * Make a cuboid which covers all of the cylinder. Then go trough this
 		 * cuboid and check if the cylinder contains the current location. If
 		 * yes at the block to the list, if not then not.
 		 */
-		Location firstPoint = center.add(radius, 0, radius);
-		Location secondPoint = center.add(-radius, 0, -radius);
+		Location firstPoint = center.clone().add(radius, 0, radius);
+		Location secondPoint = center.clone().subtract(radius, 0, radius);
 
 		for (int x = secondPoint.getBlockX(); x <= firstPoint.getBlockX(); x++) {
 			for (int y = secondPoint.getBlockY(); y <= firstPoint.getBlockY(); y++) {
@@ -118,7 +118,7 @@ public class FloorCylinder extends RegionCylinder implements IFloor {
 		if (type == FloorType.GIVENFLOOR) {
 			for (SimpleBlockData data : blockDatas) {
 				Block block = data.getWorld().getBlockAt(data.getLocation());
-
+				
 				block.setType(data.getMaterial());
 				block.setData(data.getData());
 			}
