@@ -110,7 +110,6 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 		//  \___/ \___/  (_)  \___/ \___/ 
 		//
 		
-		
 		displays = new SegmentDisplay[4];
 		
 		Location firstPoint = this.firstPoint.clone();

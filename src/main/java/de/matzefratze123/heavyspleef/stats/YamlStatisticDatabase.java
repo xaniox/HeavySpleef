@@ -79,7 +79,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 		try {
 			db.save(databaseFile);
 		} catch (Exception e) {
-			Logger.warning("Could not save stats to " + databaseFile.getName() + "! IOException?");
+			Logger.warning("Could not save stats to " + databaseFile.getName() + "! IOException: " + e.getMessage());
 		}
 	}
 
