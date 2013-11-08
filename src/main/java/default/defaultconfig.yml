@@ -22,11 +22,6 @@ general:
   # Which spleef prefix should we use?
   spleef-prefix: '&8[&6&lSpleef&8]'
   
-  # Should player inventorys and other stuff (for example health, foodlevel etc.) be saved?
-  # The state of the player will be restored on the end of the game. This makes sure that
-  # no player can cheat via enderpearls or something similar
-  saveInventory: true
-  
   # Should arenas be protected?
   protectArena: true
   
@@ -46,9 +41,6 @@ general:
   - /money
   - /msg
   - /tell
-  
-  # Should players be able to join the game while it's counting?
-  joinAtCountdown: true
   
   # How long should the countdown between a round be?
   countdownBetweenRound: 5
@@ -77,10 +69,6 @@ general:
   # to wait until they can join a spleef game. 
   # Set this to 0 to disable this function
   pvptimer: 0
-  
-  # The plugin can show ingame players a sidebar scoreboard
-  # with the knockouts and the status.
-  showSidebarScoreboard: false
   
   # This is the ready block for players who don't want to use
   # /spleef ready or /spleef vote
@@ -219,10 +207,5 @@ statistic:
   databaseName: ''
   user: 'root'
   password: ''
-  
-  # Set this to true if you want
-  # to save statistics instantly
-  # (false will only save on server shutdown)
-  push-on-change: true
   
 # How much... No, you've finished the configuration ;)
