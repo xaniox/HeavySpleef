@@ -1,7 +1,7 @@
 name: HeavySpleef
 description: Easy to use spleef plugin for bukkit
 
-version: 1.4
+version: Dev 1.4.1
 author: matzefratze123
 
 # Load WorldManagement Plugins before HeavySpleef
