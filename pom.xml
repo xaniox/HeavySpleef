@@ -15,10 +15,7 @@
     <sourceDirectory>src</sourceDirectory>
     <resources>
       <resource>
-        <directory>src</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
+        <directory>src/main/resources</directory>
       </resource>
     </resources>
     <plugins>
@@ -38,34 +35,30 @@
             <addMavenDescriptor>false</addMavenDescriptor>
           </archive>
           <finalName>${project.name}</finalName>
-          <includes>
-          	<include>**/*.yml</include>
-          	<include>**/*.lang</include>
-          </includes>
         </configuration>
       </plugin>
     </plugins>
   </build>
   <repositories>
-		<!-- Bukkit's repository -->
-		<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/content/groups/public/</url>
-		</repository>
-		<!-- sk89q's repository -->
-		<repository>
-			<id>sk89q-repo</id>
-			<url>http://maven.sk89q.com/repo/</url>
-		</repository>
-		<!-- mbaxter's repository -->
-		<repository>
-			<id>mbaxter-repo</id>
-			<url>http://repo.kitteh.org/content/repositories/public/</url>
-		</repository>
-		<repository>
-			<id>vault-repo</id>
-			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
-		</repository>
+	<!-- Bukkit's repository -->
+	<repository>
+	  <id>bukkit-repo</id>
+	  <url>http://repo.bukkit.org/content/groups/public/</url>
+	</repository>
+	<!-- sk89q's repository -->
+	<repository>
+	  <id>sk89q-repo</id>
+	  <url>http://maven.sk89q.com/repo/</url>
+	</repository>
+	<!-- mbaxter's repository -->
+	<repository>
+	  <id>mbaxter-repo</id>
+	  <url>http://repo.kitteh.org/content/repositories/public/</url>
+	</repository>
+	<repository>
+	  <id>vault-repo</id>
+      <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+	</repository>
   </repositories>
   <dependencies>
   	<dependency>
@@ -89,5 +82,4 @@
   		<version>LATEST</version>
   	</dependency>
   </dependencies>
-
 </project>
