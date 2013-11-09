@@ -479,12 +479,12 @@ public class PlayerListener implements Listener {
 		e.getPlayer().sendMessage(LanguageHandler._("cantUseCommands"));
 	}
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		handleQuit(e);
 	}
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerKick(PlayerKickEvent e) {
 		handleQuit(e);
 	}
@@ -556,8 +556,7 @@ public class PlayerListener implements Listener {
 	}
 
 	private void handleQuit(PlayerEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 
 		QueuesManager.removeFromQueue(player);
 

@@ -312,12 +312,12 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		return player;
 	}
 	
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onLeave(PlayerQuitEvent e) {
 		handleQuit(e);
 	}
 	
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onKick(PlayerKickEvent e) {
 		handleQuit(e);
 	}
