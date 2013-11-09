@@ -63,10 +63,7 @@ public class YamlDatabase {
 		this.plugin = HeavySpleef.getInstance();
 		
 		File folder = new File(plugin.getDataFolder(), File.separator + "games");
-		File statsFolder = new File(plugin.getDataFolder(), File.separator + "stats");
-		
 		folder.mkdirs();
-		statsFolder.mkdirs();
 		
 		this.databaseFile = new File(folder, "games.yml");
 		this.globalDatabaseFile = new File(folder, "global-settings.yml");
