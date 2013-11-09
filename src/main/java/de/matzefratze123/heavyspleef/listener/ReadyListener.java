@@ -26,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.CommandVote;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
@@ -69,6 +70,8 @@ public class ReadyListener implements Listener {
 			player.setReady(true);
 			player.sendMessage(LanguageHandler._("taggedAsReady"));
 		}
+		
+		CommandVote.tryStart(game);
 	}
 	
 }
