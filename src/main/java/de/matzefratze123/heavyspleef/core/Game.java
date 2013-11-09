@@ -826,6 +826,29 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	}
 	
 	@Override
+	public int hashCode() {
+		int hash = 8;
+		hash = hash * 48 + name.hashCode();
+		
+		return hash;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Game)) {
+			return false;
+		}
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+		if (hashCode() == o.hashCode()) {
+			return true;
+		}
+		
+		return ((Game)o).getName().equalsIgnoreCase(name);
+	}
+	
+	@Override
 	public ConfigurationSection serialize() {
 		MemorySection section = new MemoryConfiguration();
 		
