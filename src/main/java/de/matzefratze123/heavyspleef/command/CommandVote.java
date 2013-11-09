@@ -77,10 +77,6 @@ public class CommandVote extends HSCommand {
 		int minPlayers = game.getFlag(FlagType.MINPLAYERS);
 		List<SpleefPlayer> ingame = game.getIngamePlayers();
 		
-		System.out.println(game.hasFlag(FlagType.MINPLAYERS));
-		System.out.println(minPlayers >= 2);
-		System.out.println(ingame.size() < minPlayers);
-		
 		if (game.hasFlag(FlagType.MINPLAYERS) && minPlayers >= 2 && ingame.size() < minPlayers) {
 			return;
 		}
@@ -94,9 +90,6 @@ public class CommandVote extends HSCommand {
 		}
 		
 		int percentVoted = (voted * 100)/ingame.size();
-		System.out.println(percentVoted);
-		System.out.println(percentNeeded);
-		
 		if (percentVoted < percentNeeded) {
 			return;
 		}

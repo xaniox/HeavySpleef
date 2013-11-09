@@ -494,8 +494,7 @@ public class PlayerListener implements Listener {
 	// spleef...
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getEntity());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getEntity());
 
 		if (player.isActive()) {
 
