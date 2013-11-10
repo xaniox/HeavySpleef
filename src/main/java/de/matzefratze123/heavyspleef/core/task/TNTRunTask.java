@@ -16,7 +16,7 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 public class TNTRunTask implements Runnable {
 
 	private static boolean started = false;
-	private static final long REPETITON = 6L;
+	private static final long REPETITON = 4L;
 	
 	private TNTRunRemoveBlocksTask belongingTask;
 	
@@ -28,7 +28,7 @@ public class TNTRunTask implements Runnable {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 0L, REPETITON);
 		belongingTask = new TNTRunRemoveBlocksTask();
 		
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), belongingTask, REPETITON / 2, REPETITON);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), belongingTask, 0L, REPETITON * 2);
 	}
 
 	@Override
@@ -76,9 +76,9 @@ public class TNTRunTask implements Runnable {
 							possibleFaces[2] = BlockFace.SOUTH_WEST;
 						} else {
 							//NORTH, WEST
-							possibleFaces[0] = BlockFace.SOUTH;
+							possibleFaces[0] = BlockFace.NORTH;
 							possibleFaces[1] = BlockFace.WEST;
-							possibleFaces[2] = BlockFace.SOUTH_WEST;
+							possibleFaces[2] = BlockFace.NORTH_WEST;
 						}
 					}
 					

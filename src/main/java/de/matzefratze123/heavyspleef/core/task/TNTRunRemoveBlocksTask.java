@@ -1,6 +1,5 @@
 package de.matzefratze123.heavyspleef.core.task;
 
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -29,7 +28,6 @@ public class TNTRunRemoveBlocksTask implements Runnable {
 			Block block = queuedBlocks.remove();
 			
 			block.setType(Material.AIR);
-			block.getWorld().playEffect(block.getLocation(), Effect.SMOKE, 4);
 		}
 	}
 
