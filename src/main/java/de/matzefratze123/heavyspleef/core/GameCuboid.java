@@ -71,8 +71,8 @@ public class GameCuboid extends Game {
 		differenceX = minX < maxX ? maxX - minX : minX - maxX; // Difference between corners X
 		differenceZ = minZ < maxZ ? maxZ - minZ : minZ - maxZ; // Difference between corners Z
 		
-		int randomX = minX + random.nextInt(differenceX + 1); // Choose a random X location
-		int randomZ = minZ + random.nextInt(differenceZ + 1); // Choose a random Z location
+		int randomX = minX + HeavySpleef.getRandom().nextInt(differenceX + 1); // Choose a random X location
+		int randomZ = minZ + HeavySpleef.getRandom().nextInt(differenceZ + 1); // Choose a random Z location
 		
 		double y = floor.getY() + 1.25D;
 		

@@ -65,10 +65,10 @@ public class GameCylinder extends Game {
 		
 		int y = floors.get(floors.size() - 1).getY() + 1;
 
-	    double i = random.nextInt(360) + 1;
-	    double r = random.nextInt(region.getWorldEditRegion().getRadius().getBlockX() - 1);
+	    double i = HeavySpleef.getRandom().nextInt(360) + 1;
+	    double r = HeavySpleef.getRandom().nextInt(region.getWorldEditRegion().getRadius().getBlockX() - 1);
 
-	    double angle = i * 3.141592653589793D / 180.0D;
+	    double angle = i * Math.PI / 180.0D;
 	    int x = (int)(region.getWorldEditRegion().getCenter().getX() + r * Math.cos(angle));
 	    int z = (int)(region.getWorldEditRegion().getCenter().getZ() + r * Math.sin(angle));
 

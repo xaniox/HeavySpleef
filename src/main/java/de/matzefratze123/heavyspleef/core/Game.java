@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -63,6 +62,7 @@ import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.core.region.FloorCylinder;
+import de.matzefratze123.heavyspleef.core.region.FloorType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.core.task.PlayerTeleportTask;
@@ -86,27 +86,27 @@ import de.matzefratze123.heavyspleef.util.ViPManager;
 
 public abstract class Game implements IGame, DatabaseSerializeable {
 	
-	protected final static Random random = new Random();
-	
+	//Persistent data
 	private String name;
 	private final GameComponents components;
-	
+	private Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
+	private final GameQueue queue;
 	private GameState state;
-	private int countLeft;
-	private int roundsPlayed;
-	private int jackpot;
-	private PlayerTeleportTask teleportTask;
 	
-	/* Saving reference which points to the player object, not the instance of an object! */
+	//Per game
+	/* A map which saves all task id's */
+	private Map<String, Integer> tasks = new HashMap<String, Integer>(); 
+	/* Saving reference that points to the player object, not the instance of an object!
+	 * The presumption that this causes memory leaks is false! */
 	private List<SpleefPlayer> inPlayers = new ArrayList<SpleefPlayer>();
 	private List<OfflinePlayer> outPlayers = new ArrayList<OfflinePlayer>();
 	private List<SpleefPlayer> spectating = new ArrayList<SpleefPlayer>();
+	private int countLeft;
+	private int roundsPlayed;
+	private int jackpot;
 	
-	private final GameQueue queue;
-	private Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
-	
-	/* A map which saves all task id's */
-	private Map<String, Integer> tasks = new HashMap<String, Integer>(); 
+	//Temporary
+	private PlayerTeleportTask teleportTask;
 	
 	public Game(String name) {
 		this.name = name;
