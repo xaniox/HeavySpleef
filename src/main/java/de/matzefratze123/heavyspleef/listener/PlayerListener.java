@@ -62,8 +62,8 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.BlockIterator;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.core.QueuesManager;
@@ -92,8 +92,7 @@ public class PlayerListener implements Listener {
 
 		Game game = player.getGame();
 
-		if (game.getGameState() != GameState.COUNTING
-				&& game.getGameState() != GameState.INGAME) {
+		if (game.getGameState() != GameState.INGAME) {
 			return;
 		}
 
@@ -137,8 +136,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 		Block block = e.getClickedBlock();
 
 		if (player == null)
@@ -154,7 +152,7 @@ public class PlayerListener implements Listener {
 		if (!game.canSpleef(player, block.getLocation()))
 			return;
 
-		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG))
+		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG) || game.getFlag(FlagType.TNTRUN))
 			return;
 
 		if (game.getFlag(FlagType.BLOCKBREAKEFFECT)) {
@@ -191,18 +189,15 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 		Block block = e.getBlock();
 
 		if (!player.isActive()) {
 			for (Game game : GameManager.getGames()) {
 				if (game.contains(block.getLocation())) {
-					if (player.getBukkitPlayer().hasPermission(
-							Permissions.BUILD_BYPASS.getPerm()))
+					if (player.getBukkitPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 						return;
-					if (!HeavySpleef.getSystemConfig().getBoolean(
-							"general.protectArena", true))
+					if (!HeavySpleef.getSystemConfig().getBoolean("general.protectArena", true))
 						return;
 
 					e.setCancelled(true);
@@ -223,7 +218,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG)) {
+		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG) || game.getFlag(FlagType.TNTRUN)) {
 			e.setCancelled(true);
 			return;
 		}

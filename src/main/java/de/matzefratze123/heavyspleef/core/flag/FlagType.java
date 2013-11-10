@@ -42,6 +42,7 @@ public enum FlagType {
 	
 	public static Set<Flag<?>> customFlags = new HashSet<Flag<?>>();
 	
+	/* Boolean flags */
 	@FlagData
 	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1", false);
 	@FlagData(aliases = {"shovel"})
@@ -53,12 +54,15 @@ public enum FlagType {
 	@FlagData
 	public static final BooleanFlag BOWSPLEEF = new BooleanFlag("bowspleef", false);
 	@FlagData
+	public static final BooleanFlag TNTRUN = new BooleanFlag("tntrun", false);
+	@FlagData
 	public static final BooleanFlag SPLEGG = new BooleanFlag("splegg", false);
 	@FlagData
 	public static final BooleanFlag BOXES = new BooleanFlag("boxes", true);
 	@FlagData
 	public static final BooleanFlag BLOCKBREAKEFFECT = new BooleanFlag("blockbreakeffect", false);
 	
+	/* Location flags */
 	@FlagData(aliases = {"winpoint"})
 	public static final LocationFlag WIN = new LocationFlag("win");
 	@FlagData(aliases = {"losepoint"})
@@ -74,6 +78,7 @@ public enum FlagType {
 	@FlagData
 	public static final ListFlag<SerializeableLocation> NEXTSPAWNPOINT = new ListFlagLocation("nextspawnpoint", null);
 	
+	/* Integer flags */
 	@FlagData(aliases = {"min"})
 	public static final IntegerFlag MINPLAYERS = new IntegerFlag("minplayers", 2);
 	@FlagData(aliases = {"max"})
@@ -93,6 +98,7 @@ public enum FlagType {
 	@FlagData(aliases = {"regeneration-intervall", "regeneration", "regen-intervall"})
 	public static final IntegerFlag REGEN_INTERVALL = new IntegerFlag("regen", -1);
 	
+	/* ItemStack flags */
 	@FlagData
 	public static final ArrayItemStackFlag ITEMREWARD = new ArrayItemStackFlag("itemreward", new ItemStack[]{});
 	@FlagData

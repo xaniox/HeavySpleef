@@ -22,6 +22,7 @@ package de.matzefratze123.heavyspleef;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,6 +43,7 @@ import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.CommandHandler;
 import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
+import de.matzefratze123.heavyspleef.core.task.TNTRunTask;
 import de.matzefratze123.heavyspleef.database.YamlDatabase;
 import de.matzefratze123.heavyspleef.hooks.Hook;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
@@ -80,6 +82,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		
 	//Object instances start
 	private static HookManager hooks;
+	private static final Random random = new Random();
 	private YamlDatabase database;
 	private IStatisticDatabase statisticDatabase;
 	private SelectionManager selectionManager;
@@ -91,7 +94,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 
 	//Other utility stuff
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
-	public static final String[] commands = new String[] {"spleef", "spl", "hs", "hspleef"};
+	public static final String[] commands = new String[] {"spleef", "spl", "hspleef"};
 	
 	//Tasks
 	public int saverTid = -1;
@@ -137,6 +140,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		getCommand("spleef").setExecutor(new CommandHandler());
 		
 		startAntiCampingTask();
+		new TNTRunTask().start();
 		
 		//Command stuff
 		CommandHandler.initCommands();
@@ -158,6 +162,10 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	
 	public static HeavySpleef getInstance() {
 		return instance;
+	}
+	
+	public static Random getRandom() {
+		return random;
 	}
 	
 	public Updater getUpdater() {
