@@ -69,7 +69,6 @@ public class CommandVote extends HSCommand {
 		
 		player.setReady(true);
 		player.sendMessage(_("successfullyVoted"));
-		tryStart(game);
 	}
 	
 	public static void tryStart(Game game) {
@@ -78,6 +77,9 @@ public class CommandVote extends HSCommand {
 		List<SpleefPlayer> ingame = game.getIngamePlayers();
 		
 		if (game.hasFlag(FlagType.MINPLAYERS) && minPlayers >= 2 && ingame.size() < minPlayers) {
+			return;
+		}
+		if (ingame.size() < 2) {
 			return;
 		}
 		

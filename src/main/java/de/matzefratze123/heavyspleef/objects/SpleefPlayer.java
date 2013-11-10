@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import de.matzefratze123.heavyspleef.command.CommandVote;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
@@ -93,6 +94,8 @@ public class SpleefPlayer {
 
 	public void setReady(boolean ready) {
 		this.ready = ready;
+		
+		CommandVote.tryStart(game);
 	}
 	
 	public void addBrokenBlock(Block block) {

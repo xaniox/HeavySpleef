@@ -70,8 +70,6 @@ public class ReadyListener implements Listener {
 			player.setReady(true);
 			player.sendMessage(LanguageHandler._("taggedAsReady"));
 		}
-		
-		CommandVote.tryStart(game);
 	}
 	
 }
