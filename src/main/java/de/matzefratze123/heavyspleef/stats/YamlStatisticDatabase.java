@@ -63,10 +63,11 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 				
 				ConfigurationSection section = null;
 				
-				if (!db.contains(stat.getName()))
+				if (!db.contains(stat.getName())) {
 					section = db.createSection(stat.getName());
-				else
+				} else {
 					section = db.getConfigurationSection(stat.getName());
+				}
 				
 				section.set("wins", stat.getWins());
 				section.set("loses", stat.getLoses());
@@ -80,6 +81,7 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 			db.save(databaseFile);
 		} catch (Exception e) {
 			Logger.warning("Could not save stats to " + databaseFile.getName() + "! IOException: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
