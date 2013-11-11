@@ -78,7 +78,7 @@ import de.matzefratze123.heavyspleef.objects.Region;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.RegionCylinder;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.SpleefLogger.LogType;
 import de.matzefratze123.heavyspleef.util.Util;
@@ -299,7 +299,10 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				components.getTeam(player).leave(player);
 			}
 			
-			safeTeleport(player, getFlag(FlagType.LOSE));
+			if (winner != null && winner != player) {
+				safeTeleport(player, getFlag(FlagType.LOSE));
+			}
+			
 			player.restoreState();
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
@@ -310,6 +313,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			broadcast(_("hasWon", ViPManager.colorName(winner.getName()), this.getName()), ConfigUtil.getBroadcast("win"));
 			winner.sendMessage(_("win"));
 			winner.getStatistic().addWin();
+			safeTeleport(winner, getFlag(FlagType.WIN));
 			giveRewards(winner, true, 0);
 			SpleefLogger.log(LogType.WIN, this, winner);
 		} else if (cause == StopCause.DRAW) {
@@ -754,7 +758,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	}
 	
 	private static String _(String... key) {
-		return LanguageHandler._(key);
+		return I18N._(key);
 	}
 	
 	private void safeTeleport(SpleefPlayer player, Location location) {
