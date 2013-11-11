@@ -33,7 +33,7 @@ public abstract class Selection {
 	
 	public abstract Location getSecond();
 	
-	public abstract boolean has();
+	public abstract boolean hasSelection();
 	
 	public abstract boolean isTroughWorlds();
 	

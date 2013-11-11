@@ -102,7 +102,7 @@ public class CommandAddFloor extends HSCommand {
 		}
 		
 		if (foundGame.getType() == GameType.CUBOID) {
-			if (!selection.has()) {
+			if (!selection.hasSelection()) {
 				player.sendMessage(_("needSelection"));
 				return;
 			}

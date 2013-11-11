@@ -19,47 +19,38 @@
  */
 package de.matzefratze123.heavyspleef.hooks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class HookManager {
 
-	//Hook instances start
-	public static VaultHook vaultHook = new VaultHook();
-	public static WorldEditHook weHook = new WorldEditHook();
-	public static TagAPIHook tagAPIHook = new TagAPIHook();
-	//Hook instances end
+	private static HookManager instance;
 	
-	public static Hook<?>[] allHooks = new Hook<?>[] {vaultHook, weHook, tagAPIHook};
-	private List<Hook<?>> hooks = new ArrayList<Hook<?>>();
+	private Hook<?>[] hooks = new Hook<?>[3];
 	
-	public HookManager() {
-		initHooks();
+	private HookManager() {
+		hooks[0] = new VaultHook();
+		hooks[1] = new WorldEditHook();
+		hooks[2] = new TagAPIHook();
 	}
 	
 	public static HookManager getInstance() {
-		return new HookManager();
-	}
-	
-	private void initHooks() {
-		for (Hook<?> hook : allHooks) {
-			if (hooks.contains(hook))
-				hooks.remove(hook);
-			hooks.add(hook);
+		if (instance == null) {
+			instance = new HookManager();
 		}
+		
+		return instance;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <V> Hook<V> getService(Class<? extends Hook<V>> clazz) {
+		Hook<V> found = null;
+		
 		for (Hook<?> hook : hooks) {
 			if (!hook.getClass().equals(clazz))
 				continue;
 			
-			Hook<V> h = (Hook<V>)hook;
-			return h;
+			found = (Hook<V>)hook;
 		}
-		
-		return null;
+	
+		return found;
 	}
 	
 }

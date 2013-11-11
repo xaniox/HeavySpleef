@@ -40,23 +40,42 @@ public class AntiCampingTask implements Runnable {
 	
 	private static boolean taskEnabled = false;
 	
+	private int id;
+	
 	private boolean warnUser;
 	private int     warnAt;
 	private int     teleportAt;
 	
-	private Map<String, Location> lastLocation = new HashMap<String, Location>();
-	private Map<String, Integer> antiCamping = new HashMap<String, Integer>();
+	private Map<SpleefPlayer, Location> lastLocation = new HashMap<SpleefPlayer, Location>();
+	private Map<SpleefPlayer, Integer> antiCamping = new HashMap<SpleefPlayer, Integer>();
 	
 	public AntiCampingTask() {
-		if (taskEnabled && isTaskRunning(HeavySpleef.getInstance().antiCampTid))
-			throw new IllegalStateException("Cannot start AntiCampingTask twice!");
-		
-		taskEnabled = true;
-		
 		//Get config values
 		warnAt = HeavySpleef.getSystemConfig().getInt("anticamping.warnAt", 3);
 		warnUser = HeavySpleef.getSystemConfig().getBoolean("anticamping.campWarn", true);
 		teleportAt = HeavySpleef.getSystemConfig().getInt("anticamping.teleportAt", 6);
+	}
+	
+	public void start() {
+		if (taskEnabled) {
+			throw new IllegalStateException("Task already running!");
+		}
+		
+		taskEnabled = true;
+		
+		id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 20L, 20L);
+	}
+	
+	public void restart() {
+		if (taskEnabled && isTaskRunning(id)) {
+			Bukkit.getScheduler().cancelTask(id);
+		}
+		
+		warnAt = HeavySpleef.getSystemConfig().getInt("anticamping.warnAt", 3);
+		warnUser = HeavySpleef.getSystemConfig().getBoolean("anticamping.campWarn", true);
+		teleportAt = HeavySpleef.getSystemConfig().getInt("anticamping.teleportAt", 6);
+		
+		id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 20L, 20L);
 	}
 	
 	/**
@@ -101,17 +120,17 @@ public class AntiCampingTask implements Runnable {
 					
 					if (current >= teleportAt) {
 						teleportDown(player);
-						antiCamping.remove(player.getName());
+						antiCamping.remove(player);
 					} else {
-						antiCamping.put(player.getName(), current);
+						antiCamping.put(player, current);
 					}
 				} else {
-					antiCamping.remove(player.getName());
+					antiCamping.remove(player);
 				}
 				
 			}
 			
-			lastLocation.put(player.getName(), player.getBukkitPlayer().getLocation());
+			lastLocation.put(player, player.getBukkitPlayer().getLocation());
 		}
 	}
 	

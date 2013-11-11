@@ -80,30 +80,27 @@ import de.matzefratze123.heavyspleef.util.ViPManager;
 
 public class HeavySpleef extends JavaPlugin implements Listener {
 		
+	//Instance
+	private static HeavySpleef instance;
+	
 	//Object instances start
-	private static HookManager hooks;
 	private static final Random random = new Random();
 	private YamlDatabase database;
 	private IStatisticDatabase statisticDatabase;
 	private SelectionManager selectionManager;
 	private JoinGUI menu;
-	//Object instances end
-	
-	//Main instance
-	private static HeavySpleef instance;
 
-	//Other utility stuff
+	//Util
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
-	public static final String[] commands = new String[] {"spleef", "spl", "hspleef"};
+	public static final String[] COMMANDS = new String[] {"spleef", "spl", "hspleef"};
 	
 	//Tasks
-	public int saverTid = -1;
-	public int antiCampTid = -1;
 	private AntiCampingTask antiCampTask;
 	
 	// Updater
 	private Updater updater;
 	
+	//List of online players
 	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
 	
 	@Override
@@ -112,7 +109,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		instance = this;
 		
 		new FileConfig(this);
-		hooks = HookManager.getInstance();
+		HookManager.getInstance();
 		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
@@ -139,7 +136,9 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		//Register our main command
 		getCommand("spleef").setExecutor(new CommandHandler());
 		
-		startAntiCampingTask();
+		antiCampTask = new AntiCampingTask();
+		antiCampTask.start();
+		
 		new TNTRunTask().start();
 		
 		//Command stuff
@@ -170,10 +169,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	
 	public Updater getUpdater() {
 		return updater;
-	}
-	
-	public HookManager getHookManager() {
-		return hooks;
 	}
 	
 	public YamlDatabase getGameDatabase() {
@@ -222,7 +217,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		pm.registerEvents(new ReadyListener(), this);
 		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
 		
-		Hook<TagAPI> tagAPIHook = hooks.getService(TagAPIHook.class);
+		Hook<TagAPI> tagAPIHook = HookManager.getInstance().getService(TagAPIHook.class);
 		if (tagAPIHook.hasHook()) {
 			pm.registerEvents(new TagListener(), this);
 		}
@@ -279,14 +274,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		} catch (IOException e) {
 			Logger.info("An error occured while submitting stats to metrics...");
 		}
-	}
-	
-	public void startAntiCampingTask() {
-		if (!getConfig().getBoolean("anticamping.enabled"))
-			return;
-		
-		this.antiCampTask = new AntiCampingTask();
-		this.antiCampTid = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, antiCampTask, 0L, 20L);
 	}
 	
 	public SpleefPlayer getSpleefPlayer(Object base) {

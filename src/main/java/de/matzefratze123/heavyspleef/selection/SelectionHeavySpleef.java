@@ -41,7 +41,7 @@ public class SelectionHeavySpleef extends Selection {
 	}
 	
 	@Override
-	public boolean has() {
+	public boolean hasSelection() {
 		return this.first != null && this.second != null; 
 	}
 	

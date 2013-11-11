@@ -30,6 +30,7 @@ import org.kitteh.tag.PlayerReceiveNameTagEvent;
 import org.kitteh.tag.TagAPI;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
@@ -38,7 +39,7 @@ public class TagListener implements Listener {
 	private static Map<SpleefPlayer, ChatColor> tags = new HashMap<SpleefPlayer, ChatColor>();
 	
 	public static void setTag(SpleefPlayer player, ChatColor tag) {
-		if (!HeavySpleef.getInstance().getHookManager().getService(TagAPIHook.class).hasHook()) {
+		if (!HookManager.getInstance().getService(TagAPIHook.class).hasHook()) {
 			return;
 		}
 		

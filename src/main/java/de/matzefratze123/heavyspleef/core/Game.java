@@ -62,7 +62,6 @@ import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.core.region.FloorCylinder;
-import de.matzefratze123.heavyspleef.core.region.FloorType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.core.task.PlayerTeleportTask;
@@ -73,6 +72,7 @@ import de.matzefratze123.heavyspleef.core.task.TimeoutTask;
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.database.Parser;
 import de.matzefratze123.heavyspleef.hooks.Hook;
+import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.VaultHook;
 import de.matzefratze123.heavyspleef.objects.Region;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
@@ -170,8 +170,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 		
 		//Subtract entry fee
-		if (HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).hasHook() && getFlag(FlagType.ENTRY_FEE) > 0) {
-			Hook<Economy> hook = HeavySpleef.getInstance().getHookManager().getService(VaultHook.class);
+		if (HookManager.getInstance().getService(VaultHook.class).hasHook() && getFlag(FlagType.ENTRY_FEE) > 0) {
+			Hook<Economy> hook = HookManager.getInstance().getService(VaultHook.class);
 			
 			for (SpleefPlayer player : inPlayers) {
 				hook.getHook().withdrawPlayer(player.getName(), getFlag(FlagType.ENTRY_FEE));
@@ -796,8 +796,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.formatMaterialName(stack.getType().name())));
 		}
 		
-		if (HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).hasHook()) {
-			Economy econ = HeavySpleef.getInstance().getHookManager().getService(VaultHook.class).getHook();
+		if (HookManager.getInstance().getService(VaultHook.class).hasHook()) {
+			Economy econ = HookManager.getInstance().getService(VaultHook.class).getHook();
 			if (this.jackpot > 0) {
 				//Split the reward between the winning teams
 				double prize;

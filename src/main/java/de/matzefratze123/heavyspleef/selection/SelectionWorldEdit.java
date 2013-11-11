@@ -19,14 +19,13 @@
  */
 package de.matzefratze123.heavyspleef.selection;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
-import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 
 public class SelectionWorldEdit extends Selection {
@@ -37,7 +36,7 @@ public class SelectionWorldEdit extends Selection {
 
 	@Override
 	public Location getFirst() {
-		WorldEditPlugin we = HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).getHook();
+		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)
@@ -55,7 +54,7 @@ public class SelectionWorldEdit extends Selection {
 
 	@Override
 	public Location getSecond() {
-		WorldEditPlugin we = HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).getHook();
+		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)
@@ -72,8 +71,8 @@ public class SelectionWorldEdit extends Selection {
 	}
 
 	@Override
-	public boolean has() {
-		WorldEditPlugin we = HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).getHook();
+	public boolean hasSelection() {
+		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)
@@ -91,7 +90,7 @@ public class SelectionWorldEdit extends Selection {
 
 	@Override
 	public boolean isTroughWorlds() {
-		WorldEditPlugin we = HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).getHook();
+		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
 		
 		if (player == null)

@@ -24,13 +24,13 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
+import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -56,7 +56,7 @@ public class CommandRemoveFloor extends HSCommand {
 		}
 		
 		for (Game game : GameManager.getGames()) {
-			if (game.getType() == GameType.CYLINDER && !HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook())
+			if (game.getType() == GameType.CYLINDER && !HookManager.getInstance().getService(WorldEditHook.class).hasHook())
 				continue;
 			for (IFloor floor : game.getComponents().getFloors()) {
 				if (floor.contains(block.getLocation())) {

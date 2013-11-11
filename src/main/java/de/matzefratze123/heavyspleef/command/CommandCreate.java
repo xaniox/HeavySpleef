@@ -29,6 +29,7 @@ import de.matzefratze123.heavyspleef.core.GameCuboid;
 import de.matzefratze123.heavyspleef.core.GameCylinder;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.RegionCylinder;
@@ -58,7 +59,7 @@ public class CommandCreate extends HSCommand {
 		
 		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
 			//Create a new cylinder game
-			if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
+			if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
 				player.sendMessage(_("noWorldEdit"));
 				return;
 			}
@@ -93,7 +94,7 @@ public class CommandCreate extends HSCommand {
 		} else if (args[1].equalsIgnoreCase("cuboid") || args[1].equalsIgnoreCase("cub")) {
 			//Create a new cuboid game
 			Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
-			if (!s.has()) {
+			if (!s.hasSelection()) {
 				player.sendMessage(_("needSelection"));
 				return;
 			}

@@ -26,6 +26,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.util.Logger;
 
@@ -55,7 +56,7 @@ public class SelectionManager {
 		}
 		
 		if (wandType.equalsIgnoreCase("WorldEdit")) {
-			if (!HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook()) {
+			if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
 				Logger.info("WorldEdit wand in the config was found, but no WorldEdit?! Setting to HeavySpleef...");
 				this.type = WandType.HEAVYSPLEEF;
 				return;
@@ -68,7 +69,7 @@ public class SelectionManager {
 	public Selection getSelection(Player player) {
 		Selection s = getRawSelection(player);
 		
-		if (s == null && HeavySpleef.getInstance().getHookManager().getService(WorldEditHook.class).hasHook() && getWandType() == WandType.WORLDEDIT)
+		if (s == null && HookManager.getInstance().getService(WorldEditHook.class).hasHook() && getWandType() == WandType.WORLDEDIT)
 			s = new SelectionWorldEdit(player.getName());
 		
 		if (s == null) {

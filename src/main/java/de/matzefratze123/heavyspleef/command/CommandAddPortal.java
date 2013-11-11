@@ -49,7 +49,7 @@ public class CommandAddPortal extends HSCommand {
 		Location loc1 = s.getFirst();
 		Location loc2 = s.getSecond();
 		
-		if (!s.has()) {
+		if (!s.hasSelection()) {
 			player.sendMessage(_("needSelection"));
 			return;
 		}
