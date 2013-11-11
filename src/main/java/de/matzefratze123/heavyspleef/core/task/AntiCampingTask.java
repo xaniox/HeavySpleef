@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
@@ -97,6 +98,10 @@ public class AntiCampingTask implements Runnable {
 			
 			Game game = player.getGame();
 			if (game == null || game.getGameState() != GameState.INGAME) {
+				continue;
+			}
+			
+			if (!game.getFlag(FlagType.CAMP_DETECTION)) {
 				continue;
 			}
 			

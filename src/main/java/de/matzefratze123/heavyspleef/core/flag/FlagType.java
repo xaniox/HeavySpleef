@@ -60,6 +60,8 @@ public enum FlagType {
 	@FlagData
 	public static final BooleanFlag BOXES = new BooleanFlag("boxes", true);
 	@FlagData
+	public static final BooleanFlag CAMP_DETECTION = new BooleanFlag("anticamping", true);
+	@FlagData
 	public static final BooleanFlag BLOCKBREAKEFFECT = new BooleanFlag("blockbreakeffect", false);
 	
 	/* Location flags */
