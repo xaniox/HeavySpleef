@@ -43,8 +43,6 @@
         <version>2.9.1</version>
       	<configuration>
      	  <encoding>iso-8859-1</encoding>
-     	  <sourcepath>${project.build.directory}/main/java</sourcepath>
-     	  <!-- <outputDirectory></outputDirectory> -->
       	</configuration>
       </plugin>
     </plugins>

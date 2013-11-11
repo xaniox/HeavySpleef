@@ -19,6 +19,8 @@
  */
 package de.matzefratze123.heavyspleef.signs;
 
+import java.util.Map;
+
 import org.bukkit.block.Sign;
 import org.bukkit.event.block.SignChangeEvent;
 
@@ -33,7 +35,7 @@ public interface SpleefSign {
 	
 	public String getId();
 	
-	public String[] getLines();
+	public Map<Integer, String[]> getLines();
 	
 	public Permissions getPermission();
 	

@@ -19,6 +19,9 @@
  */
 package de.matzefratze123.heavyspleef.signs.signobjects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.event.block.SignChangeEvent;
@@ -60,10 +63,10 @@ public class SpleefSignVote implements SpleefSign {
 	}
 
 	@Override
-	public String[] getLines() {
-		String[] lines = new String[3];
+	public Map<Integer, String[]> getLines() {
+		Map<Integer, String[]> lines = new HashMap<Integer, String[]>();
 		
-		lines[0] = "[Vote]";
+		lines.put(0, new String[]{"[Vote]", "Vote"});
 		
 		return lines;
 	}
@@ -77,7 +80,18 @@ public class SpleefSignVote implements SpleefSign {
 	public void onPlace(SignChangeEvent e) {
 		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
 		
-		e.setLine(1, ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Vote" + ChatColor.DARK_GRAY + "]");
+		StringBuilder builder = new StringBuilder();
+		if (e.getLine(1).startsWith("[")) {
+			builder.append(ChatColor.DARK_GRAY + "[");
+		}
+		
+		builder.append(ChatColor.GOLD).append(ChatColor.BOLD).append("Vote");
+		
+		if (e.getLine(1).endsWith("]")) {
+			builder.append(ChatColor.DARK_GRAY + "]");
+		}
+		
+		e.setLine(1, builder.toString());
 	}
 
 }

@@ -21,6 +21,7 @@ package de.matzefratze123.heavyspleef.signs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
@@ -159,7 +160,7 @@ public class SpleefSignExecutor implements Listener {
 		// Go over all SpleefSigns
 		for (SpleefSign spleefSign : registeredSigns) {
 			
-			String[] spleefSignLines = spleefSign.getLines();
+			Map<Integer, String[]> spleefSignLines = spleefSign.getLines();
 
 			boolean matching = true;
 
@@ -169,16 +170,26 @@ public class SpleefSignExecutor implements Listener {
 
 				String line = lines[i];
 				line = ChatColor.stripColor(line);
-
-				String spleefSignLine = spleefSignLines[offset];
+				
+				
+				String[] spleefSignLine = spleefSignLines.get(offset);
 				if (spleefSignLine == null)
 					continue;
 				
-				spleefSignLine = ChatColor.stripColor(spleefSignLine);
-
-				// If one line is false the sign is not matching the current
-				// SpleefSign
-				if (!line.equalsIgnoreCase(spleefSignLine)) {
+				boolean matchingLine = false;
+				
+				for (String alias : spleefSignLine) {
+					alias = ChatColor.stripColor(alias);
+	
+					// If one line is false the sign is not matching the current
+					// SpleefSign
+					if (line.equalsIgnoreCase(alias)) {
+						matchingLine = true;
+						break;
+					}
+				}
+				
+				if (!matchingLine) {
 					matching = false;
 				}
 			}
