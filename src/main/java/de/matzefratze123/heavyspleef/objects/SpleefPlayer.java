@@ -34,7 +34,7 @@ import de.matzefratze123.heavyspleef.command.CommandVote;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 
 public class SpleefPlayer {
 
@@ -201,7 +201,7 @@ public class SpleefPlayer {
 			bukkitPlayer.removePotionEffect(effect.getType());
 		}
 		
-		bukkitPlayer.sendMessage(LanguageHandler._("stateSaved"));
+		bukkitPlayer.sendMessage(I18N._("stateSaved"));
 		bukkitPlayer.updateInventory();
 	}
 	
@@ -229,7 +229,7 @@ public class SpleefPlayer {
 		bukkitPlayer.setExp(state.getExp());
 		bukkitPlayer.setAllowFlight(state.isFly());
 		
-		sendMessage(LanguageHandler._("stateRestored"));
+		sendMessage(I18N._("stateRestored"));
 		bukkitPlayer.updateInventory();
 		state = null;
 	}

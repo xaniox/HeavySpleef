@@ -61,7 +61,7 @@ public class SingleItemStackFlag extends Flag<ItemStack> {
 			return null;
 		
 		int amount = 1;
-		SimpleBlockData data = Util.getMaterialFromString(parts[0], false);
+		SimpleBlockData data = Util.parseMaterial(parts[0], false);
 		
 		if (parts.length > 1) {
 			try {

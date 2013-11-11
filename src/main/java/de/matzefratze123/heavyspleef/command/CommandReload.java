@@ -25,7 +25,7 @@ import org.bukkit.command.CommandSender;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.config.FileConfig;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -46,7 +46,7 @@ public class CommandReload extends HSCommand {
 		HeavySpleef.PREFIX = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("general.spleef-prefix", HeavySpleef.PREFIX));
 		HeavySpleef.getInstance().getAntiCampingTask().restart();
 		
-		LanguageHandler.loadLanguageFiles();//Reload languages files
+		I18N.loadLanguageFiles();//Reload languages files
 		plugin.getSelectionManager().setup();//Reload selection
 		
 		sender.sendMessage(_("pluginReloaded", HeavySpleef.getInstance().getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));

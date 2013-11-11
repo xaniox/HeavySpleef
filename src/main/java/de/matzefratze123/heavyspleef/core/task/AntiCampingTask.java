@@ -34,7 +34,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 
 public class AntiCampingTask implements Runnable {
 	
@@ -116,7 +116,7 @@ public class AntiCampingTask implements Runnable {
 					current++;
 					
 					if (current == warnAt && warnUser)
-						player.sendMessage(LanguageHandler._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
+						player.sendMessage(I18N._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
 					
 					if (current >= teleportAt) {
 						teleportDown(player);
@@ -166,14 +166,14 @@ public class AntiCampingTask implements Runnable {
 			//Check if the player is at the last floor
 			if (i == 0 && nearestFloor.getY() == floors.get(i).getY()) {
 				player.getBukkitPlayer().teleport(player.getBukkitPlayer().getLocation().clone().add(0, -1, 0));
-				player.sendMessage(LanguageHandler._("antiCampTeleport"));
+				player.sendMessage(I18N._("antiCampTeleport"));
 				return;
 			} else if (floors.get(i).getY() == nearestFloor.getY()){
 				Location cloned = player.getBukkitPlayer().getLocation().clone();
 				cloned.setY(floors.get(i - 1).getY() + 1.25);
 				
 				player.getBukkitPlayer().teleport(cloned);
-				player.sendMessage(LanguageHandler._("antiCampTeleport"));
+				player.sendMessage(I18N._("antiCampTeleport"));
 				return;
 			}
 			

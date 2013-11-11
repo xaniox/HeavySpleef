@@ -30,7 +30,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.PvPTimerManager;
 
 public class PVPTimerListener implements Listener {
@@ -49,7 +49,7 @@ public class PVPTimerListener implements Listener {
 			return;
 		
 		PvPTimerManager.cancelTimerTask(p);
-		p.sendMessage(LanguageHandler._("pvpTimerCancelled"));
+		p.sendMessage(I18N._("pvpTimerCancelled"));
 	}
 	
 	@EventHandler
@@ -60,7 +60,7 @@ public class PVPTimerListener implements Listener {
 			return;
 		
 		PvPTimerManager.cancelTimerTask(p);
-		p.sendMessage(LanguageHandler._("pvpTimerCancelled"));
+		p.sendMessage(I18N._("pvpTimerCancelled"));
 	}
 	
 	@EventHandler

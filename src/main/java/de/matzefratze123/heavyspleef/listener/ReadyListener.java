@@ -31,7 +31,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class ReadyListener implements Listener {
@@ -52,7 +52,7 @@ public class ReadyListener implements Listener {
 		if (game.getGameState() != GameState.LOBBY)
 			return;
 		
-		SimpleBlockData readyBlock = Util.getMaterialFromString(HeavySpleef.getSystemConfig().getString("general.ready-block"), false);
+		SimpleBlockData readyBlock = Util.parseMaterial(HeavySpleef.getSystemConfig().getString("general.ready-block"), false);
 		if (readyBlock == null)
 			return;
 		
@@ -65,10 +65,10 @@ public class ReadyListener implements Listener {
 			return;
 		
 		if (player.isReady()) {
-			player.sendMessage(LanguageHandler._("alreadyVoted"));
+			player.sendMessage(I18N._("alreadyVoted"));
 		} else {
 			player.setReady(true);
-			player.sendMessage(LanguageHandler._("taggedAsReady"));
+			player.sendMessage(I18N._("taggedAsReady"));
 		}
 	}
 	

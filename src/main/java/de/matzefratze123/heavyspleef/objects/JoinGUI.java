@@ -69,7 +69,7 @@ public class JoinGUI implements Listener {
 		List<Game> games = GameManager.getGames();
 		Collections.sort(games, new GameSorter());
 		
-		final Inventory inv = Bukkit.createInventory(null, size, title);
+		final Inventory inventory = Bukkit.createInventory(null, size, title);
 		
 		for (Game game : games) {
 			ItemStack icon = game.getFlag(FlagType.ICON);
@@ -92,7 +92,7 @@ public class JoinGUI implements Listener {
 			meta.setLore(lore);
 			icon.setItemMeta(meta);
 			
-			inv.addItem(icon);
+			inventory.addItem(icon);
 		}
 		
 		player.closeInventory();
@@ -100,7 +100,7 @@ public class JoinGUI implements Listener {
 			
 			@Override
 			public void run() {
-				player.openInventory(inv);
+				player.openInventory(inventory);
 				viewing.add(player.getName());
 			}
 		});
@@ -113,8 +113,9 @@ public class JoinGUI implements Listener {
 	}
 	
 	private void validateState() {
-		if (unregistered)
+		if (unregistered) {
 			throw new IllegalStateException("Cannot perform inventory menu options while unregistered!");
+		}
 	}
 	
 	@EventHandler

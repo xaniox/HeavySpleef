@@ -29,7 +29,7 @@ import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.database.Parser;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SignWallListener implements Listener {
@@ -42,9 +42,9 @@ public class SignWallListener implements Listener {
 			for (SignWall wall : game.getComponents().getSignWalls()) {
 				if (wall.contains(e.getBlock().getLocation())) {
 					if (p.hasPermission(Permissions.REMOVE_WALL.getPerm())) {
-						p.sendMessage(LanguageHandler._("cannotDestroyWallAdmin"));
+						p.sendMessage(I18N._("cannotDestroyWallAdmin"));
 					} else {
-						p.sendMessage(LanguageHandler._("cannotDestroyWallUser"));
+						p.sendMessage(I18N._("cannotDestroyWallUser"));
 					}
 					
 					e.setCancelled(true);

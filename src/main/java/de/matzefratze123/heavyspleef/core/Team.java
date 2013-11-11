@@ -26,7 +26,7 @@ import org.bukkit.ChatColor;
 
 import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class Team {
@@ -49,24 +49,24 @@ public class Team {
 	
 	public void join(SpleefPlayer player) {
 		if (players.contains(player)) {
-			player.sendMessage(LanguageHandler._("alreadyInTeam", color + Util.formatMaterialName(color.name())));
+			player.sendMessage(I18N._("alreadyInTeam", color + Util.formatMaterialName(color.name())));
 			return;
 		}
 		
 		players.add(player);
-		player.sendMessage(LanguageHandler._("addedToTeam", color + Util.formatMaterialName(color.name())));
+		player.sendMessage(I18N._("addedToTeam", color + Util.formatMaterialName(color.name())));
 		
 		TagListener.setTag(player, color);
 	}
 	
 	public void leave(SpleefPlayer player) {
 		if (!players.contains(player)) {
-			player.sendMessage(LanguageHandler._("notInThisTeam", color + Util.formatMaterialName(color.name())));
+			player.sendMessage(I18N._("notInThisTeam", color + Util.formatMaterialName(color.name())));
 			return;
 		}
 		
 		players.remove(player);
-		player.sendMessage(LanguageHandler._("removedFromTeam", color + Util.formatMaterialName(color.name())));
+		player.sendMessage(I18N._("removedFromTeam", color + Util.formatMaterialName(color.name())));
 		
 		TagListener.setTag(player, null);
 	}

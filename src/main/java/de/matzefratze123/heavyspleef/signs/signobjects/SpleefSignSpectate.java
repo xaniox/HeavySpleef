@@ -30,7 +30,7 @@ import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefSignSpectate implements SpleefSign {
@@ -40,14 +40,14 @@ public class SpleefSignSpectate implements SpleefSign {
 		String[] lines = SpleefSignExecutor.stripSign(sign);
 		
 		if (!GameManager.hasGame(lines[2])) {
-			player.sendMessage(LanguageHandler._("arenaDoesntExists"));
+			player.sendMessage(I18N._("arenaDoesntExists"));
 			return;
 		}
 		
 		Game game = GameManager.getGame(lines[2]);
 		
 		if (game.getFlag(FlagType.SPECTATE) == null) {
-			player.sendMessage(LanguageHandler._("noSpectatePoint"));
+			player.sendMessage(I18N._("noSpectatePoint"));
 			return;
 		}
 		
@@ -76,7 +76,7 @@ public class SpleefSignSpectate implements SpleefSign {
 	@Override
 	public void onPlace(SignChangeEvent e) {
 		if (!GameManager.hasGame(e.getLine(2).toLowerCase())) {
-			e.getPlayer().sendMessage(LanguageHandler._("arenaDoesntExists"));
+			e.getPlayer().sendMessage(I18N._("arenaDoesntExists"));
 			e.getBlock().breakNaturally();
 			return;
 		}

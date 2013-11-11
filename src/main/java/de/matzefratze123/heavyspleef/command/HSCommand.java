@@ -24,7 +24,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public abstract class HSCommand {
@@ -95,7 +95,7 @@ public abstract class HSCommand {
 	}
 	
 	public static String _(String... key) {
-		return LanguageHandler._(key);
+		return I18N._(key);
 	}
 	
 	public static String __(String str) {

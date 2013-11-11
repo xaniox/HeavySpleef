@@ -29,7 +29,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.QueuesManager;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 
 public class QueuesListener implements Listener {
 	
@@ -48,7 +48,7 @@ public class QueuesListener implements Listener {
 			return;
 		
 		e.setCancelled(true);
-		player.sendMessage(LanguageHandler._("noCommandsInQueue"));
+		player.sendMessage(I18N._("noCommandsInQueue"));
 	}
 	
 	@EventHandler

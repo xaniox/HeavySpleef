@@ -71,7 +71,7 @@ import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
@@ -117,10 +117,10 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", PREFIX));
 		
 		//Load languages
-		LanguageHandler.loadLanguageFiles();
+		I18N.loadLanguageFiles();
 		ViPManager.initVips();
 		
-		menu = new JoinGUI(LanguageHandler.__("inventory"), this);
+		menu = new JoinGUI(I18N.__("inventory"), this);
 		
 		setupStatisticDatabase();
 		//statisticDatabase.load();

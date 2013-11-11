@@ -22,7 +22,7 @@ package de.matzefratze123.heavyspleef.core.task;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.StopCause;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 
 public class TimeoutTask extends AbstractCountdown {
 
@@ -38,7 +38,7 @@ public class TimeoutTask extends AbstractCountdown {
 	public void onCount() {
 		if (getTimeRemaining() <= 120) {
 			if (getTimeRemaining() <= 5) {
-				String message = LanguageHandler._("timeLeftSeconds",
+				String message = I18N._("timeLeftSeconds",
 						String.valueOf(getTimeRemaining()));
 				game.broadcast(message, ConfigUtil.getBroadcast("timeout"));
 				return;
@@ -50,8 +50,8 @@ public class TimeoutTask extends AbstractCountdown {
 			int minutes = getTimeRemaining() / 60;
 			int seconds = getTimeRemaining() % 60;
 
-			String message = minutes == 0 ? LanguageHandler._("timeLeftSeconds",
-					String.valueOf(getTimeRemaining())) : LanguageHandler._(
+			String message = minutes == 0 ? I18N._("timeLeftSeconds",
+					String.valueOf(getTimeRemaining())) : I18N._(
 					"timeLeftMinutes", String.valueOf(minutes),
 					String.valueOf(seconds));
 
@@ -61,7 +61,7 @@ public class TimeoutTask extends AbstractCountdown {
 
 	@Override
 	public void onFinish() {
-		game.broadcast(LanguageHandler._("timeoutReached"), ConfigUtil.getBroadcast("timeout"));
+		game.broadcast(I18N._("timeoutReached"), ConfigUtil.getBroadcast("timeout"));
 		game.stop(StopCause.DRAW);
 		game.cancelTask(TASK_ID_KEY);
 	}

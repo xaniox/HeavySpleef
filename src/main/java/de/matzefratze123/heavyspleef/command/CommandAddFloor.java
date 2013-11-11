@@ -89,7 +89,7 @@ public class CommandAddFloor extends HSCommand {
 		} else if (args[0].equalsIgnoreCase("given")) {
 			type = FloorType.GIVENFLOOR;
 		} else {
-			blockData = Util.getMaterialFromString(args[0], false);
+			blockData = Util.parseMaterial(args[0], false);
 			
 			if (blockData == null) {
 				//Failed to parse blockdata

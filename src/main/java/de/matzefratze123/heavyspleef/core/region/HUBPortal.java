@@ -28,7 +28,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 /**
@@ -71,7 +71,7 @@ public class HUBPortal extends RegionCuboid {
 			return;
 		
 		player.teleport(GameManager.getSpleefHub());
-		player.sendMessage(LanguageHandler._("welcomeToHUB"));
+		player.sendMessage(I18N._("welcomeToHUB"));
 		
 		//Effect
 		int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());

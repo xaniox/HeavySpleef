@@ -32,7 +32,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 
 public class CommandHandler implements CommandExecutor {
 	
@@ -48,7 +48,7 @@ public class CommandHandler implements CommandExecutor {
 		
 		HSCommand command = getSubCommand(args[0]);
 		if (command == null) {
-			sender.sendMessage(ChatColor.RED + LanguageHandler._("unknownCommand"));
+			sender.sendMessage(ChatColor.RED + I18N._("unknownCommand"));
 			return true;
 		}
 		
@@ -63,11 +63,11 @@ public class CommandHandler implements CommandExecutor {
 
 	public static boolean isValidSubCommand(CommandSender sender, HSCommand cmd, String[] args) {
 		if (cmd.onlyIngame() && !(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + LanguageHandler._("onlyIngame"));
+			sender.sendMessage(ChatColor.RED + I18N._("onlyIngame"));
 			return false;
 		}
 		if (cmd.getPermission() != null && !sender.hasPermission(cmd.getPermission().getPerm()) && !sender.hasPermission("heavyspleef.*")) {
-			sender.sendMessage(ChatColor.RED + LanguageHandler._("noPermission"));
+			sender.sendMessage(ChatColor.RED + I18N._("noPermission"));
 			return false;
 		}
 		if (args.length >= cmd.getMinArg() && (args.length <= cmd.getMaxArg() || cmd.getMaxArg() == -1))

@@ -19,166 +19,186 @@
  */
 package de.matzefratze123.heavyspleef.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+
+import org.bukkit.ChatColor;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 
 /**
- * This class manages the dynamic loading of a language file.
+ * Contains methods and messages for language handling
  * 
  * @author matzefratze123
  */
 public class I18N {
-
+	
+	/**
+	 * This map contains all messages with the specified key
+	 */
 	private static Map<String, String> messages = new HashMap<String, String>();
-	private static String locale;
-	private static boolean dynamic;
-
-	private static final File langFolder = new File(HeavySpleef.getInstance().getDataFolder(), "language");
-	private static final String[] languages = new String[] { "en", "de", "fr", "ru" };
-
-	static {
-		if (!langFolder.exists()) {
-			langFolder.mkdir();
-		}
-	}
-
-	public static void setupLocale() {
-		dynamic = HeavySpleef.getSystemConfig().getBoolean("language.editable");
-		locale = HeavySpleef.getSystemConfig().getString("language.language", "en");
-
-		if (dynamic) {
-			copyLangFiles();
-		}
+	
+	/**
+	 * Loads the language file from the given language in the config.yml
+	 */
+	public static void loadLanguageFiles() {
+		boolean fromFile = HeavySpleef.getSystemConfig().getBoolean("language.editable");
+		if (fromFile)
+			copyLanguageFiles();
+		File languageFolder = new File(HeavySpleef.getInstance().getDataFolder().getPath() + "/language");
+		languageFolder.mkdirs();
 		
-		loadLanguage(dynamic);
-		Logger.info("Loaded " + locale + " language file.");
+		String language = HeavySpleef.getSystemConfig().getString("language.language", "en");
+		setLocale(language, fromFile);
 	}
 	
-	public static void setLocale(String locale) {
-		I18N.locale = locale;
+	private static void setLocale(String locale, boolean fromFile) {
+		File langFile = null;
 		
-		loadLanguage(dynamic);
-		Logger.info("Set the language to " + locale + "!");
-	}
-
-	private static void loadLanguage(boolean dynamic) {
-		InputStream inStream;
+		if (fromFile) {
+			langFile = new File("plugins/HeavySpleef/language/" + locale + ".lang");
+			if (!langFile.exists())
+				langFile = null;
+		}
+		
 		try {
-			File dynamicFile = new File(langFolder, locale + ".yml");
-
-			if (dynamic && dynamicFile.exists()) {
-				inStream = new FileInputStream(dynamicFile);
+			InputStream stream;
+			if (langFile == null || !fromFile) {
+				stream = HeavySpleef.class.getResourceAsStream("/resource/" + locale + ".lang");
 			} else {
-				inStream = I18N.class.getResourceAsStream("/resource/" + locale + ".yml");
+				stream = new FileInputStream(langFile);
 			}
 			
-			if (inStream == null) {
-				//File is null; there is no language resource; try to load english language file
-				inStream = I18N.class.getResourceAsStream("/resource/en.yml");
+			if (stream == null) {
+				stream = I18N.class.getResourceAsStream("/resource/en.lang");
 			}
 			
-			if (inStream == null) {
-				throw new IOException("Completely failed to load language files. Could not get filestream. !!! EXPECT ERRORS !!!");
+			/* Debug start */
+			
+			/*JarFile jar = new JarFile("plugins/HeavySpleef.jar");
+			Enumeration<JarEntry> entries = jar.entries();
+			
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				
+				System.out.println(entry.getName());
 			}
 			
-			FileConfiguration yml = YamlConfiguration.loadConfiguration(inStream);
+			jar.close();*/
 			
-			for (String key : yml.getKeys(true)) {
-				if (yml.isConfigurationSection(key))
+			/* Debug end */
+			
+			InputStreamReader streamReader = new InputStreamReader(stream, Charset.forName("UTF-8"));
+			BufferedReader reader = new BufferedReader(streamReader);
+			
+			String read;
+			
+			while ((read = reader.readLine()) != null) {
+				read = read.trim();
+				if (read.isEmpty())
+					continue;
+				if (read.startsWith("#"))
+					continue;
+				String[] split = read.split(": ", 2);
+				if (split.length < 2)
 					continue;
 				
-				String value = yml.getString(key);
-				messages.put(key, value);
+				split[1] = ChatColor.translateAlternateColorCodes('&', split[1]);
+				
+				split[1] = split[1].replace("\\n", "\n");
+				
+				split[1] = split[1].replace("\\u00E4", "ä");
+				split[1] = split[1].replace("\\u00F6", "ö");
+				split[1] = split[1].replace("\\u00FC", "ü");
+				
+				split[1] = new String(split[1].getBytes(Charset.forName("UTF-16")), "UTF-16");
+						
+				messages.put(split[0], split[1]);
 			}
-			
-			inStream.close();
+			reader.close();
+			streamReader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
-			Logger.severe("[I18N] Could not load language file " + locale + ": " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
-
-	private static void copyLangFiles() {
-		for (String lang : languages) {
-
-			InputStream inStream = null;
-			OutputStream outStream = null;
-
+	
+	/**
+	 * Copy's all language files to the plugin folder
+	 * (It doesn't copy if the files are existing!)
+	 */
+	private static void copyLanguageFiles() {
+		String[] languageFiles = new String[] {"de", "en", "fr", "ru"};
+		File dataFolder = new File(HeavySpleef.getInstance().getDataFolder().getPath() + "/language");
+		dataFolder.mkdirs();
+		
+		for (String lFile : languageFiles) {
 			try {
-				final String realFilename = lang + ".yml";
-
-				inStream = I18N.class.getResourceAsStream("/resource/"
-						+ realFilename);
-
-				if (inStream == null) {
+				File outFile = new File(dataFolder.getPath() + "/" + lFile + ".lang");
+				if (outFile.exists())
 					continue;
-				}
-
-				File outFile = new File(langFolder, realFilename);
-				if (!outFile.exists()) {
-					outFile.createNewFile();
-				}
-
-				outStream = new FileOutputStream(outFile);
-
+				
+				outFile.createNewFile();
+				final InputStream inStream = HeavySpleef.class.getResourceAsStream("/resource/" + lFile + ".lang");
+				final FileOutputStream outStream = new FileOutputStream(outFile);
+				
 				int read;
 				byte[] buffer = new byte[1024];
-
-				while ((read = inStream.read(buffer)) > 0) {
-					outStream.write(buffer, 0, read);
-				}
-			} catch (IOException e) {
-				Logger.severe("[I18N] Could not load language files: "
-						+ e.getMessage());
-			} finally {
-				try {
-					if (outStream != null) {
-						outStream.flush();
-						outStream.close();
-					}
-
-					if (inStream != null) {
-						inStream.close();
-					}
-				} catch (IOException e) {}
-			}
-		}
-	}
-	
-	public static String getMessage(String key, String... replacements) {
-		if (key == null) {
-			return null;
-		}
-		
-		String msg = messages.get(key);
-		if (msg == null) {
-			return null;
-		}
-		
-		if (replacements != null) {
-			for (String replacement : replacements) {
-				if (replacement == null) {
-					continue;
-				}
 				
-				msg = msg.replaceFirst("%a", replacement);
-			}
+				while((read = inStream.read(buffer)) > 0)
+					outStream.write(buffer, 0, read);
+				
+				outStream.flush();
+				inStream.close();
+				outStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {}
 		}
-		
-		return msg;
 	}
 	
-	public static String getMessage(String key) {
-		return getMessage(key, (String[])null);
+	public static String _(String... parts) {
+		if (parts.length == 0) {
+			return null;
+		}
+		
+		String message = messages.get(parts[0]);
+		
+		for (int i = 1; i < parts.length; i++) {
+			if (parts[i].contains("$")) {
+				parts[i] = parts[i].replace("$", "\\$");
+			}
+			
+			message = message.replaceFirst("%a", parts[i]);
+		}
+		return HeavySpleef.PREFIX + ChatColor.RESET + " " + message;
+	}
+
+	public static String __(String... parts) {
+		if (parts.length == 0) {
+			return null;
+		}
+		
+		String message = messages.get(parts[0]);
+		
+		for (int i = 1; i < parts.length; i++) {
+			if (parts[i].contains("$")) {
+				parts[i] = parts[i].replace("$", "\\$");
+			}
+			
+			message = message.replaceFirst("%a", parts[i]);
+		}
+		return message;
 	}
 
 }

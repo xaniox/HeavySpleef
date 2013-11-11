@@ -71,7 +71,7 @@ import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class PlayerListener implements Listener {
@@ -202,7 +202,7 @@ public class PlayerListener implements Listener {
 
 					e.setCancelled(true);
 					fixBlockGlitch(player.getBukkitPlayer(), block);
-					player.sendMessage(LanguageHandler._("notAllowedToBuild"));
+					player.sendMessage(I18N._("notAllowedToBuild"));
 					return;
 				}
 			}
@@ -214,7 +214,7 @@ public class PlayerListener implements Listener {
 		if (!game.canSpleef(player, block.getLocation())) {
 			e.setCancelled(true);
 			fixBlockGlitch(player.getBukkitPlayer(), block);
-			player.sendMessage(LanguageHandler._("notAllowedToBuild"));
+			player.sendMessage(I18N._("notAllowedToBuild"));
 			return;
 		}
 
@@ -423,7 +423,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		player.sendMessage(LanguageHandler._("cantChangeGamemode"));
+		player.sendMessage(I18N._("cantChangeGamemode"));
 		e.setCancelled(true);
 	}
 
@@ -444,7 +444,7 @@ public class PlayerListener implements Listener {
 			}
 
 			e.setCancelled(true);
-			e.getPlayer().sendMessage(LanguageHandler._("notAllowedToBuild"));
+			e.getPlayer().sendMessage(I18N._("notAllowedToBuild"));
 		}
 	}
 
@@ -471,7 +471,7 @@ public class PlayerListener implements Listener {
 				return;
 		}
 		e.setCancelled(true);
-		e.getPlayer().sendMessage(LanguageHandler._("cantUseCommands"));
+		e.getPlayer().sendMessage(I18N._("cantUseCommands"));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

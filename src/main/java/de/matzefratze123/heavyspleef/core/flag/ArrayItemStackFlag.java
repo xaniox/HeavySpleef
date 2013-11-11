@@ -30,7 +30,7 @@ import org.bukkit.material.MaterialData;
 
 import de.matzefratze123.heavyspleef.database.ItemStackHelper;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class ArrayItemStackFlag extends Flag<ItemStack[]> {
@@ -46,13 +46,13 @@ public class ArrayItemStackFlag extends Flag<ItemStack[]> {
 		
 		int count = 0;
 		for (int i = 0; i + 1 < parts.length; i += 2) {
-			SimpleBlockData datas = Util.getMaterialFromString(parts[i], false);
+			SimpleBlockData datas = Util.parseMaterial(parts[i], false);
 			int amount = 0;
 			
 			try {
 				amount = Integer.parseInt(parts[i + 1]);
 			} catch (NumberFormatException e) {
-				player.sendMessage(LanguageHandler._("notANumber", parts[i + 1]));
+				player.sendMessage(I18N._("notANumber", parts[i + 1]));
 				return null;
 			}
 			if (datas == null)

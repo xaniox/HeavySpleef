@@ -35,7 +35,7 @@ import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
@@ -48,7 +48,7 @@ public class SpleefSignJoin implements SpleefSign {
 		//Check wether there is no game on the third line
 		if (lines[2].isEmpty()) {
 			if (!player.getBukkitPlayer().hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
-				player.sendMessage(LanguageHandler._("noPermission"));
+				player.sendMessage(I18N._("noPermission"));
 				return;
 			}
 			
@@ -57,7 +57,7 @@ public class SpleefSignJoin implements SpleefSign {
 		} else {
 			//Check if the game exists
 			if (!GameManager.hasGame(lines[2])) {
-				player.sendMessage(LanguageHandler._("arenaDoesntExists"));
+				player.sendMessage(I18N._("arenaDoesntExists"));
 				return;
 			}
 			
@@ -68,7 +68,7 @@ public class SpleefSignJoin implements SpleefSign {
 				try {
 					color = ChatColor.valueOf(lines[3].toUpperCase());
 				} catch (Exception ex) {
-					player.sendMessage(LanguageHandler._("invalidTeam"));
+					player.sendMessage(I18N._("invalidTeam"));
 					return;
 				}
 			} else {
@@ -123,7 +123,7 @@ public class SpleefSignJoin implements SpleefSign {
 			}
 			
 			if (color == null) {
-				e.getPlayer().sendMessage(LanguageHandler._("invalidColor"));
+				e.getPlayer().sendMessage(I18N._("invalidColor"));
 				e.getBlock().breakNaturally();
 				return;
 			}

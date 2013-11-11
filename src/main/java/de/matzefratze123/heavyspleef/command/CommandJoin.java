@@ -45,7 +45,7 @@ import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.VaultHook;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.PvPTimerManager;
 import de.matzefratze123.heavyspleef.util.Util;
@@ -85,7 +85,7 @@ public class CommandJoin extends HSCommand {
 			
 			if (!bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm()) &&
 				!bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm() + "." + game.getName().toLowerCase())) {
-					bukkitPlayer.sendMessage(LanguageHandler._("noPermission"));
+					bukkitPlayer.sendMessage(I18N._("noPermission"));
 					return;
 			}
 			

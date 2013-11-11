@@ -62,7 +62,7 @@ public class Util {
 	 * @param s The string
 	 * @return The material specified by this string. If there is no Material the return is null
 	 */
-	public static Material getMaterialFromName(String s) {
+	private static Material getMaterialFromName(String s) {
 		if (s == null)
 			return null;
 		Material mat;
@@ -88,7 +88,7 @@ public class Util {
 	 * @param str The string
 	 * @return A simpleblockdata objects that contains the material and data
 	 */ 
-	public static SimpleBlockData getMaterialFromString(String str, boolean onlySolid) {
+	public static SimpleBlockData parseMaterial(String str, boolean onlySolid) {
 		if (str == null)
 			return null;
 		String[] parts = str.split(":");

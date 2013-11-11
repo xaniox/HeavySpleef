@@ -29,7 +29,7 @@ import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefSignStart implements SpleefSign {
@@ -39,7 +39,7 @@ public class SpleefSignStart implements SpleefSign {
 		String[] lines = SpleefSignExecutor.stripSign(sign);
 		
 		if (!GameManager.hasGame(lines[2])) {
-			player.sendMessage(LanguageHandler._("arenaDoesntExists"));
+			player.sendMessage(I18N._("arenaDoesntExists"));
 			return;
 		}
 		
@@ -68,7 +68,7 @@ public class SpleefSignStart implements SpleefSign {
 	@Override
 	public void onPlace(SignChangeEvent e) {
 		if (!GameManager.hasGame(e.getLine(2).toLowerCase())) {
-			e.getPlayer().sendMessage(LanguageHandler._("arenaDoesntExists"));
+			e.getPlayer().sendMessage(I18N._("arenaDoesntExists"));
 			e.getBlock().breakNaturally();
 			return;
 		}

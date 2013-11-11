@@ -31,7 +31,7 @@ import de.matzefratze123.heavyspleef.core.BroadcastType;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.LanguageHandler;
+import de.matzefratze123.heavyspleef.util.I18N;
 
 public class RoundsCountdownTask extends AbstractCountdown {
 
@@ -52,10 +52,10 @@ public class RoundsCountdownTask extends AbstractCountdown {
 					player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, player.getBukkitPlayer().getLocation().getPitch());
 			}
 			
-			game.broadcast(LanguageHandler._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
+			game.broadcast(I18N._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
 		} else {//Do pre countdown
 			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
-				game.broadcast(LanguageHandler._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
+				game.broadcast(I18N._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class RoundsCountdownTask extends AbstractCountdown {
 		
 		game.setGameState(GameState.INGAME);
 		game.broadcast(HSCommand.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast("game-countdown"));
-		game.broadcast(LanguageHandler._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast("game-start-info"));
+		game.broadcast(I18N._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast("game-start-info"));
 		game.removeBoxes();
 		game.cancelTask(TASK_ID_KEY);
 	}
