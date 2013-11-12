@@ -40,7 +40,17 @@ general:
   - /spleef
   - /money
   - /msg
+  - /message
+  - /m
   - /tell
+  - /t
+  - /r
+  - /reply
+  - /mail
+  - /ban
+  - /kick
+  - /pardon
+  - /unban
   
   # How long should the countdown between a round be?
   countdownBetweenRound: 5
