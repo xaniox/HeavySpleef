@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.matzefratze123</groupId>
   <artifactId>heavyspleef</artifactId>
-  <version>Dev 1.4.1</version>
+  <version>1.4.1</version>
   <name>HeavySpleef</name>
   <description>Advanced Spleef plugin for Bukkit</description>
   <url>http://dev.bukkit.org/bukkit-plugins/heavyspleef/</url>
