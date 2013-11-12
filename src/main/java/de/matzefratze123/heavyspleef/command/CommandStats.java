@@ -25,9 +25,6 @@ import static org.bukkit.ChatColor.WHITE;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,6 +35,7 @@ import org.bukkit.entity.Player;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.stats.CachedStatistics;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -94,47 +92,41 @@ public class CommandStats extends HSCommand {
 			if (targetSpleefPlayer != null) {
 				printStatistics(targetSpleefPlayer.getStatistic(), player);
 			} else if (offlineTarget != null) {
-				final Future<StatisticModule> future = Bukkit.getScheduler().callSyncMethod(HeavySpleef.getInstance(), new Callable<StatisticModule>() {
-
-					@Override
-					public StatisticModule call() throws Exception {
-						StatisticModule module = HeavySpleef.getInstance().getStatisticDatabase().loadAccount(offlineTarget.getName());
-						
-						return module;
-					}
-				});
-				
-				Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.getInstance(), new Runnable() {
+				Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new Runnable() {
 					
 					@Override
 					public void run() {
-						try {
-							printStatistics(future.get(), player);
-						} catch (InterruptedException e) {
-							player.sendMessage(ChatColor.RED + "Error while loading stats for " + offlineTarget.getName() + ": Thread interrupted.");
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							player.sendMessage(ChatColor.RED + "Error while loading stats for " + offlineTarget.getName() + ": " + e.getMessage());
+						//Get statistic via cache
+						CachedStatistics cache = CachedStatistics.getInstance();
+						
+						StatisticModule module = cache.cacheStatistic(offlineTarget.getName());
+						
+						if (module.getName().equalsIgnoreCase(CachedStatistics.INVALID_MODULE)) {
+							player.sendMessage(ChatColor.RED + "This player doesn't have statistics!");
+						} else {
+							printStatistics(module, player);
 						}
 					}
-				}, 15L);
+				});
 			} else {
 				player.sendMessage(ChatColor.RED + "This player doesn't have statistics!");
 			}
 		}
 	}
 
-	private void printStatistics(StatisticModule stat, Player p) {
-		if (!stat.getName().equalsIgnoreCase(p.getName()))
-			p.sendMessage("--- " + GREEN + "Statistics of " + stat.getName() + WHITE + " ---");
-		else
-			p.sendMessage("--- " + GREEN + "Your statistics" + WHITE + " ---");
-		p.sendMessage(GREEN + "Wins: " + WHITE + stat.getWins());
-		p.sendMessage(RED + "Loses: " + WHITE + stat.getLoses());
-		p.sendMessage(GREEN + "Knockouts: " + WHITE + stat.getKnockouts());
-		p.sendMessage(GREEN + "Games played: " + WHITE + stat.getGamesPlayed());
-		p.sendMessage(GREEN + "Wins / Game: " + WHITE + stat.getKD());
-		p.sendMessage(GREEN + "Score: " + WHITE + stat.getScore());
+	private void printStatistics(StatisticModule module, Player player) {
+		if (!module.getName().equalsIgnoreCase(player.getName())) {
+			player.sendMessage("--- " + GREEN + "Statistics of " + module.getName() + WHITE + " ---");
+		} else {
+			player.sendMessage("--- " + GREEN + "Your statistics" + WHITE + " ---");
+		}
+		
+		player.sendMessage(GREEN + "Wins: "         + WHITE + module.getWins());
+		player.sendMessage(RED   + "Loses: "        + WHITE + module.getLoses());
+		player.sendMessage(GREEN + "Knockouts: "    + WHITE + module.getKnockouts());
+		player.sendMessage(GREEN + "Games played: " + WHITE + module.getGamesPlayed());
+		player.sendMessage(GREEN + "Wins / Game: "  + WHITE + module.getKD());
+		player.sendMessage(GREEN + "Score: "        + WHITE + module.getScore());
 	}
 	
 	public static void showLeaderboard(final Player player, final int page) {

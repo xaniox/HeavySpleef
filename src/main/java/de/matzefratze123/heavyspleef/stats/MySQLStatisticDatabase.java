@@ -97,6 +97,11 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public StatisticModule loadAccount(String holder) {
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(holder);
+		if (player != null) {
+			return player.getStatistic();
+		}
+		
 		Database database = new Database(HeavySpleef.getInstance());
 		if (!database.hasTable(tableName))
 			return null;

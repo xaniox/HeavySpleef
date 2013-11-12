@@ -199,6 +199,20 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	public void setElo(int elo) {
 		this.elo = elo;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof StatisticModule)) {
+			return false;
+		}
+		
+		StatisticModule module = (StatisticModule) o;
+		if (!module.getName().equalsIgnoreCase(name)) {
+			return false;
+		}
+		
+		return true;
+	}
 
 	@Override
 	public int compareTo(StatisticModule o) {
