@@ -21,7 +21,7 @@ package de.matzefratze123.heavyspleef.core.task;
 
 public abstract class AbstractCountdown implements Runnable {
 
-	private int remaining;
+	protected int remaining;
 	
 	protected AbstractCountdown(int start) {
 		this.remaining = start;

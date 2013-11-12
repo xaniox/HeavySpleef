@@ -40,6 +40,10 @@ public class StartCountdownTask extends AbstractCountdown {
 	@Override
 	public void onFinish() {
 		//Start the game
+		for (SpleefPlayer player : game.getIngamePlayers()) {
+			player.getBukkitPlayer().setLevel(0);
+		}
+		
 		game.start();
 	}
 	
@@ -51,13 +55,17 @@ public class StartCountdownTask extends AbstractCountdown {
 	@Override
 	public void onCount() {
 		game.setCountLeft(getTimeRemaining());
+		boolean playPlingSound = HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true);
 		
-		if (getTimeRemaining() <= 5){//Do improved countdown
-			if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
-				for (SpleefPlayer player : game.getIngamePlayers()) {
-					player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
-				}
+		for (SpleefPlayer player : game.getIngamePlayers()) {
+			if (playPlingSound && remaining <= 5) {
+				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
 			}
+			
+			player.getBukkitPlayer().setLevel(getTimeRemaining());
+		}
+		
+		if (getTimeRemaining() <= 5){
 			game.broadcast(I18N._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
 		} else {//Do pre countdown
 			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
