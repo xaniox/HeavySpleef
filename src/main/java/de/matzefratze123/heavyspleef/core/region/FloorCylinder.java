@@ -58,7 +58,7 @@ public class FloorCylinder extends RegionCylinder implements IFloor {
 
 	public FloorCylinder(int id, Location center, int radius, int minY, int maxY, FloorType type) {
 		super(id, center, radius, minY, maxY);
-
+		
 		this.type = type;
 		
 		if (type == FloorType.GIVENFLOOR) {

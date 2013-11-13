@@ -60,7 +60,7 @@ public class GameComponents implements IGameComponents {
 	@Override
 	public void addFloor(IFloor floor) {
 		if (hasFloor(floor.getId())) {
-			throw new IllegalArgumentException("floor with id " + floor.getId() + " already registered!");
+			throw new IllegalArgumentException("Floor with id " + floor.getId() + " already registered!");
 		}
 		
 		floors.add(floor);

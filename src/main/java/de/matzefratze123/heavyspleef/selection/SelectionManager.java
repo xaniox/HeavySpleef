@@ -63,6 +63,8 @@ public class SelectionManager {
 			}
 			
 			type = WandType.WORLDEDIT;
+		} else {
+			type = WandType.HEAVYSPLEEF;
 		}
 	}
 	

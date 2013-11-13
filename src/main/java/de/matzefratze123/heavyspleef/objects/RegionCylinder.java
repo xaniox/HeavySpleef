@@ -35,6 +35,8 @@ public class RegionCylinder implements Region {
 	protected int id;
 	
 	public RegionCylinder(int id, Location center, int radius, int minY, int maxY) {
+		this.id = id;
+		
 		LocalWorld localWorld = BukkitUtil.getLocalWorld(center.getWorld());
 		Vector vCenter = Util.toWorldEditVector(center);
 		Vector2D v2DRadius = new Vector2D(radius, radius);
