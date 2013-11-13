@@ -19,7 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.listener;
 
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,10 +35,15 @@ public class UpdateListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
 		
-		if(!player.hasPermission(Permissions.UPDATE_PLUGIN.getPerm()))
+		if (!HeavySpleef.getSystemConfig().getBoolean("auto-update")) {
 			return;
-		if (!HeavySpleef.getInstance().getUpdater().isUpdateAvailable())
+		}
+		if (!player.hasPermission(Permissions.UPDATE_PLUGIN.getPerm())) {
 			return;
+		}
+		if (!HeavySpleef.getInstance().getUpdater().isUpdateAvailable()) {
+			return;
+		}
 		
 		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Your version of spleef is outdated! New version: " + ChatColor.GOLD + HeavySpleef.getInstance().getUpdater().getFileTitle());
 		player.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " If you wish to download the new version of HeavySpleef type /spleef update");
