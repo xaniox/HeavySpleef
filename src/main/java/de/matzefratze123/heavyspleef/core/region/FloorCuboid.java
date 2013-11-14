@@ -287,6 +287,7 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 					ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
 					List<SimpleBlockData> data = (List<SimpleBlockData>)in.readObject();
 					
+					in.close();
 					floor.blockDatas = data;
 				} else {
 					Logger.severe("Could not load data for given-floor " + id + "!!! Blockdata file does not exist! (plugins/HeavySpleef/games/" + game.getName() + "/" + id + ".ssf");
