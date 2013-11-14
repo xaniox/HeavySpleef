@@ -20,11 +20,15 @@
 package de.matzefratze123.heavyspleef.core.region;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 
 public interface IFloor extends Comparable<IFloor>, DatabaseSerializeable {
+	
+	public String FILE_EXTENSION = "ssf";
 	
 	public int getId();
 	
@@ -41,6 +45,8 @@ public interface IFloor extends Comparable<IFloor>, DatabaseSerializeable {
 	public void remove();
 	
 	public int getY();
+	
+	public ConfigurationSection serialize(Game game);
 
 	public String asPlayerInfo();
 

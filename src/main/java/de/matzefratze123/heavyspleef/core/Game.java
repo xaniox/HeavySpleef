@@ -866,7 +866,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		for (IFloor floor : components.getFloors()) {
 			String id = String.valueOf(floor.getId());
 			
-			currentSection.createSection(id, floor.serialize().getValues(true));
+			ConfigurationSection serialized = floor.serialize(this);
+			currentSection.createSection(id, serialized.getValues(true));
 		}
 		
 		currentSection = section.createSection("losezones");
@@ -951,9 +952,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			IFloor floor = null;
 			
 			if (shape.equalsIgnoreCase("CUBOID")) {
-				floor = FloorCuboid.deserialize(floorSection);
+				floor = FloorCuboid.deserialize(floorSection, game);
 			} else if (shape.equalsIgnoreCase("CYLINDER")) {
-				floor = FloorCylinder.deserialize(floorSection);
+				floor = FloorCylinder.deserialize(floorSection, game);
 			}
 			
 			game.getComponents().addFloor(floor);

@@ -19,6 +19,12 @@
  */
 package de.matzefratze123.heavyspleef.core.region;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +42,8 @@ import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.database.Parser;
 import de.matzefratze123.heavyspleef.objects.RegionCylinder;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
@@ -231,14 +239,40 @@ public class FloorCylinder extends RegionCylinder implements IFloor {
 		if (type == FloorType.SPECIFIEDID) {
 			section.set("block", blockData.getMaterial().name());
 			section.set("data", blockData.getData());
-		} else if (type == FloorType.GIVENFLOOR) {
-			section.set("blocks", toBase64(blockDatas));
 		}
 		
 		return section;
 	}
 	
-	public static FloorCylinder deserialize(ConfigurationSection section) {
+	@Override
+	public ConfigurationSection serialize(Game game) {
+		ConfigurationSection section = serialize();
+		
+		if (type == FloorType.GIVENFLOOR) {
+			try {
+				File folder = new File(HeavySpleef.getInstance().getDataFolder(), "games/" + game.getName());
+				folder.mkdir();
+				
+				File file = new File(folder, id + "." + FILE_EXTENSION);
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+				
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+				out.writeObject(blockDatas);
+				out.flush();
+				out.close();
+			} catch (IOException e) {
+				Logger.severe("Could not save floor " + id + " to database: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		
+		return section;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static FloorCylinder deserialize(ConfigurationSection section, Game game) {
 		int id = section.getInt("id");
 		FloorType type = FloorType.valueOf(section.getString("type"));
 		Location center = Parser.convertStringtoLocation(section.getString("center"));
@@ -254,8 +288,20 @@ public class FloorCylinder extends RegionCylinder implements IFloor {
 			
 			floor.setBlockData(new SimpleBlockData(block, data));
 		} else if (type == FloorType.GIVENFLOOR) {
-			List<SimpleBlockData> blocks = fromBase64(section.getString("blocks"));
-			floor.blockDatas = blocks;
+			try {
+				File file = new File(HeavySpleef.getInstance().getDataFolder(), "games/" + game.getName() + "/" + id + "." + FILE_EXTENSION);
+				if (file.exists()) {
+					ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+					List<SimpleBlockData> data = (List<SimpleBlockData>)in.readObject();
+					
+					floor.blockDatas = data;
+				} else {
+					Logger.severe("Could not load data for given-floor " + id + "!!! Blockdata file does not exist! (plugins/HeavySpleef/games/" + game.getName() + "/" + id + ".ssf");
+				}
+			} catch (Exception e) {
+				Logger.severe("Could not load data for given floor " + id + ": " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 		
 		return floor;
