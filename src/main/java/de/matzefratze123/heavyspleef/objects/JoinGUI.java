@@ -81,13 +81,13 @@ public class JoinGUI implements Listener {
 			ItemMeta meta = icon.getItemMeta();
 			ChatColor color = game.getGameState() == GameState.JOINABLE || game.getGameState() == GameState.LOBBY ? ChatColor.GREEN : ChatColor.RED;
 			
-			meta.setDisplayName(color + "Join " + game.getName());
+			meta.setDisplayName(color + "Join " + ChatColor.BOLD + game.getName());
 			List<String> lore = new ArrayList<String>();
 			
 			String maxPlayers = String.valueOf(game.getFlag(FlagType.MAXPLAYERS) < 2 ? infinity : game.getFlag(FlagType.MAXPLAYERS));
 			
 			lore.add(color + "" + game.getIngamePlayers().size() + ChatColor.DARK_GRAY + ChatColor.BOLD + " / " + ChatColor.RED + maxPlayers);
-			lore.add(ChatColor.AQUA + Util.formatMaterialName(game.getGameState().name()));
+			lore.add(ChatColor.AQUA + "" + ChatColor.BOLD + Util.formatMaterialName(game.getGameState().name()));
 			
 			meta.setLore(lore);
 			icon.setItemMeta(meta);
