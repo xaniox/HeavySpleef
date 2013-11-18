@@ -40,10 +40,6 @@ public class ListFlagLocation extends ListFlag<ListFlagLocation.SerializeableLoc
 		
 		list.add(sLocation);
 		
-		for (SerializeableLocation l : list) {
-			System.out.println(l.x + "," + l.y + "," + l.z);
-		}
-		
 		System.out.println(list.size());
 	}
 
