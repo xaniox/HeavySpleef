@@ -299,10 +299,10 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		
 		//Player isn't registered yet
 		player = new SpleefPlayer(bukkitPlayer);
+		players.add(player);
+		
 		StatisticModule module = statisticDatabase.loadAccount(player.getName());
 		player.setStatistic(module);
-		
-		players.add(player);
 		
 		return player;
 	}
