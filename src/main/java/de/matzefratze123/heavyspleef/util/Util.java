@@ -175,5 +175,23 @@ public class Util {
 		
 		return new Location(BukkitUtil.toWorld(world), x, y, z);
 	}
+	
+	public static Location getMin(Location l1, Location l2) {
+		return new Location(
+				l1.getWorld(), 
+				Math.min(l1.getX(), l2.getX()),
+				Math.min(l1.getY(), l2.getY()),
+				Math.min(l1.getZ(), l2.getZ())
+							);
+	}
+	
+	public static Location getMax(Location l1, Location l2) {
+		return new Location(
+				l1.getWorld(), 
+				Math.max(l1.getX(), l2.getX()),
+				Math.max(l1.getY(), l2.getY()),
+				Math.max(l1.getZ(), l2.getZ())
+							);
+	}
 
 }

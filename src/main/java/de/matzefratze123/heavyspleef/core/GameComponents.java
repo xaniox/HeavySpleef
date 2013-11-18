@@ -19,17 +19,22 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGameComponents;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
+import de.matzefratze123.heavyspleef.core.task.Rollback;
+import de.matzefratze123.heavyspleef.core.task.SaveSchematic;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Util;
 
@@ -57,13 +62,23 @@ public class GameComponents implements IGameComponents {
 	
 	/* Floors start */
 	
-	@Override
-	public void addFloor(IFloor floor) {
+	public void addFloor(IFloor floor, boolean saveAsSchematic) {
 		if (hasFloor(floor.getId())) {
 			throw new IllegalArgumentException("Floor with id " + floor.getId() + " already registered!");
 		}
 		
+		if (saveAsSchematic) {
+			//Save the floor to the disk
+			SaveSchematic saver = new SaveSchematic(floor);
+			Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), saver);
+		}
+		
 		floors.add(floor);
+	}
+	
+	@Override
+	public void addFloor(IFloor floor) {
+		addFloor(floor, true);
 	}
 	
 	@Override
@@ -78,14 +93,22 @@ public class GameComponents implements IGameComponents {
 	}
 	
 	@Override
+	public void removeFloor(IFloor floor) {
+		if (!hasFloor(floor.getId())) {
+			return;
+		}
+		
+		floor.delete();
+	}
+	
+	@Override
 	public void removeFloor(int id) {
 		IFloor floor = getFloor(id);
 		
 		if (floor != null) {
-			floor.remove();
+			floors.remove(floor);
+			floor.delete();
 		}
-		
-		floors.remove(floor);
 	}
 	
 	@Override
@@ -106,20 +129,15 @@ public class GameComponents implements IGameComponents {
 	
 	@Override
 	public void regenerateFloors() {
-		for (IFloor floor : floors) {
-			floor.generate();
-		}
+		Rollback rollback = new Rollback(game);
+		Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), rollback);
 	}
 	
-	@Override
-	public void regenerateFloor(int id) {
-		IFloor floor = getFloor(id);
+	public File getFloorFolder() {
+		File file = new File(HeavySpleef.getInstance().getDataFolder(), "games/" + game.getName());
+		file.mkdirs();
 		
-		if (floor == null) {
-			return;
-		}
-		
-		floor.generate();
+		return file;
 	}
 	
 	/* Floors end */

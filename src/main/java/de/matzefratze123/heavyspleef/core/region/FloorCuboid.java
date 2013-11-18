@@ -20,16 +20,8 @@
 package de.matzefratze123.heavyspleef.core.region;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,36 +31,26 @@ import org.bukkit.configuration.MemorySection;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameComponents;
+import de.matzefratze123.heavyspleef.core.task.SaveSchematic;
 import de.matzefratze123.heavyspleef.database.Parser;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
-import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
-import de.matzefratze123.heavyspleef.util.Base64Helper;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class FloorCuboid extends RegionCuboid implements IFloor {
 	
-	private FloorType type;
-	private SimpleBlockData blockData;
-
-	/*
-	 * This list is used when the game has a given floor It saves all blockdatas
-	 * and their location into this list
-	 */
-	private List<SimpleBlockData> blockDatas = new ArrayList<SimpleBlockData>();
-
-	private Random random = new Random();
-
-	public FloorCuboid(int id, Location firstPoint, Location secondPoint, FloorType type) {
+	private Game game;
+	private boolean randomWool;
+	
+	public FloorCuboid(int id, Game game, Location firstPoint, Location secondPoint) {
 		super(id, firstPoint, secondPoint);
 
-		this.type = type;
-
-		if (type == FloorType.GIVENFLOOR) {
-			initGivenFloor();
-		}
+		this.game = game;
 	}
-
-	private void initGivenFloor() {
+	
+	public void generateWool() {
+		byte data = (byte)HeavySpleef.getRandom().nextInt(16);
+		
 		int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
 		int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
 
@@ -81,8 +63,10 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
-					Block block = firstPoint.getWorld().getBlockAt(x, y, z);
-					blockDatas.add(new SimpleBlockData(block));
+					Block current = getWorld().getBlockAt(x, y, z);
+					
+					current.setType(Material.WOOL);
+					current.setData(data);
 				}
 			}
 		}
@@ -94,91 +78,6 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 	}
 
 	@Override
-	public SimpleBlockData getBlockData() {
-		return blockData;
-	}
-
-	@Override
-	public void setBlockData(SimpleBlockData data) {
-		this.blockData = data;
-	}
-
-	@Override
-	public FloorType getType() {
-		return type;
-	}
-
-	@Override
-	public void generate() {
-		if (type == FloorType.GIVENFLOOR) {
-			for (SimpleBlockData data : blockDatas) {
-				Block block = data.getWorld().getBlockAt(data.getLocation());
-				
-				block.setType(data.getMaterial());
-				block.setData(data.getData());
-			}
-		} else {
-			int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
-			int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
-	
-			int minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
-			int maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
-	
-			int minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
-			int maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
-	
-			Block current;
-	
-			Material material = Material.SNOW;
-			byte data = (byte)0;
-	
-			if (type == FloorType.SPECIFIEDID) {
-				if (blockData == null) {
-					Logger.warning("Could not load for floor " + id + "! Using default snow floor...");
-					blockData = new SimpleBlockData(Material.SNOW_BLOCK, (byte) 0);
-				}
-	
-				material = blockData.getMaterial();
-				data = blockData.getData();
-			} else if (type == FloorType.RANDOMWOOL) {
-				material = Material.WOOL;
-				data = (byte) (random.nextInt(16) + 1);
-			}
-	
-			for (int x = minX; x <= maxX; x++) {
-				for (int y = minY; y <= maxY; y++) {
-					for (int z = minZ; z <= maxZ; z++) {
-						current = firstPoint.getWorld().getBlockAt(x, y, z);
-						current.setType(material);
-						current.setData(data);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public void remove() {
-		int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
-		int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
-
-		int minY = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
-		int maxY = Math.max(firstPoint.getBlockY(), secondPoint.getBlockY());
-
-		int minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
-		int maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int y = minY; y <= maxY; y++) {
-				for (int z = minZ; z <= maxZ; z++) {
-					Block block = firstPoint.getWorld().getBlockAt(x, y, z);
-					block.setType(Material.AIR);
-				}
-			}
-		}
-	}
-
-	@Override
 	public int getY() {
 		int y = Math.min(firstPoint.getBlockY(), secondPoint.getBlockY());
 
@@ -187,34 +86,7 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 
 	@Override
 	public String asPlayerInfo() {
-		return "ID: " + getId() + ", shape: CUBOID" + ", type: " + getType();
-	}
-
-	@Override
-	public ConfigurationSection serialize(Game game) {
-		ConfigurationSection section = serialize();
-		
-		if (type == FloorType.GIVENFLOOR) {
-			try {
-				File folder = new File(HeavySpleef.getInstance().getDataFolder(), "games/" + game.getName());
-				folder.mkdir();
-				
-				File file = new File(folder, id + "." + FILE_EXTENSION);
-				if (!file.exists()) {
-					file.createNewFile();
-				}
-				
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
-				out.writeObject(blockDatas);
-				out.flush();
-				out.close();
-			} catch (IOException e) {
-				Logger.severe("Could not save floor " + id + " to database: " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-		
-		return section;
+		return "ID: " + getId() + ", shape: CUBOID";
 	}
 	
 	@Override
@@ -223,82 +95,72 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 		
 		section.set("id", id);
 		section.set("shape", "CUBOID");
-		section.set("type", type.name());
 		section.set("first", Parser.convertLocationtoString(firstPoint));
 		section.set("second", Parser.convertLocationtoString(secondPoint));
-		
-		if (type == FloorType.SPECIFIEDID) {
-			section.set("block", blockData.getMaterial().name());
-			section.set("data", blockData.getData());
-		}
 		
 		return section;
 	}
 	
-	public static String toBase64(List<SimpleBlockData> blockDatas) {
-		StringBuilder builder = new StringBuilder();
-		
-		Iterator<SimpleBlockData> iterator = blockDatas.iterator();
-		while (iterator.hasNext()) {
-			SimpleBlockData data = iterator.next();
-			
-			String base64String = Base64Helper.toBase64(data);
-			builder.append(base64String);
-			
-			if (iterator.hasNext()) {
-				builder.append("@");
-			}
-		}
-		
-		return builder.toString();
-	}
-	
-	public static List<SimpleBlockData> fromBase64(String str) {
-		String[] parts = str.split("@");
-		List<SimpleBlockData> datas = new ArrayList<SimpleBlockData>();
-		
-		for (String part : parts) {
-			SimpleBlockData data = (SimpleBlockData) Base64Helper.fromBase64(part);
-			
-			datas.add(data);
-		}
-		
-		return datas;
-	}
-	
-	@SuppressWarnings("unchecked")
 	public static FloorCuboid deserialize(ConfigurationSection section, Game game) {
 		int id = section.getInt("id");
-		FloorType type = FloorType.valueOf(section.getString("type"));
-		Location first = Parser.convertStringtoLocation(section.getString("first"));
-		Location second = Parser.convertStringtoLocation(section.getString("second"));
+		String shape = section.getString("shape");
 		
-		FloorCuboid floor = new FloorCuboid(id, first, second, type);
+		Location first, second;
 		
-		if (type == FloorType.SPECIFIEDID) {
-			Material block = Material.valueOf(section.getString("block"));
-			byte data = (byte) section.getInt("data");
+		if (shape.equalsIgnoreCase("CUBOID")) {
+			first = Parser.convertStringtoLocation(section.getString("first"));
+			second = Parser.convertStringtoLocation(section.getString("second"));
+		} else if (shape.equalsIgnoreCase("CYLINDER")) {
+			//Convert old cylinder floors into cuboid floors
+			Location center = Parser.convertStringtoLocation(section.getString("center"));
+			int radius = section.getInt("radius");
+			int min = section.getInt("min");
+			int max = section.getInt("max");
 			
-			floor.setBlockData(new SimpleBlockData(block, data));
-		} else if (type == FloorType.GIVENFLOOR) {
-			try {
-				File file = new File(HeavySpleef.getInstance().getDataFolder(), "games/" + game.getName() + "/" + id + "." + FILE_EXTENSION);
-				if (file.exists()) {
-					ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-					List<SimpleBlockData> data = (List<SimpleBlockData>)in.readObject();
-					
-					in.close();
-					floor.blockDatas = data;
-				} else {
-					Logger.severe("Could not load data for given-floor " + id + "!!! Blockdata file does not exist! (plugins/HeavySpleef/games/" + game.getName() + "/" + id + ".ssf");
-				}
-			} catch (Exception e) {
-				Logger.severe("Could not load data for given floor " + id + ": " + e.getMessage());
-				e.printStackTrace();
-			}
+			first = new Location(center.getWorld(), center.getBlockX() - radius, min, center.getBlockZ() - radius);
+			second = new Location(center.getWorld(), center.getBlockX() + radius, max, center.getBlockZ() + radius);
+		} else {
+			Logger.warning("Invalid floor shape " + shape + " for floor " + id + "!");
+			Logger.warning("Failed to load floor " + id + "!");
+			return null;
+		}
+		
+		FloorCuboid floor = new FloorCuboid(id, game, first, second);
+		File file = new File(((GameComponents)game.getComponents()).getFloorFolder(), id + "." + FILE_EXTENSION);
+		
+		if (!file.exists()) {
+			SaveSchematic saver = new SaveSchematic(floor);
+			Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), saver);
 		}
 		
 		return floor;
+	}
+
+	@Override
+	public Game getGame() {
+		return game;
+	}
+
+	@Override
+	public void delete() {
+		game.getComponents().removeFloor(id);
+		
+		File file = new File(((GameComponents)game.getComponents()).getFloorFolder(), id + "." + FILE_EXTENSION);
+		if (file.exists()) {
+			file.delete();
+		}
+	}
+
+	public boolean getRandomWool() {
+		return randomWool;
+	}
+
+	public void setRandomWool(boolean randomWool) {
+		this.randomWool = randomWool;
+		
+		if (randomWool) {
+			generateWool();
+		}
 	}
 
 }

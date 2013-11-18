@@ -41,6 +41,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -61,7 +62,6 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
-import de.matzefratze123.heavyspleef.core.region.FloorCylinder;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.core.task.PlayerTeleportTask;
@@ -88,6 +88,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	
 	//Persistent data
 	private String name;
+	private World world;
 	private final GameComponents components;
 	private Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
 	private final GameQueue queue;
@@ -118,6 +119,15 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public World getWorld() {
+		return world;
+	}
+	
+	protected void setWorld(World world) {
+		this.world = world;
 	}
 	
 	public abstract Location getRandomLocation();
@@ -330,7 +340,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		roundsPlayed = 0;
 		jackpot = 0;
 		
-		queue.processQueue();
+		queue.flushQueue();
 	}
 	
 	/* Extra method to stop the game per a winner team */
@@ -379,7 +389,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		roundsPlayed = 0;
 		jackpot = 0;
 		
-		queue.processQueue();
+		queue.flushQueue();
 	}
 
 	@Override
@@ -865,8 +875,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		currentSection = section.createSection("floors");
 		for (IFloor floor : components.getFloors()) {
 			String id = String.valueOf(floor.getId());
+			ConfigurationSection serialized = floor.serialize();
 			
-			ConfigurationSection serialized = floor.serialize(this);
 			currentSection.createSection(id, serialized.getValues(true));
 		}
 		
@@ -948,16 +958,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection floorSection = currentSection.getConfigurationSection(key);
 			
-			String shape = floorSection.getString("shape");
-			IFloor floor = null;
+			IFloor floor = FloorCuboid.deserialize(floorSection, game);
 			
-			if (shape.equalsIgnoreCase("CUBOID")) {
-				floor = FloorCuboid.deserialize(floorSection, game);
-			} else if (shape.equalsIgnoreCase("CYLINDER")) {
-				floor = FloorCylinder.deserialize(floorSection, game);
-			}
-			
-			game.getComponents().addFloor(floor);
+			game.components.addFloor(floor, false);
 		}
 		
 		currentSection = section.getConfigurationSection("losezones");

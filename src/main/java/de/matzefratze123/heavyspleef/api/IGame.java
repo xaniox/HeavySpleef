@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 
 import de.matzefratze123.heavyspleef.core.BroadcastType;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -45,6 +46,11 @@ public interface IGame {
 	 * Gets the type of this game
 	 */
 	public GameType getType();
+	
+	/**
+	 * Gets the world of this game
+	 */
+	public World getWorld();
 	
 	/**
 	 * Renames this game

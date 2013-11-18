@@ -111,7 +111,7 @@ playerJoinedToPlayer: &7You joined the game %a
 kickedOfToPlayer: &7You were kicked of by %a&7%a
 kickedOfToKicker: &7You kicked of %a&7 from the game %a%a
 left: &cYou left the game...
-floorRemoved: &7The floor has been removed!
+floorRemoved: &7The floor has been unregistered!
 loseZoneRemoved: &7The losezone with the id %a has been removed!
 gamesSaved: &7All games have been saved to the database!
 gameStarted: &7Game started!

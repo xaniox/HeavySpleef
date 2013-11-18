@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.objects;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 
 public interface Region {
 	
@@ -29,6 +30,11 @@ public interface Region {
 	 * @return Region id
 	 */
 	public int getId();
+	
+	/**
+	 * Gets the world of this region
+	 */
+	public World getWorld();
 	
 	/**
 	 * Checks if this region contains a location

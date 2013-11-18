@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.objects;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
@@ -58,6 +59,11 @@ public class RegionCylinder implements Region {
 		Vector vector = Util.toWorldEditVector(location);
 		
 		return region.contains(vector);
+	}
+
+	@Override
+	public World getWorld() {
+		return BukkitUtil.toWorld(region.getWorld());
 	}
 
 }

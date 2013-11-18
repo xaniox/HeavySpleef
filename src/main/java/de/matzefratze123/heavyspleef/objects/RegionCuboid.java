@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.objects;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 
 public class RegionCuboid implements Region {
 
@@ -67,6 +68,11 @@ public class RegionCuboid implements Region {
 				&& location.getBlockX() >= minX && location.getBlockX() <= maxX
 				&& location.getBlockY() >= minY && location.getBlockY() <= maxY
 				&& location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
+	}
+
+	@Override
+	public World getWorld() {
+		return firstPoint.getWorld();
 	}
 	
 }

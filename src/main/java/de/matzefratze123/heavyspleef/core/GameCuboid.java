@@ -43,6 +43,7 @@ public class GameCuboid extends Game {
 		super(name);
 		
 		this.region = region;
+		setWorld(region.getWorld());
 	}
 	
 	public Location getFirstPoint() {

@@ -46,6 +46,7 @@ public class GameCylinder extends Game {
 		super(name);
 		
 		this.region = region;
+		setWorld(region.getWorld());
 	}
 
 	@Override

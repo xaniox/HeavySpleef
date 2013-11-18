@@ -46,7 +46,7 @@ public class CommandAddLose extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0].toLowerCase())) {
+		if (!GameManager.hasGame(args[0])) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}

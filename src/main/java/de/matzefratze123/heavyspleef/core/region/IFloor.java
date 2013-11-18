@@ -20,33 +20,26 @@
 package de.matzefratze123.heavyspleef.core.region;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.World;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
-import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 
 public interface IFloor extends Comparable<IFloor>, DatabaseSerializeable {
 	
-	public String FILE_EXTENSION = "ssf";
+	public String FILE_EXTENSION = "schematic";
 	
 	public int getId();
 	
-	public SimpleBlockData getBlockData();
+	public Game getGame();
 	
-	public void setBlockData(SimpleBlockData data);
-	
-	public FloorType getType();
+	public World getWorld();
 	
 	public boolean contains(Location location);
 	
-	public void generate();
-	
-	public void remove();
+	public void delete();
 	
 	public int getY();
-	
-	public ConfigurationSection serialize(Game game);
 
 	public String asPlayerInfo();
 

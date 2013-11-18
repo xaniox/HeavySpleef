@@ -36,6 +36,8 @@ public interface IGameComponents {
 	
 	public boolean hasFloor(int id);
 	
+	public void removeFloor(IFloor floor);
+	
 	public void removeFloor(int id);
 	
 	public IFloor getFloor(int id);
@@ -43,8 +45,6 @@ public interface IGameComponents {
 	public List<IFloor> getFloors();
 	
 	public void regenerateFloors();
-	
-	public void regenerateFloor(int id);
 	
 	public void addLoseZone(LoseZone loseZone);
 	
