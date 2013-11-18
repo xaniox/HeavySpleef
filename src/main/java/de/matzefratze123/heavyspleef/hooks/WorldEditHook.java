@@ -32,11 +32,13 @@ public class WorldEditHook implements Hook<WorldEditPlugin>{
 	public void hook() {
 		Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
 		
-		if (we == null)
+		if (we == null) {
 			return;
+		}
 		
-		if (!we.isEnabled())
+		if (!we.isEnabled()) {
 			return;
+		}
 		
 		if (!(we instanceof WorldEditPlugin))
 			return;
@@ -46,6 +48,10 @@ public class WorldEditHook implements Hook<WorldEditPlugin>{
 
 	@Override
 	public WorldEditPlugin getHook() {
+		if (hook == null) {
+			hook();
+		}
+		
 		return this.hook;
 	}
 

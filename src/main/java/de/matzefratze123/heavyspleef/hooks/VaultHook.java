@@ -43,6 +43,10 @@ public class VaultHook implements Hook<Economy> {
 
 	@Override
 	public Economy getHook() {
+		if (hook == null) {
+			hook();
+		}
+		
 		return this.hook;
 	}
 

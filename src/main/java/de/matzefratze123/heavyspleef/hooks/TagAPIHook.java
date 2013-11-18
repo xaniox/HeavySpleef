@@ -44,6 +44,10 @@ public class TagAPIHook implements Hook<TagAPI> {
 
 	@Override
 	public TagAPI getHook() {
+		if (hook == null) {
+			hook();
+		}
+		
 		return this.hook;
 	}
 
