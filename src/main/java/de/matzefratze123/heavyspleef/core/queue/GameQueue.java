@@ -53,7 +53,7 @@ public class GameQueue {
 		return queue.contains(player);
 	}
 	
-	public void processQueue() {
+	public void flushQueue() {
 		SpleefPlayer currentItem = null;
 		
 		do {
