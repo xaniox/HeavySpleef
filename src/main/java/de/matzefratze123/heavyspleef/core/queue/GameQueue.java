@@ -19,6 +19,7 @@
  */
 package de.matzefratze123.heavyspleef.core.queue;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
@@ -33,13 +34,15 @@ public class GameQueue {
 		this.queue = new ArrayQueue<SpleefPlayer>();
 	}
 	
-	public int addPlayer(SpleefPlayer player) {
+	public void addPlayer(SpleefPlayer player) {
 		if (queue.contains(player))
-			return -1;
+			return;
+		if (!HeavySpleef.getSystemConfig().getBoolean("queues.useQueues", true)) {
+			return;
+		}
 		
 		int place = queue.add(player);
 		player.sendMessage(I18N._("addedToQueue", game.getName(), String.valueOf(place + 1)));
-		return place;
 	}
 	
 	public void removePlayer(SpleefPlayer player) {
