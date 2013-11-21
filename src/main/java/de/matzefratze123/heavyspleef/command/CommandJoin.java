@@ -179,7 +179,7 @@ public class CommandJoin extends HSCommand {
 			}
 		}
 		
-		if ((game.getGameState() == GameState.COUNTING && HeavySpleef.getSystemConfig().getBoolean("general.joinAtCountdown") && !is1vs1) || (game.getGameState() != GameState.COUNTING)) {
+		if ((game.getGameState() == GameState.COUNTING && !is1vs1) || (game.getGameState() != GameState.COUNTING)) {
 			int pvptimer = HeavySpleef.getSystemConfig().getInt("general.pvptimer");
 			
 			if (pvptimer > 0) {
