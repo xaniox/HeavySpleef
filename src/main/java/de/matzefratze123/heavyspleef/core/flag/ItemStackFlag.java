@@ -29,9 +29,9 @@ import de.matzefratze123.heavyspleef.database.ItemStackHelper;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.util.Util;
 
-public class SingleItemStackFlag extends Flag<ItemStack> {
+public class ItemStackFlag extends Flag<ItemStack> {
 
-	public SingleItemStackFlag(String name, ItemStack defaulte) {
+	public ItemStackFlag(String name, ItemStack defaulte) {
 		super(name, defaulte);
 	}
 

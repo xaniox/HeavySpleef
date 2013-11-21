@@ -28,6 +28,7 @@ import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import de.matzefratze123.heavyspleef.core.flag.ListFlagItemstack.SerializeableItemStack;
 import de.matzefratze123.heavyspleef.core.flag.ListFlagLocation.SerializeableLocation;
 
 public enum FlagType {
@@ -79,6 +80,8 @@ public enum FlagType {
 	public static final LocationFlag SPAWNPOINT = new LocationFlag("spawnpoint");
 	@FlagData
 	public static final ListFlag<SerializeableLocation> NEXTSPAWNPOINT = new ListFlagLocation("nextspawnpoint", null);
+	@FlagData
+	public static final ListFlag<SerializeableItemStack> ITEMREWARD = new ListFlagItemstack("itemreward", null);
 	
 	/* Integer flags */
 	@FlagData(aliases = {"min"})
@@ -100,13 +103,8 @@ public enum FlagType {
 	@FlagData(aliases = {"regeneration-intervall", "regeneration", "regen-intervall"})
 	public static final IntegerFlag REGEN_INTERVALL = new IntegerFlag("regen", -1);
 	
-	/* ItemStack flags */
 	@FlagData
-	public static final ArrayItemStackFlag ITEMREWARD = new ArrayItemStackFlag("itemreward", new ItemStack[]{});
-	@FlagData
-	public static final ArrayItemStackFlag LOSEREWARD = new ArrayItemStackFlag("losereward", new ItemStack[]{});
-	@FlagData
-	public static final SingleItemStackFlag ICON = new SingleItemStackFlag("icon", new ItemStack(Material.DIAMOND_SPADE));
+	public static final ItemStackFlag ICON = new ItemStackFlag("icon", new ItemStack(Material.DIAMOND_SPADE));
 	
 	static {
 		ONEVSONE.setConflictingFlags(TEAM);

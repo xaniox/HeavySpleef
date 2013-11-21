@@ -53,8 +53,7 @@ public class CommandFlag extends HSCommand {
 		
 		setMinArgs(2);
 		setOnlyIngame(true);
-		setUsage("/spleef flag <name> <flag> [state]\n" +
-				ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", "));
+		setUsage("/spleef flag <name> <flag> [state]\n" + ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", "));
 		setPermission(Permissions.SET_FLAG);
 		setHelp("Sets a flag for this game");
 	}

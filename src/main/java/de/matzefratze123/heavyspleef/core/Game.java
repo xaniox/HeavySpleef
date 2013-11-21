@@ -19,10 +19,7 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.ITEMREWARD;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.REWARD;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.SPECTATE;
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.TEAM;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +57,7 @@ import de.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
+import de.matzefratze123.heavyspleef.core.flag.ListFlagItemstack.SerializeableItemStack;
 import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
@@ -804,10 +802,12 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	 * @param winnersTeamSize How many players won the game. This parameter makes sure that the money reward is splitted up equally
 	 */
 	public void giveRewards(SpleefPlayer player, boolean clearJackpot, int winnersTeamSize) {
-		for (ItemStack stack : getFlag(ITEMREWARD)) {
-			ItemStack newStack = stack.getData().toItemStack(stack.getAmount());//We need to convert the data to a new stack (Bukkit ItemData bug?)
-			player.getBukkitPlayer().getInventory().addItem(newStack);
-			player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.formatMaterialName(stack.getType().name())));
+		if (getFlag(ITEMREWARD) != null) {
+			for (SerializeableItemStack stack : getFlag(ITEMREWARD)) {
+				ItemStack bukkitStack = stack.toBukkitStack();
+				player.getBukkitPlayer().getInventory().addItem(bukkitStack);
+				player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.formatMaterialName(stack.getMaterial().name())));
+			}
 		}
 		
 		if (HookManager.getInstance().getService(VaultHook.class).hasHook()) {

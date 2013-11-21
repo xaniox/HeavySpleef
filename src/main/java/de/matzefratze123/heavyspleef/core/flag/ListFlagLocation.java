@@ -39,8 +39,6 @@ public class ListFlagLocation extends ListFlag<ListFlagLocation.SerializeableLoc
 		SerializeableLocation sLocation = new SerializeableLocation(location);
 		
 		list.add(sLocation);
-		
-		System.out.println(list.size());
 	}
 
 	@Override
@@ -50,7 +48,8 @@ public class ListFlagLocation extends ListFlag<ListFlagLocation.SerializeableLoc
 
 	@Override
 	public String getHelp() {
-		return HeavySpleef.PREFIX + " /spleef flag <name> " + getName();
+		return HeavySpleef.PREFIX + " /spleef flag <name> " + getName() + "\n" + 
+			   HeavySpleef.PREFIX + " Adds the next location.";
 	}
 	
 	public static class SerializeableLocation implements Serializable {
