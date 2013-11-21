@@ -27,6 +27,7 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
@@ -71,6 +72,7 @@ import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.FuzzyReflection;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -165,8 +167,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onSpleggGunClick(PlayerInteractEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 
 		if (player == null)
 			return;
@@ -185,6 +186,7 @@ public class PlayerListener implements Listener {
 
 		// Launch egg
 		player.getBukkitPlayer().launchProjectile(Egg.class);
+		player.getBukkitPlayer().playSound(e.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 0.4F, 2F);
 	}
 
 	@EventHandler
@@ -311,6 +313,7 @@ public class PlayerListener implements Listener {
 				return;
 
 			// Use BlockIterator to detect the hit block
+			World world = egg.getWorld();
 			BlockIterator iterator = new BlockIterator(egg.getWorld(), egg.getLocation().toVector(), egg.getVelocity().normalize(), 0, 4);
 			
 			egg.remove();
@@ -327,6 +330,9 @@ public class PlayerListener implements Listener {
 				return;
 
 			player.addBrokenBlock(hitBlock);
+			world.playSound(hitBlock.getLocation(), Sound.CHICKEN_EGG_POP, 0.7F, 1.0F);
+			FuzzyReflection.playMobSpellEffect(hitBlock.getLocation().clone().add(0.5, 0.8, 0.5), 100, 0);
+			//world.playEffect(hitBlock.getLocation(), Effect., 0);
 			hitBlock.setType(Material.AIR);
 		}
 	}
