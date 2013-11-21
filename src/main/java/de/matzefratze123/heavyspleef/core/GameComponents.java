@@ -130,7 +130,7 @@ public class GameComponents implements IGameComponents {
 	@Override
 	public void regenerateFloors() {
 		Rollback rollback = new Rollback(game);
-		Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), rollback);
+		rollback.rollback();
 	}
 	
 	public File getFloorFolder() {
