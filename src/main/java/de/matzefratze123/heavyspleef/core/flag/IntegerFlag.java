@@ -23,6 +23,7 @@ package de.matzefratze123.heavyspleef.core.flag;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.util.Util;
 
 public class IntegerFlag extends Flag<Integer> {
 
@@ -34,13 +35,14 @@ public class IntegerFlag extends Flag<Integer> {
 	public Integer parse(Player player, String input, Object previousObject) {
 		String[] parts = input.split(" ");
 		
-		try {
-			int i = Integer.parseInt(parts[0]);
-			i = Math.abs(i);
-			return i;
-		} catch (NumberFormatException e) {
+		if (!Util.isNumber(parts[0])) {
 			return null;
 		}
+		
+		int i = Integer.parseInt(parts[0]);
+		i = Math.abs(i);
+		
+		return i;
 	}
 
 	@Override

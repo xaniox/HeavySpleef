@@ -17,7 +17,7 @@ import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.util.Logger;
 
-public class Rollback implements Runnable {
+public class Rollback {
 
 	private Game game;
 	private LocalSession localSession;
@@ -32,9 +32,8 @@ public class Rollback implements Runnable {
 		this.localSession = new LocalSession(worldEdit.getConfiguration());
 		this.editSession = new EditSession(new BukkitWorld(game.getWorld()), UNLIMITED_BLOCKS);
 	}
-
-	@Override
-	public void run() {
+	
+	public void rollback() {
 		for (IFloor floor : game.getComponents().getFloors()) {
 			FloorCuboid cuboidFloor = (FloorCuboid) floor;
 			

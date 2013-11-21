@@ -37,6 +37,9 @@ import de.matzefratze123.heavyspleef.util.Logger;
 
 public class YamlStatisticDatabase implements IStatisticDatabase {
 
+	//Saving yaml files to fast will cause errors
+	private static boolean onCooldown = false;
+	
 	private HeavySpleef plugin;
 	private File databaseFile;
 	private FileConfiguration db;
@@ -57,6 +60,10 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 	
 	@Override
 	public void saveAccounts() {
+		if (onCooldown) {
+			return;
+		}
+		
 		synchronized (db) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				StatisticModule stat = HeavySpleef.getInstance().getSpleefPlayer(player).getStatistic();
@@ -83,6 +90,8 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 			Logger.warning("Could not save stats to " + databaseFile.getName() + "! IOException: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
+		cooldown();
 	}
 
 	@Override
@@ -109,6 +118,10 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public void unloadAccount(SpleefPlayer player) {
+		if (onCooldown) {
+			return;
+		}
+		
 		ConfigurationSection section = null;
 		StatisticModule module = player.getStatistic();
 		
@@ -125,6 +138,15 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 			section.set("games", module.getGamesPlayed());
 			section.set("score", module.getScore());
 		}
+		
+		try {
+			db.save(databaseFile);
+		} catch (Exception e) {
+			Logger.warning("Could not save stats to " + databaseFile.getName() + "! IOException: " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		cooldown();
 	}
 
 	@Override
@@ -147,6 +169,24 @@ public class YamlStatisticDatabase implements IStatisticDatabase {
 		
 		return list;
 		
+	}
+	
+	private static void cooldown() {
+		if (onCooldown) {
+			return;
+		}
+		if (!HeavySpleef.getInstance().isEnabled()) {
+			return;
+		}
+		
+		onCooldown = true;
+		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.getInstance(), new Runnable() {
+			
+			@Override
+			public void run() {
+				onCooldown = false;
+			}
+		}, 60 * 20);
 	}
 
 }

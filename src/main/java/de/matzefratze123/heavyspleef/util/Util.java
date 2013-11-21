@@ -193,5 +193,34 @@ public class Util {
 				Math.max(l1.getZ(), l2.getZ())
 							);
 	}
+	
+	/**
+	 * Checks if a string can be parsed into a number
+	 * @param str
+	 * @return
+	 */
+	public static boolean isNumber(String str) {
+		boolean isNumeric = true;
+		
+		if (str == null) {
+			return false;
+		}
+		if (str.isEmpty()) {
+			return false;
+		}
+		
+		char[] chars = str.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			
+			if (c == '-' && i == 0) {
+				continue;
+			}
+			
+			isNumeric &= Character.isDigit(c);
+		}
+		
+		return isNumeric;
+	}
 
 }
