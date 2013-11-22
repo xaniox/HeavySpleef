@@ -254,6 +254,19 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			items.add(bow);
 			items.add(arrow);
 		}
+	        
+	        if (getFlag(FlagType.FIRESPLEEF)) {
+			ItemStack flintandsteel = new ItemStack(Material.FLINT_AND_STEEL);
+			ItemMeta meta = flintandsteel.getItemMeta();
+			meta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Spleef Flint");
+			List<String> lore = new ArrayList<String>();
+			lore.add(ChatColor.YELLOW + "Right click to burn blocks!");
+			meta.setLore(lore);
+			flintandsteel.setItemMeta(meta);
+			flintandsteel.addUnsafeEnchantment(Enchantment.DURABILITY, 1000);
+			
+			items.add(flintandsteel);
+		}
 		
 		for (ItemStack item : items) {
 			player.getBukkitPlayer().getInventory().addItem(item);
