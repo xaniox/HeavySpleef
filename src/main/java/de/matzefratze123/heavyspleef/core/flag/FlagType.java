@@ -59,6 +59,8 @@ public enum FlagType {
 	@FlagData
 	public static final BooleanFlag SPLEGG = new BooleanFlag("splegg", false);
 	@FlagData
+	public static final BooleanFlag FIRESPLEEF = new BooleanFlag("bowspleef", false);
+	@FlagData
 	public static final BooleanFlag BOXES = new BooleanFlag("boxes", true);
 	@FlagData
 	public static final BooleanFlag CAMP_DETECTION = new BooleanFlag("anticamping", true);
@@ -110,10 +112,11 @@ public enum FlagType {
 		ONEVSONE.setConflictingFlags(TEAM);
 		TEAM.setConflictingFlags(ONEVSONE);
 		
-		SHOVELS.setConflictingFlags(SPLEGG, BOWSPLEEF, SHEARS);
-		SPLEGG.setConflictingFlags(SHOVELS, BOWSPLEEF, SHEARS);
-		BOWSPLEEF.setConflictingFlags(SHOVELS, SPLEGG, SHEARS);
-		SHEARS.setConflictingFlags(SHOVELS, SPLEGG, BOWSPLEEF);
+		SHOVELS.setConflictingFlags(SPLEGG, BOWSPLEEF, SHEARS, FIRESPLEEF);
+		SPLEGG.setConflictingFlags(SHOVELS, BOWSPLEEF, SHEARS, FIRESPLEEF);
+		BOWSPLEEF.setConflictingFlags(SHOVELS, SPLEGG, SHEARS, FIRESPLEEF);
+		SHEARS.setConflictingFlags(SHOVELS, SPLEGG, BOWSPLEEF, FIRESPLEEF);
+		FIRESPLEEF.setConflictingFlags(SHOVELS, SPLEGG, BOWSPLEEF, SHEARS);
 		
 		BOXES.setRequiredFlags(ONEVSONE);
 		ROUNDS.setRequiredFlags(ONEVSONE);
