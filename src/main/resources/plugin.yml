@@ -12,5 +12,5 @@ main: de.matzefratze123.heavyspleef.HeavySpleef
 
 commands:
   spleef:
-    aliases: [hs, hspleef, spl]
+    aliases: [hs, hspleef, spl, splegg]
     description: General Spleef command for HeavySpleef
