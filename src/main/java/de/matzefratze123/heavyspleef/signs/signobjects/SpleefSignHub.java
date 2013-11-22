@@ -41,7 +41,7 @@ public class SpleefSignHub implements SpleefSign {
 
 	@Override
 	public String getId() {
-		return "sign.hub";
+		return "sign-hub";
 	}
 
 	@Override

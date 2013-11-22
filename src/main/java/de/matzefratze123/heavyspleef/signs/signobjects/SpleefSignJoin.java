@@ -92,7 +92,7 @@ public class SpleefSignJoin implements SpleefSign {
 
 	@Override
 	public String getId() {
-		return "sign.join";
+		return "sign-join";
 	}
 
 	@Override

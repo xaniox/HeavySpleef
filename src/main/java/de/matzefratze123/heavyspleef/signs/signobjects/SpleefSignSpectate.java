@@ -59,7 +59,7 @@ public class SpleefSignSpectate implements SpleefSign {
 
 	@Override
 	public String getId() {
-		return "sign.spectate";
+		return "sign-spectate";
 	}
 
 	@Override

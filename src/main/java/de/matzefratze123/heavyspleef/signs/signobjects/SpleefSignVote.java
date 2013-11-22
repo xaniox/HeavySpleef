@@ -59,7 +59,7 @@ public class SpleefSignVote implements SpleefSign {
 
 	@Override
 	public String getId() {
-		return "sign.vote";
+		return "sign-vote";
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class SpleefSignLeave implements SpleefSign {
 
 	@Override
 	public String getId() {
-		return "sign.leave";
+		return "sign-leave";
 	}
 
 	@Override

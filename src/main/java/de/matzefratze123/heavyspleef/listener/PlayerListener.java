@@ -332,7 +332,6 @@ public class PlayerListener implements Listener {
 			player.addBrokenBlock(hitBlock);
 			world.playSound(hitBlock.getLocation(), Sound.CHICKEN_EGG_POP, 0.7F, 1.0F);
 			FuzzyReflection.playMobSpellEffect(hitBlock.getLocation().clone().add(0.5, 0.8, 0.5), 100, 0);
-			//world.playEffect(hitBlock.getLocation(), Effect., 0);
 			hitBlock.setType(Material.AIR);
 		}
 	}

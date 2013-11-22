@@ -51,7 +51,7 @@ public class SpleefSignStart implements SpleefSign {
 
 	@Override
 	public String getId() {
-		return "sign.start";
+		return "sign-start";
 	}
 	
 	@Override
