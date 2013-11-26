@@ -166,7 +166,6 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addWin() {
 		wins++;
-		
 	}
 	
 	/**
@@ -174,7 +173,6 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addLose() {
 		loses++;
-		saveAsync();
 	}
 	
 	/**
@@ -182,7 +180,6 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addKnockout() {
 		knockouts++;
-		saveAsync();
 	}
 	
 	/**
@@ -190,7 +187,6 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public void addGame() {
 		gamesPlayed++;
-		saveAsync();
 	}
 	
 	/**
@@ -232,7 +228,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		return d / 10000.0D;
 	}
 	
-	private static void saveAsync() {
+	public static void pushAsync() {
 		Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new Runnable() {
 			
 			@Override

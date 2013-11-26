@@ -198,6 +198,9 @@ sounds:
   
 statistic:
 
+  # Do you want to enable statistics?
+  enabled: true
+
   # Which database type should be used for statistic database storing?
   # Allowed types: 'yaml', 'mysql'
   dbType: yaml

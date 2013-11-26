@@ -37,6 +37,7 @@ import de.matzefratze123.heavyspleef.command.UserType.Type;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.stats.CachedStatistics;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
+import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
@@ -54,6 +55,11 @@ public class CommandStats extends HSCommand {
 	public void execute(CommandSender sender, String[] args) {
 		final Player player = (Player) sender;
 		SpleefPlayer spleefPlayer = HeavySpleef.getInstance().getSpleefPlayer(player);
+		
+		if (!AbstractDatabase.isEnabled()) {
+			player.sendMessage(ChatColor.RED + "Statistics are disabled!");
+			return;
+		}
 		
 		if (args.length == 0) {
 			if (!player.hasPermission(Permissions.STATS.getPerm())) {

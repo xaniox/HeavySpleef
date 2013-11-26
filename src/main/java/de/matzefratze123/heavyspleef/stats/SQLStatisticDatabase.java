@@ -1,22 +1,3 @@
-/**
- *   HeavySpleef - Advanced spleef plugin for bukkit
- *   
- *   Copyright (C) 2013 matzefratze123
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package de.matzefratze123.heavyspleef.stats;
 
 import java.sql.ResultSet;
@@ -31,17 +12,24 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.stats.sql.Database;
+import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.stats.sql.Field;
 import de.matzefratze123.heavyspleef.stats.sql.Field.Type;
+import de.matzefratze123.heavyspleef.stats.sql.SQLResult;
 import de.matzefratze123.heavyspleef.stats.sql.Table;
 import de.matzefratze123.heavyspleef.util.Logger;
 
-
-public class MySQLStatisticDatabase implements IStatisticDatabase {
+public class SQLStatisticDatabase implements IStatisticDatabase {
 	
-	private static final String tableName = "HeavySpleef_Statistics";
+	public static final String TABLE_NAME = "HeavySpleef_Statistics";
 	private static Map<String, Field> columns;
+	
+	//Database current cooldown (time to close connection etc. write-lock)
+	private Cooldown cooldown;
+	
+	public SQLStatisticDatabase() {
+		this.cooldown = new Cooldown();
+	}
 	
 	static {
 		if (columns == null) {
@@ -56,12 +44,18 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 	}
 	
 	@Override
-	public void saveAccounts() {
-		Database database = new Database(HeavySpleef.getInstance());
-		if (!database.hasTable(tableName))
-			database.createTable(tableName, columns);
+	public synchronized void saveAccounts() {
+		System.out.println("SaveAccountsCalled");
+		if (!cooldown.isExpired()) {
+			return;
+		}
 		
-		Table table = database.getTable(tableName);
+		AbstractDatabase database = AbstractDatabase.getInstance();
+		
+		if (!database.hasTable(TABLE_NAME))
+			database.createTable(TABLE_NAME, columns);
+		
+		Table table = database.getTable(TABLE_NAME);
 		for (String columnName : columns.keySet()) {
 			if (!table.hasColumn(columnName))
 				table.addColumn(columnName, columns.get(columnName));
@@ -93,20 +87,18 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		}
 		
 		database.close();
+		cooldown.cooldown();
 	}
 
 	@Override
-	public StatisticModule loadAccount(String holder) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(holder);
-		if (player != null) {
-			return player.getStatistic();
-		}
+	public synchronized StatisticModule loadAccount(String holder) {
+		System.out.println("LoadAccountCalled");
 		
-		Database database = new Database(HeavySpleef.getInstance());
-		if (!database.hasTable(tableName))
+		AbstractDatabase database = AbstractDatabase.getInstance();
+		if (!database.hasTable(TABLE_NAME))
 			return null;
 		
-		Table table = database.getTable(tableName);
+		Table table = database.getTable(TABLE_NAME);
 		for (String columnName : columns.keySet()) {
 			if (!table.hasColumn(columnName))
 				table.addColumn(columnName, columns.get(columnName));
@@ -115,20 +107,21 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		Map<String, Object> where = new HashMap<String, Object>();
 		
 		where.put("owner", holder);
-		ResultSet result = table.select("*", where);
+		SQLResult result = table.select("*", where);
+		ResultSet set = result.getResultSet();
 		
 		StatisticModule module = null;
 		
 		try {
 			
-			if (!result.next()) {
+			if (!set.next()) {
 				module = null;
 			} else {
-				String owner = result.getString("owner");
-				int wins = result.getInt("wins");
-				int loses = result.getInt("loses");
-				int knockouts = result.getInt("knockouts");
-				int games = result.getInt("games");
+				String owner = set.getString("owner");
+				int wins = set.getInt("wins");
+				int loses = set.getInt("loses");
+				int knockouts = set.getInt("knockouts");
+				int games = set.getInt("games");
 				
 				module = new StatisticModule(owner, loses, wins, knockouts, games);
 			}
@@ -138,20 +131,27 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 			e.printStackTrace();
 		}
 		
+		result.close();
 		database.close();
 		
 		return module;
 	}
 
 	@Override
-	public void unloadAccount(SpleefPlayer player) {
+	public synchronized void unloadAccount(SpleefPlayer player) {
+		System.out.println("UnloadAccountCalled");
+		
+		if (!cooldown.isExpired()) {
+			return;
+		}
+		
 		StatisticModule module = player.getStatistic();
 		
-		Database database = new Database(HeavySpleef.getInstance());
-		if (!database.hasTable(tableName))
-			database.createTable(tableName, columns);
+		AbstractDatabase database = AbstractDatabase.getInstance();
+		if (!database.hasTable(TABLE_NAME))
+			database.createTable(TABLE_NAME, columns);
 		
-		Table table = database.getTable(tableName);
+		Table table = database.getTable(TABLE_NAME);
 		for (String columnName : columns.keySet()) {
 			if (!table.hasColumn(columnName))
 				table.addColumn(columnName, columns.get(columnName));
@@ -179,30 +179,34 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 		table.insertOrUpdate(values, where);
 		
 		database.close();
+		cooldown.cooldown();
 	}
 
 	@Override
-	public List<StatisticModule> loadAccounts() {
-		Database database = new Database(HeavySpleef.getInstance());
-		if (!database.hasTable(tableName))
+	public synchronized List<StatisticModule> loadAccounts() {
+		System.out.println("LoadAccountsCalled");
+		
+		AbstractDatabase database = AbstractDatabase.getInstance();
+		if (!database.hasTable(TABLE_NAME))
 			return null;
 		
-		Table table = database.getTable(tableName);
+		Table table = database.getTable(TABLE_NAME);
 		for (String columnName : columns.keySet()) {
 			if (!table.hasColumn(columnName))
 				table.addColumn(columnName, columns.get(columnName));
 		}
 		
 		List<StatisticModule> list = new ArrayList<StatisticModule>();
-		ResultSet result = table.select("*");
+		SQLResult result = table.selectAll();
+		ResultSet set = result.getResultSet();
 		
 		try {
-			while (result.next()) {
-				String owner = result.getString("owner");
-				int wins = result.getInt("wins");
-				int loses = result.getInt("loses");
-				int knockouts = result.getInt("knockouts");
-				int games = result.getInt("games");
+			while (set.next()) {
+				String owner = set.getString("owner");
+				int wins = set.getInt("wins");
+				int loses = set.getInt("loses");
+				int knockouts = set.getInt("knockouts");
+				int games = set.getInt("games");
 				
 				StatisticModule module = new StatisticModule(owner, loses, wins, knockouts, games);
 				list.add(module);
@@ -213,9 +217,10 @@ public class MySQLStatisticDatabase implements IStatisticDatabase {
 			e.printStackTrace();
 		}
 		
+		result.close();
 		database.close();
 		
 		return list;
 	}
-
+	
 }

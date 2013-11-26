@@ -19,6 +19,8 @@
  */
 package de.matzefratze123.heavyspleef.stats.sql;
 
+import static de.matzefratze123.heavyspleef.stats.sql.SQLUtils.*;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -27,7 +29,8 @@ import java.sql.Statement;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import org.bukkit.Bukkit;
 
@@ -35,16 +38,10 @@ import de.matzefratze123.heavyspleef.util.Util;
 
 public class Table {
 	
-	private Database database;
+	private AbstractDatabase database;
 	private String name;
 	
-	public static final char tick = '\'';
-	
-	protected Table(Database database, String name) {
-		if (database.isInterrupted()) {
-			database.connectionHolder.getLogger().warning("Database is interrupted, expect errors!!");
-		}
-		
+	Table(AbstractDatabase database, String name) {
 		this.database = database;
 		this.name = name;
 	}
@@ -57,18 +54,20 @@ public class Table {
 	 * 
 	 * @return A ResultSet containing all datasets of this selection
 	 */
-	public ResultSet select(String selection, Map<String, Object> where) {
+	public SQLResult select(String selection, Map<String, Object> where) {
 		String whereClause = parseWhereClause(where);
+		Statement statement = null;
 		
 		try {
 			Connection conn = database.getConnection();
-			Statement statement = conn.createStatement();
+			statement = conn.createStatement();
 			
 			if (selection.trim().equalsIgnoreCase("*") || selection.trim().equalsIgnoreCase("all")) {
 				selection = "*";
 			}
 			
-			return statement.executeQuery("SELECT " + selection + " FROM " + name + (whereClause == null ? "" : whereClause));
+			ResultSet result = statement.executeQuery("SELECT " + selection + " FROM " + name + (whereClause == null ? "" : whereClause));
+			return new SQLResult(statement, result);
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("SQL Exception occured while trying to select " + selection + " from table " + name + " in database: " + e.getMessage());
 			return null;
@@ -83,16 +82,22 @@ public class Table {
 	 * 
 	 * @see #select(String, Map)
 	 */
-	public ResultSet select(String selection) {
+	public SQLResult select(String selection) {
 		return select(selection, null);
+	}
+	
+	public SQLResult selectAll() {
+		return select("*");
 	}
 	
 	public int insertOrUpdate(Map<String, Object> values, Map<String, Object> where) {
 		int result = Statement.EXECUTE_FAILED;
 		
+		Statement statement = null;
+		
 		try {
 			Connection conn = database.getConnection();
-			Statement statement = conn.createStatement();
+			statement = conn.createStatement();
 			
 			if (hasRow(where)) {
 				//Update part syntax beginn
@@ -125,30 +130,15 @@ public class Table {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {}
+			}
 		}
 		
 		return result;
-	}
-	
-	private String parseWhereClause(Map<?, ?> where) {
-		if (where == null)
-			return null;
-		
-		StringBuilder builder = new StringBuilder();
-		Iterator<?> iter = where.keySet().iterator();
-		builder.append(" WHERE ");
-		
-		while(iter.hasNext()) {
-			Object next = iter.next();
-			Object value = where.get(next);
-			
-			builder.append(next).append("=").append(tick).append(value).append(tick);
-			if (iter.hasNext())
-				builder.append(" AND ");
-		}
-		
-
-		return builder.toString();
 	}
 	
 	public boolean hasRow(Map<String, Object> where) {
@@ -159,42 +149,66 @@ public class Table {
 		while(iter.hasNext()) {
 			String next = iter.next();
 			if (!hasColumn(next)) {
-				database.connectionHolder.getLogger().warning("MySQL: Column " + next + " on table " + getName() + " doesn't exists! Ignoring...");
 				continue;
 			}
 			
 			Object value = where.get(next);
 			
-			builder.append(next).append("=").append(tick).append(value).append(tick);
+			builder.append(next).append("=").append(TICK).append(value).append(TICK);
 			if (iter.hasNext())
 				builder.append(" AND ");
 		}
 		
 		String whereClause = builder.toString();
 		
+		Statement statement = null;
+		ResultSet set = null;
+		
 		try {
 			Connection conn = database.getConnection();
-			Statement statement = conn.createStatement();
+			statement = conn.createStatement();
 			
-			ResultSet set = statement.executeQuery("SELECT * FROM " + name + whereClause);
-			return set.next();
+			set = statement.executeQuery("SELECT * FROM " + name + whereClause);
+			boolean next = set.next();
+			
+			return next;
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("SQLException while checking if row exists: " + e.getMessage());
 			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				
+				if (set != null) {
+					set.close();
+				}
+			} catch (SQLException e) {}
 		}
 		
 		return false;
 	}
 	
 	public boolean hasColumn(String column) {
+		ResultSet set = null;
+		
 		try {
 			Connection conn = database.getConnection();
 			DatabaseMetaData meta = conn.getMetaData();
-			ResultSet set = meta.getColumns(null, null, name, column);
+			set = meta.getColumns(null, null, name, column);
 			
-			return set.next();
+			boolean next = set.next();
+			
+			return next; 
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("Could not check column " + column + " in table " + name + ": " + e.getMessage());
+		} finally {
+			if (set != null) {
+				try {
+					set.close();
+				} catch (SQLException e) {}
+			}
 		}
 		
 		return false;
@@ -203,13 +217,23 @@ public class Table {
 	public int addColumn(String name, Field field) {
 		int result = Statement.EXECUTE_FAILED;
 		
+		Statement statement = null;
+		
 		try {
 			Connection conn = database.getConnection();
 			
-			Statement statement = conn.createStatement();
+			statement = conn.createStatement();
 			result = statement.executeUpdate("ALTER TABLE " + this.name + " ADD " + name + " " + field);
+			
+			statement.close();
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("Could not add column " + name + " to the table " + this.name + ": " + e.getMessage());
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {}
+			}
 		}
 		
 		return result;
@@ -229,7 +253,7 @@ public class Table {
 	 * 
 	 * @return The database of this table
 	 */
-	public Database getDatabase() {
+	public AbstractDatabase getDatabase() {
 		return this.database;
 	}
 	

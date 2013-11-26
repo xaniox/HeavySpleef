@@ -11,7 +11,7 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 /**
- * A class that provides a cache for statistics
+ * This class provides a cache for statistics
  */
 public class CachedStatistics {
 
