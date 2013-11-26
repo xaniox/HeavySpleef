@@ -53,6 +53,7 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGame;
 import de.matzefratze123.heavyspleef.api.IGameComponents;
 import de.matzefratze123.heavyspleef.api.event.SpleefFinishEvent;
+import de.matzefratze123.heavyspleef.api.event.SpleefJoinEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -460,6 +461,10 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (getFlag(FlagType.ONEVSONE) && inPlayers.size() >= 2) {
 			return;
 		}
+                
+                SpleefJoinEvent event = new SpleefJoinEvent(this, player.getBukkitPlayer());
+                Bukkit.getPluginManager().callEvent(event);
+                if(event.isCancelled()) return;
 		
 		broadcast(_("playerJoinedGame", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("player-join"));
 		
