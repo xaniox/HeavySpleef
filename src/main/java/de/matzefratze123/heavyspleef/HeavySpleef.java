@@ -68,9 +68,11 @@ import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignSpectate;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignStart;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignVote;
 import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
-import de.matzefratze123.heavyspleef.stats.MySQLStatisticDatabase;
+import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
-import de.matzefratze123.heavyspleef.stats.YamlStatisticDatabase;
+import de.matzefratze123.heavyspleef.stats.YamlConverter;
+import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
+import de.matzefratze123.heavyspleef.stats.sql.SQLiteDatabase;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
@@ -122,8 +124,15 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		
 		menu = new JoinGUI(I18N.__("inventory"), this);
 		
-		setupStatisticDatabase();
-		//statisticDatabase.load();
+		AbstractDatabase.setupDatabase();
+		
+		//Convert
+		if (AbstractDatabase.getInstance() instanceof SQLiteDatabase) {
+			YamlConverter.convertYamlData();
+		}
+		
+		statisticDatabase = new SQLStatisticDatabase();
+		
 		SpleefLogger.logRaw("Starting plugin version " + getDescription().getVersion() + "!");
 		
 		//Start metrics
@@ -232,19 +241,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		executor.registerSign(new SpleefSignHub());
 		executor.registerSign(new SpleefSignSpectate());
 		executor.registerSign(new SpleefSignVote());
-	}
-	
-	private void setupStatisticDatabase() {
-		String type = this.getConfig().getString("statistic.dbType");
-		
-		if (type.equalsIgnoreCase("yaml")) {
-			this.statisticDatabase = new YamlStatisticDatabase();
-		} else if (type.equalsIgnoreCase("mysql")) {
-			this.statisticDatabase = new MySQLStatisticDatabase();
-		} else {
-			Logger.warning("Invalid statistic database type! Setting to YAML...");
-			this.statisticDatabase = new YamlStatisticDatabase();
-		}
 	}
 	
 	private void initUpdate() {
