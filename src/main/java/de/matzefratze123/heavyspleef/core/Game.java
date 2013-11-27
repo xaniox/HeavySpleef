@@ -461,11 +461,13 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (getFlag(FlagType.ONEVSONE) && inPlayers.size() >= 2) {
 			return;
 		}
-                
-                SpleefJoinEvent event = new SpleefJoinEvent(this, player.getBukkitPlayer());
-                Bukkit.getPluginManager().callEvent(event);
-                if(event.isCancelled()) return;
-		
+
+		SpleefJoinEvent event = new SpleefJoinEvent(this, player.getBukkitPlayer());
+		Bukkit.getPluginManager().callEvent(event);
+
+		if (event.isCancelled())
+			return;
+
 		broadcast(_("playerJoinedGame", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("player-join"));
 		
 		player.saveState();

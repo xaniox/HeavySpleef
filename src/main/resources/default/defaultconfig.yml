@@ -202,8 +202,8 @@ statistic:
   enabled: true
 
   # Which database type should be used for statistic database storing?
-  # Allowed types: 'yaml', 'mysql'
-  dbType: yaml
+  # Allowed types: 'sqlite', 'mysql'
+  dbType: sqlite
   
   # If you use mysql you have to fill the following things:
   

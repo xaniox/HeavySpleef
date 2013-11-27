@@ -297,8 +297,12 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		player = new SpleefPlayer(bukkitPlayer);
 		players.add(player);
 		
-		StatisticModule module = statisticDatabase.loadAccount(player.getName());
-		player.setStatistic(module);
+		if (AbstractDatabase.isEnabled()) {
+			StatisticModule module = statisticDatabase.loadAccount(player.getName());
+			player.setStatistic(module);
+		} else {
+			player.setStatistic(new StatisticModule(player.getName()));
+		}
 		
 		return player;
 	}

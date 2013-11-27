@@ -16,6 +16,7 @@ import de.matzefratze123.heavyspleef.util.Util;
 public abstract class AbstractDatabase {
 	
 	protected Connection connection;
+	protected DatabaseState state;
 	
 	static AbstractDatabase database;
 	static final File SQLITE_FILE = new File(HeavySpleef.getInstance().getDataFolder(), "statistic/statistic.db");
@@ -118,7 +119,8 @@ public abstract class AbstractDatabase {
 			
 			String dbType = section.getString("dbType");
 			
-			if (dbType.equalsIgnoreCase("sqlite")) {
+			//Convert old deprecated yaml
+			if (dbType.equalsIgnoreCase("sqlite") || dbType.equalsIgnoreCase("yaml")) {
 				database = new SQLiteDatabase(SQLITE_FILE);
 			} else if (dbType.equalsIgnoreCase("mysql")) {
 				database = new MySQLDatabase();
@@ -127,8 +129,19 @@ public abstract class AbstractDatabase {
 				return;
 			}
 			
-			
+			if (database.state != DatabaseState.SUCCESS) {
+				Logger.warning("Failed to activate statistics.");
+				database = null;
+			}
 		}
+	}
+	
+	public enum DatabaseState {
+		
+		NO_DRIVERS,
+		FAILED_CONNECT,
+		SUCCESS;
+		
 	}
 	
 }

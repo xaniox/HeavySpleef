@@ -45,8 +45,10 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 	
 	@Override
 	public synchronized void saveAccounts() {
-		System.out.println("SaveAccountsCalled");
 		if (!cooldown.isExpired()) {
+			return;
+		}
+		if (!AbstractDatabase.isEnabled()) {
 			return;
 		}
 		
@@ -92,11 +94,14 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public synchronized StatisticModule loadAccount(String holder) {
-		System.out.println("LoadAccountCalled");
+		if (!AbstractDatabase.isEnabled()) {
+			return null;
+		}
 		
 		AbstractDatabase database = AbstractDatabase.getInstance();
 		if (!database.hasTable(TABLE_NAME))
 			return null;
+		
 		
 		Table table = database.getTable(TABLE_NAME);
 		for (String columnName : columns.keySet()) {
@@ -139,8 +144,9 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public synchronized void unloadAccount(SpleefPlayer player) {
-		System.out.println("UnloadAccountCalled");
-		
+		if (!AbstractDatabase.isEnabled()) {
+			return;
+		}
 		if (!cooldown.isExpired()) {
 			return;
 		}
@@ -184,7 +190,9 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public synchronized List<StatisticModule> loadAccounts() {
-		System.out.println("LoadAccountsCalled");
+		if (!AbstractDatabase.isEnabled()) {
+			return null;
+		}
 		
 		AbstractDatabase database = AbstractDatabase.getInstance();
 		if (!database.hasTable(TABLE_NAME))
