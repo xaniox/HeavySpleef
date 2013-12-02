@@ -124,20 +124,10 @@ flag-defaults:
   blockbreakeffect: false
   tntrun: false
   anticamping: true
-  
-  # Syntax of an array itemreward flag: 'ID AMOUNT ID2 AMOUNT2 ID3 AMOUNT3 etc.'
-  # Example: '264 5 388 3'. This would give 5 Diamonds and 3 Emeralds
-  itemreward: ''
-  losereward: ''
-  
-  # Syntax of an single itemstack flag: '<id:data> [amount]'
-  icon: '277 1'
-  
-  difficulty: MEDIUM
 
 queues:
   
-  # Should queues be enabled?
+  # Should we enable queues?
   useQueues: true
   
   # Should users be allowed to use commands while in queue?
@@ -168,7 +158,7 @@ language:
   # If you set this to true, you
   # find language files in the folder
   # /plugins/HeavySpleef/language
-  editable: false 
+  editable: false
 
 anticamping:
 
@@ -177,14 +167,14 @@ anticamping:
   # the game! They will be teleported a floor down if they camp...
   enabled: true
 
-  # Should a player be warned of camping?
+  # Should a player be warned of camping before he gets teleported down?
   campWarn: true
 
   # At how many seconds of camping should a warning be send to the player?
   # (Only works if campWarn is set to true)
   warnAt: 3
   
-  # At how many seconds of camping should a player teleported one floor down?
+  # After how many seconds of camping should a player teleported one floor down?
   teleportAt: 6
   
 sounds:
