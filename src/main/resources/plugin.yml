@@ -5,7 +5,8 @@ version: Dev 1.4.2
 author: matzefratze123
 
 # Load WorldManagement Plugins before HeavySpleef
-softdepend: [Vault, WorldEdit, TagAPI, Multiverse-Core, MultiWorld]
+depend: [WorldEdit]
+softdepend: [Vault, TagAPI, Multiverse-Core, MultiWorld]
 website: http://dev.bukkit.org/server-mods/heavyspleef/
 
 main: de.matzefratze123.heavyspleef.HeavySpleef
