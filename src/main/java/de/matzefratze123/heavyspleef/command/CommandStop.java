@@ -23,7 +23,10 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -35,11 +38,8 @@ public class CommandStop extends HSCommand {
 
 	public CommandStop() {
 		setMinArgs(1);
-		setMaxArgs(1);
 		setPermission(Permissions.STOP);
-		setUsage("/spleef stop <Name>");
 		setOnlyIngame(true);
-		setHelp("Stops a game");
 	}
 	
 	@Override
@@ -57,6 +57,14 @@ public class CommandStop extends HSCommand {
 		}
 		
 		game.stop(StopCause.STOP);
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef stop <Name>");
+		help.addHelp("Stops a game");
+		
+		return help;
 	}
 
 }

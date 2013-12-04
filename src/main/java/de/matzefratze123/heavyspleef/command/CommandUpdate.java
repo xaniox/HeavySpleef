@@ -23,7 +23,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -31,8 +34,6 @@ public class CommandUpdate extends HSCommand {
 
 	public CommandUpdate() {
 		setPermission(Permissions.UPDATE_PLUGIN);
-		setUsage("/spleef update");
-		setHelp("Updates the plugin");
 	}
 	
 	@Override
@@ -57,6 +58,14 @@ public class CommandUpdate extends HSCommand {
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Visit http://dev.bukkit.org/server-mods/heavyspleef/ for more information!");
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Version will be auto-installed with the next server reload/restart");
 		HeavySpleef.updateAvaible = false;*/
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef update");
+		help.addHelp("Updates the plugin");
+		
+		return help;
 	}
 
 	

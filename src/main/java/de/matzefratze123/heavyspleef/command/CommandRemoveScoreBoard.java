@@ -23,7 +23,10 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
@@ -33,12 +36,8 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandRemoveScoreBoard extends HSCommand {
 
 	public CommandRemoveScoreBoard() {
-		setMaxArgs(0);
-		setMinArgs(0);
 		setOnlyIngame(true);
 		setPermission(Permissions.REMOVE_SCOREBOARD);
-		setUsage("/spleef removescoreboard");
-		setHelp("Removes the scoreboard where you currently looking");
 	}
 
 	@Override
@@ -63,6 +62,14 @@ public class CommandRemoveScoreBoard extends HSCommand {
 		
 		p.sendMessage(_("notLookingAtScoreBoard"));
 		
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef removescoreboard");
+		help.addHelp("Removes the scoreboard where you currently looking");
+		
+		return help;
 	} 
 	
 }

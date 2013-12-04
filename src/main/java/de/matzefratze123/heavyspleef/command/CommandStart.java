@@ -23,7 +23,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -40,8 +43,6 @@ public class CommandStart extends HSCommand {
 
 	public CommandStart() {
 		setPermission(Permissions.START_GAME);
-		setUsage("/spleef start [name]");
-		setHelp("Starts a game");
 		setOnlyIngame(true);
 	}
 
@@ -120,6 +121,14 @@ public class CommandStart extends HSCommand {
 
 		game.countdown();
 		player.sendMessage(_("gameStarted"));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef start [name]");
+		help.addHelp("Starts a game");
+		
+		return help;
 	}
 
 }

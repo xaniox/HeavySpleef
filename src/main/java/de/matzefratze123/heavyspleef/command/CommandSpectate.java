@@ -23,7 +23,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
@@ -37,8 +40,6 @@ public class CommandSpectate extends HSCommand {
 		setMinArgs(1);
 		setPermission(Permissions.SPECTATE);
 		setOnlyIngame(true);
-		setUsage("/spleef spectate <Game>");
-		setHelp("Spectates a game");
 	}
 	
 	@Override
@@ -58,6 +59,14 @@ public class CommandSpectate extends HSCommand {
 		}
 		
 		game.spectate(player);
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef spectate <Game>");
+		help.addHelp("Spectates a game");
+		
+		return help;
 	}
 
 }

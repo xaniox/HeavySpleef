@@ -25,7 +25,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
@@ -38,8 +41,6 @@ public class CommandVote extends HSCommand {
 	public CommandVote() {
 		setPermission(Permissions.VOTE);
 		setOnlyIngame(true);
-		setUsage("/spleef vote");
-		setHelp("Votes to start the game");
 	}
 	
 	@Override
@@ -97,6 +98,14 @@ public class CommandVote extends HSCommand {
 		}
 		
 		game.countdown();
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef vote");
+		help.addHelp("Votes to start the game");
+		
+		return help;
 	}
 
 }

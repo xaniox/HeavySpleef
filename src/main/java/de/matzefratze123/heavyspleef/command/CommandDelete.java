@@ -21,7 +21,10 @@ package de.matzefratze123.heavyspleef.command;
 
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -32,11 +35,8 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandDelete extends HSCommand {
 
 	public CommandDelete() {
-		setMaxArgs(1);
 		setMinArgs(1);
 		setPermission(Permissions.DELETE_GAME);
-		setUsage("/spleef delete <name>");
-		setHelp("Deletes a game");
 	}
 	
 	@Override
@@ -54,6 +54,14 @@ public class CommandDelete extends HSCommand {
 		game.getQueue().clear();
 		GameManager.deleteGame(args[0]);
 		sender.sendMessage(_("gameDeleted"));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef delete <name>");
+		help.addHelp("Deletes a game");
+		
+		return help;
 	}
 
 }

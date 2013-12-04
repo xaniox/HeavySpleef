@@ -23,7 +23,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
@@ -37,8 +40,6 @@ public class CommandKick extends HSCommand {
 		setMinArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.KICK);
-		setUsage("/spleef kick <Player> [Reason]");
-		setHelp("Kicks a player from a game");
 	}
 	
 	@Override
@@ -66,6 +67,14 @@ public class CommandKick extends HSCommand {
 		game.leave(target, LoseCause.KICK);
 		target.sendMessage(_("kickedOfToPlayer", ViPManager.colorName(player.getName()), reasonMessage));
 		player.sendMessage(_("kickedOfToKicker", ViPManager.colorName(target.getName()), game.getName(), reasonMessage));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef kick <Player> [Reason]");
+		help.addHelp("Kicks a player from a game");
+		
+		return help;
 	}
 
 }

@@ -24,18 +24,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandSave extends HSCommand {
 
 	public CommandSave() {
-		setMinArgs(0);
-		setMaxArgs(0);
 		setPermission(Permissions.SAVE);
-		setUsage("/spleef save");
-		setHelp("Saves all games to the database");
 	}
 	
 	@Override
@@ -45,6 +44,14 @@ public class CommandSave extends HSCommand {
 		HeavySpleef.getInstance().getStatisticDatabase().saveAccounts();
 		sender.sendMessage(_("gamesSaved"));
 		sender.sendMessage(__(ChatColor.GRAY + "Took " + (System.currentTimeMillis() - millis) + "ms"));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef save");
+		help.addHelp("Saves all games to the database");
+		
+		return help;
 	}
 
 }

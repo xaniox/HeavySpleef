@@ -21,7 +21,10 @@ package de.matzefratze123.heavyspleef.command;
 
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.util.Permissions;
@@ -31,11 +34,8 @@ public class CommandRename extends HSCommand {
 
 	public CommandRename() {
 		setMinArgs(2);
-		setMaxArgs(2);
-		setUsage("/spleef rename <arena> <newName>");
 		setOnlyIngame(true);
 		setPermission(Permissions.RENAME);
-		setHelp("Renames a game");
 	}
 	
 	@Override
@@ -54,6 +54,14 @@ public class CommandRename extends HSCommand {
 			sender.sendMessage(_("gameRenamed", args[0], args[1]));
 		}
 		
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef rename <arena> <newName>");
+		help.addHelp("Renames a game");
+		
+		return help;
 	}
 
 }

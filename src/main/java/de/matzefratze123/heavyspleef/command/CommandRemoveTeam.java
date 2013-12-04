@@ -24,7 +24,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Team;
@@ -36,10 +39,8 @@ public class CommandRemoveTeam extends HSCommand {
 	
 	public CommandRemoveTeam() {
 		setMinArgs(2);
-		setUsage("/spleef removeteam <arena> <red|blue|green|yellow|gray>");
 		setPermission(Permissions.REMOVE_TEAM);
 		setOnlyIngame(true);
-		setHelp("Removes a team from a game");
 	}
 	
 	@Override
@@ -65,6 +66,14 @@ public class CommandRemoveTeam extends HSCommand {
 		
 		game.getComponents().removeTeam(color);
 		player.sendMessage(_("teamRemoved", color + Util.formatMaterialName(color.name())));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef removeteam <arena> <red|blue|green|yellow|gray>");
+		help.addHelp("Removes a team from a game");
+		
+		return help;
 	}
 
 }

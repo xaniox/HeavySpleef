@@ -33,7 +33,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.stats.CachedStatistics;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
@@ -44,11 +47,7 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandStats extends HSCommand {
 
 	public CommandStats() {
-		setMaxArgs(2);
-		setMinArgs(0);
 		setOnlyIngame(true);
-		setUsage("/spleef stats [player|top] [page]");
-		setHelp("Shows spleef statistics");
 	}
 
 	@Override
@@ -185,6 +184,15 @@ public class CommandStats extends HSCommand {
         }
         
 }
+
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef stats [player|top] [page]");
+		help.addHelp("Shows spleef statistics");
+		
+		return help;
+	}
 
 
 }

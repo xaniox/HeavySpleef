@@ -23,7 +23,10 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
@@ -36,8 +39,6 @@ public class CommandAddScoreBoard extends HSCommand {
 		setMinArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_SCOREBOARD);
-		setUsage("/spleef addscoreboard <name>");
-		setHelp("Adds a scoreboard to the game (only 1vs1) with the direction you are currently looking");
 	}
 
 	@Override
@@ -63,6 +64,15 @@ public class CommandAddScoreBoard extends HSCommand {
 		
 		game.getComponents().addScoreBoard(scoreboard);
 		
+	}
+	
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef addscoreboard <game>");
+		
+		help.addHelp("Creates a new block scoreboard (only 1vs1) in the direction you're currently looking");
+		
+		return help;
 	}
 	
 	private BlockFace getBlockFace(float yaw) {

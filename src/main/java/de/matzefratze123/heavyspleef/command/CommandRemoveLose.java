@@ -23,7 +23,10 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -34,11 +37,8 @@ public class CommandRemoveLose extends HSCommand {
 
 	public CommandRemoveLose() {
 		setMinArgs(2);
-		setMaxArgs(2);
 		setOnlyIngame(true);
 		setPermission(Permissions.REMOVE_LOSEZONE);
-		setUsage("/spleef removelose <Name> <ID>");
-		setHelp("Removes a losezone from a game");
 	}
 	
 	@Override
@@ -73,6 +73,14 @@ public class CommandRemoveLose extends HSCommand {
 		return;
 				
 		
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef removelose <Name> <ID>");
+		help.addHelp("Removes a losezone from a game");
+		
+		return help;
 	}
 
 }

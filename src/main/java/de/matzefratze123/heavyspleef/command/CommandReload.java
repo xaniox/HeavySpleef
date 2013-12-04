@@ -23,7 +23,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
@@ -33,8 +36,6 @@ public class CommandReload extends HSCommand {
 
 	public CommandReload() {
 		setPermission(Permissions.RELOAD);
-		setUsage("/spleef reload");
-		setHelp("Reloads the entire spleef plugin");
 	}
 	
 	@Override
@@ -51,6 +52,14 @@ public class CommandReload extends HSCommand {
 		
 		sender.sendMessage(_("pluginReloaded", HeavySpleef.getInstance().getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
 		//And we're done!
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef reload");
+		help.addHelp("Reloads the entire spleef plugin");
+		
+		return help;
 	}
 
 }

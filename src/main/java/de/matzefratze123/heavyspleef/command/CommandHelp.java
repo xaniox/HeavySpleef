@@ -21,35 +21,39 @@ package de.matzefratze123.heavyspleef.command;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
 public class CommandHelp extends HSCommand {
 	
 	public CommandHelp() {
-		setMaxArgs(1);
 		setMinArgs(0);
-		setUsage("/spleef help [page]");
-		setHelp("Shows Spleef help");
 	}
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		Map<String, HSCommand> commands = CommandHandler.getCommands();
+		List<HSCommand> commands = new ArrayList<HSCommand>(CommandHandler.getCommands().values());
+		Collections.sort(commands);
 		
-		sender.sendMessage(ChatColor.DARK_BLUE + "   -----   HeavySpleef Help   -----   ");
+		sender.sendMessage(ChatColor.GRAY + "   -----   HeavySpleef Help   -----   ");
 		
 		//We don't want to print aliases again...
 		List<Class<?>> printedCommands = new ArrayList<Class<?>>();
 		
-		for (HSCommand cmd : commands.values()) {
+		for (HSCommand cmd : commands) {
 			if (printedCommands.contains(cmd.getClass())) {
 				continue;
 			}
@@ -72,12 +76,21 @@ public class CommandHelp extends HSCommand {
 			}
 			
 			if (isPermitted) {
-				String msg = ChatColor.GOLD + cmd.getExactUsage() + ChatColor.RED + " - " + ChatColor.YELLOW + cmd.getHelp();
-				
-				sender.sendMessage(msg);
-				printedCommands.add(cmd.getClass());
+				Help help = new Help(cmd);
+					
+				sender.sendMessage(ChatColor.GRAY + "/spleef " + cmd.getName() + ChatColor.RED + " - " + ChatColor.YELLOW + help.getHelp().get(0));
 			}
+				
+			printedCommands.add(cmd.getClass());
 		}
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef help [page]");
+		help.addHelp("Shows Spleef help");
+		
+		return help;
 	}
 
 }

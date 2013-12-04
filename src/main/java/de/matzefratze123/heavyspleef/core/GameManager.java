@@ -22,19 +22,13 @@ package de.matzefratze123.heavyspleef.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Location;
-
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGame;
-import de.matzefratze123.heavyspleef.core.region.HUBPortal;
 
 public class GameManager {
 	
 	//Main list which contains all games
 	public static List<Game> games = new ArrayList<Game>();
-	
-	public static Location spleefHub = null;
-	public static List<HUBPortal> portals = new ArrayList<HUBPortal>();
 	
 	public static void addGame(Game game) {
 		if (hasGame(game.getName())) {
@@ -78,63 +72,5 @@ public class GameManager {
 	public static List<Game> getGames() {
 		return games;
 	}
-	
-	/* Spleef HUB Start */
-	public static void setSpleefHub(Location location) {
-		spleefHub = location;
-		if (location == null)
-			HeavySpleef.getInstance().getGameDatabase().globalDb.set("hub", null);
-		
-	}
-	
-	public static Location getSpleefHub() {
-		return spleefHub;
-	}
-	
-	public static void addPortal(HUBPortal portal) {
-		if (portal.isIllegalId()) {
-			int newlyId = getValidId();
-			portal.setId(newlyId);
-		}
-		
-		portals.add(portal);
-	}
-	
-	public static void removePortal(HUBPortal portal) {
-		portals.remove(portal);
-	}
-	
-	public static HUBPortal getPortal(int id) {
-		for (HUBPortal portal : portals) {
-			if (portal.getId() == id)
-				return portal;
-		}
-		
-		return null;
-	}
-	
-	public static List<HUBPortal> getPortals() {
-		return GameManager.portals;
-	}
-	
-	public static boolean hasPortal(int id) {
-		for (HUBPortal portal : portals) {
-			if (portal.getId() == id)
-				return true;
-		}
-		
-		return false;
-	}
-	
-	private static int getValidId() {
-		int id = 0;
-		
-		while(hasPortal(id))
-			id++;
-		
-		return id;
-	}
-	
-	/* Spleef HUB End */
 	
 }

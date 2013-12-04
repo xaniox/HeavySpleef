@@ -23,7 +23,10 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.SignWall;
@@ -33,12 +36,8 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandRemoveWall extends HSCommand {
 
 	public CommandRemoveWall() {
-		setMaxArgs(1);
-		setMinArgs(0);
 		setOnlyIngame(true);
 		setPermission(Permissions.REMOVE_WALL);
-		setUsage("/spleef removewall");
-		setHelp("Removes the wall on which you're currently looking");
 	}
 	
 	@Override
@@ -59,6 +58,12 @@ public class CommandRemoveWall extends HSCommand {
 		p.sendMessage(_("notLookingAtWall"));
 	}
 
-	
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef removewall");
+		help.addHelp("Removes the wall on which you're currently looking");
+		
+		return help;
+	}
 	
 }

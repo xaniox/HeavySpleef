@@ -24,7 +24,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Team;
@@ -36,10 +39,8 @@ public class CommandAddTeam extends HSCommand {
 	
 	public CommandAddTeam() {
 		setMinArgs(2);
-		setUsage("/spleef addteam <arena> <red|blue|green|yellow|gray>");
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_TEAM);
-		setHelp("Adds a team with the given color to the game");
 	}
 	
 	@Override
@@ -65,6 +66,15 @@ public class CommandAddTeam extends HSCommand {
 		
 		game.getComponents().addTeam(color);
 		player.sendMessage(_("teamAdded", color + Util.formatMaterialName(color.name())));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef addteam <game> <red|blue|green|yellow|gray>");
+		
+		help.addHelp("Adds a team with the given color to the game");
+		
+		return help;
 	}
 
 }

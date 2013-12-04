@@ -17,9 +17,8 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package de.matzefratze123.heavyspleef.command;
+package de.matzefratze123.heavyspleef.command.handler;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -27,87 +26,77 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
-public abstract class HSCommand {
+public abstract class HSCommand implements Comparable<HSCommand> {
 
-	private Permissions permission = null;
-	private int minArgs = 0;
-	private int maxArgs = -1;
-	private boolean onlyIngame = false;
-	private String help;
-	private String usage;
-	
-	public static HeavySpleef plugin;
-	public static FileConfiguration config;
-	
+	private String					name;
+	private Permissions				permission	= null;
+	private int						minArgs		= 0;
+	private boolean					onlyIngame	= false;
+
+	public static HeavySpleef		plugin;
+	public static FileConfiguration	config;
 
 	public abstract void execute(CommandSender sender, String[] args);
-	
-	void setMaxArgs(int arg) {
-		this.maxArgs = arg;
+
+	public abstract Help getHelp(Help help);
+
+	public String getName() {
+		return name;
 	}
-	
-	void setMinArgs(int arg) {
+
+	protected HSCommand setName(String name) {
+		this.name = name;
+
+		return this;
+	}
+
+	public void setMinArgs(int arg) {
 		this.minArgs = arg;
 	}
-	
-	int getMaxArg() {
-		return maxArgs;
-	}
-	
-	int getMinArg() {
+
+	public int getMinArg() {
 		return minArgs;
 	}
-	
-	void setPermission(Permissions perm) {
+
+	public void setPermission(Permissions perm) {
 		this.permission = perm;
 	}
-	
-	Permissions getPermission() {
+
+	public Permissions getPermission() {
 		return permission;
 	}
-	
-	void setUsage(String usage) {
-		this.usage = usage;
-	}
-	
-	String getUsage() {
-		return HeavySpleef.PREFIX + ChatColor.RED + " " + usage;
-	}
-	
-	String getExactUsage() {
-		return usage;
-	}
-	
-	boolean onlyIngame() {
+
+	public boolean onlyIngame() {
 		return onlyIngame;
 	}
-	
-	void setOnlyIngame(boolean ingame) {
+
+	public void setOnlyIngame(boolean ingame) {
 		this.onlyIngame = ingame;
 	}
-	
-	void setHelp(String description) {
-		this.help = description;
-	}
-	
-	String getHelp() {
-		return help;
-	}
-	
+
 	public static String _(String... key) {
 		return I18N._(key);
 	}
-	
+
 	public static String __(String str) {
 		return HeavySpleef.PREFIX + " " + str;
 	}
-	
-	static void setPluginInstance(HeavySpleef instance) {
+
+	public static void setPluginInstance(HeavySpleef instance) {
 		plugin = instance;
 	}
-	
-	static void setFileConfiguration(FileConfiguration c) {
+
+	public static void setFileConfiguration(FileConfiguration c) {
 		config = c;
 	}
 	
+	protected String getUsage() {
+		return new Help(this).getUsage();
+	}
+	
+	@Override
+	public int compareTo(HSCommand other) {
+		return name.compareTo(other.name);
+	}
+
 }

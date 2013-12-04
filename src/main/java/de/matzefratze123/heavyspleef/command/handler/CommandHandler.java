@@ -17,13 +17,12 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package de.matzefratze123.heavyspleef.command;
+package de.matzefratze123.heavyspleef.command.handler;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -32,6 +31,37 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.command.CommandAddFloor;
+import de.matzefratze123.heavyspleef.command.CommandAddLose;
+import de.matzefratze123.heavyspleef.command.CommandAddScoreBoard;
+import de.matzefratze123.heavyspleef.command.CommandAddTeam;
+import de.matzefratze123.heavyspleef.command.CommandAddWall;
+import de.matzefratze123.heavyspleef.command.CommandCreate;
+import de.matzefratze123.heavyspleef.command.CommandDelete;
+import de.matzefratze123.heavyspleef.command.CommandDisable;
+import de.matzefratze123.heavyspleef.command.CommandEnable;
+import de.matzefratze123.heavyspleef.command.CommandFlag;
+import de.matzefratze123.heavyspleef.command.CommandHelp;
+import de.matzefratze123.heavyspleef.command.CommandInfo;
+import de.matzefratze123.heavyspleef.command.CommandJoin;
+import de.matzefratze123.heavyspleef.command.CommandKick;
+import de.matzefratze123.heavyspleef.command.CommandLeave;
+import de.matzefratze123.heavyspleef.command.CommandList;
+import de.matzefratze123.heavyspleef.command.CommandReload;
+import de.matzefratze123.heavyspleef.command.CommandRemoveFloor;
+import de.matzefratze123.heavyspleef.command.CommandRemoveLose;
+import de.matzefratze123.heavyspleef.command.CommandRemoveScoreBoard;
+import de.matzefratze123.heavyspleef.command.CommandRemoveTeam;
+import de.matzefratze123.heavyspleef.command.CommandRemoveWall;
+import de.matzefratze123.heavyspleef.command.CommandRename;
+import de.matzefratze123.heavyspleef.command.CommandSave;
+import de.matzefratze123.heavyspleef.command.CommandSpectate;
+import de.matzefratze123.heavyspleef.command.CommandStart;
+import de.matzefratze123.heavyspleef.command.CommandStats;
+import de.matzefratze123.heavyspleef.command.CommandStop;
+import de.matzefratze123.heavyspleef.command.CommandTeamFlag;
+import de.matzefratze123.heavyspleef.command.CommandUpdate;
+import de.matzefratze123.heavyspleef.command.CommandVote;
 import de.matzefratze123.heavyspleef.util.I18N;
 
 public class CommandHandler implements CommandExecutor {
@@ -51,6 +81,17 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + I18N._("unknownCommand"));
 			return true;
 		}
+		if (args.length > 1 && (args[1].equalsIgnoreCase("help") || args[1].equalsIgnoreCase("?"))) {
+			Help help = new Help(command);
+			
+			sender.sendMessage(help.getUsage());
+			
+			for (String line : help.getHelp()) {
+				sender.sendMessage(ChatColor.GRAY + line);
+			}
+			
+			return true;
+		}
 		
 		Vector<String> cutArgs = new Vector<String>(Arrays.asList(args));
 		cutArgs.remove(0);
@@ -66,26 +107,34 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + I18N._("onlyIngame"));
 			return false;
 		}
+		
 		if (cmd.getPermission() != null && !sender.hasPermission(cmd.getPermission().getPerm()) && !sender.hasPermission("heavyspleef.*")) {
 			sender.sendMessage(ChatColor.RED + I18N._("noPermission"));
 			return false;
 		}
-		if (args.length >= cmd.getMinArg() && (args.length <= cmd.getMaxArg() || cmd.getMaxArg() == -1))
+		
+		if (args.length >= cmd.getMinArg()) {
 			return true;
-		else
-			sender.sendMessage(ChatColor.RED + cmd.getUsage());
+		} else {
+			Help help = new Help(cmd);
+			
+			sender.sendMessage(help.getUsage());
+		}
+		
 		return false;
 	}
 	
 	public static void addSubCommand(String name, HSCommand cmd) {
 		commands.put(name, cmd);
+		
+		cmd.setName(name);
 	}
 	
 	public static HSCommand getSubCommand(String name) {
 		return commands.get(name.toLowerCase());
 	}
 	
-	protected static Map<String, HSCommand> getCommands() {
+	public static Map<String, HSCommand> getCommands() {
 		return commands;
 	}
 	
@@ -124,10 +173,6 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("rename", new CommandRename());
 		addSubCommand("addteam", new CommandAddTeam());
 		addSubCommand("removeteam", new CommandRemoveTeam());
-		addSubCommand("sethub", new CommandSetHub());
-		addSubCommand("addportal", new CommandAddPortal());
-		addSubCommand("removeportal", new CommandRemovePortal());
-		addSubCommand("hub", new CommandHub());
 		addSubCommand("teamflag", new CommandTeamFlag());
 		addSubCommand("spectate", new CommandSpectate());
 	}

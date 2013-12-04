@@ -23,7 +23,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.SignWall;
@@ -35,11 +38,8 @@ public class CommandAddWall extends HSCommand {
 	
 	public CommandAddWall() {
 		setMinArgs(1);
-		setMaxArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_WALL);
-		setUsage("/spleef addwall <name>");
-		setHelp("Adds a self updating wall to a game");
 	}
 
 	@Override
@@ -87,6 +87,14 @@ public class CommandAddWall extends HSCommand {
 		SignWall wall = new SignWall(s.getFirst(), s.getSecond(), game, id);
 		game.getComponents().addSignWall(wall);
 		p.sendMessage(_("signWallAdded"));
+	}
+	
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef addwall <name>");
+		help.addHelp("Adds a self updating wall to a game");
+		
+		return help;
 	}
 
 }

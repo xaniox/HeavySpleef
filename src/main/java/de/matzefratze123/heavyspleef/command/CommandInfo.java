@@ -27,7 +27,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -39,12 +42,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandInfo extends HSCommand {
 
 	public CommandInfo() {
-		setMaxArgs(1);
 		setMinArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.INFO);
-		setUsage("/spleef info <name>");
-		setHelp("Prints out information about this game");
 	}
 	
 	@Override
@@ -80,6 +80,14 @@ public class CommandInfo extends HSCommand {
 		}
 		
 		return set;
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef info <name>");
+		help.addHelp("Prints out information about this game");
+		
+		return help;
 	}
 
 }

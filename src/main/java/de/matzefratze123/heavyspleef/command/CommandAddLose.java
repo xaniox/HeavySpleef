@@ -24,7 +24,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
@@ -35,12 +38,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandAddLose extends HSCommand {
 
 	public CommandAddLose() {
-		setMaxArgs(1);
 		setMinArgs(1);
 		setPermission(Permissions.ADD_LOSEZONE);
 		setOnlyIngame(true);
-		setUsage("/spleef addlose <name>");
-		setHelp("Adds a losezone to the game with the bounds of your WorldEdit selection");
 	}
 	
 	@Override
@@ -75,6 +75,15 @@ public class CommandAddLose extends HSCommand {
 		g.getComponents().addLoseZone(loseZone);
 		
 		player.sendMessage(_("loseZoneCreated", String.valueOf(id), g.getName(), String.valueOf(id)));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef addlose <game>");
+		
+		help.addHelp("Creates a new losezone based on your selection");
+		
+		return help;
 	}
 
 }

@@ -27,7 +27,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.BooleanFlag;
@@ -53,9 +56,7 @@ public class CommandFlag extends HSCommand {
 		
 		setMinArgs(2);
 		setOnlyIngame(true);
-		setUsage("/spleef flag <name> <flag> [state]\n" + ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", "));
 		setPermission(Permissions.SET_FLAG);
-		setHelp("Sets a flag for this game");
 	}
 	
 	@Override
@@ -160,6 +161,14 @@ public class CommandFlag extends HSCommand {
 	@SuppressWarnings("unchecked")
 	public <V> void setFlag(Game game, Flag<V> flag, Object value) {
 		game.setFlag(flag, (V)value);
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef flag <name> <flag> [state]\n" + ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", "));
+		help.addHelp("Sets a flag for this game");
+		
+		return help;
 	} 
 	
 }

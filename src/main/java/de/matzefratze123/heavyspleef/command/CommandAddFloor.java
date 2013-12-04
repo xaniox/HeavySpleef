@@ -24,7 +24,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.UserType.Type;
+import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.heavyspleef.command.handler.UserType;
+import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
@@ -38,8 +41,6 @@ public class CommandAddFloor extends HSCommand {
 		setMinArgs(1);
 		setOnlyIngame(true);
 		setPermission(Permissions.ADD_FLOOR);
-		setUsage("/spleef addfloor <game> [randomwool]");
-		setHelp("Adds a floor to the game");
 	}
 	
 	@Override
@@ -85,6 +86,15 @@ public class CommandAddFloor extends HSCommand {
 		
 		game.getComponents().addFloor(floor);
 		player.sendMessage(_("floorCreated", String.valueOf(id + 1)));
+	}
+
+	@Override
+	public Help getHelp(Help help) {
+		help.setUsage("/spleef addfloor <game> [randomwool]");
+		
+		help.addHelp("Creates a new floor based on your selection");
+		
+		return help;
 	}
 	
 } 
