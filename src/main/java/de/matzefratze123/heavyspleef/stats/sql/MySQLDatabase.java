@@ -68,9 +68,11 @@ public class MySQLDatabase extends AbstractDatabase {
 		} catch (SQLException e) {
 			Logger.warning("Failed to connect to the mysql database! Disabling statistics: " + e.getMessage());
 			state = DatabaseState.FAILED_CONNECT;
+			return;
 		} catch (ClassNotFoundException e) {
 			Logger.warning("Failed to load drivers for mysql database. Disabling statistics: " + e.getMessage());
 			state = DatabaseState.NO_DRIVERS;
+			return;
 		} finally {
 			close();
 		}

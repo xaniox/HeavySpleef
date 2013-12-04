@@ -19,7 +19,8 @@
  */
 package de.matzefratze123.heavyspleef.stats.sql;
 
-import static de.matzefratze123.heavyspleef.stats.sql.SQLUtils.*;
+import static de.matzefratze123.heavyspleef.stats.sql.SQLUtils.TICK;
+import static de.matzefratze123.heavyspleef.stats.sql.SQLUtils.parseWhereClause;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -29,8 +30,6 @@ import java.sql.Statement;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 
 import org.bukkit.Bukkit;
 
