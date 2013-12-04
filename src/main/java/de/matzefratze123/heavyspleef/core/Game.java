@@ -85,30 +85,32 @@ import de.matzefratze123.heavyspleef.util.Util;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
 public abstract class Game implements IGame, DatabaseSerializeable {
-	
-	//Persistent data
-	private String name;
-	private World world;
-	private final GameComponents components;
-	private Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
-	private final GameQueue queue;
-	private GameState state;
-	
-	//Per game
+
+	// Persistent data
+	private String					name;
+	private World					world;
+	private final GameComponents	components;
+	private Map<Flag<?>, Object>	flags		= new HashMap<Flag<?>, Object>();
+	private final GameQueue			queue;
+	private GameState				state;
+
+	// Per game
 	/* A map which saves all task id's */
-	private Map<String, Integer> tasks = new HashMap<String, Integer>(); 
-	/* Saving reference that points to the player object, not the instance of an object!
-	 * The presumption that this causes memory leaks is false! */
-	private List<SpleefPlayer> inPlayers = new ArrayList<SpleefPlayer>();
-	private List<OfflinePlayer> outPlayers = new ArrayList<OfflinePlayer>();
-	private List<SpleefPlayer> spectating = new ArrayList<SpleefPlayer>();
-	private int countLeft;
-	private int roundsPlayed;
-	private int jackpot;
-	
-	//Temporary
-	private PlayerTeleportTask teleportTask;
-	
+	private Map<String, Integer>	tasks		= new HashMap<String, Integer>();
+	/*
+	 * Saving reference that points to the player object, not the instance of an
+	 * object! The presumption that this causes memory leaks is false!
+	 */
+	private List<SpleefPlayer>		inPlayers	= new ArrayList<SpleefPlayer>();
+	private List<OfflinePlayer>		outPlayers	= new ArrayList<OfflinePlayer>();
+	private List<SpleefPlayer>		spectating	= new ArrayList<SpleefPlayer>();
+	private int						countLeft;
+	private int						roundsPlayed;
+	private int						jackpot;
+
+	// Temporary
+	private PlayerTeleportTask		teleportTask;
+
 	public Game(String name) {
 		this.name = name;
 		this.components = new GameComponents(this);
@@ -120,24 +122,24 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public World getWorld() {
 		return world;
 	}
-	
+
 	protected void setWorld(World world) {
 		this.world = world;
 	}
-	
+
 	public abstract Location getRandomLocation();
-	
+
 	public abstract void broadcast(String message, BroadcastType type);
-	
+
 	public abstract Region getRegion();
-	
+
 	public abstract GameType getType();
-	
+
 	@Override
 	public void broadcast(String message) {
 		broadcast(message, BroadcastType.RADIUS);
@@ -148,7 +150,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (GameManager.hasGame(newName)) {
 			return;
 		}
-		
+
 		this.name = newName;
 		HeavySpleef.getInstance().getGameDatabase().save();
 	}
@@ -161,128 +163,133 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	@Override
 	public void start() {
 		cancelTask(StartCountdownTask.TASK_ID_KEY);
-		
+
 		state = GameState.INGAME;
 		removeBoxes();
-		
+
 		if (getFlag(FlagType.TIMEOUT) > 0) {
 			TimeoutTask timeoutTask = new TimeoutTask(getFlag(FlagType.TIMEOUT), this);
 			int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), timeoutTask, 0L, 20L);
 			tasks.put(TimeoutTask.TASK_ID_KEY, id);
 		}
-		
+
 		if (getFlag(FlagType.REGEN_INTERVALL) > 0) {
 			RegenerationTask regenTask = new RegenerationTask(this);
 			long intervall = getFlag(FlagType.REGEN_INTERVALL) * 20L;
-			
+
 			int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), regenTask, intervall, intervall);
 			tasks.put(RegenerationTask.TASK_ID_KEY, id);
 		}
-		
-		//Subtract entry fee
+
+		// Subtract entry fee
 		if (HookManager.getInstance().getService(VaultHook.class).hasHook() && getFlag(FlagType.ENTRY_FEE) > 0) {
 			Hook<Economy> hook = HookManager.getInstance().getService(VaultHook.class);
-			
+
 			for (SpleefPlayer player : inPlayers) {
 				hook.getHook().withdrawPlayer(player.getName(), getFlag(FlagType.ENTRY_FEE));
 				player.sendMessage(_("paidIntoJackpot", hook.getHook().format(getFlag(FlagType.ENTRY_FEE))));
 				jackpot += getFlag(FlagType.ENTRY_FEE);
 			}
 		}
-		
+
 		for (SpleefPlayer player : inPlayers) {
 			giveItems(player);
 			player.getStatistic().addGame();
 		}
-		
+
 		StatisticModule.pushAsync();
 		broadcast(_("gameHasStarted"), BroadcastType.INGAME);
 		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast("game-start-info"));
 		broadcast(_("startedGameWith", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast("game-start-info"));
 		components.updateWalls();
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	private void giveItems(SpleefPlayer player) {
-		//Give items
+		// Give items
 		List<ItemStack> items = new ArrayList<ItemStack>();
-		
+
 		if (getFlag(FlagType.SHOVELS)) {
 			ItemStack shovel = new ItemStack(Material.DIAMOND_SPADE);
 			ItemMeta meta = shovel.getItemMeta();
 			meta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Spleef Shovel");
 			shovel.setItemMeta(meta);
-			
+
 			items.add(shovel);
 		}
-		
+
 		if (getFlag(FlagType.SHEARS)) {
 			ItemStack shear = new ItemStack(Material.SHEARS);
 			ItemMeta meta = shear.getItemMeta();
 			meta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Spleef Shear");
 			shear.setItemMeta(meta);
-			
+
 			items.add(shear);
 		}
-		
+
 		if (getFlag(FlagType.SPLEGG)) {
 			ItemStack spleggLauncher = new ItemStack(Material.DIAMOND_SPADE);
 			ItemMeta meta = spleggLauncher.getItemMeta();
 			meta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Splegg Launcher");
-			
+
 			List<String> lore = new ArrayList<String>();
 			lore.add(ChatColor.YELLOW + "Right click to " + ChatColor.RED + "fire" + ChatColor.YELLOW + "!");
 			meta.setLore(lore);
-			
+
 			spleggLauncher.setItemMeta(meta);
-			
+
 			items.add(spleggLauncher);
 		}
-		
+
 		if (getFlag(FlagType.BOWSPLEEF)) {
 			ItemStack bow = new ItemStack(Material.BOW);
 			ItemStack arrow = new ItemStack(Material.ARROW);
-			
+
 			bow.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 10);
 			bow.addUnsafeEnchantment(Enchantment.ARROW_FIRE, 10);
-			
+
 			ItemMeta bowMeta = bow.getItemMeta();
 			bowMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Bow");
 			bow.setItemMeta(bowMeta);
-			
+
 			ItemMeta arrowMeta = arrow.getItemMeta();
 			arrowMeta.setDisplayName(ChatColor.GREEN + "Arrow");
 			arrow.setItemMeta(arrowMeta);
-			
+
 			items.add(bow);
 			items.add(arrow);
 		}
-		
+
 		for (ItemStack item : items) {
 			player.getBukkitPlayer().getInventory().addItem(item);
 		}
-		
+
 		player.getBukkitPlayer().updateInventory();
 	}
 
 	@Override
 	public void countdown() {
+		//Don't count when we're already counting
+		if (state == GameState.COUNTING) {
+			return;
+		}
+		
 		SpleefStartEvent event = new SpleefStartEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
 			return;
 		}
-		
+
 		state = GameState.COUNTING;
 		components.regenerateFloors();
-		
+
 		StartCountdownTask countdownTask = new StartCountdownTask(getFlag(FlagType.COUNTDOWN), this);
 		int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), countdownTask, 0L, 20L);
 		tasks.put(StartCountdownTask.TASK_ID_KEY, id);
-		
+
 		teleportTask = new PlayerTeleportTask(this);
 		Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
-		
+
 		components.updateWalls();
 		components.updateScoreBoards();
 	}
@@ -291,21 +298,21 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	public void stop() {
 		stop(StopCause.STOP);
 	}
-	
+
 	@Override
 	public void stop(StopCause cause) {
 		stop(cause, null);
 	}
-	
+
 	public void stop(StopCause cause, SpleefPlayer winner) {
-		//Cancel all tasks
+		// Cancel all tasks
 		for (String task : tasks.keySet()) {
 			cancelTask(task);
 		}
-		
+
 		SpleefFinishEvent event = new SpleefFinishEvent(this, cause, null);
 		Bukkit.getPluginManager().callEvent(event);
-		
+
 		Iterator<SpleefPlayer> iterator = inPlayers.iterator();
 		while (iterator.hasNext()) {
 			SpleefPlayer player = iterator.next();
@@ -313,17 +320,17 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			if (components.getTeam(player) != null) {
 				components.getTeam(player).leave(player);
 			}
-			
+
 			if (winner != null && winner != player) {
 				safeTeleport(player, getFlag(FlagType.LOSE));
 			}
-			
+
 			player.restoreState();
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
 			player.getBukkitPlayer().setFallDistance(0);
 		}
-		
+
 		if (winner != null) {
 			broadcast(_("hasWon", ViPManager.colorName(winner.getName()), this.getName()), ConfigUtil.getBroadcast("win"));
 			winner.sendMessage(_("win"));
@@ -332,70 +339,74 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			safeTeleport(winner, getFlag(FlagType.WIN));
 			giveRewards(winner, true, 0);
 			SpleefLogger.log(LogType.WIN, this, winner);
+
+			if (HeavySpleef.getSystemConfig().getBoolean("sounds.levelUp", true)) {
+				winner.getBukkitPlayer().playSound(winner.getBukkitPlayer().getLocation(), Sound.LEVEL_UP, 1.0F, 2.0F);
+			}
 		} else if (cause == StopCause.DRAW) {
 			broadcast(_("endedDraw", getName()), ConfigUtil.getBroadcast("win"));
 		}
-		
+
 		state = GameState.JOINABLE;
 		outPlayers.clear();
 		removeBoxes();
-		
+
 		components.updateScoreBoards();
 		components.updateWalls();
 		components.regenerateFloors();
 		roundsPlayed = 0;
 		jackpot = 0;
-		
+
 		queue.flushQueue();
 	}
-	
+
 	/* Extra method to stop the game per a winner team */
 	private void stop(Team winnerTeam) {
-		//Cancel all tasks
+		// Cancel all tasks
 		for (String task : tasks.keySet()) {
 			cancelTask(task);
 		}
-		
+
 		int teamSize = winnerTeam.getPlayers().size();
-		
+
 		SpleefFinishEvent event = new SpleefFinishEvent(this, StopCause.WIN, null);
 		Bukkit.getPluginManager().callEvent(event);
-		
+
 		Iterator<SpleefPlayer> iterator = inPlayers.iterator();
 		while (iterator.hasNext()) {
 			SpleefPlayer player = iterator.next();
-			
+
 			Team playerTeam = components.getTeam(player);
 			iterator.remove();
-			
+
 			if (playerTeam == winnerTeam) {
 				giveRewards(player, false, teamSize);
 				player.getStatistic().addWin();
 			}
-			
+
 			safeTeleport(player, getFlag(FlagType.LOSE));
 			player.restoreState();
-			
+
 			playerTeam.leave(player);
-			
+
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
 			player.getBukkitPlayer().setFallDistance(0);
 		}
-		
+
 		broadcast(_("hasWon", "Team " + winnerTeam.getColor() + winnerTeam.getColor().name().toLowerCase() + ChatColor.GREEN, this.getName()), ConfigUtil.getBroadcast("win"));
-		
+
 		StatisticModule.pushAsync();
 		state = GameState.JOINABLE;
 		outPlayers.clear();
 		removeBoxes();
-		
+
 		components.updateScoreBoards();
 		components.updateWalls();
 		components.regenerateFloors();
 		roundsPlayed = 0;
 		jackpot = 0;
-		
+
 		queue.flushQueue();
 	}
 
@@ -404,7 +415,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (state != GameState.DISABLED) {
 			return;
 		}
-		
+
 		state = GameState.JOINABLE;
 		components.updateWalls();
 	}
@@ -414,40 +425,40 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (state == GameState.DISABLED) {
 			return;
 		}
-		
+
 		if (state == GameState.COUNTING || state == GameState.INGAME || state == GameState.LOBBY) {
 			stop();
 		}
-		
+
 		state = GameState.DISABLED;
 		components.updateWalls();
 	}
-	
+
 	public void spectate(SpleefPlayer player) {
 		if (player.isActive()) {
 			player.sendMessage(_("cannotSpectateWhilePlaying"));
 			return;
 		}
-		
+
 		Location spectate = getFlag(SPECTATE);
-		
+
 		player.saveLocation();
 		player.getBukkitPlayer().teleport(spectate);
 		player.sendMessage(_("welcomeToSpectate"));
 		player.setGame(this);
-		
+
 		spectating.add(player);
 	}
-	
+
 	public void leaveSpectate(SpleefPlayer player) {
 		if (!isSpectating(player))
 			return;
-		
+
 		spectating.remove(player);
 		player.clearGameData();
 		player.getBukkitPlayer().teleport(player.getLastLocation());
 	}
-	
+
 	public List<SpleefPlayer> getSpectating() {
 		return spectating;
 	}
@@ -457,7 +468,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (player.isActive()) {
 			return;
 		}
-		
+
 		if (getFlag(FlagType.ONEVSONE) && inPlayers.size() >= 2) {
 			return;
 		}
@@ -469,37 +480,37 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			return;
 
 		broadcast(_("playerJoinedGame", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("player-join"));
-		
+
 		player.saveState();
 		player.setGame(this);
-		
+
 		inPlayers.add(player);
 		SpleefLogger.log(LogType.JOIN, this, player);
-		
+
 		if (state == GameState.JOINABLE) {
 			state = GameState.LOBBY;
 		}
-		
+
 		player.saveLocation();
-		
+
 		if (state == GameState.COUNTING || state == GameState.INGAME) {
-			Location spawnpoint = getFlag(FlagType.SPAWNPOINT) == null ? getRandomLocation(): getFlag(FlagType.SPAWNPOINT);
-			
+			Location spawnpoint = getFlag(FlagType.SPAWNPOINT) == null ? getRandomLocation() : getFlag(FlagType.SPAWNPOINT);
+
 			player.getBukkitPlayer().teleport(spawnpoint);
 		} else {
 			Location lobby = getFlag(FlagType.LOBBY) == null ? getRandomLocation() : getFlag(FlagType.LOBBY);
-			
+
 			player.getBukkitPlayer().teleport(lobby);
 		}
-		
+
 		if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
 			for (SpleefPlayer inPlayer : inPlayers)
 				inPlayer.getBukkitPlayer().playSound(inPlayer.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, inPlayer.getBukkitPlayer().getLocation().getPitch());
 		}
-		
+
 		components.updateWalls();
-		
-		//Autostart
+
+		// Autostart
 		if ((getFlag(FlagType.AUTOSTART) > 1 && inPlayers.size() >= getFlag(FlagType.AUTOSTART)) || (getFlag(FlagType.ONEVSONE) && inPlayers.size() >= 2)) {
 			countdown();
 		}
@@ -515,60 +526,59 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (!inPlayers.contains(player)) {
 			return;
 		}
-		
+
 		if (cause == null) {
 			cause = LoseCause.UNKNOWN;
 		}
-		
+
 		if (cause == LoseCause.LOSE && getFlag(FlagType.ONEVSONE)) {
-			//Indicate the winner
+			// Indicate the winner
 			SpleefPlayer winner = null;
-			
+
 			for (SpleefPlayer inPlayer : inPlayers) {
 				HeavySpleef.getInstance().getAntiCampingTask().resetTimer(player.getBukkitPlayer());
-				
+
 				if (inPlayer != player) {
 					winner = inPlayer;
 					break;
 				}
 			}
-			
+
 			if (winner == null) {
 				winner = player;
 				roundsPlayed = getFlag(FlagType.ROUNDS);
 			}
-			
+
 			winner.addWin();
 			winner.addKnockout();
 			roundsPlayed++;
-			
+
 			if (roundsPlayed < getFlag(FlagType.ROUNDS)) {
-				//Play one round more
-				
+				// Play one round more
+
 				components.regenerateFloors();
-				
+
 				teleportTask = new PlayerTeleportTask(this);
 				Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
-				
+
 				int countdown = HeavySpleef.getSystemConfig().getInt("general.countdownBetweenRound");
 				RoundsCountdownTask task = new RoundsCountdownTask(countdown, this);
 				int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), task, 0L, 20L);
 				tasks.put(RoundsCountdownTask.TASK_ID_KEY, id);
-				
-				
-				broadcast(_("wonRound", ViPManager.colorName(winner.getName()), String.valueOf(roundsPlayed), String.valueOf(getFlag(FlagType.ROUNDS))), ConfigUtil.getBroadcast("win"));//Broadcast the winner of the round
-				broadcast(_("roundsRemaining", String.valueOf(getFlag(FlagType.ROUNDS) - roundsPlayed)), ConfigUtil.getBroadcast("win"));//Broadcast how many rounds remaining
-				
+
+				broadcast(_("wonRound", ViPManager.colorName(winner.getName()), String.valueOf(roundsPlayed), String.valueOf(getFlag(FlagType.ROUNDS))), ConfigUtil.getBroadcast("win"));
+				broadcast(_("roundsRemaining", String.valueOf(getFlag(FlagType.ROUNDS) - roundsPlayed)), ConfigUtil.getBroadcast("win"));
+
 				components.updateWalls();
 				components.updateScoreBoards();
 			} else {
-				//Game end, indicate the final winner
+				// Game end, indicate the final winner
 				SpleefPlayer finalWinner = null;
-				
+
 				if (inPlayers.size() == 2) {
 					finalWinner = inPlayers.get(0).getWins() > inPlayers.get(1).getWins() ? inPlayers.get(0) : inPlayers.get(0).getWins() == inPlayers.get(1).getWins() ? null : inPlayers.get(1);
 				}
-				
+
 				if (finalWinner != null) {
 					stop(StopCause.WIN, finalWinner);
 				} else {
@@ -580,46 +590,45 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			if (components.getTeam(player) != null) {
 				components.getTeam(player).leave(player);
 			}
-			
+
 			player.restoreState();
-			
+
 			SpleefPlayer killer = detectKiller(player);
-			
+
 			if (cause == LoseCause.LOSE) {
 				player.sendMessage(_("outOfGame"));
 				player.getStatistic().addLose();
 				SpleefLogger.log(LogType.LOSE, this, player);
-				
+
 				if (killer != null) {
 					killer.addKnockout();
 					killer.getStatistic().addKnockout();
-					
+
 					broadcast(_("loseCause_lose", ViPManager.colorName(player.getName()), ViPManager.colorName(killer.getName())), ConfigUtil.getBroadcast("player-lose"));
 				} else {
 					broadcast(_("loseCause_lose_unknown", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("player-lose"));
 				}
-				
+
 				StatisticModule.pushAsync();
 			} else {
 				SpleefLogger.log(LogType.LEAVE, this, player);
 				broadcast(_("loseCause_leave", ViPManager.colorName(player.getName()), name), ConfigUtil.getBroadcast("player-lose"));
 			}
-			
+
 			safeTeleport(player, getFlag(FlagType.LOSE));
-			
+
 			if (state == GameState.INGAME || state == GameState.COUNTING) {
 				outPlayers.add(player.getBukkitPlayer());
 				broadcast(_("remaining", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast("knockouts"));
 			}
-			
-			
+
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
 			player.getBukkitPlayer().setFallDistance(0);
-			
+
 			components.updateScoreBoards();
 			components.updateWalls();
-			
+
 			if (inPlayers.size() <= 1 && !getFlag(FlagType.TEAM)) {
 				if (state == GameState.INGAME) {
 					stop(StopCause.WIN, inPlayers.get(0));
@@ -643,36 +652,36 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	private SpleefPlayer detectKiller(SpleefPlayer player) {
 		List<IFloor> floors = components.getFloors();
 		Collections.sort(floors);
-		
+
 		IFloor floor = floors.get(0);
-		
+
 		Location playerLocation = player.getBukkitPlayer().getLocation();
 		Block above = player.getBukkitPlayer().getWorld().getBlockAt(playerLocation.getBlockX(), floor.getY(), playerLocation.getBlockZ());
-		
+
 		for (Player bukkitPlayer : Bukkit.getOnlinePlayers()) {
 			SpleefPlayer spleefPlayer = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
-			
+
 			List<Block> brokenBlocks = spleefPlayer.getBrokenBlocks();
 			if (brokenBlocks == null || brokenBlocks.isEmpty()) {
 				continue;
 			}
-			
+
 			for (Block block : brokenBlocks) {
 				if (block.equals(above)) {
-					//We got the killer!
+					// We got the killer!
 					return spleefPlayer;
 				}
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public boolean hasPlayer(SpleefPlayer player) {
 		return inPlayers.contains(player);
 	}
-	
+
 	public boolean isSpectating(SpleefPlayer player) {
 		return spectating.contains(player);
 	}
@@ -692,15 +701,15 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	public <T extends Flag<V>, V> V getFlag(T flag) {
 		Object o = flags.get(flag);
 		V value = null;
-		
+
 		if (o == null) {
 			String str = HeavySpleef.getSystemConfig().getString("flag-defaults." + flag.getName());
 			if (str == null)
 				return flag.getAbsoluteDefault();
 			return flag.parse(null, str, null);
 		} else
-			value = (V)o;
-		
+			value = (V) o;
+
 		return value;
 	}
 
@@ -717,12 +726,12 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	public boolean hasFlag(Flag<?> flag) {
 		return flags.containsKey(flag);
 	}
-	
+
 	@Override
 	public Map<Flag<?>, Object> getFlags() {
 		return flags;
 	}
-	
+
 	public void setFlags(Map<Flag<?>, Object> flags) {
 		this.flags = flags;
 	}
@@ -735,13 +744,13 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (state != GameState.INGAME) {
 			return false;
 		}
-		
+
 		for (IFloor floor : components.getFloors()) {
 			if (floor.contains(location)) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -754,38 +763,38 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	public void setGameState(GameState state) {
 		this.state = state;
 	}
-	
+
 	public void cancelTask(String key) {
 		if (!tasks.containsKey(key)) {
 			return;
 		}
-		
+
 		BukkitScheduler scheduler = Bukkit.getScheduler();
-		
+
 		int id = tasks.get(key);
 		if (!scheduler.isCurrentlyRunning(id) && !scheduler.isQueued(id)) {
 			return;
 		}
-		
+
 		scheduler.cancelTask(id);
 	}
-	
+
 	public void setCountLeft(int countLeft) {
 		this.countLeft = countLeft;
 	}
-	
+
 	public int getCountLeft() {
 		return countLeft;
 	}
-	
+
 	public int getRoundsPlayed() {
 		return roundsPlayed;
 	}
-	
+
 	private static String _(String... key) {
 		return I18N._(key);
 	}
-	
+
 	private void safeTeleport(SpleefPlayer player, Location location) {
 		if (location == null) {
 			Location last = player.getLastLocation();
@@ -794,11 +803,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			player.getBukkitPlayer().teleport(location);
 		}
 	}
-	
+
 	public boolean isReadyToPlay() {
 		return getFlag(FlagType.LOBBY) != null && components.getFloors().size() > 0;
 	}
-	
+
 	public void removeBoxes() {
 		if (teleportTask != null) {
 			teleportTask.removeBoxes();
@@ -809,14 +818,18 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	public GameQueue getQueue() {
 		return queue;
 	}
-	
+
 	/**
-	 * Gives spleef rewards to the given player
-	 * Possible rewards: Money reward, Jackpot reward, Item reward
+	 * Gives spleef rewards to the given player Possible rewards: Money reward,
+	 * Jackpot reward, Item reward
 	 * 
-	 * @param player Player who should receive rewards
-	 * @param clearJackpot If the jackpot should be cleared (resets the jackpot)
-	 * @param winnersTeamSize How many players won the game. This parameter makes sure that the money reward is splitted up equally
+	 * @param player
+	 *            Player who should receive rewards
+	 * @param clearJackpot
+	 *            If the jackpot should be cleared (resets the jackpot)
+	 * @param winnersTeamSize
+	 *            How many players won the game. This parameter makes sure that
+	 *            the money reward is splitted up equally
 	 */
 	public void giveRewards(SpleefPlayer player, boolean clearJackpot, int winnersTeamSize) {
 		if (getFlag(ITEMREWARD) != null) {
@@ -826,44 +839,44 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.formatMaterialName(stack.getMaterial().name())));
 			}
 		}
-		
+
 		if (HookManager.getInstance().getService(VaultHook.class).hasHook()) {
 			Economy econ = HookManager.getInstance().getService(VaultHook.class).getHook();
 			if (this.jackpot > 0) {
-				//Split the reward between the winning teams
+				// Split the reward between the winning teams
 				double prize;
-				
+
 				if (getFlag(TEAM)) {
-					prize = (double)jackpot / winnersTeamSize;
+					prize = (double) jackpot / winnersTeamSize;
 				} else {
 					prize = jackpot;
 				}
-				
+
 				EconomyResponse r = econ.depositPlayer(player.getName(), prize);
 				player.sendMessage(_("jackpotReceived", econ.format(r.amount)));
-				
+
 				if (clearJackpot) {
 					jackpot = 0;
 				}
 			}
-			
+
 			int reward = getFlag(REWARD);
-			
+
 			if (reward > 0) {
 				EconomyResponse r = econ.depositPlayer(player.getName(), reward);
 				player.sendMessage(_("rewardReceived", econ.format(r.amount)));
 			}
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hash = 8;
 		hash = hash * 48 + name.hashCode();
-		
+
 		return hash;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Game)) {
@@ -875,167 +888,167 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (hashCode() == o.hashCode()) {
 			return true;
 		}
-		
-		return ((Game)o).getName().equalsIgnoreCase(name);
+
+		return ((Game) o).getName().equalsIgnoreCase(name);
 	}
-	
+
 	@Override
 	public ConfigurationSection serialize() {
 		MemorySection section = new MemoryConfiguration();
-		
+
 		section.set("type", getType().name());
 		section.set("name", getName());
-		
+
 		ConfigurationSection currentSection;
 		/* Serialize game components */
-		
+
 		currentSection = section.createSection("floors");
 		for (IFloor floor : components.getFloors()) {
 			String id = String.valueOf(floor.getId());
 			ConfigurationSection serialized = floor.serialize();
-			
+
 			currentSection.createSection(id, serialized.getValues(true));
 		}
-		
+
 		currentSection = section.createSection("losezones");
 		for (LoseZone zone : components.getLoseZones()) {
 			String id = String.valueOf(zone.getId());
-			
+
 			currentSection.createSection(id, zone.serialize().getValues(true));
 		}
-		
+
 		currentSection = section.createSection("scoreboards");
 		for (ScoreBoard board : components.getScoreBoards()) {
 			String id = String.valueOf(board.getId());
-			
+
 			currentSection.createSection(id, board.serialize().getValues(true));
 		}
-		
+
 		currentSection = section.createSection("signwalls");
 		for (SignWall wall : components.getSignWalls()) {
 			String id = String.valueOf(wall.getId());
-			
+
 			currentSection.createSection(id, wall.serialize().getValues(true));
 		}
-		
+
 		currentSection = section.createSection("teams");
-		
+
 		for (Team team : components.getTeams()) {
 			ChatColor color = team.getColor();
 			int minPlayers = team.getMinPlayers();
 			int maxPlayers = team.getMaxPlayers();
-			
+
 			ConfigurationSection teamSection = currentSection.createSection(color.name());
 			teamSection.set("color", color.name());
 			teamSection.set("min-players", minPlayers);
 			teamSection.set("max-players", maxPlayers);
 		}
-		
+
 		/* Serialize flags */
 		currentSection = section.createSection("flags");
-		
+
 		for (Entry<Flag<?>, Object> entry : flags.entrySet()) {
 			Flag<?> flag = entry.getKey();
 			Object value = entry.getValue();
-			
+
 			ConfigurationSection flagSection = currentSection.createSection(flag.getName());
 			flagSection.set("value", flag.serialize(value));
 		}
-		
+
 		return section;
 	}
-	
+
 	public static Game deserialize(ConfigurationSection section) {
 		GameType type = GameType.valueOf(section.getString("type"));
 		String name = section.getString("name");
-		
+
 		Game game = null;
-		
+
 		if (type == GameType.CUBOID) {
 			Location first = Parser.convertStringtoLocation(section.getString("first"));
 			Location second = Parser.convertStringtoLocation(section.getString("second"));
-			
+
 			RegionCuboid region = new RegionCuboid(-1, first, second);
-			
+
 			game = new GameCuboid(name, region);
 		} else if (type == GameType.CYLINDER) {
 			Location center = Parser.convertStringtoLocation(section.getString("center"));
 			int radius = section.getInt("radius");
 			int min = section.getInt("min");
 			int max = section.getInt("max");
-			
+
 			RegionCylinder region = new RegionCylinder(-1, center, radius, min, max);
-			
+
 			game = new GameCylinder(name, region);
 		}
-		
+
 		ConfigurationSection currentSection;
-		
+
 		currentSection = section.getConfigurationSection("floors");
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection floorSection = currentSection.getConfigurationSection(key);
-			
+
 			IFloor floor = FloorCuboid.deserialize(floorSection, game);
-			
+
 			game.components.addFloor(floor, false);
 		}
-		
+
 		currentSection = section.getConfigurationSection("losezones");
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection losezoneSection = currentSection.getConfigurationSection(key);
-			
+
 			LoseZone zone = LoseZone.deserialize(losezoneSection);
 			game.getComponents().addLoseZone(zone);
 		}
-		
+
 		currentSection = section.getConfigurationSection("scoreboards");
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection scoreboardSection = currentSection.getConfigurationSection(key);
-			
+
 			ScoreBoard board = ScoreBoard.deserialize(scoreboardSection);
-			
+
 			game.getComponents().addScoreBoard(board);
 		}
-		
+
 		currentSection = section.getConfigurationSection("signwalls");
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection wallSection = currentSection.getConfigurationSection(key);
-			
+
 			SignWall wall = SignWall.deserialize(wallSection);
 			wall.setGame(game);
-			
+
 			game.getComponents().addSignWall(wall);
 		}
-		
+
 		currentSection = section.getConfigurationSection("teams");
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection teamSection = currentSection.getConfigurationSection(key);
-			
+
 			ChatColor color = ChatColor.valueOf(teamSection.getString("color"));
 			int minPlayers = teamSection.getInt("min-players");
 			int maxPlayers = teamSection.getInt("max-players");
-			
+
 			Team team = new Team(color);
 			team.setMinPlayers(minPlayers);
 			team.setMaxPlayers(maxPlayers);
-			
+
 			game.getComponents().addTeam(team);
 		}
-		
+
 		currentSection = section.getConfigurationSection("flags");
 		Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
-		
+
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection flagSection = currentSection.getConfigurationSection(key);
-			
+
 			Flag<?> flag = FlagType.byName(key);
 			Object value = flag.deserialize(flagSection.getString("value"));
-			
+
 			flags.put(flag, value);
 		}
-		
+
 		game.setFlags(flags);
-		
+
 		return game;
 	}
 
