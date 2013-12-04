@@ -19,26 +19,21 @@
  */
 package de.matzefratze123.heavyspleef.database;
 
-import static de.matzefratze123.heavyspleef.database.Parser.convertLocationtoString;
-import static de.matzefratze123.heavyspleef.database.Parser.convertStringtoLocation;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.StopCause;
-import de.matzefratze123.heavyspleef.core.region.HUBPortal;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 /**
@@ -51,7 +46,6 @@ public class YamlDatabase {
 	private HeavySpleef plugin;
 	
 	private File databaseFile;
-	private File globalDatabaseFile;
 	
 	public FileConfiguration db;
 	public FileConfiguration globalDb;
@@ -66,18 +60,12 @@ public class YamlDatabase {
 		folder.mkdirs();
 		
 		this.databaseFile = new File(folder, "games.yml");
-		this.globalDatabaseFile = new File(folder, "global-settings.yml");
 		
 		if (!databaseFile.exists()) {
 			createDefaultDatabaseFile(databaseFile);
 		}
 		
-		if (!globalDatabaseFile.exists()) {
-			createDefaultDatabaseFile(globalDatabaseFile);
-		}
-		
 		this.db = YamlConfiguration.loadConfiguration(databaseFile);
-		this.globalDb = YamlConfiguration.loadConfiguration(globalDatabaseFile);
 	}
 
 	private void createDefaultDatabaseFile(File file) {
@@ -120,7 +108,6 @@ public class YamlDatabase {
 		
 		
 		Logger.info("Loaded " + count + " games!");
-		loadGlobalSettings();
 		saveConfig();
 	}
 
@@ -137,62 +124,7 @@ public class YamlDatabase {
 			db.createSection(game.getName(), serialized.getValues(true));
 		}
 		
-		saveGlobalSettings();
 		saveConfig();
-	}
-	
-	private void saveGlobalSettings() {
-		if (globalDb == null)
-			return;
-		//Save the spleef hub
-		Location spleefHub = GameManager.getSpleefHub();
-		if (spleefHub != null)
-			globalDb.set("hub", convertLocationtoString(spleefHub));
-		
-		//Create a section for the portals if there isn't one
-		ConfigurationSection portalsSection = globalDb.contains("portals") ? globalDb.getConfigurationSection("portals") : globalDb.createSection("portals");
-		
-		//Save every portal
-		for (HUBPortal portal : GameManager.getPortals()) {
-			ConfigurationSection section = portalsSection.createSection(String.valueOf(portal.getId()));
-			
-			section.set("firstCorner", convertLocationtoString(portal.getFirstPoint()));
-			section.set("secondCorner", convertLocationtoString(portal.getSecondPoint()));
-		}
-	}
-	
-	private void loadGlobalSettings() {
-		if (globalDb == null)
-			return;
-		
-		if (globalDb.contains("hub"))
-			GameManager.setSpleefHub(convertStringtoLocation(globalDb.getString("hub")));
-		
-		ConfigurationSection portalsSection = globalDb.getConfigurationSection("portals");
-		if (portalsSection != null) {
-			for (String key : portalsSection.getKeys(false)) {
-				ConfigurationSection keySection = portalsSection.getConfigurationSection(key);
-				
-				Location firstCorner = null;
-				Location secondCorner = null;
-				int id = -1;
-				
-				if (keySection.contains("firstCorner"))
-					firstCorner = convertStringtoLocation(keySection.getString("firstCorner"));
-				if (keySection.contains("secondCorner"))
-					secondCorner = convertStringtoLocation(keySection.getString("secondCorner"));
-				
-				try {
-					id = Integer.parseInt(key);
-				} catch (NumberFormatException e) {
-					Logger.warning("Failed to load portal id for portal " + id + "! Ignoring portal...");
-					continue;
-				}
-				
-				HUBPortal portal = new HUBPortal(id, firstCorner, secondCorner);
-				GameManager.addPortal(portal);
-			}
-		}
 	}
 
 	/**
@@ -210,7 +142,6 @@ public class YamlDatabase {
 	public void saveConfig() {
 		try {
 			db.save(databaseFile);
-			globalDb.save(globalDatabaseFile);
 		} catch (IOException e) {
 			Bukkit.getLogger().severe("Could not save database to " + databaseFile.getAbsolutePath() + "! IOException?");
 			e.printStackTrace();

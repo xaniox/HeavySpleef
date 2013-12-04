@@ -40,7 +40,7 @@ import org.kitteh.tag.TagAPI;
 
 import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
-import de.matzefratze123.heavyspleef.command.CommandHandler;
+import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
 import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import de.matzefratze123.heavyspleef.core.task.TNTRunTask;
@@ -48,7 +48,6 @@ import de.matzefratze123.heavyspleef.database.YamlDatabase;
 import de.matzefratze123.heavyspleef.hooks.Hook;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
-import de.matzefratze123.heavyspleef.listener.HUBPortalListener;
 import de.matzefratze123.heavyspleef.listener.PVPTimerListener;
 import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.listener.QueuesListener;
@@ -61,7 +60,6 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.selection.SelectionListener;
 import de.matzefratze123.heavyspleef.selection.SelectionManager;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
-import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignHub;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignJoin;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignLeave;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignSpectate;
@@ -222,7 +220,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		pm.registerEvents(new SignWallListener(), this);
 		pm.registerEvents(new QueuesListener(), this);
 		pm.registerEvents(new PVPTimerListener(), this);
-		pm.registerEvents(new HUBPortalListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
 		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
 		
@@ -238,7 +235,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		executor.registerSign(new SpleefSignJoin());
 		executor.registerSign(new SpleefSignLeave());
 		executor.registerSign(new SpleefSignStart());
-		executor.registerSign(new SpleefSignHub());
 		executor.registerSign(new SpleefSignSpectate());
 		executor.registerSign(new SpleefSignVote());
 	}
