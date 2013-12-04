@@ -104,6 +104,9 @@ public class YamlDatabase {
 	 * Loads all games from the database into the system
 	 */
 	public void load() {
+		//Make sure to clear all other games to provide compatibility with PluginLoaders
+		GameManager.getGames().clear();
+		
 		int count = 0;
 		
 		for (String key : db.getKeys(false)) {
