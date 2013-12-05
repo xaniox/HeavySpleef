@@ -13,3 +13,5 @@ Made for Bukkit 1.6 (Minecraft 1.6.4 or 1.6.2)
 Bukkit-Dev: <url>http://dev.bukkit.org/server-mods/heavyspleef/</url>
 
 Github: <url>https://github.com/matzefratze123/HeavySpleef</url>
+
+Build-Server: <url>http://ci.matzefratze123.de/jenkins/job/HeavySpleef/</url>
