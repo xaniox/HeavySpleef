@@ -114,6 +114,7 @@ public abstract class AbstractDatabase {
 		
 		if (section != null) {
 			if (!section.getBoolean("enabled", true)) {
+				database = null;
 				return;
 			}
 			
@@ -126,11 +127,12 @@ public abstract class AbstractDatabase {
 				database = new MySQLDatabase();
 			} else {
 				Logger.warning("Warning: Database type " + dbType + " is invalid. Disabling statistics...");
+				database = null;
 				return;
 			}
 			
 			if (database.state != DatabaseState.SUCCESS) {
-				Logger.warning("Failed to activate statistics.");
+				Logger.warning("Failed to activate statistics: " + database.state.name());
 				database = null;
 			}
 		}
@@ -139,7 +141,7 @@ public abstract class AbstractDatabase {
 	public enum DatabaseState {
 		
 		NO_DRIVERS,
-		FAILED_CONNECT,
+		FAILED_TO_CONNECT,
 		SUCCESS;
 		
 	}

@@ -22,7 +22,7 @@ public class SQLiteDatabase extends AbstractDatabase {
 			connection = DriverManager.getConnection(getHost());
 		} catch (SQLException e) {
 			Logger.warning("Failed to establish connection to sqlite database! Disabling statistics: " + e.getMessage());
-			state = DatabaseState.FAILED_CONNECT;
+			state = DatabaseState.FAILED_TO_CONNECT;
 		} catch (ClassNotFoundException e) {
 			Logger.warning("Failed to load drivers for sqlite database. Disabling statistics: " + e.getMessage());
 			state = DatabaseState.NO_DRIVERS;

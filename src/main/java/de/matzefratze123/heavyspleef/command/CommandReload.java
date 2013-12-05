@@ -28,6 +28,7 @@ import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.FileConfig;
+import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -49,6 +50,7 @@ public class CommandReload extends HSCommand {
 		
 		I18N.loadLanguageFiles();//Reload languages files
 		plugin.getSelectionManager().setup();//Reload selection
+		AbstractDatabase.setupDatabase();
 		
 		sender.sendMessage(_("pluginReloaded", HeavySpleef.getInstance().getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
 		//And we're done!
