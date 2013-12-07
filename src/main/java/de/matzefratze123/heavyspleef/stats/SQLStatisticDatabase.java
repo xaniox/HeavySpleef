@@ -99,9 +99,9 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 		}
 		
 		AbstractDatabase database = AbstractDatabase.getInstance();
-		if (!database.hasTable(TABLE_NAME))
+		if (!database.hasTable(TABLE_NAME)) {
 			return null;
-		
+		}
 		
 		Table table = database.getTable(TABLE_NAME);
 		for (String columnName : columns.keySet()) {
@@ -229,6 +229,10 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 		database.close();
 		
 		return list;
+	}
+	
+	public static Map<String, Field> getColumns() {
+		return columns;
 	}
 	
 }
