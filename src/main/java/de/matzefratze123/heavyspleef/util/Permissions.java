@@ -28,7 +28,6 @@ public enum Permissions {
 
 	// Command
 	KICK("heavyspleef.kick"),
-	TELEPORT_HUB("heavyspleef.teleporthub"),
 	SET_FLAG("heavyspleef.flag"),
 	SET_TEAMFLAG("heavyspleef.setteamflag"),
 	
@@ -46,8 +45,9 @@ public enum Permissions {
 	JOIN_GAME_INV("heavyspleef.join.inventory"),
 	LEAVE_GAME("heavyspleef.leave"),
 	START_GAME("heavyspleef.start"),
-	START_GAME_OTHER("heavyspleef.start.other"),
+	START_OTHER_GAME("heavyspleef.start.other"),
 	SPECTATE("heavyspleef.spectate"),
+	RESTORE_FLOORS("heavyspleef.restorefloor"),
 	
 	CREATE_GAME("heavyspleef.create"),
 	DELETE_GAME("heavyspleef.delete"),
@@ -59,7 +59,6 @@ public enum Permissions {
 	
 	STATS("heavyspleef.statistic"),
 	STATS_OTHERS("heavyspleef.statistic.others"),
-	SET_HUB("heavyspleef.sethub"),
 	ADD_SCOREBOARD("heavyspleef.addscoreboard"),
 	REMOVE_SCOREBOARD("heavyspleef.removescoreboard"),
 	UPDATE_SCOREBOARD("heavyspleef.updatescoreboard"),
@@ -75,22 +74,17 @@ public enum Permissions {
 	INFO("heavyspleef.info"),
 	VOTE("heavyspleef.vote"),
 	
-	USE_PORTAL("heavyspleef.useportal"),
-	ADD_PORTAL("heavyspleef.addportal"),
-	REMOVE_PORTAL("heavyspleef.removeportal"),
-	
 	// Bypass
 	BUILD_BYPASS("heavyspleef.build.bypass"),
 	
-	//Selection
+	// Selection
 	SELECTION("heavyspleef.selection"),
 	
-	//Sign
+	// Sign
 	CREATE_SPLEEF_SIGN("heavyspleef.createsign"),
 	SIGN_JOIN("heavyspleef.sign.join"),
 	SIGN_LEAVE("heavyspleef.sign.leave"),
 	SIGN_START("heavyspleef.sign.start"),
-	SIGN_HUB("heavyspleef.sign.hub"),
 	SIGN_VOTE("heavyspleef.sign.vote"),
 	SIGN_SPECTATE("heavyspleef.sign.spectate");
 	

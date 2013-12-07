@@ -47,6 +47,7 @@ import de.matzefratze123.heavyspleef.command.CommandJoin;
 import de.matzefratze123.heavyspleef.command.CommandKick;
 import de.matzefratze123.heavyspleef.command.CommandLeave;
 import de.matzefratze123.heavyspleef.command.CommandList;
+import de.matzefratze123.heavyspleef.command.CommandRegenerate;
 import de.matzefratze123.heavyspleef.command.CommandReload;
 import de.matzefratze123.heavyspleef.command.CommandRemoveFloor;
 import de.matzefratze123.heavyspleef.command.CommandRemoveLose;
@@ -98,6 +99,7 @@ public class CommandHandler implements CommandExecutor {
 		
 		if (!isValidSubCommand(sender, command, cutArgs.toArray(new String[cutArgs.size()])))
 			return true;
+		
 		command.execute(sender, cutArgs.toArray(new String[cutArgs.size()]));
 		return true;
 	}
@@ -175,6 +177,8 @@ public class CommandHandler implements CommandExecutor {
 		addSubCommand("removeteam", new CommandRemoveTeam());
 		addSubCommand("teamflag", new CommandTeamFlag());
 		addSubCommand("spectate", new CommandSpectate());
+		addSubCommand("regenerate", new CommandRegenerate());
+		addSubCommand("restore", new CommandRegenerate());
 	}
 	
 	public static void setPluginInstance(HeavySpleef instance) {
