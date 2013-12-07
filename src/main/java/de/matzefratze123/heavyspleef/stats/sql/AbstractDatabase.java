@@ -10,6 +10,7 @@ import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Util;
 
@@ -131,7 +132,11 @@ public abstract class AbstractDatabase {
 				return;
 			}
 			
-			if (database.state != DatabaseState.SUCCESS) {
+			if (database.state == DatabaseState.SUCCESS) {
+				if (!database.hasTable(SQLStatisticDatabase.TABLE_NAME)) {
+					database.createTable(SQLStatisticDatabase.TABLE_NAME, SQLStatisticDatabase.getColumns());
+				}
+			} else {
 				Logger.warning("Failed to activate statistics: " + database.state.name());
 				database = null;
 			}
