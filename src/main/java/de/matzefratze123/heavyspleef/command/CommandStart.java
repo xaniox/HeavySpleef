@@ -69,7 +69,7 @@ public class CommandStart extends HSCommand {
 
 				if (playerGame != null && playerGame.getName().equalsIgnoreCase(args[0]))
 					break permissionsCheck;
-				if (player.getBukkitPlayer().hasPermission(Permissions.START_GAME_OTHER.getPerm()))
+				if (player.getBukkitPlayer().hasPermission(Permissions.START_OTHER_GAME.getPerm()))
 					break permissionsCheck;
 
 				player.sendMessage(_("noPermission"));
