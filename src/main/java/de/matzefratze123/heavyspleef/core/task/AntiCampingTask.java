@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
@@ -88,54 +89,49 @@ public class AntiCampingTask implements Runnable {
 	
 	@Override
 	public void run() {
-		//Check every player
-		for (Player bukkitPlayer : Bukkit.getOnlinePlayers()) {
-			SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
-			
-			//Goto the next player when he is not ingame
-			if (!player.isActive())
-				continue;
-			
-			Game game = player.getGame();
-			if (game == null || game.getGameState() != GameState.INGAME) {
-				continue;
+		//Check every game
+		for (Game game : GameManager.getGames()) {
+			if (game.getGameState() != GameState.INGAME) {
+				return;
 			}
-			
+		    
 			if (!game.getFlag(FlagType.CAMP_DETECTION)) {
 				continue;
 			}
 			
-			//Get the base value
-			int current = antiCamping.containsKey(player.getName()) ? antiCamping.get(player.getName()) : 0;
-			
-			if (lastLocation.containsKey(player.getName())) {
-				Location last = lastLocation.get(player.getName());
-				Location now = player.getBukkitPlayer().getLocation();
+			for (SpleefPlayer player : game.getIngamePlayers()) {
+				//Get the base value
+				int current = antiCamping.containsKey(player) ? antiCamping.get(player) : 0;
 				
-				//Compare the differences of the last location
-				double differenceX = last.getX() < now.getX() ? now.getX() - last.getX() : last.getX() - now.getX();
-				double differenceZ = last.getZ() < now.getZ() ? now.getZ() - last.getZ() : last.getZ() - now.getZ();
-				
-				if ((differenceX < 1.0 && differenceZ < 1.0) || player.getBukkitPlayer().isSneaking()) {
-					//Add one second to map
-					current++;
+				if (lastLocation.containsKey(player)) {
+					Location last = lastLocation.get(player);
+					Location now = player.getBukkitPlayer().getLocation();
 					
-					if (current == warnAt && warnUser)
-						player.sendMessage(I18N._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
+					//Compare the differences of the last location
+					double differenceX = last.getX() < now.getX() ? now.getX() - last.getX() : last.getX() - now.getX();
+					double differenceZ = last.getZ() < now.getZ() ? now.getZ() - last.getZ() : last.getZ() - now.getZ();
 					
-					if (current >= teleportAt) {
-						teleportDown(player);
-						antiCamping.remove(player);
+					if ((differenceX < 1.0 && differenceZ < 1.0) || player.getBukkitPlayer().isSneaking()) {
+						//Add one second to map
+						current++;
+						
+						if (current == warnAt && warnUser)
+							player.sendMessage(I18N._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
+						
+						if (current >= teleportAt) {
+							teleportDown(player);
+							antiCamping.remove(player);
+						} else {
+							antiCamping.put(player, current);
+						}
 					} else {
-						antiCamping.put(player, current);
+						antiCamping.remove(player);
 					}
-				} else {
-					antiCamping.remove(player);
+					
 				}
 				
+				lastLocation.put(player, player.getBukkitPlayer().getLocation());
 			}
-			
-			lastLocation.put(player, player.getBukkitPlayer().getLocation());
 		}
 	}
 	
@@ -170,7 +166,7 @@ public class AntiCampingTask implements Runnable {
 		for (int i = 0; i < floors.size(); i++) {
 			//Check if the player is at the last floor
 			if (i == 0 && nearestFloor.getY() == floors.get(i).getY()) {
-				player.getBukkitPlayer().teleport(player.getBukkitPlayer().getLocation().clone().add(0, -1, 0));
+				player.getBukkitPlayer().teleport(player.getBukkitPlayer().getLocation().add(0, -1, 0));
 				player.sendMessage(I18N._("antiCampTeleport"));
 				return;
 			} else if (floors.get(i).getY() == nearestFloor.getY()){
