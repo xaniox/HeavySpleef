@@ -38,6 +38,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.tag.TagAPI;
 
+import de.matzefratze123.api.sql.AbstractDatabase;
+import de.matzefratze123.api.sql.SQLiteDatabase;
 import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
@@ -55,7 +57,7 @@ import de.matzefratze123.heavyspleef.listener.ReadyListener;
 import de.matzefratze123.heavyspleef.listener.SignWallListener;
 import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.listener.UpdateListener;
-import de.matzefratze123.heavyspleef.objects.JoinGUI;
+import de.matzefratze123.heavyspleef.objects.InventoryJoinGUI;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.selection.SelectionListener;
 import de.matzefratze123.heavyspleef.selection.SelectionManager;
@@ -69,8 +71,6 @@ import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.stats.YamlConverter;
-import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
-import de.matzefratze123.heavyspleef.stats.sql.SQLiteDatabase;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
@@ -88,7 +88,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	private YamlDatabase database;
 	private IStatisticDatabase statisticDatabase;
 	private SelectionManager selectionManager;
-	private JoinGUI menu;
+	private InventoryJoinGUI joinGui;
 
 	//Util
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
@@ -120,7 +120,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		I18N.loadLanguageFiles();
 		ViPManager.initVips();
 		
-		menu = new JoinGUI(I18N.__("inventory"), this);
+		joinGui = new InventoryJoinGUI();
 		
 		AbstractDatabase.setupDatabase();
 		
@@ -206,8 +206,8 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		return antiCampTask;
 	}
 	
-	public JoinGUI getJoinGUI() {
-		return menu;
+	public InventoryJoinGUI getJoinGUI() {
+		return joinGui;
 	}
 	
 	private void registerEvents() {
