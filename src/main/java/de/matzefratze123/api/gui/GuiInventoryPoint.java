@@ -16,15 +16,15 @@ public class GuiInventoryPoint {
 	public int getY() {
 		return y;
 	}
-	
+
 	public GuiInventoryPoint add(GuiInventoryPoint point) {
 		return add(point.getX(), point.getY());
 	}
-	
+
 	public GuiInventoryPoint add(int x, int y) {
 		this.x += x;
 		this.y += y;
-		
+
 		return this;
 	}
 

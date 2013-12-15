@@ -57,7 +57,7 @@ public abstract class GuiInventory implements Listener {
 			}
 		}
 	}
-	
+
 	public GuiInventory(Plugin plugin) {
 		this(plugin, 1);
 	}
@@ -67,7 +67,7 @@ public abstract class GuiInventory implements Listener {
 
 		this.title = title;
 	}
-	
+
 	public Plugin getPlugin() {
 		return plugin;
 	}
@@ -75,17 +75,17 @@ public abstract class GuiInventory implements Listener {
 	public String getTitle() {
 		return title;
 	}
-	
+
 	public void setLines(int lines) {
 		this.lines = lines;
-		
-		//Copy old values and put them into the new array if possible
+
+		// Copy old values and put them into the new array if possible
 		GuiInventorySlot[][] oldSlots = slots.clone();
 		slots = new GuiInventorySlot[lines][];
-		
+
 		for (int y = 0; y < oldSlots.length; y++) {
 			slots[y] = new GuiInventorySlot[SLOTS_PER_LINE];
-			
+
 			for (int x = 0; x < oldSlots[y].length; x++) {
 				if (y < oldSlots.length && x < oldSlots[y].length) {
 					slots[y][x] = oldSlots[y][x];
@@ -99,7 +99,7 @@ public abstract class GuiInventory implements Listener {
 	public int getLines() {
 		return lines;
 	}
-	
+
 	public List<GuiInventoryView> getViews() {
 		return views;
 	}
@@ -118,18 +118,18 @@ public abstract class GuiInventory implements Listener {
 
 		return slots[y][x];
 	}
-	
+
 	public GuiInventorySlot getSlotByValue(Object value) {
 		for (int y = 0; y < slots.length; y++) {
 			for (int x = 0; x < slots[y].length; x++) {
 				GuiInventorySlot slot = slots[y][x];
-				
+
 				if (slot.getValue() == value) {
 					return slot;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -152,7 +152,7 @@ public abstract class GuiInventory implements Listener {
 				break;
 			}
 		}
-		
+
 		views.add(new GuiInventoryView(inventory, player));
 	}
 
@@ -215,16 +215,16 @@ public abstract class GuiInventory implements Listener {
 		GuiInventoryPoint point = GuiInventoryUtil.toGuiSlot(slot);
 		GuiInventorySlot guiSlot = slots[point.getY()][point.getX()];
 		ClickType clickType = ClickType.byEvent(e);
-		
+
 		GuiClickEvent event = new GuiClickEvent(player, guiSlot, clickType);
-		
+
 		try {
 			onClick(event);
 		} catch (Throwable t) {
 			plugin.getLogger().severe("Exception occured while dispatching click event onClick by plugin " + plugin.getName() + ": " + t.getMessage());
 			t.printStackTrace();
 		}
-		
+
 		if (event.isCancelled()) {
 			e.setCancelled(true);
 		}
@@ -251,15 +251,15 @@ public abstract class GuiInventory implements Listener {
 		}
 
 	}
-	
+
 	public static class GuiClickEvent {
-		
-		private Player player;
-		private GuiInventorySlot slot;
-		private ClickType clickType;
-		
-		private boolean isCancelled;
-		
+
+		private Player				player;
+		private GuiInventorySlot	slot;
+		private ClickType			clickType;
+
+		private boolean				isCancelled;
+
 		public GuiClickEvent(Player player, GuiInventorySlot slot, ClickType clickType) {
 			this.player = player;
 			this.slot = slot;
@@ -285,7 +285,7 @@ public abstract class GuiInventory implements Listener {
 		public void setCancelled(boolean cancel) {
 			this.isCancelled = cancel;
 		}
-		
+
 	}
 
 }
