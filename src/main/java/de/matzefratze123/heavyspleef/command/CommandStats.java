@@ -32,6 +32,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
@@ -40,7 +41,6 @@ import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.stats.CachedStatistics;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
-import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)

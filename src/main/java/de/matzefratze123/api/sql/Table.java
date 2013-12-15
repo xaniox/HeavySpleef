@@ -17,10 +17,10 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package de.matzefratze123.heavyspleef.stats.sql;
+package de.matzefratze123.api.sql;
 
-import static de.matzefratze123.heavyspleef.stats.sql.SQLUtils.TICK;
-import static de.matzefratze123.heavyspleef.stats.sql.SQLUtils.parseWhereClause;
+import static de.matzefratze123.api.sql.SQLUtils.TICK;
+import static de.matzefratze123.api.sql.SQLUtils.parseWhereClause;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

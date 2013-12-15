@@ -22,13 +22,13 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import de.matzefratze123.api.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.FileConfig;
-import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 

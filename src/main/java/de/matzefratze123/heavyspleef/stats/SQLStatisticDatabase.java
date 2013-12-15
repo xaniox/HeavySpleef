@@ -10,13 +10,13 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.sql.AbstractDatabase;
+import de.matzefratze123.api.sql.Field;
+import de.matzefratze123.api.sql.SQLResult;
+import de.matzefratze123.api.sql.Table;
+import de.matzefratze123.api.sql.Field.Type;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
-import de.matzefratze123.heavyspleef.stats.sql.Field;
-import de.matzefratze123.heavyspleef.stats.sql.Field.Type;
-import de.matzefratze123.heavyspleef.stats.sql.SQLResult;
-import de.matzefratze123.heavyspleef.stats.sql.Table;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class SQLStatisticDatabase implements IStatisticDatabase {

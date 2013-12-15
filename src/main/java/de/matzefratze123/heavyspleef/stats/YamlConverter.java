@@ -8,10 +8,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import de.matzefratze123.api.sql.AbstractDatabase;
+import de.matzefratze123.api.sql.SQLiteDatabase;
+import de.matzefratze123.api.sql.Table;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.stats.sql.AbstractDatabase;
-import de.matzefratze123.heavyspleef.stats.sql.SQLiteDatabase;
-import de.matzefratze123.heavyspleef.stats.sql.Table;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class YamlConverter {

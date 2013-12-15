@@ -1,4 +1,4 @@
-package de.matzefratze123.heavyspleef.stats.sql;
+package de.matzefratze123.api.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

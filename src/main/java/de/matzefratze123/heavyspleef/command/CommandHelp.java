@@ -19,16 +19,13 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
