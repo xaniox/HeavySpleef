@@ -8,10 +8,10 @@ With this plugin you can easily setup games without much knowledge.
 Just define a cuboid with the built-in selection system or make a cylinder game and add a lobby point and a floor.
 After that, the game is ready to play! For more infos how to setup an game click the "Documentation" button on the bukkit-dev site.
 
-Made for Bukkit 1.6 (Minecraft 1.6.4 or 1.6.2)
+Made for Bukkit (Minecraft 1.7)
 
 Bukkit-Dev: <url>http://dev.bukkit.org/server-mods/heavyspleef/</url>
 
 Github: <url>https://github.com/matzefratze123/HeavySpleef</url>
 
-Build-Server: <url>http://ci.matzefratze123.de/jenkins/job/HeavySpleef/</url>
+Build-Server/CI-Management: <url>http://ci.matzefratze123.de/jenkins/job/HeavySpleef/</url>
