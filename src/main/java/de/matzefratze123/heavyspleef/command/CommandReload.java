@@ -22,7 +22,6 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.api.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
@@ -50,7 +49,7 @@ public class CommandReload extends HSCommand {
 		
 		I18N.loadLanguageFiles();//Reload languages files
 		plugin.getSelectionManager().setup();//Reload selection
-		AbstractDatabase.setupDatabase();
+		HeavySpleef.getInstance().initStatisticDatabase();
 		
 		sender.sendMessage(_("pluginReloaded", HeavySpleef.getInstance().getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
 		//And we're done!

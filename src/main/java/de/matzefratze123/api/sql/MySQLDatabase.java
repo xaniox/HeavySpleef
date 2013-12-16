@@ -26,9 +26,6 @@ import java.sql.Statement;
 
 import org.bukkit.plugin.Plugin;
 
-import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.util.Logger;
-
 public class MySQLDatabase extends AbstractDatabase {
 	
 	private String host;
@@ -37,24 +34,14 @@ public class MySQLDatabase extends AbstractDatabase {
 	private String user;
 	private String password;
 	
-	public MySQLDatabase(String host, int port, String database, String user, String password) {
+	public MySQLDatabase(Plugin plugin, String host, int port, String database, String user, String password) {
+		super(plugin);
+		
 		this.host = host;
 		this.port = port;
 		this.database = database;
 		this.user = user;
 		this.password = password;
-		
-		tryConnect();
-	}
-	
-	public MySQLDatabase() {
-		Plugin plugin = HeavySpleef.getInstance();
-		
-		this.host = plugin.getConfig().getString("statistic.host");
-		this.port = Integer.parseInt(plugin.getConfig().getString("statistic.port"));
-		this.database = plugin.getConfig().getString("statistic.databaseName");
-		this.user = plugin.getConfig().getString("statistic.user");
-		this.password = plugin.getConfig().getString("statistic.password");
 		
 		tryConnect();
 	}
@@ -67,10 +54,10 @@ public class MySQLDatabase extends AbstractDatabase {
 			connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
 			state = DatabaseState.SUCCESS;
 		} catch (SQLException e) {
-			Logger.warning("Failed to connect to the mysql database! Disabling statistics: " + e.getMessage());
+			plugin.getLogger().warning("Failed to connect to the mysql database! Disabling statistics: " + e.getMessage());
 			state = DatabaseState.FAILED_TO_CONNECT;
 		} catch (ClassNotFoundException e) {
-			Logger.warning("Failed to load drivers for mysql database. Disabling statistics: " + e.getMessage());
+			plugin.getLogger().warning("Failed to load drivers for mysql database. Disabling statistics: " + e.getMessage());
 			state = DatabaseState.NO_DRIVERS;
 		} finally {
 			close();
@@ -86,7 +73,7 @@ public class MySQLDatabase extends AbstractDatabase {
 			
 			connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
 		} catch (SQLException e) {
-			Logger.severe("Failed to connect to database: " + e.getMessage());
+			plugin.getLogger().severe("Failed to connect to database: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -111,7 +98,7 @@ public class MySQLDatabase extends AbstractDatabase {
 				}
 			}
 		} catch (SQLException e) {
-			Logger.severe("Failed to check table " + name + ": " + e.getMessage());
+			plugin.getLogger().severe("Failed to check table " + name + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -137,6 +124,11 @@ public class MySQLDatabase extends AbstractDatabase {
 	
 	public String getPassword() {
 		return this.password;
+	}
+
+	@Override
+	public SQLType getDatabaseType() {
+		return SQLType.MYSQL;
 	}
 
 	

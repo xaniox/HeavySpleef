@@ -32,7 +32,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.api.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
@@ -40,6 +39,7 @@ import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.stats.CachedStatistics;
+import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -55,7 +55,7 @@ public class CommandStats extends HSCommand {
 		final Player player = (Player) sender;
 		SpleefPlayer spleefPlayer = HeavySpleef.getInstance().getSpleefPlayer(player);
 		
-		if (!AbstractDatabase.isEnabled()) {
+		if (!SQLStatisticDatabase.isDatabaseEnabled()) {
 			player.sendMessage(ChatColor.RED + "Statistics are disabled!");
 			return;
 		}

@@ -39,10 +39,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.tag.TagAPI;
 
 import de.matzefratze123.api.sql.AbstractDatabase;
+import de.matzefratze123.api.sql.MySQLDatabase;
 import de.matzefratze123.api.sql.SQLiteDatabase;
 import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
+import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import de.matzefratze123.heavyspleef.core.task.TNTRunTask;
@@ -70,7 +72,6 @@ import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignVote;
 import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
-import de.matzefratze123.heavyspleef.stats.YamlConverter;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
@@ -122,14 +123,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		
 		joinGui = new InventoryJoinGUI();
 		
-		AbstractDatabase.setupDatabase();
-		
-		//Convert
-		if (AbstractDatabase.getInstance() instanceof SQLiteDatabase) {
-			YamlConverter.convertYamlData();
-		}
-		
-		statisticDatabase = new SQLStatisticDatabase();
+		initStatisticDatabase();
 		
 		SpleefLogger.logRaw("Starting plugin version " + getDescription().getVersion() + "!");
 		
@@ -239,6 +233,27 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		executor.registerSign(new SpleefSignVote());
 	}
 	
+	public void initStatisticDatabase() {
+		if (SQLStatisticDatabase.isDatabaseEnabled()) {
+			//Load authentication data
+			String statsDB = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "dbType");
+			String host = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "host");
+			int port = getConfig().getInt(ConfigUtil.STATISTIC_SECTION + "port", 3306);
+			String databaseName = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "databaseName");
+			String user = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "user");
+			String password = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "password");
+			
+			AbstractDatabase database;
+			if (statsDB.equalsIgnoreCase("mysql")) {
+				database = new MySQLDatabase(this, host, port, databaseName, user, password);
+			} else {
+				database = new SQLiteDatabase(this, SQLStatisticDatabase.SQLITE_FILE);
+			}
+			
+			statisticDatabase = new SQLStatisticDatabase(database);
+		}
+	}
+	
 	private void initUpdate() {
 		//Don't check for updates if the user has disabled this function
 		if (!getConfig().getBoolean("auto-update"))
@@ -293,7 +308,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		player = new SpleefPlayer(bukkitPlayer);
 		players.add(player);
 		
-		if (AbstractDatabase.isEnabled()) {
+		if (SQLStatisticDatabase.isDatabaseEnabled()) {
 			StatisticModule module = statisticDatabase.loadAccount(player.getName());
 			player.setStatistic(module);
 		} else {

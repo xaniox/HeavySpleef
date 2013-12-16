@@ -1,5 +1,6 @@
 package de.matzefratze123.heavyspleef.stats;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,23 +13,59 @@ import org.bukkit.entity.Player;
 
 import de.matzefratze123.api.sql.AbstractDatabase;
 import de.matzefratze123.api.sql.Field;
+import de.matzefratze123.api.sql.Field.Type;
 import de.matzefratze123.api.sql.SQLResult;
 import de.matzefratze123.api.sql.Table;
-import de.matzefratze123.api.sql.Field.Type;
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class SQLStatisticDatabase implements IStatisticDatabase {
 	
 	public static final String TABLE_NAME = "HeavySpleef_Statistics";
+	public static final File SQLITE_FILE = new File(HeavySpleef.getInstance().getDataFolder(), "statistic/statistic.db");
+	
 	private static Map<String, Field> columns;
 	
 	//Database current cooldown (time to close connection etc. write-lock)
 	private Cooldown cooldown;
+	private AbstractDatabase database;
 	
-	public SQLStatisticDatabase() {
+	public SQLStatisticDatabase(AbstractDatabase connectionDatabase) {
 		this.cooldown = new Cooldown();
+		this.database = connectionDatabase;
+		
+		/*//Setup
+		ConfigurationSection section = HeavySpleef.getSystemConfig().getConfigurationSection("statistic");
+		
+		if (section != null) {
+			if (!section.getBoolean("enabled", true)) {
+				database = null;
+				return;
+			}
+			
+			String dbType = section.getString("dbType");
+			
+			if (dbType.equalsIgnoreCase("sqlite") || dbType.equalsIgnoreCase("yaml")) {
+				database = new SQLiteDatabase(SQLITE_FILE);
+			} else if (dbType.equalsIgnoreCase("mysql")) {
+				database = new MySQLDatabase();
+			} else {
+				Logger.warning("Warning: Database type " + dbType + " is invalid. Disabling statistics...");
+				database = null;
+				return;
+			}
+			
+			if (database != null && database.getConnectionState() == DatabaseState.SUCCESS) {
+				if (!database.hasTable(SQLStatisticDatabase.TABLE_NAME)) {
+					database.createTable(SQLStatisticDatabase.TABLE_NAME, SQLStatisticDatabase.getColumns());
+				}
+			} else {
+				Logger.warning("Failed to activate statistics: " + database.getConnectionState().name());
+				database = null;
+			}
+		}*/
 	}
 	
 	static {
@@ -43,16 +80,18 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 		}
 	}
 	
+	public AbstractDatabase getRawDatabase() {
+		return database;
+	}
+	
 	@Override
 	public synchronized void saveAccounts() {
 		if (!cooldown.isExpired()) {
 			return;
 		}
-		if (!AbstractDatabase.isEnabled()) {
+		if (!isDatabaseEnabled()) {
 			return;
 		}
-		
-		AbstractDatabase database = AbstractDatabase.getInstance();
 		
 		if (!database.hasTable(TABLE_NAME))
 			database.createTable(TABLE_NAME, columns);
@@ -94,11 +133,10 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public synchronized StatisticModule loadAccount(String holder) {
-		if (!AbstractDatabase.isEnabled()) {
+		if (!isDatabaseEnabled()) {
 			return null;
 		}
 		
-		AbstractDatabase database = AbstractDatabase.getInstance();
 		if (!database.hasTable(TABLE_NAME)) {
 			return null;
 		}
@@ -144,7 +182,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public synchronized void unloadAccount(SpleefPlayer player) {
-		if (!AbstractDatabase.isEnabled()) {
+		if (!isDatabaseEnabled()) {
 			return;
 		}
 		if (!cooldown.isExpired()) {
@@ -153,7 +191,6 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 		
 		StatisticModule module = player.getStatistic();
 		
-		AbstractDatabase database = AbstractDatabase.getInstance();
 		if (!database.hasTable(TABLE_NAME))
 			database.createTable(TABLE_NAME, columns);
 		
@@ -190,11 +227,10 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 
 	@Override
 	public synchronized List<StatisticModule> loadAccounts() {
-		if (!AbstractDatabase.isEnabled()) {
+		if (!isDatabaseEnabled()) {
 			return null;
 		}
 		
-		AbstractDatabase database = AbstractDatabase.getInstance();
 		if (!database.hasTable(TABLE_NAME))
 			return null;
 		
@@ -233,6 +269,10 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 	
 	public static Map<String, Field> getColumns() {
 		return columns;
+	}
+	
+	public static boolean isDatabaseEnabled() {
+		return HeavySpleef.getSystemConfig().getBoolean(ConfigUtil.STATISTIC_SECTION + "enabled", true);
 	}
 	
 }

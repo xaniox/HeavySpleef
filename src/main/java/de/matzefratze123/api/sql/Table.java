@@ -32,15 +32,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-
-import de.matzefratze123.heavyspleef.util.Util;
+import org.bukkit.plugin.Plugin;
 
 public class Table {
 	
+	private Plugin plugin;
 	private AbstractDatabase database;
 	private String name;
 	
-	Table(AbstractDatabase database, String name) {
+	Table(Plugin plugin, AbstractDatabase database, String name) {
+		this.plugin = plugin;
 		this.database = database;
 		this.name = name;
 	}
@@ -66,7 +67,7 @@ public class Table {
 			}
 			
 			ResultSet result = statement.executeQuery("SELECT " + selection + " FROM " + name + (whereClause == null ? "" : whereClause));
-			return new SQLResult(statement, result);
+			return new SQLResult(plugin, statement, result);
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("SQL Exception occured while trying to select " + selection + " from table " + name + " in database: " + e.getMessage());
 			return null;
@@ -111,14 +112,14 @@ public class Table {
 					c++;
 				}
 				
-				String update = Util.toFriendlyString(parts, ", ");
+				String update = SQLUtils.toFriendlyString(parts, ", ");
 				//Update Part syntax end
 				String whereClause = parseWhereClause(where);
 				
 				result = statement.executeUpdate("UPDATE " + name + " SET " + update + (whereClause == null ? "" : whereClause));
 			} else {
-				String friendlyKeySet = Util.toFriendlyString(values.keySet(), ", ");
-				String friendlyValueSet = Util.toFriendlyString(values.values(), "', '");
+				String friendlyKeySet = SQLUtils.toFriendlyString(values.keySet(), ", ");
+				String friendlyValueSet = SQLUtils.toFriendlyString(values.values(), "', '");
 				
 				//Ticks am Ende und anfang hinzufügen
 				friendlyValueSet += "'";

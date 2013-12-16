@@ -58,7 +58,7 @@ public class YamlConverter {
 	}
 
 	private static void writeToSQLite(StatisticModule module) {
-		AbstractDatabase abstractDatabase = AbstractDatabase.getInstance();
+		AbstractDatabase abstractDatabase = HeavySpleef.getInstance().getStatisticDatabase().getRawDatabase();
 		
 		if (!(abstractDatabase instanceof SQLiteDatabase)) {
 			return;

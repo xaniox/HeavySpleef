@@ -21,9 +21,12 @@ package de.matzefratze123.heavyspleef.stats;
 
 import java.util.List;
 
+import de.matzefratze123.api.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public interface IStatisticDatabase {
+	
+	public AbstractDatabase getRawDatabase();
 	
 	public void saveAccounts();
 	

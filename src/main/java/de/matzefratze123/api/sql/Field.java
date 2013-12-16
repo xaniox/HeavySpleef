@@ -1,26 +1,17 @@
-/**
- *   HeavySpleef - Advanced spleef plugin for bukkit
- *   
- *   Copyright (C) 2013 matzefratze123
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
 package de.matzefratze123.api.sql;
 
+/**
+ * This class represents a field type for a sql table
+ * 
+ * @author matzefratze123
+ */
 public class Field {
 	
+	/**
+	 * An enum which contains raw field types
+	 * 
+	 * @author matzefratze123
+	 */
 	public static enum Type {
 		
 		//General
@@ -73,16 +64,32 @@ public class Field {
 	private int length = -1;
 	private Type type;
 	
+	/**
+	 * Creates a new field with the given type
+	 * 
+	 * @param type The type of this field
+	 */
 	public Field(Type type) {
 		this.type = type;
 	}
 	
+	/**
+	 * Creates a new field with the given type and length 
+	 * (the CHAR type for example needs the length of chars that can be stored at maximum)
+	 * 
+	 * @param type The type of this field
+	 * @param length The length of this field (as described above)
+	 */
 	public Field(Type type, int length) {
 		this(type);
 		
 		this.length = length;
 	}
 	
+	/**
+	 * Turns this field into a string which can be used in a sql statement  
+	 */
+	@Override
 	public String toString() {
 		return type.name() + (length < 0 ? "" : "(" + length + ")");
 	}

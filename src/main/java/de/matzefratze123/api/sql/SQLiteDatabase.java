@@ -6,13 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import de.matzefratze123.heavyspleef.util.Logger;
+import org.bukkit.plugin.Plugin;
 
 public class SQLiteDatabase extends AbstractDatabase {
 
 	private File file;
 	
-	public SQLiteDatabase(File file) {
+	public SQLiteDatabase(Plugin plugin, File file) {
+		super(plugin);
+		
 		this.file = file;
 		
 		try {
@@ -21,10 +23,10 @@ public class SQLiteDatabase extends AbstractDatabase {
 			file.getParentFile().mkdirs();
 			connection = DriverManager.getConnection(getHost());
 		} catch (SQLException e) {
-			Logger.warning("Failed to establish connection to sqlite database! Disabling statistics: " + e.getMessage());
+			plugin.getLogger().warning("Failed to establish connection to sqlite database! Disabling statistics: " + e.getMessage());
 			state = DatabaseState.FAILED_TO_CONNECT;
 		} catch (ClassNotFoundException e) {
-			Logger.warning("Failed to load drivers for sqlite database. Disabling statistics: " + e.getMessage());
+			plugin.getLogger().warning("Failed to load drivers for sqlite database. Disabling statistics: " + e.getMessage());
 			state = DatabaseState.NO_DRIVERS;
 		} finally {
 			close();
@@ -42,7 +44,7 @@ public class SQLiteDatabase extends AbstractDatabase {
 			
 			connection = DriverManager.getConnection(getHost());
 		} catch (SQLException e) {
-			Logger.warning("Failed to establish connection to sqlite database: " + e.getMessage());
+			plugin.getLogger().warning("Failed to establish connection to sqlite database: " + e.getMessage());
 		}
 	}
 	
@@ -64,7 +66,7 @@ public class SQLiteDatabase extends AbstractDatabase {
 				}
 			}
 		} catch (SQLException e) {
-			Logger.severe("Failed to check table " + name + ": " + e.getMessage());
+			plugin.getLogger().severe("Failed to check table " + name + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -78,6 +80,11 @@ public class SQLiteDatabase extends AbstractDatabase {
 	
 	public File getFile() {
 		return file;
+	}
+
+	@Override
+	public SQLType getDatabaseType() {
+		return SQLType.SQ_LITE;
 	}
 
 }
