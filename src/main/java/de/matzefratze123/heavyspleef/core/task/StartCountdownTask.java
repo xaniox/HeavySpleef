@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.ExperienceBar;
 import de.matzefratze123.heavyspleef.util.I18N;
 
 public class StartCountdownTask extends AbstractCountdown {
@@ -41,7 +42,7 @@ public class StartCountdownTask extends AbstractCountdown {
 	public void onFinish() {
 		//Start the game
 		for (SpleefPlayer player : game.getIngamePlayers()) {
-			player.getBukkitPlayer().setLevel(0);
+			player.getBukkitPlayer().setExp(0.0F);
 		}
 		
 		game.start();
@@ -57,18 +58,22 @@ public class StartCountdownTask extends AbstractCountdown {
 		game.setCountLeft(getTimeRemaining());
 		boolean playPlingSound = HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true);
 		
+		int procent = getTimeRemaining() * 100 / getStart();
+		
 		for (SpleefPlayer player : game.getIngamePlayers()) {
 			if (playPlingSound && remaining <= 5) {
 				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
 			}
 			
-			player.getBukkitPlayer().setLevel(getTimeRemaining());
+			ExperienceBar bar = new ExperienceBar(player.getBukkitPlayer());
+			bar.setExp(procent);
 		}
 		
 		if (getTimeRemaining() <= 5){
 			game.broadcast(I18N._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
 		} else {//Do pre countdown
-			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
+			if (getTimeRemaining() % 5 == 0)
+				//Only message if the remaining value is divisible by 5
 				game.broadcast(I18N._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast("game-countdown"));
 		}
 	}

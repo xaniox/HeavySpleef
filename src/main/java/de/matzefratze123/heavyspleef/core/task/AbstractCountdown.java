@@ -22,9 +22,11 @@ package de.matzefratze123.heavyspleef.core.task;
 public abstract class AbstractCountdown implements Runnable {
 
 	protected int remaining;
+	protected int start;
 	
 	protected AbstractCountdown(int start) {
 		this.remaining = start;
+		this.start = start;
 	}
 
 	@Override
@@ -48,4 +50,9 @@ public abstract class AbstractCountdown implements Runnable {
 	public int getTimeRemaining() {
 		return this.remaining;
 	}
+	
+	public int getStart() {
+		return start;
+	}
+	
 }
