@@ -51,7 +51,7 @@ public class YamlConverter {
 			//Finally delete file
 			yamlFile.delete();
 		} catch (Exception e) {
-			//Catch any exceptions as we may got corrupted files
+			//We catch any exceptions as we may got corrupted files
 			Logger.warning("Warning! Failed to convert old yaml data into sqlite data: " + e.getMessage());
 		}
 		
