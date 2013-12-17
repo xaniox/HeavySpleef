@@ -72,6 +72,7 @@ import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignVote;
 import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
+import de.matzefratze123.heavyspleef.stats.YamlConverter;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
@@ -262,10 +263,13 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			if (statsDB.equalsIgnoreCase("mysql")) {
 				database = new MySQLDatabase(this, host, port, databaseName, user, password);
 			} else {
-				database = new SQLiteDatabase(this, SQLStatisticDatabase.SQLITE_FILE);
+				database = new SQLiteDatabase(this, SQLStatisticDatabase.SQLITE_FILE);	
 			}
 			
 			statisticDatabase = new SQLStatisticDatabase(database);
+			
+			//Convert old yaml statistics
+			YamlConverter.convertYamlData();
 		}
 	}
 	
