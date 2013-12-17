@@ -47,11 +47,11 @@ import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
-import de.matzefratze123.heavyspleef.core.task.TNTRunTask;
 import de.matzefratze123.heavyspleef.database.YamlDatabase;
 import de.matzefratze123.heavyspleef.hooks.Hook;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
+import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.listener.PVPTimerListener;
 import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.listener.QueuesListener;
@@ -83,6 +83,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		
 	//Instance
 	private static HeavySpleef instance;
+	private static boolean noWorldEdit;
 	
 	//Object instances start
 	private static final Random random = new Random();
@@ -110,7 +111,19 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		instance = this;
 		
 		new FileConfig(this);
-		HookManager.getInstance();
+		
+		if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
+			Logger.warning("WARNING !!! Failed to detect WorldEdit !!! WARNING");
+			Logger.warning(" In order to use HeavySpleef make sure to install ");
+			Logger.warning("       WorldEdit before using this plugin!        ");
+			Logger.warning(" ");
+			Logger.warning("Disabling HeavySpleef due to no WorldEdit.");
+			
+			noWorldEdit = true;
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		
 		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
@@ -140,8 +153,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		antiCampTask = new AntiCampingTask();
 		antiCampTask.start();
 		
-		new TNTRunTask().start();
-		
 		//Command stuff
 		CommandHandler.initCommands();
 		CommandHandler.setPluginInstance(this);
@@ -153,8 +164,12 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
-		this.database.save();
-		this.statisticDatabase.saveAccounts();
+		
+		if (!noWorldEdit) {
+			this.database.save();
+			this.statisticDatabase.saveAccounts();
+		}
+		
 		SpleefLogger.logRaw("Stopping plugin!");
 		
 		Logger.info("HeavySpleef disabled!");
