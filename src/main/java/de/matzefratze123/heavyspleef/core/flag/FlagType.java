@@ -55,8 +55,6 @@ public enum FlagType {
 	@FlagData
 	public static final BooleanFlag BOWSPLEEF = new BooleanFlag("bowspleef", false);
 	@FlagData
-	public static final BooleanFlag TNTRUN = new BooleanFlag("tntrun", false);
-	@FlagData
 	public static final BooleanFlag SPLEGG = new BooleanFlag("splegg", false);
 	@FlagData
 	public static final BooleanFlag BOXES = new BooleanFlag("boxes", true);

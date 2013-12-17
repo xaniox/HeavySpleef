@@ -122,7 +122,6 @@ flag-defaults:
   splegg: false
   boxes: true
   blockbreakeffect: false
-  tntrun: false
   anticamping: true
 
 queues:

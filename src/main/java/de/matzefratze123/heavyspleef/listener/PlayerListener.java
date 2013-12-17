@@ -154,7 +154,7 @@ public class PlayerListener implements Listener {
 		if (!game.canSpleef(player, block.getLocation()))
 			return;
 
-		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG) || game.getFlag(FlagType.TNTRUN))
+		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG))
 			return;
 
 		if (game.getFlag(FlagType.BLOCKBREAKEFFECT)) {
@@ -220,7 +220,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG) || game.getFlag(FlagType.TNTRUN)) {
+		if (game.getFlag(FlagType.BOWSPLEEF) || game.getFlag(FlagType.SPLEGG)) {
 			e.setCancelled(true);
 			return;
 		}

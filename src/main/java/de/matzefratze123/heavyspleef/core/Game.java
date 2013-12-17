@@ -97,10 +97,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	// Per game
 	/* A map which saves all task id's */
 	private Map<String, Integer>	tasks		= new HashMap<String, Integer>();
-	/*
-	 * Saving reference that points to the player object, not the instance of an
-	 * object! The presumption that this causes memory leaks is false!
-	 */
 	private List<SpleefPlayer>		inPlayers	= new ArrayList<SpleefPlayer>();
 	private List<OfflinePlayer>		outPlayers	= new ArrayList<OfflinePlayer>();
 	private List<SpleefPlayer>		spectating	= new ArrayList<SpleefPlayer>();
