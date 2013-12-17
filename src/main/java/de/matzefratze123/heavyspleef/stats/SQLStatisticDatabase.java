@@ -35,37 +35,6 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 	public SQLStatisticDatabase(AbstractDatabase connectionDatabase) {
 		this.cooldown = new Cooldown();
 		this.database = connectionDatabase;
-		
-		/*//Setup
-		ConfigurationSection section = HeavySpleef.getSystemConfig().getConfigurationSection("statistic");
-		
-		if (section != null) {
-			if (!section.getBoolean("enabled", true)) {
-				database = null;
-				return;
-			}
-			
-			String dbType = section.getString("dbType");
-			
-			if (dbType.equalsIgnoreCase("sqlite") || dbType.equalsIgnoreCase("yaml")) {
-				database = new SQLiteDatabase(SQLITE_FILE);
-			} else if (dbType.equalsIgnoreCase("mysql")) {
-				database = new MySQLDatabase();
-			} else {
-				Logger.warning("Warning: Database type " + dbType + " is invalid. Disabling statistics...");
-				database = null;
-				return;
-			}
-			
-			if (database != null && database.getConnectionState() == DatabaseState.SUCCESS) {
-				if (!database.hasTable(SQLStatisticDatabase.TABLE_NAME)) {
-					database.createTable(SQLStatisticDatabase.TABLE_NAME, SQLStatisticDatabase.getColumns());
-				}
-			} else {
-				Logger.warning("Failed to activate statistics: " + database.getConnectionState().name());
-				database = null;
-			}
-		}*/
 	}
 	
 	static {
