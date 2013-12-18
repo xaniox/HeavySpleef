@@ -58,7 +58,7 @@ public class GuiInventoryFactory {
 			for (int x = 0; x < slots[y].length; x++) {
 				GuiInventorySlot slot = slots[y][x];
 
-				int mcSlot = GuiInventoryUtil.toMinecraftSlot(slot.getX(), slot.getY());
+				int mcSlot = GuiInventoryUtil.toMinecraftSlot(slot.getPoint());
 				inventory.setItem(mcSlot, slot.getItem());
 			}
 		}

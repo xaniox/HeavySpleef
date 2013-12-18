@@ -53,7 +53,7 @@ public abstract class GuiInventory implements Listener {
 			slots[y] = new GuiInventorySlot[SLOTS_PER_LINE];
 
 			for (int x = 0; x < SLOTS_PER_LINE; x++) {
-				slots[y][x] = new GuiInventorySlot(x, y);
+				slots[y][x] = new GuiInventorySlot(this, x, y);
 			}
 		}
 	}
@@ -90,7 +90,7 @@ public abstract class GuiInventory implements Listener {
 				if (y < oldSlots.length && x < oldSlots[y].length) {
 					slots[y][x] = oldSlots[y][x];
 				} else {
-					slots[y][x] = new GuiInventorySlot(x, y);
+					slots[y][x] = new GuiInventorySlot(this, x, y);
 				}
 			}
 		}
@@ -184,6 +184,26 @@ public abstract class GuiInventory implements Listener {
 		}
 
 		return null;
+	}
+	
+	@SuppressWarnings("deprecation")
+	protected void refreshOpenInventories() {
+		for (GuiInventoryView view : views) {
+			Player player = view.getPlayer();
+			Inventory inv = view.getInventory();
+			
+			for (int y = 0; y < slots.length; y++) {
+				for (int x = 0; x < slots[y].length; x++) {
+					GuiInventorySlot slot = slots[y][x];
+					
+					int vanillaSlot = GuiInventoryUtil.toMinecraftSlot(slot.getPoint());
+					
+					inv.setItem(vanillaSlot, slot.getItem());
+				}
+			}
+			
+			player.updateInventory();
+		}
 	}
 
 	@EventHandler

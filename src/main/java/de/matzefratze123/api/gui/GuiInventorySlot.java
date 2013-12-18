@@ -9,41 +9,50 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class GuiInventorySlot {
 
-	private ItemStack	item;
-	private Object		value;
-	private int			x, y;
+	private ItemStack			item;
+	private Object				value;
+	private GuiInventoryPoint	point;
+	private GuiInventory		inventory;
 
-	public GuiInventorySlot(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public GuiInventorySlot(GuiInventory inventory, int x, int y) {
+		this.inventory = inventory;
+		this.point = new GuiInventoryPoint(x, y);
 	}
 
-	public GuiInventorySlot(int x, int y, ItemStack item) {
-		this(x, y);
+	public GuiInventorySlot(GuiInventory inventory, int x, int y, ItemStack item) {
+		this(inventory, x, y);
 
 		this.item = item;
 	}
 
-	public GuiInventorySlot(int x, int y, ItemStack item, Object value) {
-		this(x, y, item);
+	public GuiInventorySlot(GuiInventory inventory, int x, int y, ItemStack item, Object value) {
+		this(inventory, x, y, item);
 
 		this.value = value;
 	}
 
 	public void setItem(ItemStack item) {
 		this.item = item;
+		
+		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material) {
 		this.item = new ItemStack(material);
+		
+		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material, int amount) {
 		this.item = new ItemStack(material, amount);
+		
+		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material, int amount, byte data) {
 		this.item = new ItemStack(material, amount, data);
+		
+		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material, int amount, byte data, String name) {
@@ -54,6 +63,8 @@ public class GuiInventorySlot {
 		stack.setItemMeta(meta);
 
 		this.item = stack;
+		
+		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material, int amount, byte data, String name, String... lore) {
@@ -66,22 +77,23 @@ public class GuiInventorySlot {
 		stack.setItemMeta(meta);
 
 		this.item = stack;
+		
+		inventory.refreshOpenInventories();
+
 	}
 
 	public void setItem(Material material, byte data) {
 		this.item = new ItemStack(material, 1, data);
+		
+		inventory.refreshOpenInventories();
 	}
 
 	public ItemStack getItem() {
 		return item;
 	}
 
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
+	public GuiInventoryPoint getPoint() {
+		return point;
 	}
 
 	public Object getValue() {

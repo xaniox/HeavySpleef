@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.security.auth.Refreshable;
+
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -315,6 +317,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		while (iterator.hasNext()) {
 			SpleefPlayer player = iterator.next();
 			iterator.remove();
+			
 			if (components.getTeam(player) != null) {
 				components.getTeam(player).leave(player);
 			}
@@ -597,6 +600,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			}
 		} else {
 			inPlayers.remove(player);
+			HeavySpleef.getInstance().getJoinGUI().refresh();
+			
 			if (components.getTeam(player) != null) {
 				components.getTeam(player).leave(player);
 			}
