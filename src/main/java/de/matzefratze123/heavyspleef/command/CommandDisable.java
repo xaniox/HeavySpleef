@@ -38,7 +38,7 @@ import de.matzefratze123.heavyspleef.util.ViPManager;
 public class CommandDisable extends HSCommand {
 
 	public CommandDisable() {
-		setMinArgs(0);
+		setMinArgs(1);
 		setPermission(Permissions.DISABLE);
 		setOnlyIngame(true);
 	}
@@ -46,33 +46,22 @@ public class CommandDisable extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		Player player = (Player)sender;
-		if (args.length > 0) {
-			if (!GameManager.hasGame(args[0].toLowerCase())) {
-				player.sendMessage(_("arenaDoesntExists"));
-				return;
-			}
-			
-			Game game = GameManager.getGame(args[0]);
-			
-			if (game.getGameState() == GameState.DISABLED) {
-				player.sendMessage(_("gameIsAlreadyDisabled"));
-				return;
-			}
-			
-			game.disable();
-			game.broadcast(_("gameDisabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-disable"));
-			player.sendMessage(_("gameDisabledToPlayer", game.getName()));
-		} else if (args.length == 0) {
-			for (Game game : GameManager.getGames()) {
-				if (game.getGameState() == GameState.DISABLED)
-					continue;
-				
-				game.disable();
-				game.broadcast(_("gameDisabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-disable"));
-			}
-			
-			player.sendMessage(_("allGamesDisabledToPlayer"));
+	
+		if (!GameManager.hasGame(args[0].toLowerCase())) {
+			player.sendMessage(_("arenaDoesntExists"));
+			return;
 		}
+		
+		Game game = GameManager.getGame(args[0]);
+		
+		if (game.getGameState() == GameState.DISABLED) {
+			player.sendMessage(_("gameIsAlreadyDisabled"));
+			return;
+		}
+		
+		game.disable();
+		game.broadcast(_("gameDisabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-disable"));
+		player.sendMessage(_("gameDisabledToPlayer", game.getName()));
 	}
 
 	@Override
