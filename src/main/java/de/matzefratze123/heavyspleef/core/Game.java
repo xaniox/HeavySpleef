@@ -161,6 +161,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		cancelTask(StartCountdownTask.TASK_ID_KEY);
 
 		state = GameState.INGAME;
+		HeavySpleef.getInstance().getJoinGUI().refresh();
 		removeBoxes();
 
 		if (getFlag(FlagType.TIMEOUT) > 0) {
@@ -277,6 +278,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 
 		state = GameState.COUNTING;
+		HeavySpleef.getInstance().getJoinGUI().refresh();
 		components.regenerateFloors();
 
 		StartCountdownTask countdownTask = new StartCountdownTask(getFlag(FlagType.COUNTDOWN), this);
@@ -344,6 +346,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 
 		state = GameState.JOINABLE;
+		HeavySpleef.getInstance().getJoinGUI().refresh();
+		
 		outPlayers.clear();
 		removeBoxes();
 
@@ -394,6 +398,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		StatisticModule.pushAsync();
 		state = GameState.JOINABLE;
+		HeavySpleef.getInstance().getJoinGUI().refresh();
+		
 		outPlayers.clear();
 		removeBoxes();
 
@@ -413,6 +419,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 
 		state = GameState.JOINABLE;
+		HeavySpleef.getInstance().getJoinGUI().refresh();
+		
 		components.updateWalls();
 	}
 
@@ -427,6 +435,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 
 		state = GameState.DISABLED;
+		HeavySpleef.getInstance().getJoinGUI().refresh();
+		
 		components.updateWalls();
 	}
 
@@ -479,12 +489,16 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		player.saveState();
 		player.setGame(this);
-
+		
 		inPlayers.add(player);
+		
+		HeavySpleef.getInstance().getJoinGUI().refresh();
 		SpleefLogger.log(LogType.JOIN, this, player);
 
 		if (state == GameState.JOINABLE) {
 			state = GameState.LOBBY;
+			
+			HeavySpleef.getInstance().getJoinGUI().refresh();
 		}
 
 		player.saveLocation();
@@ -758,6 +772,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	@Override
 	public void setGameState(GameState state) {
 		this.state = state;
+		
+		HeavySpleef.getInstance().getJoinGUI().refresh();
 	}
 
 	public void cancelTask(String key) {
