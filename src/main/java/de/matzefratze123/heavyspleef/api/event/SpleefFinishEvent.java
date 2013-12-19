@@ -25,14 +25,15 @@ import org.bukkit.event.HandlerList;
 
 import de.matzefratze123.heavyspleef.api.IGame;
 import de.matzefratze123.heavyspleef.core.StopCause;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class SpleefFinishEvent extends SpleefEvent {
 
 	private static final HandlerList handlers = new HandlerList();
-	private Player winner;
+	private SpleefPlayer winner;
 	private StopCause cause;
 	
-	public SpleefFinishEvent(IGame game, StopCause cause, Player winner) {
+	public SpleefFinishEvent(IGame game, StopCause cause, SpleefPlayer winner) {
 		super(game);
 		this.cause = cause;
 		this.winner = winner;
@@ -58,15 +59,27 @@ public class SpleefFinishEvent extends SpleefEvent {
 	}
 	
 	/**
+	 * Gets the winner of the spleef game
+	 * May be null when there is no winner
+	 * 
+	 * @return The winner as a {@link SpleefPlayer}
+	 */
+	public SpleefPlayer getSpleefWinner() {
+		return winner;
+	}
+	
+	/**
 	 * Gets the winner of the spleef game</br></br>
 	 * <b>This winner can be null, if the game
 	 * has been stopped manually or the game
 	 * has ended in a draw!</b>
 	 * 
 	 * @return The winner, or null
+	 * @deprecated Deprecated due to {@link getSpleefWinner()}
 	 */
+	@Deprecated
 	public Player getWinner() {
-		return winner;
+		return winner != null ? winner.getBukkitPlayer() : null;
 	}
 
 }

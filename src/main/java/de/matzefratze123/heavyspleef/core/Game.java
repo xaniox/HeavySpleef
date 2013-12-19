@@ -19,7 +19,10 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
-import static de.matzefratze123.heavyspleef.core.flag.FlagType.*;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.ITEMREWARD;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.REWARD;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.SPECTATE;
+import static de.matzefratze123.heavyspleef.core.flag.FlagType.TEAM;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.security.auth.Refreshable;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -56,6 +57,7 @@ import de.matzefratze123.heavyspleef.api.IGame;
 import de.matzefratze123.heavyspleef.api.IGameComponents;
 import de.matzefratze123.heavyspleef.api.event.SpleefFinishEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefJoinEvent;
+import de.matzefratze123.heavyspleef.api.event.SpleefLoseEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -89,25 +91,25 @@ import de.matzefratze123.heavyspleef.util.ViPManager;
 public abstract class Game implements IGame, DatabaseSerializeable {
 
 	// Persistent data
-	private String					name;
-	private World					world;
-	private final GameComponents	components;
-	private Map<Flag<?>, Object>	flags		= new HashMap<Flag<?>, Object>();
-	private final GameQueue			queue;
-	private GameState				state;
+	private String                  name;
+	private World                   world;
+	private final GameComponents    components;
+	private Map<Flag<?>, Object>    flags       = new HashMap<Flag<?>, Object>();
+	private final GameQueue         queue;
+	private GameState               state;
 
 	// Per game
 	/* A map which saves all task id's */
-	private Map<String, Integer>	tasks		= new HashMap<String, Integer>();
-	private List<SpleefPlayer>		inPlayers	= new ArrayList<SpleefPlayer>();
-	private List<OfflinePlayer>		outPlayers	= new ArrayList<OfflinePlayer>();
-	private List<SpleefPlayer>		spectating	= new ArrayList<SpleefPlayer>();
-	private int						countLeft;
-	private int						roundsPlayed;
-	private int						jackpot;
+	private Map<String, Integer>    tasks       = new HashMap<String, Integer>();
+	private List<SpleefPlayer>      inPlayers   = new ArrayList<SpleefPlayer>();
+	private List<OfflinePlayer>     outPlayers  = new ArrayList<OfflinePlayer>();
+	private List<SpleefPlayer>      spectating  = new ArrayList<SpleefPlayer>();
+	private int                     countLeft;
+	private int                     roundsPlayed;
+	private int                     jackpot;
 
 	// Temporary
-	private PlayerTeleportTask		teleportTask;
+	private PlayerTeleportTask      teleportTask;
 
 	public Game(String name) {
 		this.name = name;
@@ -310,7 +312,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			cancelTask(task);
 		}
 
-		SpleefFinishEvent event = new SpleefFinishEvent(this, cause, null);
+		SpleefFinishEvent event = new SpleefFinishEvent(this, cause, winner);
 		Bukkit.getPluginManager().callEvent(event);
 
 		Iterator<SpleefPlayer> iterator = inPlayers.iterator();
@@ -613,6 +615,10 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			if (cause == LoseCause.LOSE) {
 				player.sendMessage(_("outOfGame"));
 				player.getStatistic().addLose();
+				
+				SpleefLoseEvent event = new SpleefLoseEvent(this, player.getBukkitPlayer(), killer, cause);
+				Bukkit.getPluginManager().callEvent(event);
+				
 				SpleefLogger.log(LogType.LOSE, this, player);
 
 				if (killer != null) {

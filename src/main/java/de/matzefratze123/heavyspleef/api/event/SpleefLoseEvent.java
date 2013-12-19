@@ -24,16 +24,19 @@ import org.bukkit.event.HandlerList;
 
 import de.matzefratze123.heavyspleef.api.IGame;
 import de.matzefratze123.heavyspleef.core.LoseCause;
+import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class SpleefLoseEvent extends SpleefEvent {
 
 	public static final HandlerList handlers = new HandlerList();
 	
+	private SpleefPlayer killer = null;
 	private Player loser = null;
 	private LoseCause cause = null;
 	
-	public SpleefLoseEvent(IGame game, Player player, LoseCause cause) {
+	public SpleefLoseEvent(IGame game, Player player, SpleefPlayer killer, LoseCause cause) {
 		super(game);
+		this.killer = killer;
 		this.loser = player;
 		this.cause = cause;
 	}
@@ -45,14 +48,22 @@ public class SpleefLoseEvent extends SpleefEvent {
 	 * @return A type of the enum LoseCause
 	 */
 	public LoseCause getCause() {
-		return this.cause;
+		return cause;
 	}
 	
 	/**
 	 * Gets the player that lost
 	 */
 	public Player getLoser() {
-		return this.loser;
+		return loser;
+	}
+	
+	/**
+	 * Gets the player who killed the loser
+	 * May be null if there was no killer detected
+	 */
+	public SpleefPlayer getKiller() {
+		return killer;
 	}
 	
 	@Override
