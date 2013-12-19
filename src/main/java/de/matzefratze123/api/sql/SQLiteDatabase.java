@@ -8,10 +8,20 @@ import java.sql.Statement;
 
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Represents a sqlite database
+ * 
+ * @author matzefratze123
+ */
 public class SQLiteDatabase extends AbstractDatabase {
 
 	private File file;
 	
+	/**
+	 * Constructs a connection to a sqlite database
+	 * If the database doesn't exist, a new one will be
+	 * created
+	 */
 	public SQLiteDatabase(Plugin plugin, File file) {
 		super(plugin);
 		
@@ -35,6 +45,9 @@ public class SQLiteDatabase extends AbstractDatabase {
 		state = DatabaseState.SUCCESS;
 	}
 	
+	/**
+	 * Connects to the database
+	 */
 	@Override
 	public void connect() {
 		try {
@@ -48,6 +61,9 @@ public class SQLiteDatabase extends AbstractDatabase {
 		}
 	}
 	
+	/**
+	 * Checks if the database has a table
+	 */
 	@Override
 	public boolean hasTable(String name) {
 		name = name.toLowerCase();
@@ -73,15 +89,24 @@ public class SQLiteDatabase extends AbstractDatabase {
 		return false;
 	}
 
+	/**
+	 * Gets the url host of the database
+	 */
 	@Override
 	public String getHost() {
 		return "jdbc:sqlite:" + file.getAbsolutePath();
 	}
 	
+	/**
+	 * Gets the sqlite file
+	 */
 	public File getFile() {
 		return file;
 	}
 
+	/**
+	 * Gets the database type
+	 */
 	@Override
 	public SQLType getDatabaseType() {
 		return SQLType.SQ_LITE;

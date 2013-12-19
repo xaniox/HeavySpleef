@@ -9,7 +9,8 @@ import java.util.Set;
 import org.bukkit.plugin.Plugin;
 
 /**
- * This class represents an abstract database
+ * This class represents an abstract database.
+ * This class is extended by a specific database class (e.g. MySQL, SQLite...)
  * 
  * @author matzefratze123
  */

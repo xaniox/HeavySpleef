@@ -78,7 +78,7 @@ public class Table {
 	 * Selects a data-set of this table
 	 * 
 	 * @param selection The selection
-	 * @return A ResultSet containing all datasets of this selection
+	 * @return A SQLResult containing all datasets of this selection
 	 * 
 	 * @see #select(String, Map)
 	 */
@@ -86,10 +86,21 @@ public class Table {
 		return select(selection, null);
 	}
 	
+	/**
+	 * Selects all of the database
+	 * @return A SQLResult containing all datasets of the table
+	 */
 	public SQLResult selectAll() {
 		return select("*");
 	}
 	
+	/**
+	 * Inserts or updates values in the table. If there is no entry
+	 * yet, it will insert the data otherwise it updates the data
+	 * 
+	 * @param values The values to insert
+	 * @param where A where clause, key as the column name value as the field value
+	 */
 	public int insertOrUpdate(Map<String, Object> values, Map<String, Object> where) {
 		int result = Statement.EXECUTE_FAILED;
 		
@@ -141,6 +152,12 @@ public class Table {
 		return result;
 	}
 	
+	/**
+	 * Checks if the table contains a row
+	 * 
+	 * @param where A where clause, key as the column name value as the field value
+	 * @return True if the row exists, false otherwise
+	 */
 	public boolean hasRow(Map<String, Object> where) {
 		StringBuilder builder = new StringBuilder();
 		Iterator<String> iter = where.keySet().iterator();
@@ -190,6 +207,11 @@ public class Table {
 		return false;
 	}
 	
+	/**
+	 * Checks if this table contains a column with the given name
+	 * 
+	 * @return True if the table contains the column, false otherwise
+	 */
 	public boolean hasColumn(String column) {
 		ResultSet set = null;
 		
@@ -214,6 +236,12 @@ public class Table {
 		return false;
 	}
 	
+	/**
+	 * Adds a column to this table
+	 * 
+	 * @param name The name of the column
+	 * @param field The type of the column
+	 */
 	public int addColumn(String name, Field field) {
 		int result = Statement.EXECUTE_FAILED;
 		

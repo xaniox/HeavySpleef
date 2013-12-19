@@ -26,6 +26,11 @@ import java.sql.Statement;
 
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Represents a MySQL database
+ * 
+ * @author matzefratze123
+ */
 public class MySQLDatabase extends AbstractDatabase {
 	
 	private String host;
@@ -34,6 +39,9 @@ public class MySQLDatabase extends AbstractDatabase {
 	private String user;
 	private String password;
 	
+	/**
+	 * Constructs a new database with the specified authorization
+	 */
 	public MySQLDatabase(Plugin plugin, String host, int port, String database, String user, String password) {
 		super(plugin);
 		
@@ -64,6 +72,9 @@ public class MySQLDatabase extends AbstractDatabase {
 		}
 	}
 	
+	/**
+	 * Connects to the database
+	 */
 	@Override
 	public void connect() {
 		try {
@@ -78,6 +89,9 @@ public class MySQLDatabase extends AbstractDatabase {
 		}
 	}
 	
+	/**
+	 * Checks if the database has a table
+	 */
 	@Override
 	public boolean hasTable(String name) {
 		name = name.toLowerCase();
@@ -105,27 +119,45 @@ public class MySQLDatabase extends AbstractDatabase {
 		return false;
 	}
 	
+	/**
+	 * Gets the url host for this database
+	 */
 	@Override
 	public String getHost() {
 		return this.host;
 	}
 	
+	/**
+	 * Gets the port
+	 */
 	public int getPort() {
 		return this.port;
 	}
 	
+	/**
+	 * Gets the database name
+	 */
 	public String getDatabase() {
 		return this.database;
 	}
 	
+	/**
+	 * Gets the database user
+	 */
 	public String getUser() {
 		return this.user;
 	}
 	
+	/**
+	 * Gets the database password
+	 */
 	public String getPassword() {
 		return this.password;
 	}
 
+	/**
+	 * Gets the type of this database
+	 */
 	@Override
 	public SQLType getDatabaseType() {
 		return SQLType.MYSQL;
