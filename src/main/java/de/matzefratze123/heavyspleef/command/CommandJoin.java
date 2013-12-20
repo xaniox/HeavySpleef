@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -39,10 +38,12 @@ import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameComponents;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.Team;
+import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.VaultHook;
@@ -74,7 +75,6 @@ public class CommandJoin extends HSCommand {
 			
 			HeavySpleef.getInstance().getJoinGUI().open(bukkitPlayer);
 		} else {
-		
 			if (!GameManager.hasGame(args[0].toLowerCase())) {
 				bukkitPlayer.sendMessage(_("arenaDoesntExists"));
 				return;
@@ -88,37 +88,32 @@ public class CommandJoin extends HSCommand {
 					return;
 			}
 			
+			Team team = null;
+			
 			if (args.length == 1) {
 				if (game.getFlag(FlagType.TEAM)) {
-					bukkitPlayer.sendMessage(_("specifieTeam", getFriendlyTeamList(game)));
-					return;
+					team = ((GameComponents)game.getComponents()).getBestAvailableTeam();
+				} else {
+					team = null;
+					//joinAndDoChecks(game, player, null);
 				}
-				
-				doFurtherChecks(game, player, null);
 			} else if (args.length >= 2) {
 				if (!game.getFlag(FlagType.TEAM)) {
-					doFurtherChecks(game, player, null);
-					return;
+					team = null;
+				} else {
+					team = game.getComponents().getTeam(Color.byName(args[1]));
+					if (team == null) {
+						player.sendMessage(getUsage());
+						return;
+					}
 				}
-				
-				ChatColor color = null;
-				
-				for (ChatColor colors : Team.allowedColors) {
-					if (colors.name().equalsIgnoreCase(args[1]))
-						color = colors;
-				}
-				
-				if (color == null) {
-					bukkitPlayer.sendMessage(getUsage());
-					return;
-				}
-				
-				doFurtherChecks(game, player, color);
 			}
+			
+			joinAndDoChecks(game, player, team);
 		}
 	}
 	
-	public static void doFurtherChecks(final Game game, final SpleefPlayer player, ChatColor teamColor) {
+	public static void joinAndDoChecks(final Game game, final SpleefPlayer player, Team team) {
 		int jackpotToPay = game.getFlag(ENTRY_FEE) == null ? HeavySpleef.getSystemConfig().getInt("general.defaultToPay", 0) : game.getFlag(ENTRY_FEE);
 		
 		if (game.getGameState() == GameState.DISABLED) {
@@ -156,7 +151,6 @@ public class CommandJoin extends HSCommand {
 			return;
 		}
 		
-		final Team team = game.getComponents().getTeam(teamColor);
 		boolean is1vs1 = game.getFlag(ONEVSONE);
 		
 		int maxplayers = game.getFlag(MAXPLAYERS);
@@ -168,11 +162,13 @@ public class CommandJoin extends HSCommand {
 		
 		if (game.getFlag(FlagType.TEAM)) {
 			if (team == null) {
-				player.sendMessage(_("specifieTeam", getFriendlyTeamList(game)));
+				team = ((GameComponents)game.getComponents()).getBestAvailableTeam();
+			} else if (team.getMaxPlayers() > 0 && team.getPlayers().size() >= team.getMaxPlayers()) {
+				player.sendMessage(_("maxPlayersInTeam"));
 				return;
 			}
 			
-			if (team.getMaxPlayers() > 0 && team.getPlayers().size() >= team.getMaxPlayers()) {
+			if (team == null) {
 				player.sendMessage(_("maxPlayersInTeam"));
 				return;
 			}
@@ -186,38 +182,12 @@ public class CommandJoin extends HSCommand {
 				player.sendMessage(_("dontMove"));
 			}
 			
-			PvPTimerManager.addToTimer(player.getBukkitPlayer(), new Runnable() {
-				
-				@Override
-				public void run() {
-					if (game.getFlag(TEAM)) {
-						team.join(player);
-						game.broadcast(_("playerJoinedTeam", player.getName(), team.getColor() + Util.formatMaterialName(team.getColor().name())), ConfigUtil.getBroadcast("player-join"));
-					}
-					
-					game.join(player);
-					player.sendMessage(_("playerJoinedToPlayer", game.getName()));
-					
-					game.getQueue().removePlayer(player);
-					PvPTimerManager.cancelTimerTask(player.getBukkitPlayer());
-				}
-			});
+			PvPTimerManager.addToTimer(player.getBukkitPlayer(), new JoinTimerRunnable(game, player, team));
 		} else if (game.getGameState() == GameState.COUNTING){
 			player.sendMessage(_("gameAlreadyRunning"));
 			game.getQueue().addPlayer(player);
 			return;
 		}
-	}
-	
-	private static String getFriendlyTeamList(Game game) {
-		List<Team> teams = game.getComponents().getTeams();
-		Set<String> teamColors = new HashSet<String>();
-		
-		for (Team team : teams) {
-			teamColors.add(team.getColor() + team.getColor().name());
-		}
-		
-		return Util.toFriendlyString(teamColors, ", ");
 	}
 
 	@Override
@@ -226,6 +196,34 @@ public class CommandJoin extends HSCommand {
 		help.addHelp("Joins a game");
 		
 		return help;
+	}
+	
+	static class JoinTimerRunnable implements Runnable {
+
+		private Game game;
+		private SpleefPlayer player;
+		private Team team;
+		
+		public JoinTimerRunnable(Game game, SpleefPlayer player, Team team){
+			this.game = game;
+			this.player = player;
+			this.team = team;
+		}
+		
+		@Override
+		public void run() {
+			if (game.getFlag(TEAM)) {
+				team.join(player);
+				game.broadcast(_("playerJoinedTeam", player.getName(), team.getColor().toMessageColorString()), ConfigUtil.getBroadcast("player-join"));
+			}
+			
+			game.join(player);
+			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
+			
+			game.getQueue().removePlayer(player);
+			PvPTimerManager.cancelTimerTask(player.getBukkitPlayer());
+		}
+		
 	}
 
 }
