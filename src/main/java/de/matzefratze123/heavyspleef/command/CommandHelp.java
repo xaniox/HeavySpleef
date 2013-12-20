@@ -45,6 +45,11 @@ public class CommandHelp extends HSCommand {
 		List<HSCommand> commands = new ArrayList<HSCommand>(CommandHandler.getCommands().values());
 		Collections.sort(commands);
 		
+		if (!sender.hasPermission(Permissions.HELP_ADMIN.getPerm()) && !sender.hasPermission(Permissions.HELP_USER.getPerm())) {
+			sender.sendMessage(_("noPermission"));
+			return;
+		}
+		
 		sender.sendMessage(ChatColor.GRAY + "   -----   HeavySpleef Help   -----   ");
 		
 		//We don't want to print aliases again...
