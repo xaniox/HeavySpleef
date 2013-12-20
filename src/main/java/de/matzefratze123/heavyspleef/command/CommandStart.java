@@ -87,10 +87,6 @@ public class CommandStart extends HSCommand {
 			player.sendMessage(_("gameIsDisabled"));
 			return;
 		}
-		if (game.getType() == GameType.CYLINDER	&& !HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
-			player.sendMessage(_("noWorldEdit"));
-			return;
-		}
 		if (game.getGameState() == GameState.COUNTING || game.getGameState() == GameState.INGAME) {
 			player.sendMessage(_("cantStartGameWhileRunning"));
 			return;

@@ -12,59 +12,40 @@ unknownCommand: &cUnbekannter HeavySpleef Befehl! Gib &6/spleef help [Seite] &cf
 
 selectionCantTroughWorlds: &cDeine Auswahl kann nicht \u00FCber zwei Welten sein!
 needSelection: &cBitte mache erst eine Auswahl...
-notInsideArena: &cDeine Auswahl ist in keiner Arena!
-invalidBlock: &cDiese Blockdaten sind nicht g\u00FCltig!
 
 arenaAlreadyExists: &cDiese Arena exestiert bereits!
 arenaDoesntExists: &cDiese Arena exestiert nicht...
-arenaCantBeInsideAnother: &cEine Spleefarena kann keine andere \u00FCberlappen!
-cantDeleteGameWhileIngame: &cEin Spiel kann nicht gel\u00F6scht werden w\u00E4hrend es l\u00E4uft!
 gameIsAlreadyDisabled: &cDiese Arena ist bereits deaktiviert!
 gameIsAlreadyEnabled: &cDiese Arena ist bereits aktiviert!
 
-pageDoesntExists: &cDiese Seite exestiert nicht!
 gameIsDisabled: &cDiese Arena ist deaktiviert!
 isntReadyToPlay: &cDiese Arena ist noch nicht fertig!
 notEnoughMoneyToJoin: &cDu hast nicht gen\u00FCgend Geld diesem Spiel beizutreten!
 playerNotOnline: &cKann Spieler nicht finden...
-targetHasntEnoughMoney: &cDieser Spieler hat nicht gen\u00FCgend Geld um dem Spiel beizutreten!
 gameAlreadyRunning: &cIn dieser Arena findet bereits ein Spiel statt!
 cantJoinMultipleGames: &cDu kannst nicht mehreren Arenen gleichzeitig beitreten!
 playerIsntInAnyGame: &cDieser Spieler ist nicht in irgendeinem Spiel!
-playerIsntInAnyGameToPlayer: &cDu bist in keinem Spiel!
-minimumToLow: &cDer Minimalwert kann nicht kleiner als 2 sein!
 notANumber: &c%a ist keine Zahl!
 notLookingAtABlock: &cDu schaust auf keinen Block...
 notLookingAtFloor: &cDu schaust auf keinen Floor...
-cantRemoveFloorWhileRunning: &cDu kannst keine Spleefebene entfernen w\u00E4hrend das Spiel l\u00E4uft!
 loseZoneWithIDDoesntExists: &cEine Verlierzone mit dieser ID exestiert nicht!
-cantRemoveLoseWhileRunning: &cDu kannst keine Verlierzone entfernen w\u00E4hrend das Spiel l\u00E4uft!
-noVault: &cVault ist nicht auf diesem Server installiert oder funktoniert nicht richtig!
 cantStartGameWhileRunning: &cDu kannst kein Spiel starten w\u00E4hrend es schon l\u00E4uft!
 notEnoughPlayers: &cNicht genug Spieler! Es werden mindestens %a Spieler ben\u00F6tigt!
 
 notAllowedToBuild: &cDir ist es nicht erlaubt hier zu bauen!
-notAllowedToBreakSpecified: &cDir ist es nicht erlaubt %a abzubauen!
 cantChangeGamemode: &cDein Spielmodus kann w\u00E4hrend dem Spiel nicht ge\u00E4ndert werden!
 cantUseCommands: &cDir ist es nicht erlaubt diesen Befehl zu nutzen!
-loginAfterServerShutdown: &cDu wurdest zum Verlierpunkt teleportiert da der Server zu diesem Zeitpunkt gestoppt wurde.
-notAllowedToCreateSpleefSigns: &cDir ist es nicht erlaubt Spleef-Schilder zu erstellen!
 
-errorOnState: &cEin Fehler trat auf w\u00E4hrend dein Inventar geladen wurde... :(
 noGameRunning: &cIn dieser Arena findet gerade kein Spiel statt!
 
 noWorldEdit: &cDiese Funktion kann nicht genutzt werden! WorldEdit wurde nicht gefunden!
 
-onlyOneLayer: &cEin Floor kann nur einen Block dick sein!
 maxPlayersReached: &cDie maximale Spieleranzahl in dieser Arena ist erreicht!
-
-invalidBlockFace: &cDiese Himmelsrichtung ist nicht g\u00FCltig!
 notLookingAtScoreBoard: &cDu schaust auf keine Punktetafel!
 
 didntSelectWall: &cDu hast keine Wand ausgew\u00E4hlt!
 yMustBeSame: &cDie Y-Koordinate kann nur einen Block dick sein!
 notLookingAtWall: &cDu schaust auf keine Wand...!
-cannotDestroyWallAdmin: &cDu kannst dieses Schild nicht entfernen! Um die Wand zu entfernen, schau auf sie und tippe: /spleef removewall
 cannotDestroyWallUser: &cDu kannst dieses Schild nicht entfernen!
 lengthMustBeOver1: &cDie Wand muss mindestens zwei Bl\u00F6cke lang sein!
 
@@ -79,11 +60,7 @@ alreadyVoted: &6Du hast bereits gevotet!
 alreadyInTeam: &cDu bist bereits im %a &c Team!
 notInThisTeam: &cDu bist nicht im &a &cTeam!
 invalidColor: &cDies ist keine g\u00FCltige Teamfarbe!
-specifieTeam: &cBitte w\u00E4hle ein Team! Verf\u00FCgbare Teams: %a
 notASign: &cNicht alle Bl\u00F6cke in dieser Auswahl sind Schilder!
-
-noSpleefHubSet: &cEs wurde kein Spleef-HUB gesetzt...
-notLookingAtPortal: &cDu schaust auf kein Portal...
 
 teamNeedMorePlayers: &cDas Team %a &cbraucht mindestens %a Spieler!
 maxPlayersInTeam: &cDie maximale Spieleranzahl ist bereits in diesem Team!
@@ -107,10 +84,6 @@ gameCreated: &7Arena hinzugef\u00FCgt!
 gameDeleted: &7Arena gel\u00F6scht!
 gameDisabledToPlayer: &7Du hast das Spiel %a deaktiviert!
 gameEnabledToPlayer: &7Du hast das Spiel %a aktiviert!
-allGamesDisabledToPlayer: &7Alle Spiele wurden deaktiviert!
-allGamesEnabledToPlayer: &7Alle Spiele wurden aktiviert!
-targetHasJoined: &7Der Spieler %a ist dem Spiel %a beigetreten!
-targetAddedToQueue: &7Der Spieler %a wurde zur Warteliste hinzugef\u00FCgt!
 playerJoinedToPlayer: &7Du bist dem Spiel %a beigetreten
 kickedOfToPlayer: &7Du wurdest von %a &7gekickt%a
 kickedOfToKicker: &7Du hast %a &7von Spiel %a gekickt%a
@@ -127,10 +100,7 @@ antiCampWarn: &4AntiCamping&c: Du hast noch &4%a &cSekunden bevor du eine Ebene 
 antiCampTeleport: &4AntiCamping&c: Du wurdest eine Ebene nach unten teleportiert weil du zulange an einem Punkt standest!
 
 paidIntoJackpot: &7Du hast %a in Jackpot dieses Spiels gezahlt!
-yourKnockOuts: &7Deine Knockouts: %a
 
-noLongerInQueue: &7Du bist nicht l\u00E4nger in der Warteschlange f\u00FCr wurde das Spiel &6%a&7!
-leftQueue: &7Du hast das die Warteschlange f\u00FCr das Spiel %a verlassen!
 addedToQueue: &7Du bist nun in der Warteschlange f\u00FCr das Spiel &6%a&7. Platz &l#%a
 notInQueue: &7Du bist in keiner Warteschlange!
 
@@ -138,10 +108,6 @@ outOfGame: &cDu hast verloren!
 spleefSignCreated: &7Spleef Schild erfolgreich erstellt!
 stateRestored: &7Dein Inventar wurde wiederhergestellt!
 stateSaved: &7Dein Inventar wurde gespeichert!
-gameStopped: &cDas Spiel wurde gestoppt!
-
-chancesLeft: &cDir verbleiben noch %a Chancen!
-chancesLeftBroadcast: &c%a hat noch %a Chancen!
 
 scoreBoardAdded: &7Die Punktetafel wurde hinzugef\u00FCgt!
 scoreBoardRemoved: &7Die Punktetafel wurde entfernt!
@@ -157,7 +123,6 @@ flagSet: &7Flag %a gesetzt!
 pluginReloaded: &7HeavySpleef Version %a neu geladen! Dauerte %ams...
 
 itemRewardReceived: &7Du erh\u00E4lst %a %a!
-loserewardReceived: &7Du erh\u00E4lst %a %a als Trostpreis!
 
 successfullyVoted: &6Erfolgreich gevotet!
 
@@ -172,13 +137,7 @@ teamRemoved: &7Das Team mit der Farbe %a &7wurde enfernt.
 
 gameRenamed: &7Spiel &6%a &7wurde zu &5%a &7umbenannt!
 
-welcomeToHUB: &7Willkommen beim &4&lSpleef-HUB&r&7!
-spleefHubSet: &7Der globale Spleef-HUB wurde gesetzt!
-portalRemoved: &7Portal entfernt!
-portalAdded: &7Portal hinzugef\u00FCgt!
-
 taggedAsReady: &7Du wurdest als bereit gekennzeichnet!
-teleportingToHub: &7Teleportiere zum HUB. Beweg dich nicht...
 welcomeToSpectate: &7Du beobachtest jetzt das Spiel. Benutze &l/spleef leave &7um aus dem Beobachtungsmodus herauszukommen!
 
 # Broadcast nachrichten
@@ -206,7 +165,6 @@ unbelievableKnockout: &5%a: &6&lUnglaublicher-Knockout&r&5!
 
 wonRound: &a%a &chat Runde &6%a &cvon &6%a &cgewonnen!
 roundsRemaining: &6&l%a &7Runden verbleiben!
-wonThe1vs1: &a%a &ahat das Spiel gegen %a gewonnen! Gl\u00FCckwunsch!
 endedDraw: &aDas Spiel in Arena %a ist unentschieden ausgegangen...
 
 roundStarted: &aRunde &6%a &avon &6%a &agestartet!
@@ -216,9 +174,6 @@ timeLeftSeconds: &6&l%a &7Sekunden \u00FCbrig bis das Spiel endet!
 timeLeftMinutes: &6&l%a &7Minuten und &6&l%a &7Sekunden \u00FCbrig bis das Spiel endet!
 timeoutReached: &6&lTimeout erreicht! &7Spiel beendet.
 
-loseCause_kick: &6%a&6 &cwurde aus dem Spiel gekickt!
 loseCause_leave: &6%a&6 &chat das Spiel %a verlassen!
 loseCause_lose: &6%a&6 &cwurde von &4%a &causgeknockt!
 loseCause_lose_unknown: &6%a &cwurde ausgeknockt!
-loseCause_quit: &6%a&6 &chat den Server verlassen w\u00E4hrend das Spiel lief...
-loseCause_unknown: &6%a&6 &chat das Spiel aus einem unbekannten Grund verlassen

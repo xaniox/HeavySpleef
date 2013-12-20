@@ -63,10 +63,6 @@ public class CommandRemoveLose extends HSCommand {
 			player.sendMessage(_("loseZoneWithIDDoesntExists"));
 			return;
 		}
-		if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING) {
-			player.sendMessage(_("cantRemoveLoseWhileRunning"));
-			return;
-		}
 		
 		game.getComponents().removeLoseZone(id);
 		player.sendMessage(_("loseZoneRemoved", String.valueOf(id)));

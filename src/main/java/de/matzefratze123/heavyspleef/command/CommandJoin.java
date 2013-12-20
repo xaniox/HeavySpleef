@@ -125,10 +125,6 @@ public class CommandJoin extends HSCommand {
 			player.sendMessage(_("isntReadyToPlay"));
 			return;
 		}
-		if (game.getType() == GameType.CYLINDER && !HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
-			player.sendMessage(_("noWorldEdit"));
-			return;
-		}
 		
 		if (HookManager.getInstance().getService(VaultHook.class).hasHook()) {
 			if (HookManager.getInstance().getService(VaultHook.class).getHook().getBalance(player.getName()) < jackpotToPay) {

@@ -41,11 +41,7 @@ public class SignWallListener implements Listener {
 		for (Game game : GameManager.getGames()) {
 			for (SignWall wall : game.getComponents().getSignWalls()) {
 				if (wall.contains(e.getBlock().getLocation())) {
-					if (p.hasPermission(Permissions.REMOVE_WALL.getPerm())) {
-						p.sendMessage(I18N._("cannotDestroyWallAdmin"));
-					} else {
-						p.sendMessage(I18N._("cannotDestroyWallUser"));
-					}
+					p.sendMessage(I18N._("cannotDestroyWallUser"));
 					
 					e.setCancelled(true);
 				} else {

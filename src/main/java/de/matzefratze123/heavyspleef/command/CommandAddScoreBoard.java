@@ -63,7 +63,7 @@ public class CommandAddScoreBoard extends HSCommand {
 		scoreboard.generate('0', '0', '0', '0');
 		
 		game.getComponents().addScoreBoard(scoreboard);
-		
+		player.sendMessage(_("scoreBoardAdded"));
 	}
 	
 	@Override

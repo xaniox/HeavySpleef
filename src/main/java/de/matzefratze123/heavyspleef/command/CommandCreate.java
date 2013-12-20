@@ -58,20 +58,11 @@ public class CommandCreate extends HSCommand {
 		
 		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
 			//Create a new cylinder game
-			if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
-				player.sendMessage(_("noWorldEdit"));
-				return;
-			}
 			if (args.length < 4) {
 				player.sendMessage(getUsage());
 				return;
 			}
-			for (Game game : GameManager.getGames()) {
-				if (game.contains(player.getLocation())) {
-					player.sendMessage(_("arenaCantBeInsideAnother"));
-					return;
-				}
-			}
+			
 			try {
 				int radius = Integer.parseInt(args[2]);
 				int height = Integer.parseInt(args[3]);
@@ -100,13 +91,6 @@ public class CommandCreate extends HSCommand {
 			if (s.isTroughWorlds()) {
 				player.sendMessage(_("selectionCantTroughWorlds"));
 				return;
-			}
-			
-			for (Game game : GameManager.getGames()) {
-				if (game.contains(s.getFirst()) || game.contains(s.getSecond())) {
-					player.sendMessage(_("arenaCantBeInsideAnother"));
-					return;
-				}
 			}
 			
 			RegionCuboid region = new RegionCuboid(-1, s.getFirst(), s.getSecond());

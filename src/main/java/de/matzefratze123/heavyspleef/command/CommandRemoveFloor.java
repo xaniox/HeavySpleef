@@ -59,11 +59,6 @@ public class CommandRemoveFloor extends HSCommand {
 				continue;
 			for (IFloor floor : game.getComponents().getFloors()) {
 				if (floor.contains(block.getLocation())) {
-					if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING) {
-						player.sendMessage(_("cantRemoveFloorWhileRunning"));
-						return;
-					}
-					
 					int id = floor.getId();
 					game.getComponents().removeFloor(id);
 					player.sendMessage(_("floorRemoved"));
