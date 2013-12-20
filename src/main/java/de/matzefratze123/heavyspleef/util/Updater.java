@@ -150,7 +150,7 @@ public class Updater {
 			longerVersionString = thisVersion;
 		}
 
-		// Split on "."
+		// Split on the point
 		String[] thisParts = thisVersion.split("\\.");
 		String[] newParts = newVersion.split("\\.");
 
@@ -160,21 +160,22 @@ public class Updater {
 		} else {
 			for (int i = 0; i < longerVersionString.split("\\.").length; i++) {
 				if (i + 1 > thisParts.length) {
-					updateAvailable = true;
 					break;
 				}
 
 				if (i + 1 > newParts.length) {
+					updateAvailable = true;
 					break;
 				}
 
+				
 				int newPart = Integer.parseInt(newParts[i]);
 				int thisPart = Integer.parseInt(thisParts[i]);
 
 				if (newPart > thisPart) {
 					updateAvailable = true;
+					break;
 				}
-
 			}
 		}
 		
@@ -247,10 +248,6 @@ public class Updater {
 				}
 			}
 		}).start();
-		
-		
-		
-		
 	}
 
 	private void waitForThread() {
