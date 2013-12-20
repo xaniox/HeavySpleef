@@ -251,7 +251,7 @@ public class SignWall extends RegionCuboid implements DatabaseSerializeable {
 					String name = player.getName();
 					
 					Team team = game.getComponents().getTeam(player);
-					String prefix = team == null ? name.equalsIgnoreCase("matzefratze123") ? ChatColor.DARK_RED.toString() : "" : team.getColor().toString();
+					String prefix = team == null ? name.equalsIgnoreCase("matzefratze123") ? ChatColor.DARK_RED.toString() : "" : team.getColor().toChatColor().toString();
 					sign.setLine(line, prefix + (name.equalsIgnoreCase("matzefratze123") ? "matzefratze" : prefix + name));
 					sign.update();
 				} else if (outIterator.hasNext()) {

@@ -77,7 +77,7 @@ public class InventoryJoinGUI extends GuiInventory {
 			String[] lore = new String[LORE_SIZE];
 			
 			lore[0] = color + "" + game.getIngamePlayers().size() + ChatColor.DARK_GRAY + ChatColor.BOLD + " / " + ChatColor.RED + maxPlayers;
-			lore[1] = ChatColor.AQUA + "" + ChatColor.BOLD + Util.formatMaterialName(game.getGameState().name());
+			lore[1] = ChatColor.AQUA + "" + ChatColor.BOLD + Util.firstToUpperCase(game.getGameState().name());
 			
 			slot.setItem(icon.getType(), icon.getAmount(), icon.getData().getData(),
 					color + "" + ChatColor.BOLD + "Join " + ChatColor.GRAY + game.getName(), lore);
@@ -108,7 +108,7 @@ public class InventoryJoinGUI extends GuiInventory {
 		Game game = (Game) value;
 		close(player);
 		
-		CommandJoin.doFurtherChecks(game, spleefPlayer, null);
+		CommandJoin.joinAndDoChecks(game, spleefPlayer, null);
 	}
 	
 }

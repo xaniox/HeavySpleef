@@ -32,9 +32,11 @@ import org.bukkit.event.block.SignChangeEvent;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.CommandJoin;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.core.Team;
+import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
@@ -64,29 +66,35 @@ public class SpleefSignJoin implements SpleefSign {
 				return;
 			}
 			
-			ChatColor color = null;
+			Game game = GameManager.getGame(lines[2]);
+			Team team;
 			
 			//Check teams
 			if (!lines[3].isEmpty()) {
 				try {
-					color = ChatColor.valueOf(lines[3].toUpperCase());
+					team = game.getComponents().getTeam(Color.byName(lines[3]));
 				} catch (Exception ex) {
 					player.sendMessage(I18N._("invalidTeam"));
 					return;
 				}
 			} else {
+				Color color = null;
+				
 				//Try to calculate team colors via block neighboors
 				Block up = sign.getBlock().getRelative(BlockFace.UP);
 				if (up.getType() == Material.WOOL) {
-					color = Team.woolDyeToChatColor(up.getData());
+					color = Color.byWoolColor(up.getData());
 				}
 				
 				Block attached = SignWall.getAttachedBlock(sign);
-				if (attached != null && attached.getType() == Material.WOOL)
-					color = Team.woolDyeToChatColor(attached.getData());
+				if (attached != null && attached.getType() == Material.WOOL) {
+					color = Color.byWoolColor(attached.getData());
+				}
+				
+				team = game.getComponents().getTeam(color);
 			}
 			
-			CommandJoin.doFurtherChecks(GameManager.getGame(lines[2]), player, color);
+			CommandJoin.joinAndDoChecks(GameManager.getGame(lines[2]), player, team);
 		}
 	}
 
@@ -118,12 +126,7 @@ public class SpleefSignJoin implements SpleefSign {
 		}
 		
 		if (!e.getLine(3).isEmpty()) {
-			ChatColor color = null;
-			
-			for (ChatColor c : Team.allowedColors) {
-				if (c.name().equalsIgnoreCase(e.getLine(3)))
-					color = c;
-			}
+			Color color = Color.byName(e.getLine(3));
 			
 			if (color == null) {
 				e.getPlayer().sendMessage(I18N._("invalidColor"));
@@ -131,7 +134,7 @@ public class SpleefSignJoin implements SpleefSign {
 				return;
 			}
 			
-			e.setLine(3, color + Util.formatMaterialName(e.getLine(3)));
+			e.setLine(3, color.toMessageColorString());
 		}
 		
 		e.getPlayer().sendMessage(HSCommand._("spleefSignCreated"));

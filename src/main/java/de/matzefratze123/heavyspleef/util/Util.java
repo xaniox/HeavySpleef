@@ -19,7 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.util;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -33,73 +32,71 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 
 public class Util {
-
-	public static String formatMaterialName(String str) {
-		str = str.toLowerCase();
+	
+	private static final String MATERIAL_ENUM_SEPERATOR = "_";
+	private static final String MATERIAL_PARSE_SEPERATOR = ":";
+	
+	/**
+	 * Formats a material to a friendly readable string
+	 * 
+	 * @param material The material to format
+	 */
+	public static String formatMaterial(Material material) {
+		String[] parts = material.name().toLowerCase().split(MATERIAL_ENUM_SEPERATOR);
 		
-		String[] parts = str.split("_");
-		String realName = "";
-		
-		Iterator<String> iter = Arrays.asList(parts).iterator();
-		while (iter.hasNext()) {
-			String next = iter.next();
+		for (int i = 0; i < parts.length; i++) {
+			String part = parts[i];
+			part = firstToUpperCase(part);
 			
-			char[] chars = next.toCharArray();
-			chars[0] = Character.toUpperCase(chars[0]);
-			
-			next = String.copyValueOf(chars);
-			realName += next;
-			if (iter.hasNext())
-				realName += " ";
+			parts[i] = part;
 		}
 		
-		return realName;
+		return toFriendlyString(parts, " ");
 	}
 	
 	/**
-	 * Converts a string to a material
+	 * Sets the first character of a string to a uppercase character
 	 * 
-	 * @param s The string
-	 * @return The material specified by this string. If there is no Material the return is null
+	 * @param str The string to format
 	 */
-	private static Material getMaterialFromName(String s) {
-		if (s == null)
-			return null;
-		Material mat;
+	public static String firstToUpperCase(String str) {
+		char[] chars = str.toLowerCase().toCharArray();
 		
-		try {
-			int id = Integer.parseInt(s);
-			mat = Material.getMaterial(id);
-		} catch (Exception e) {
-			try {
-				s = s.toUpperCase();
-				mat = Material.getMaterial(s);
-			} catch (Exception e1) {//Catch the exception again
-				mat = null;
-			}
+		if (chars.length > 0) {
+			chars[0] = Character.toUpperCase(chars[0]);
 		}
 		
-		return mat;
+		str = new String(chars);
+		return str;
 	}
 	
 	/**
 	 * Converts an argument to material and data
 	 * 
 	 * @param str The string
-	 * @return A simpleblockdata objects that contains the material and data
+	 * @return A simpleblockdata objects which contains the material and data
 	 */ 
 	public static SimpleBlockData parseMaterial(String str, boolean onlySolid) {
-		if (str == null)
+		if (str == null) {
 			return null;
-		String[] parts = str.split(":");
+		}
 		
-		if (parts.length < 1)
+		String[] parts = str.split(MATERIAL_PARSE_SEPERATOR);
+		
+		if (parts.length <= 0) {
 			return null;
-		Material m = getMaterialFromName(parts[0]);
-		if (m == null)
+		}
+		
+		Material material = getMaterialFromName(parts[0]);
+		
+		if (material == null) {
 			return null;
-		if (!SimpleBlockData.isSolid(m.getId()) && onlySolid)
+		}
+		
+		if (!SimpleBlockData.isSolid(material.getId()) && onlySolid) {
 			return null;
+		}
+		
 		byte data = 0;
 		
 		if (parts.length > 1) {
@@ -107,13 +104,48 @@ public class Util {
 				data = Byte.parseByte(parts[1]);
 			} catch (Exception e) {}
 		}
-		return new SimpleBlockData(m, data);
+		
+		return new SimpleBlockData(material, data);
+	}
+	
+	private static Material getMaterialFromName(String str) {
+		if (str == null) {
+			return null;
+		}
+		
+		Material material;
+		
+		try {
+			//Try to parse the item id
+			int id = Integer.parseInt(str);
+			material = Material.getMaterial(id);
+		} catch (Exception e) {
+			//Hmm, failed now we try to get the material by name
+			try {
+				str = str.toUpperCase();
+				material = Material.getMaterial(str);
+			} catch (Exception e1) {
+				//Failed again, no suitable material found
+				material = null;
+			}
+		}
+		
+		return material;
 	}
 	
 	/**
-	 * Gets the transparent materials for the method getTargetBlock(HashSet<Byte>, int) in the type Player
+	 * Gets transparent materials for {@link org.bukkit.entity.Player#getTargetBlock(HashSet, int)}</br>
+	 * This hashset contains the following materials.</br></br>
 	 * 
-	 * @return A HashSet containing air, water and lava
+	 * <ul>
+	 *   <li>Air</li>
+	 *   <li>Flowing Water</li>
+	 *   <li>Water</li>
+	 *   <li>Flowing Lava</li>
+	 *   <li>Lava</li>
+	 * </ul>
+	 * 
+	 * @return A hashset which contains the material values as described above
 	 */
 	public static HashSet<Byte> getTransparentMaterials() {
 		HashSet<Byte> set = new HashSet<Byte>();
@@ -127,21 +159,40 @@ public class Util {
 		return set;
 	}
 	
+	/**
+	 * Turns the given iterable into a friendly (for users) readable string with the
+	 * given seperator.
+	 * 
+	 * @param iterable The iterable to format
+	 * @param seperator The seperator between elements
+	 * 
+	 * @see #toFriendlyString(Object[], String)
+	 */
 	public static String toFriendlyString(Iterable<?> iterable, String seperator) {
 		Iterator<?> iter = iterable.iterator();
 		StringBuilder builder = new StringBuilder();
 		
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			Object next = iter.next();
 			
 			builder.append(next);
-			if (iter.hasNext())
+			if (iter.hasNext()) {
 				builder.append(seperator);
+			}
 		}
 		
 		return builder.toString();
 	}
 	
+	/**
+	 * Turns the given array into a friendly (for users) readable string with the
+	 * given seperator.
+	 * 
+	 * @param iterable The array to format
+	 * @param seperator The seperator between elements
+	 * 
+	 * @see #toFriendlyString(Iterable, String)
+	 */
 	public static String toFriendlyString(Object[] o, String seperator) {
 		StringBuilder builder = new StringBuilder();
 		
@@ -149,13 +200,19 @@ public class Util {
 			Object next = o[i];
 			
 			builder.append(next);
-			if (o.length >= i + 2)
+			if (o.length >= i + 2) {
 				builder.append(seperator);
+			}
 		}
 		
 		return builder.toString();
 	}
 	
+	/**
+	 * Converts a bukkit location to a WorldEdit vector
+	 * 
+	 * @see #toBukkitLocation(LocalWorld, Vector)
+	 */
 	public static Vector toWorldEditVector(Location location) {
 		int x, y, z;
 		
@@ -166,6 +223,14 @@ public class Util {
 		return new Vector(x, y, z);
 	}
 	
+	/**
+	 * Converts a WorldEdit vector into a bukkit location
+	 * 
+	 * @param world The world of the vector
+	 * @param vector The vector isself
+	 * 
+	 * @see #toWorldEditVector(Location)
+	 */
 	public static Location toBukkitLocation(LocalWorld world, Vector vector) {
 		int x, y, z;
 		
@@ -176,6 +241,10 @@ public class Util {
 		return new Location(BukkitUtil.toWorld(world), x, y, z);
 	}
 	
+	/**
+	 * Gets the absolute minimum location of the given cuboid represented
+	 * by the given two locations
+	 */
 	public static Location getMin(Location l1, Location l2) {
 		return new Location(
 				l1.getWorld(), 
@@ -185,6 +254,10 @@ public class Util {
 							);
 	}
 	
+	/**
+	 * Gets the absolute maximum location of the given cuboid represented
+	 * by the given two locations
+	 */
 	public static Location getMax(Location l1, Location l2) {
 		return new Location(
 				l1.getWorld(), 
@@ -196,8 +269,8 @@ public class Util {
 	
 	/**
 	 * Checks if a string can be parsed into a number
-	 * @param str
-	 * @return
+	 * 
+	 * @param str The string to check
 	 */
 	public static boolean isNumber(String str) {
 		boolean isNumeric = true;

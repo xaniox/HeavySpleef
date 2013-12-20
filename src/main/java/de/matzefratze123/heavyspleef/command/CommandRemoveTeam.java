@@ -19,8 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,11 +26,11 @@ import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Team;
+import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.util.Permissions;
-import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
 public class CommandRemoveTeam extends HSCommand {
@@ -52,20 +50,16 @@ public class CommandRemoveTeam extends HSCommand {
 			return;
 		}
 		Game game = GameManager.getGame(args[0]);
-		ChatColor color = null;
+		Color color = Color.byName(args[1]);
+		Team team = game.getComponents().getTeam(Color.byName(args[1]));
 		
-		for (ChatColor colors : Team.allowedColors) {
-			if (colors.name().equalsIgnoreCase(args[1]))
-				color = colors;
-		}
-		
-		if (color == null) {
+		if (team == null) {
 			player.sendMessage(getUsage());
 			return;
 		}
 		
-		game.getComponents().removeTeam(color);
-		player.sendMessage(_("teamRemoved", color + Util.formatMaterialName(color.name())));
+		game.getComponents().removeTeam(team);
+		player.sendMessage(_("teamRemoved", color.toMessageColorString()));
 	}
 
 	@Override

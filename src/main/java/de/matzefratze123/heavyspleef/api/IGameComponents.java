@@ -26,6 +26,7 @@ import org.bukkit.ChatColor;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.core.Team;
+import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
@@ -80,19 +81,33 @@ public interface IGameComponents {
 	
 	public void updateScoreBoards();
 	
+	@Deprecated
 	public void addTeam(ChatColor color);
+	
+	public void addTeam(Color color);
 	
 	public void addTeam(Team team);
 	
+	@Deprecated
 	public Team getTeam(ChatColor color);
+	
+	public Team getTeam(Color color);
 	
 	public Team getTeam(SpleefPlayer player);
 	
+	@Deprecated
 	public boolean removeTeam(ChatColor color);
+	
+	public boolean removeTeam(Color color);
+	
+	public boolean removeTeam(Team team);
 	
 	public boolean removePlayerFromTeam(SpleefPlayer player);
 	
+	@Deprecated
 	public boolean hasTeam(ChatColor color);
+	
+	public boolean hasTeam(Color color);
 	
 	public List<Team> getTeams();
 	

@@ -106,7 +106,7 @@ public class CommandStart extends HSCommand {
 			for (Team team : game.getComponents().getTeams()) {
 				if (team.getPlayers().size() < team.getMinPlayers()) {
 					player.sendMessage(_("teamNeedMorePlayers", team.getColor()
-							.name().toLowerCase(),
+							.toMessageColorString(),
 							String.valueOf(team.getMinPlayers())));
 
 				}

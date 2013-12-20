@@ -60,6 +60,7 @@ import de.matzefratze123.heavyspleef.api.event.SpleefJoinEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefLoseEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
+import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.flag.ListFlagItemstack.SerializeableItemStack;
@@ -399,7 +400,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			player.getBukkitPlayer().setFallDistance(0);
 		}
 
-		broadcast(_("hasWon", "Team " + winnerTeam.getColor() + winnerTeam.getColor().name().toLowerCase() + ChatColor.GREEN, this.getName()), ConfigUtil.getBroadcast("win"));
+		broadcast(_("hasWon", "Team " + winnerTeam.getColor().toMessageColorString(), this.getName()), ConfigUtil.getBroadcast("win"));
 
 		StatisticModule.pushAsync();
 		state = GameState.JOINABLE;
@@ -859,7 +860,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			for (SerializeableItemStack stack : getFlag(ITEMREWARD)) {
 				ItemStack bukkitStack = stack.toBukkitStack();
 				player.getBukkitPlayer().getInventory().addItem(bukkitStack);
-				player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.formatMaterialName(stack.getMaterial().name())));
+				player.sendMessage(_("itemRewardReceived", String.valueOf(stack.getAmount()), Util.formatMaterial(stack.getMaterial())));
 			}
 		}
 
@@ -957,7 +958,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		currentSection = section.createSection("teams");
 
 		for (Team team : components.getTeams()) {
-			ChatColor color = team.getColor();
+			Color color = team.getColor();
 			int minPlayers = team.getMinPlayers();
 			int maxPlayers = team.getMaxPlayers();
 
@@ -1047,7 +1048,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		for (String key : currentSection.getKeys(false)) {
 			ConfigurationSection teamSection = currentSection.getConfigurationSection(key);
 
-			ChatColor color = ChatColor.valueOf(teamSection.getString("color"));
+			Color color = Color.byName(teamSection.getString("color"));
 			int minPlayers = teamSection.getInt("min-players");
 			int maxPlayers = teamSection.getInt("max-players");
 

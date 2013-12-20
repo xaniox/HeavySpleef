@@ -30,43 +30,41 @@ import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class Team {
-
-	public static ChatColor[] allowedColors = new ChatColor[] {ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.GRAY};
 	
 	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
-	private ChatColor color;
+	private Color color;
 	
 	private int maxplayers = -1;
 	private int minplayers = -1;
 	
-	public Team(ChatColor color) {
+	public Team(Color color) {
 		this.color = color;
 	}
 	
-	public ChatColor getColor() {
+	public Color getColor() {
 		return this.color;
 	}
 	
 	public void join(SpleefPlayer player) {
 		if (players.contains(player)) {
-			player.sendMessage(I18N._("alreadyInTeam", color + Util.formatMaterialName(color.name())));
+			player.sendMessage(I18N._("alreadyInTeam", color.toMessageColorString()));
 			return;
 		}
 		
 		players.add(player);
-		player.sendMessage(I18N._("addedToTeam", color + Util.formatMaterialName(color.name())));
+		player.sendMessage(I18N._("addedToTeam", color.toMessageColorString()));
 		
-		TagListener.setTag(player, color);
+		TagListener.setTag(player, color.toChatColor());
 	}
 	
 	public void leave(SpleefPlayer player) {
 		if (!players.contains(player)) {
-			player.sendMessage(I18N._("notInThisTeam", color + Util.formatMaterialName(color.name())));
+			player.sendMessage(I18N._("notInThisTeam", color.toMessageColorString()));
 			return;
 		}
 		
 		players.remove(player);
-		player.sendMessage(I18N._("removedFromTeam", color + Util.formatMaterialName(color.name())));
+		player.sendMessage(I18N._("removedFromTeam", color.toMessageColorString()));
 		
 		TagListener.setTag(player, null);
 	}
@@ -96,40 +94,6 @@ public class Team {
 		return true;
 	}
 	
-	public static byte chatColorToWoolDye(ChatColor color) {
-		switch (color) {
-		case RED:
-			return 0xE;
-		case GREEN:
-			return 0x5;
-		case BLUE:
-			return 0xB;
-		case YELLOW:
-			return 0x4;
-		case GRAY:
-			return 0x8;
-		default:
-			return 0x0;
-		}	
-	}
-	
-	public static ChatColor woolDyeToChatColor(byte woolDye) {
-		switch(woolDye) {
-		case 0xE:
-			return ChatColor.RED;
-		case 0x5:
-			return ChatColor.GREEN;
-		case 0xB:
-			return ChatColor.BLUE;
-		case 0x4:
-			return ChatColor.YELLOW;
-		case 0x8:
-			return ChatColor.GRAY;
-		default:
-			return ChatColor.WHITE;
-		}
-	}
-	
 	public void setMaxPlayers(int maxplayers) {
 		this.maxplayers = maxplayers;
 	}
@@ -154,6 +118,98 @@ public class Team {
 		}
 		
 		return knockouts;
+	}
+	
+	public enum Color {
+		
+		RED('c', 0xE),
+		BLUE('9', 0xB),
+		YELLOW('e', 0x4),
+		GREEN('a', 0x5),
+		GRAY('7', 0x8);
+		
+		private char chatColorChar;
+		private int  woolColor;
+		
+		private Color(char chatColorChar, int woolColor) {
+			this.chatColorChar = chatColorChar;
+			this.woolColor = woolColor;
+		}
+		
+		public ChatColor toChatColor() {
+			return ChatColor.getByChar(chatColorChar);
+		}
+		
+		public String toMessageColorString() {
+			return toChatColor() + Util.firstToUpperCase(name());
+		}
+		
+		public int getWoolColor() {
+			return woolColor;
+		}
+		
+		public static Color byName(String name) {
+			if (name == null) {
+				throw new IllegalArgumentException("name cannot be null");
+			}
+			
+			try {
+				return valueOf(name.toUpperCase());
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		
+		public static Color byChatColor(ChatColor color) {
+			for (Color c : values()) {
+				if (c.chatColorChar == color.getChar()) {
+					return c;
+				}
+			}
+			
+			return null;
+		}
+		
+		public static Color byWoolColor(int color) {
+			for (Color c : values()) {
+				if (c.getWoolColor() == color) {
+					return c;
+				}
+			}
+			
+			return null;
+		}
+		
+		public static String toFriendlyList() {
+			final Color[] values = values();
+			final int values_length = values().length;
+			
+			String[] colors = new String[values_length];
+			
+			for (int i = 0; i < values_length; i++) {
+				colors[i] = values[i].toMessageColorString();
+			}
+			
+			return Util.toFriendlyString(colors, ", ");
+		}
+		
+		public static String toFriendlyList(Game game) {
+			final Color[] values = values();
+			final int values_length = values().length;
+			
+			String[] colors = new String[game.getComponents().getTeams().size()];
+			
+			for (int i = 0; i < values_length; i++) {
+				if (!game.getComponents().hasTeam(values[i])) {
+					continue;
+				}
+				
+				colors[i] = values[i].toMessageColorString();
+			}
+			
+			return Util.toFriendlyString(colors, ", ");
+		}
+		
 	}
 	
 }

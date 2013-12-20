@@ -83,7 +83,7 @@ public class ItemStackFlag extends Flag<ItemStack> {
 	public String toInfo(Object value) {
 		ItemStack stack = (ItemStack) value;
 		
-		return getName() + ":" + stack.getAmount() + " " + Util.formatMaterialName(stack.getType().name());
+		return getName() + ":" + stack.getAmount() + " " + Util.formatMaterial(stack.getType());
 	}
 
 	@Override

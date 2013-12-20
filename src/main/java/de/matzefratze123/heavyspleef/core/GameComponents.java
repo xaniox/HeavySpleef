@@ -30,6 +30,7 @@ import org.bukkit.ChatColor;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGameComponents;
+import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
@@ -338,6 +339,15 @@ public class GameComponents implements IGameComponents {
 	/* Teams start */
 	@Override
 	public void addTeam(ChatColor color) {
+		addTeam(Color.byChatColor(color));
+	}
+	
+	@Override
+	public void addTeam(Color color) {
+		if (color == null) {
+			return;
+		}
+		
 		for (Team team : teams) {
 			if (team.getColor() == color) {
 				teams.remove(team);
@@ -348,6 +358,7 @@ public class GameComponents implements IGameComponents {
 		Team team = new Team(color);
 		teams.add(team);
 	}
+	
 	@Override
 	public void addTeam(Team team) {
 		addTeam(team.getColor());
@@ -355,6 +366,15 @@ public class GameComponents implements IGameComponents {
 	
 	@Override
 	public Team getTeam(ChatColor color) {
+		return getTeam(Color.byChatColor(color));
+	}
+	
+	@Override
+	public Team getTeam(Color color) {
+		if (color == null) {
+			return null;
+		}
+		
 		for (Team team : teams) {
 			if (team.getColor() == color)
 				return team;
@@ -376,16 +396,44 @@ public class GameComponents implements IGameComponents {
 		return null;
 	}
 	
-	@Override
-	public boolean removeTeam(ChatColor color) {
-		for (Team team : teams) {
-			if (team.getColor() == color) {
-				teams.remove(team);
-				return true;
+	public Team getBestAvailableTeam() {
+		Team team = null;
+		int min = -1;
+		
+		for (Team t : teams) {
+			int players = t.getPlayers().size();
+			
+			if (t.getMaxPlayers() > 0 && players >= t.getMaxPlayers()) {
+				continue;
+			}
+			
+			if (min == -1 || players < min) {
+				min = players;
+				team = t;
 			}
 		}
 		
-		return false;
+		return team;
+	}
+	
+	@Override
+	public boolean removeTeam(ChatColor color) {
+		return removeTeam(Color.byChatColor(color));
+	}
+	
+	@Override
+	public boolean removeTeam(Color color) {
+		return removeTeam(getTeam(color));
+	}
+	
+	@Override
+	public boolean removeTeam(Team team) {
+		if (team == null) {
+			return false;
+		}
+		
+		teams.remove(team);
+		return true;
 	}
 	
 	@Override
@@ -404,6 +452,11 @@ public class GameComponents implements IGameComponents {
 	
 	@Override
 	public boolean hasTeam(ChatColor color) {
+		return hasTeam(Color.byChatColor(color));
+	}
+	
+	@Override
+	public boolean hasTeam(Color color) {
 		for (Team team : teams) {
 			if (team.getColor() == color)
 				return true;
@@ -419,14 +472,6 @@ public class GameComponents implements IGameComponents {
 	@Override
 	public List<Team> getTeams() {
 		return teams;
-	}
-	
-	public Set<String> getTeamColors() {
-		Set<String> set = new HashSet<String>();
-		for (Team team : teams)
-			set.add(team.getColor() + Util.formatMaterialName(team.getColor().name()));
-		
-		return set;
 	}
 	
 	@Override

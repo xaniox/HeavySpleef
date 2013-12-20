@@ -85,7 +85,7 @@ notASign: &cNicht alle Bl\u00F6cke in dieser Auswahl sind Schilder!
 noSpleefHubSet: &cEs wurde kein Spleef-HUB gesetzt...
 notLookingAtPortal: &cDu schaust auf kein Portal...
 
-teamNeedMorePlayers: &cDas Team %a braucht mindestens %a Spieler!
+teamNeedMorePlayers: &cDas Team %a &cbraucht mindestens %a Spieler!
 maxPlayersInTeam: &cDie maximale Spieleranzahl ist bereits in diesem Team!
 minimumTwoTeams: &cEs werden minimum zwei Teams ben\u00F6tigt um das Spiel zu starten!
 invalidTeam: &cDieses Team ist ung\u00FCltig

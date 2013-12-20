@@ -19,8 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,9 +26,10 @@ import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Team;
+import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -51,15 +50,9 @@ public class CommandTeamFlag extends HSCommand {
 		}
 		
 		Game game = GameManager.getGame(args[0]);
-		ChatColor color = null;
-		
-		for (ChatColor c : Team.allowedColors) {
-			if (args[1].equalsIgnoreCase(c.name()))
-				color = c;
-		}
-		
-		if (color == null || !game.getComponents().hasTeam(color)) {
-			player.sendMessage(getUsage());
+		Team team = game.getComponents().getTeam(Color.byName(args[1]));
+		if (team == null) {
+			sender.sendMessage(getUsage());
 			return;
 		}
 		
@@ -77,22 +70,20 @@ public class CommandTeamFlag extends HSCommand {
 		
 		if (args[2].equalsIgnoreCase("maxplayers")) {
 			if (clear) {
-				game.getComponents().getTeam(color).setMaxPlayers(0);
+				team.setMaxPlayers(0);
 				player.sendMessage(_("flagCleared", "maxplayers"));
-				return;
+			} else {
+				team.setMaxPlayers(number);
+				player.sendMessage(_("flagSet", "maxplayers"));
 			}
-			
-			game.getComponents().getTeam(color).setMaxPlayers(number);
-			player.sendMessage(_("flagSet", "maxplayers"));
 		} else if (args[2].equalsIgnoreCase("minplayers")) {
 			if (clear) {
-				game.getComponents().getTeam(color).setMinPlayers(0);
+				team.setMinPlayers(0);
 				player.sendMessage(_("flagCleared", "minplayers"));
-				return;
+			} else {
+				team.setMinPlayers(number);
+				player.sendMessage(_("flagSet", "minplayers"));
 			}
-			
-			game.getComponents().getTeam(color).setMinPlayers(number);
-			player.sendMessage(_("flagSet", "minplayers"));
 		} else player.sendMessage(getUsage());
 	}
 

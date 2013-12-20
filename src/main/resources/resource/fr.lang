@@ -81,7 +81,7 @@ notASign: &cCertains blocs de cette selections ne sont pas des panneaux!!
 noSpleefHubSet: &cLe Spleef-HUB n'est pas défini!
 notLookingAtPortal: &cVous ne regardez pas un portail!
 
-teamNeedMorePlayers: &cLa team %a a besoin d'au moins %a joueurs!
+teamNeedMorePlayers: &cLa team %a &ca besoin d'au moins %a joueurs!
 maxPlayersInTeam: &cLe nombre maximum de joueurs dans cette team est atteind! Choisissez en une autre!
 minimumTwoTeams: &cIl faut au moins 2 team pour commencer la partie!
 invalidTeam: &cCette team est invalide!
