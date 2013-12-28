@@ -73,11 +73,23 @@ public class SelectionListener implements Listener {
 	}
 	
 	public void addFirstSelection(Location loc, Player player) {
-		selManager.getSelection(player).setFirst(loc);
+		Selection selection = selManager.getSelection(player);
+		
+		if (selection.getFirst() != null && selection.getFirst().equals(loc)) {
+			return;
+		}
+		
+		selection.setFirst(loc);
 		player.sendMessage(ChatColor.DARK_BLUE + "First point set (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")");
 	}
 	
 	public void addSecondSelection(Location loc, Player player) {
+		Selection selection = selManager.getSelection(player);
+		
+		if (selection.getSecond() != null && selection.getSecond().equals(loc)) {
+			return;
+		}
+		
 		selManager.getSelection(player).setSecond(loc);
 		player.sendMessage(ChatColor.DARK_BLUE + "Second point set (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")");
 	}
