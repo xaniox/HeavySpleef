@@ -24,10 +24,6 @@ import static de.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
 import static de.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
 import static de.matzefratze123.heavyspleef.core.flag.FlagType.TEAM;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -41,18 +37,15 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameComponents;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
-import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.VaultHook;
-import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.PvPTimerManager;
-import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.PLAYER)
 public class CommandJoin extends HSCommand {

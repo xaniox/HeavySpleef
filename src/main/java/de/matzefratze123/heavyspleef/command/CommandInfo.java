@@ -19,9 +19,7 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -37,6 +35,7 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.util.Permissions;
+import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
 public class CommandInfo extends HSCommand {
@@ -58,28 +57,32 @@ public class CommandInfo extends HSCommand {
 		Game game = GameManager.getGame(args[0]);
 		
 		player.sendMessage(ChatColor.YELLOW + "Name: " + game.getName() + ChatColor.GRAY + ", type: " + game.getType().name());
-		if (game.getFlags().size() > 0)
-			player.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Flags: " + ChatColor.BLUE + parseFlags(game));
+		if (game.getFlags().size() > 0) {
+			player.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Flags: " + ChatColor.BLUE + getFriendlyFlagInfo(game));
+		}
 		
 		player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Floors:");
 		for (IFloor floor : game.getComponents().getFloors()) {
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "# " + floor.asPlayerInfo());
 		}
+		
 		player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "Losezones:");
 		for (LoseZone zone : game.getComponents().getLoseZones()) {
 			player.sendMessage(ChatColor.YELLOW + "# " + zone.asInfo());
 		}
 	}
 	
-	private Set<String> parseFlags(Game game) {
+	private String getFriendlyFlagInfo(Game game) {
 		Map<Flag<?>, Object> flags = game.getFlags();
-		Set<String> set = new HashSet<String>();
+		String[] info = new String[flags.size()];
 		
+		int i = 0;
 		for (Flag<?> flag : flags.keySet()) {
-			set.add(flag.toInfo(flags.get(flag)));
+			info[i] = flag.toInfo(flags.get(flag));
+			i++;
 		}
 		
-		return set;
+		return Util.toFriendlyString(info, ", ");
 	}
 
 	@Override
