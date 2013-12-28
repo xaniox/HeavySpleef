@@ -42,7 +42,6 @@ import de.matzefratze123.heavyspleef.signs.SpleefSign;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
-import de.matzefratze123.heavyspleef.util.Util;
 
 public class SpleefSignJoin implements SpleefSign {
 
@@ -67,6 +66,12 @@ public class SpleefSignJoin implements SpleefSign {
 			}
 			
 			Game game = GameManager.getGame(lines[2]);
+			
+			if (!player.getBukkitPlayer().hasPermission(Permissions.SIGN_JOIN.getPerm())
+			 && !player.getBukkitPlayer().hasPermission(Permissions.SIGN_JOIN.getPerm() + "." + game.getName().toLowerCase())) {
+				return;
+			}
+			
 			Team team;
 			
 			//Check teams
@@ -114,7 +119,7 @@ public class SpleefSignJoin implements SpleefSign {
 
 	@Override
 	public Permissions getPermission() {
-		return Permissions.SIGN_JOIN;
+		return null;
 	}
 
 	@Override
