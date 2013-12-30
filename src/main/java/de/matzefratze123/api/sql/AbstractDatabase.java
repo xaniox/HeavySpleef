@@ -9,8 +9,7 @@ import java.util.Set;
 import org.bukkit.plugin.Plugin;
 
 /**
- * This class represents an abstract database.
- * This class is extended by a specific database class (e.g. MySQL, SQLite...)
+ * This class represents an abstract database
  * 
  * @author matzefratze123
  */
@@ -27,17 +26,20 @@ public abstract class AbstractDatabase {
 	 */
 	public AbstractDatabase(Plugin plugin) {
 		this.plugin = plugin;
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				close();
+			}
+		}));
 	}
 	
 	/**
 	 * Creates and tries to establish a connection to the sql server
 	 */
 	public abstract void connect();
-	
-	/**
-	 * Gets the type of this database
-	 */
-	public abstract SQLType getDatabaseType();
 	
 	/**
 	 * Returns the instance of the connection, created with {@link #connect()}
@@ -170,13 +172,6 @@ public abstract class AbstractDatabase {
 		NO_DRIVERS,
 		FAILED_TO_CONNECT,
 		SUCCESS;
-		
-	}
-
-	public static enum SQLType {
-		
-		SQ_LITE,
-		MYSQL;
 		
 	}
 	
