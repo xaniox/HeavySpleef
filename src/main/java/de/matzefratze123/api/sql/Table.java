@@ -1,20 +1,20 @@
 /**
- *   HeavySpleef - Advanced spleef plugin for bukkit
- *   
- *   Copyright (C) 2013 matzefratze123
+ * HeavySpleef - Advanced spleef plugin for bukkit
  *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ * Copyright (C) 2013 matzefratze123
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
 package de.matzefratze123.api.sql;
@@ -35,37 +35,39 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 public class Table {
-	
-	private Plugin plugin;
-	private AbstractDatabase database;
-	private String name;
-	
+
+	private Plugin				plugin;
+	private AbstractDatabase	database;
+	private String				name;
+
 	Table(Plugin plugin, AbstractDatabase database, String name) {
 		this.plugin = plugin;
 		this.database = database;
 		this.name = name;
 	}
-	
+
 	/**
 	 * Selects a data-set of this table
 	 * 
-	 * @param selection The selection
-	 * @param where A "where" clause where the key is the column and the value the row data-set
-	 * 
+	 * @param selection
+	 *            The selection
+	 * @param where
+	 *            A "where" clause where the key is the column and the value the
+	 *            row data-set
 	 * @return A ResultSet containing all datasets of this selection
 	 */
 	public SQLResult select(String selection, Map<String, Object> where) {
 		String whereClause = parseWhereClause(where);
 		Statement statement = null;
-		
+
 		try {
 			Connection conn = database.getConnection();
 			statement = conn.createStatement();
-			
+
 			if (selection.trim().equalsIgnoreCase("*") || selection.trim().equalsIgnoreCase("all")) {
 				selection = "*";
 			}
-			
+
 			ResultSet result = statement.executeQuery("SELECT " + selection + " FROM " + name + (whereClause == null ? "" : whereClause));
 			return new SQLResult(plugin, statement, result);
 		} catch (SQLException e) {
@@ -73,121 +75,128 @@ public class Table {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Selects a data-set of this table
 	 * 
-	 * @param selection The selection
+	 * @param selection
+	 *            The selection
 	 * @return A SQLResult containing all datasets of this selection
-	 * 
 	 * @see #select(String, Map)
 	 */
 	public SQLResult select(String selection) {
 		return select(selection, null);
 	}
-	
+
 	/**
 	 * Selects all of the database
+	 * 
 	 * @return A SQLResult containing all datasets of the table
 	 */
 	public SQLResult selectAll() {
 		return select("*");
 	}
-	
+
 	/**
-	 * Inserts or updates values in the table. If there is no entry
-	 * yet, it will insert the data otherwise it updates the data
+	 * Inserts or updates values in the table. If there is no entry yet, it will
+	 * insert the data otherwise it updates the data
 	 * 
-	 * @param values The values to insert
-	 * @param where A where clause, key as the column name value as the field value
+	 * @param values
+	 *            The values to insert
+	 * @param where
+	 *            A where clause, key as the column name value as the field
+	 *            value
 	 */
 	public int insertOrUpdate(Map<String, Object> values, Map<String, Object> where) {
 		int result = Statement.EXECUTE_FAILED;
-		
+
 		Statement statement = null;
-		
+
 		try {
 			Connection conn = database.getConnection();
 			statement = conn.createStatement();
-			
+
 			if (hasRow(where)) {
-				//Update part syntax beginn
+				// Update part syntax beginn
 				String parts[] = new String[values.size()];
 				Set<String> keys = values.keySet();
-				
+
 				int c = 0;
 				for (String key : keys) {
 					Object value = values.get(key);
-					
+
 					parts[c] = key + " = '" + value + "'";
 					c++;
 				}
-				
+
 				String update = SQLUtils.toFriendlyString(parts, ", ");
-				//Update Part syntax end
+				// Update Part syntax end
 				String whereClause = parseWhereClause(where);
-				
+
 				result = statement.executeUpdate("UPDATE " + name + " SET " + update + (whereClause == null ? "" : whereClause));
 			} else {
 				String friendlyKeySet = SQLUtils.toFriendlyString(values.keySet(), ", ");
 				String friendlyValueSet = SQLUtils.toFriendlyString(values.values(), "', '");
-				
-				//Ticks am Ende und anfang hinzufügen
+
+				// Ticks am Ende und anfang hinzufügen
 				friendlyValueSet += "'";
 				friendlyValueSet = "'" + friendlyValueSet;
-				
+
 				result = statement.executeUpdate("INSERT INTO " + name + " (" + friendlyKeySet + ") VALUES (" + friendlyValueSet + ")");
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			if (statement != null) {
 				try {
 					statement.close();
-				} catch (SQLException e) {}
+				} catch (SQLException e) {
+				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Checks if the table contains a row
 	 * 
-	 * @param where A where clause, key as the column name value as the field value
+	 * @param where
+	 *            A where clause, key as the column name value as the field
+	 *            value
 	 * @return True if the row exists, false otherwise
 	 */
 	public boolean hasRow(Map<String, Object> where) {
 		StringBuilder builder = new StringBuilder();
 		Iterator<String> iter = where.keySet().iterator();
 		builder.append(" WHERE ");
-		
-		while(iter.hasNext()) {
+
+		while (iter.hasNext()) {
 			String next = iter.next();
 			if (!hasColumn(next)) {
 				continue;
 			}
-			
+
 			Object value = where.get(next);
-			
+
 			builder.append(next).append("=").append(TICK).append(value).append(TICK);
 			if (iter.hasNext())
 				builder.append(" AND ");
 		}
-		
+
 		String whereClause = builder.toString();
-		
+
 		Statement statement = null;
 		ResultSet set = null;
-		
+
 		try {
 			Connection conn = database.getConnection();
 			statement = conn.createStatement();
-			
+
 			set = statement.executeQuery("SELECT * FROM " + name + whereClause);
 			boolean next = set.next();
-			
+
 			return next;
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("SQLException while checking if row exists: " + e.getMessage());
@@ -197,16 +206,17 @@ public class Table {
 				if (statement != null) {
 					statement.close();
 				}
-				
+
 				if (set != null) {
 					set.close();
 				}
-			} catch (SQLException e) {}
+			} catch (SQLException e) {
+			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Checks if this table contains a column with the given name
 	 * 
@@ -214,45 +224,48 @@ public class Table {
 	 */
 	public boolean hasColumn(String column) {
 		ResultSet set = null;
-		
+
 		try {
 			Connection conn = database.getConnection();
 			DatabaseMetaData meta = conn.getMetaData();
 			set = meta.getColumns(null, null, name, column);
-			
+
 			boolean next = set.next();
-			
-			return next; 
+
+			return next;
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("Could not check column " + column + " in table " + name + ": " + e.getMessage());
 		} finally {
 			if (set != null) {
 				try {
 					set.close();
-				} catch (SQLException e) {}
+				} catch (SQLException e) {
+				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Adds a column to this table
 	 * 
-	 * @param name The name of the column
-	 * @param field The type of the column
+	 * @param name
+	 *            The name of the column
+	 * @param field
+	 *            The type of the column
 	 */
 	public int addColumn(String name, Field field) {
 		int result = Statement.EXECUTE_FAILED;
-		
+
 		Statement statement = null;
-		
+
 		try {
 			Connection conn = database.getConnection();
-			
+
 			statement = conn.createStatement();
 			result = statement.executeUpdate("ALTER TABLE " + this.name + " ADD " + name + " " + field);
-			
+
 			statement.close();
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("Could not add column " + name + " to the table " + this.name + ": " + e.getMessage());
@@ -260,13 +273,14 @@ public class Table {
 			if (statement != null) {
 				try {
 					statement.close();
-				} catch (SQLException e) {}
+				} catch (SQLException e) {
+				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets the name of this table
 	 * 
@@ -275,7 +289,7 @@ public class Table {
 	public String getName() {
 		return this.name;
 	}
-	
+
 	/**
 	 * Gets the database of this table
 	 * 
@@ -284,5 +298,5 @@ public class Table {
 	public AbstractDatabase getDatabase() {
 		return this.database;
 	}
-	
+
 }

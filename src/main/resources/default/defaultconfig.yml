@@ -199,11 +199,11 @@ statistic:
   host: 'localhost'
   port: '3306'
   databaseName: ''
-  user: 'root'
+  user: ''
   password: ''
   
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG!
-config-version: 0
+config-version: 1
 
 # How much... No, you've finished the configuration ;)

@@ -125,7 +125,7 @@ public class SpleefSignJoin implements SpleefSign {
 	@Override
 	public void onPlace(SignChangeEvent e) {
 		if (!GameManager.hasGame(e.getLine(2))) {
-			e.getPlayer().sendMessage(HSCommand._("arenaDoesntExists"));
+			e.getPlayer().sendMessage(I18N._("arenaDoesntExists"));
 			e.getBlock().breakNaturally();
 			return;
 		}
@@ -142,7 +142,7 @@ public class SpleefSignJoin implements SpleefSign {
 			e.setLine(3, color.toMessageColorString());
 		}
 		
-		e.getPlayer().sendMessage(HSCommand._("spleefSignCreated"));
+		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
 		
 		StringBuilder builder = new StringBuilder();
 		if (e.getLine(1).startsWith("[")) {

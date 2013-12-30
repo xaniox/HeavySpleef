@@ -8,15 +8,15 @@ import org.bukkit.plugin.Plugin;
 
 /**
  * Represents a sql result
+ * 
  * @author matzefratze123
- *
  */
 public class SQLResult {
-	
-	private Statement statement;
-	private ResultSet result;
-	private Plugin plugin;
-	
+
+	private Statement	statement;
+	private ResultSet	result;
+	private Plugin		plugin;
+
 	/**
 	 * Constructs a new sql result
 	 */
@@ -25,14 +25,14 @@ public class SQLResult {
 		this.statement = statement;
 		this.result = result;
 	}
-	
+
 	/**
 	 * Gets the ResultSet
 	 */
 	public ResultSet getResultSet() {
 		return result;
 	}
-	
+
 	/**
 	 * Closes and releases any connection associated with the result set
 	 */
@@ -45,5 +45,5 @@ public class SQLResult {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
