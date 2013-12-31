@@ -83,10 +83,10 @@ public abstract class GuiInventory implements Listener {
 		GuiInventorySlot[][] oldSlots = slots.clone();
 		slots = new GuiInventorySlot[lines][];
 
-		for (int y = 0; y < oldSlots.length; y++) {
+		for (int y = 0; y < oldSlots.length && y < slots.length; y++) {
 			slots[y] = new GuiInventorySlot[SLOTS_PER_LINE];
 
-			for (int x = 0; x < oldSlots[y].length; x++) {
+			for (int x = 0; x < oldSlots[y].length && y < slots[y].length; x++) {
 				if (y < oldSlots.length && x < oldSlots[y].length) {
 					slots[y][x] = oldSlots[y][x];
 				} else {
