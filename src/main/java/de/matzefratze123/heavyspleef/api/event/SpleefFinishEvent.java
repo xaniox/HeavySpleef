@@ -75,7 +75,7 @@ public class SpleefFinishEvent extends SpleefEvent {
 	 * has ended in a draw!</b>
 	 * 
 	 * @return The winner, or null
-	 * @deprecated Deprecated due to {@link getSpleefWinner()}
+	 * @deprecated Deprecated due to {@link #getSpleefWinner()}
 	 */
 	@Deprecated
 	public Player getWinner() {

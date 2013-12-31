@@ -75,8 +75,7 @@ public class CachedStatistics {
 	/**
 	 * Caches and returns the statistic
 	 * 
-	 * @param holder
-	 * @return
+	 * @param holder The holder of the statistic
 	 */
 	public StatisticModule cacheStatistic(String holder) {
 		try {

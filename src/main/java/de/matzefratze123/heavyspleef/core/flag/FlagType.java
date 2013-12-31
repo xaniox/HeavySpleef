@@ -152,7 +152,8 @@ public enum FlagType {
 	 * @see IntegerFlag
 	 * @see BooleanFlag
 	 * @see EnumFlag
-	 * @see ArrayItemStackFlag
+	 * @see ListFlag
+	 * @see ItemStackFlag
 	 * @see LocationFlag
 	 */
 	public static void registerFlag(Flag<?> flag) {

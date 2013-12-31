@@ -34,8 +34,9 @@ import de.matzefratze123.heavyspleef.database.FlagSerializeable;
  * @see IntegerFlag
  * @see BooleanFlag
  * @see EnumFlag
- * @see ArrayItemStackFlag
+ * @see ListFlag
  * @see LocationFlag
+ * @see ItemStackFlag
  * 
  * @author matzefratze123
  *

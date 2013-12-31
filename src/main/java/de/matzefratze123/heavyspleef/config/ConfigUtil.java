@@ -42,7 +42,7 @@ public class ConfigUtil {
 	 * Gets an broadcast type from the config.
 	 * Internal method
 	 * 
-	 * @param name The config message name
+	 * @param msgType The config message name
 	 */
 	public static BroadcastType getBroadcast(MessageType msgType) {
 		return HeavySpleef.getSystemConfig().getMessagesSection().getBroadcastType(msgType);

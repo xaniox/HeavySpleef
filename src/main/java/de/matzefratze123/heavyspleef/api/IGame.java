@@ -129,15 +129,11 @@ public interface IGame {
 	
 	/**
 	 * Gets all ingame players
-	 * 
-	 * @return
 	 */
 	public List<SpleefPlayer> getIngamePlayers();
 	
 	/**
 	 * Gets all out players
-	 * 
-	 * @return
 	 */
 	public List<OfflinePlayer> getOutPlayers();
 	
@@ -161,14 +157,11 @@ public interface IGame {
 	 * Checks if this game has a flag
 	 * 
 	 * @param flag The flag to check
-	 * @return
 	 */
 	public boolean hasFlag(Flag<?> flag);
 	
 	/**
 	 * Gets all flags 
-	 * 
-	 * @return
 	 */
 	public Map<Flag<?>, Object> getFlags();
 	
@@ -177,7 +170,6 @@ public interface IGame {
 	 * 
 	 * @param player The player to check
 	 * @param location The location to check
-	 * @return
 	 */
 	public boolean canSpleef(SpleefPlayer player, Location location);
 	
@@ -198,8 +190,6 @@ public interface IGame {
 	
 	/**
 	 * Gets the state of this game
-	 * 
-	 * @return
 	 */
 	public GameState getGameState();
 	
@@ -212,8 +202,6 @@ public interface IGame {
 	
 	/**
 	 * Gets the queue of this game
-	 * 
-	 * @return
 	 */
 	public GameQueue getQueue();
 

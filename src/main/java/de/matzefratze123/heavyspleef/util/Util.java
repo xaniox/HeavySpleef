@@ -188,7 +188,7 @@ public class Util {
 	 * Turns the given array into a friendly (for users) readable string with the
 	 * given seperator.
 	 * 
-	 * @param iterable The array to format
+	 * @param o The array to format
 	 * @param seperator The seperator between elements
 	 * 
 	 * @see #toFriendlyString(Iterable, String)
