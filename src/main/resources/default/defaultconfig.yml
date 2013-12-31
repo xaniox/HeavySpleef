@@ -8,7 +8,7 @@
 
 # Should the plugin be able to download a new version of
 # HeavySpleef if there is an update available? (/spleef update)
-# You'll find updates in the folder /plugins/update
+# You'll find updates in the folder plugins/update
 # The plugin will be auto installed by bukkit at the next
 # server reload / restart...
 auto-update: true
@@ -42,9 +42,6 @@ general:
   - /msg
   - /tell
   
-  # How long should the countdown between a round be?
-  countdownBetweenRound: 5
-  
   # Should the autostart-vote feature be enabled?
   autostart-vote-enabled: true
   
@@ -54,6 +51,11 @@ general:
   # to autostart the game (Only if you don't want to
   # use /spleef start)
   autostart-vote: 70
+  
+  # This is the ready block for players who don't want to use
+  # /spleef ready or /spleef vote
+  # (Hit the block)
+  ready-block: IRON_BLOCK
   
   # A list of vips on your server
   # Vip's will have a dark red name
@@ -69,11 +71,6 @@ general:
   # to wait until they can join a spleef game. 
   # Set this to 0 to disable this function
   pvptimer: 0
-  
-  # This is the ready block for players who don't want to use
-  # /spleef ready or /spleef vote
-  # (Hit the block)
-  ready-block: IRON_BLOCK
   
 leaderboard:
   # Points for Spleef Games

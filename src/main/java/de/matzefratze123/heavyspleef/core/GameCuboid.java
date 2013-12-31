@@ -110,7 +110,7 @@ public class GameCuboid extends Game {
 			Bukkit.broadcastMessage(msg);
 			break;
 		case RADIUS:
-			int radius = HeavySpleef.getSystemConfig().getInt("general.broadcast-radius", 40);
+			int radius = HeavySpleef.getSystemConfig().getGeneralSection().getBroadcastRadius();
 			int radiusSqared = radius * radius;
 			Location[] corners = get4Points();
 			

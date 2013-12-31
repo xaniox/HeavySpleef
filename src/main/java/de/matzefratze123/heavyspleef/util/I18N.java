@@ -51,21 +51,21 @@ public class I18N {
 	 * Loads the language file from the given language in the config.yml
 	 */
 	public static void loadLanguageFiles() {
-		boolean fromFile = HeavySpleef.getSystemConfig().getBoolean("language.editable");
+		boolean fromFile = HeavySpleef.getSystemConfig().getLanguageSection().isEditableFiles();
 		if (fromFile)
 			copyLanguageFiles();
 		File languageFolder = new File(HeavySpleef.getInstance().getDataFolder().getPath() + "/language");
 		languageFolder.mkdirs();
 		
-		String language = HeavySpleef.getSystemConfig().getString("language.language", "en");
+		Language language = HeavySpleef.getSystemConfig().getLanguageSection().getLanguage();
 		setLocale(language, fromFile);
 	}
 	
-	private static void setLocale(String locale, boolean fromFile) {
+	private static void setLocale(Language locale, boolean fromFile) {
 		File langFile = null;
 		
 		if (fromFile) {
-			langFile = new File("plugins/HeavySpleef/language/" + locale + ".lang");
+			langFile = new File("plugins/HeavySpleef/language/" + locale.getLanguageCode() + ".lang");
 			if (!langFile.exists())
 				langFile = null;
 		}
@@ -73,29 +73,14 @@ public class I18N {
 		try {
 			InputStream stream;
 			if (langFile == null || !fromFile) {
-				stream = HeavySpleef.class.getResourceAsStream("/resource/" + locale + ".lang");
+				stream = HeavySpleef.class.getResourceAsStream("/resource/" + locale.getLanguageCode() + ".lang");
 			} else {
 				stream = new FileInputStream(langFile);
 			}
 			
 			if (stream == null) {
-				stream = I18N.class.getResourceAsStream("/resource/en.lang");
+				stream = I18N.class.getResourceAsStream("/resource/" + Language.ENGLISH.getCountryCode() + ".lang");
 			}
-			
-			/* Debug start */
-			
-			/*JarFile jar = new JarFile("plugins/HeavySpleef.jar");
-			Enumeration<JarEntry> entries = jar.entries();
-			
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				
-				System.out.println(entry.getName());
-			}
-			
-			jar.close();*/
-			
-			/* Debug end */
 			
 			InputStreamReader streamReader = new InputStreamReader(stream, Charset.forName("UTF-8"));
 			BufferedReader reader = new BufferedReader(streamReader);
@@ -199,6 +184,50 @@ public class I18N {
 			message = message.replaceFirst("%a", parts[i]);
 		}
 		return message;
+	}
+	
+	public enum Language {
+		
+		ENGLISH("en", "US"),
+		GERMAN("de", "DE"),
+		FRANCE("fr", "FR"),
+		RUSSIAN("ru", "RU"),
+		CUSTOM("", "");
+		
+		private String languageCode;
+		private String countryCode;
+		
+		private Language(String languageCode, String countryCode) {
+			this.languageCode = languageCode;
+			this.countryCode = countryCode;
+		}
+		
+		public void setLanguageCode(String languageCode) {
+			this.languageCode = languageCode;
+		}
+		
+		public String getLanguageCode() {
+			return languageCode;
+		}
+		
+		public String getCountryCode() {
+			return countryCode;
+		}
+		
+		public void setCountryCode(String countryCode) {
+			this.countryCode = countryCode;
+		}
+		
+		public static Language byLanguageCode(String code) {
+			for (Language lang : values()) {
+				if (lang.getLanguageCode().equalsIgnoreCase(code)) {
+					return lang;
+				}
+			}
+			
+			return null;
+		}
+		
 	}
 
 }

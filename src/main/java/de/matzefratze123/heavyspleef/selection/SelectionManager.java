@@ -22,13 +22,11 @@ package de.matzefratze123.heavyspleef.selection;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
-import de.matzefratze123.heavyspleef.util.Logger;
 
 /**
  * Contains selections for players
@@ -47,25 +45,7 @@ public class SelectionManager {
 	}
 	
 	public void setup() {
-		String wandType = HeavySpleef.getSystemConfig().getString("general.wandType");
-		
-		if (wandType == null || (!wandType.equalsIgnoreCase("HeavySpleef") && !wandType.equalsIgnoreCase("WorldEdit"))) {
-			Logger.info("Invalid wand type found! " + wandType + " is not permitted! Setting to HeavySpleef selection...");
-			this.type = WandType.HEAVYSPLEEF;
-			return;
-		}
-		
-		if (wandType.equalsIgnoreCase("WorldEdit")) {
-			if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
-				Logger.info("WorldEdit wand in the config was found, but no WorldEdit?! Setting to HeavySpleef...");
-				this.type = WandType.HEAVYSPLEEF;
-				return;
-			}
-			
-			type = WandType.WORLDEDIT;
-		} else {
-			type = WandType.HEAVYSPLEEF;
-		}
+		type = HeavySpleef.getSystemConfig().getGeneralSection().getWandType();
 	}
 	
 	public Selection getSelection(Player player) {

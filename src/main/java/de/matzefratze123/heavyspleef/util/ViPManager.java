@@ -32,7 +32,7 @@ public class ViPManager {
 	public static String[] baseVips = new String[] {"matzefratze123", "x3Fawkesx3", "HeavyRain900", "benfire1"};
 	
 	public static void initVips() {
-		List<String> serverVips = HeavySpleef.getSystemConfig().getStringList("general.vip");
+		List<String> serverVips = HeavySpleef.getSystemConfig().getGeneralSection().getVips();
 		
 		List<String> allVips = ArrayHelper.mergeArrays(serverVips.toArray(new String[serverVips.size()]), baseVips);
 		baseVips = allVips.toArray(new String[allVips.size()]);

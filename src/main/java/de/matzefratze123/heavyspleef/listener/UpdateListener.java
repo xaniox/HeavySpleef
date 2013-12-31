@@ -35,7 +35,7 @@ public class UpdateListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
 		
-		if (!HeavySpleef.getSystemConfig().getBoolean("auto-update")) {
+		if (!HeavySpleef.getSystemConfig().getRootSection().isAutoUpdate()) {
 			return;
 		}
 		if (!player.hasPermission(Permissions.UPDATE_PLUGIN.getPerm())) {

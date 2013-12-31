@@ -27,7 +27,6 @@ import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.config.FileConfig;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -41,7 +40,7 @@ public class CommandReload extends HSCommand {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		long millis = System.currentTimeMillis();
-		new FileConfig(plugin);//Create a new config if the file was deleted
+		HeavySpleef.getSystemConfig().reload();
 		plugin.reloadConfig();//First reload our config
 		
 		HeavySpleef.PREFIX = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("general.spleef-prefix", HeavySpleef.PREFIX));

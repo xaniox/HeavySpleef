@@ -17,26 +17,20 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package de.matzefratze123.heavyspleef.core.task;
+package de.matzefratze123.heavyspleef.config.sections;
 
-import de.matzefratze123.heavyspleef.config.ConfigUtil;
-import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.util.I18N;
+import org.bukkit.configuration.ConfigurationSection;
 
-public class RegenerationTask implements Runnable {
+import de.matzefratze123.heavyspleef.config.SpleefConfig;
+
+public interface SettingsSection {
 	
-	public static final String TASK_ID_KEY = "regenTask";
-	private Game game;
+	public SpleefConfig getConfig();
 	
-	public RegenerationTask(Game game) {
-		this.game = game;
-	}
+	public ConfigurationSection getSection();
 	
-	@Override
-	public void run() {
-		game.getComponents().regenerateFloors();
-		game.broadcast(I18N._("floorsRegenerated"), ConfigUtil.getBroadcast(MessageType.FLOOR_REGENERATION));
-	}
+	public Object getValue(String path);
+	
+	public void reload();
 	
 }

@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
+import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -58,7 +59,7 @@ public class CommandEnable extends HSCommand {
 		}
 		
 		game.enable();
-		game.broadcast(_("gameEnabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("game-enable"));
+		game.broadcast(_("gameEnabled", game.getName(), ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast(MessageType.GAME_ENABLE));
 		player.sendMessage(_("gameEnabledToPlayer", game.getName()));
 	
 	}

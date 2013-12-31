@@ -48,7 +48,7 @@ public class CommandVote extends HSCommand {
 		Player bukkitPlayer = (Player)sender;
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
 		
-		if (!HeavySpleef.getSystemConfig().getBoolean("general.autostart-vote-enabled", true)) {
+		if (!HeavySpleef.getSystemConfig().getGeneralSection().isVotesEnabled()) {
 			player.sendMessage(_("votesDisabled"));
 			return;
 		}
@@ -73,7 +73,7 @@ public class CommandVote extends HSCommand {
 	}
 	
 	public static void tryStart(Game game) {
-		int percentNeeded = HeavySpleef.getSystemConfig().getInt("general.autostart-vote", 70);
+		int percentNeeded = HeavySpleef.getSystemConfig().getGeneralSection().getVotesNeeded();
 		int minPlayers = game.getFlag(FlagType.MINPLAYERS);
 		List<SpleefPlayer> ingame = game.getIngamePlayers();
 		

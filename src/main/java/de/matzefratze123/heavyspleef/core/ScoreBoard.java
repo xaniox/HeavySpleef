@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,7 +34,6 @@ import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.database.Parser;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
-import de.matzefratze123.heavyspleef.util.Logger;
 
 public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 	
@@ -157,8 +155,8 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 	
 	private void generateColons() {
 		for (Location colonPart : colon) {
-			colonPart.getBlock().setType(SegmentDisplay.fontData.getMaterial());
-			colonPart.getBlock().setData(SegmentDisplay.fontData.getData());
+			colonPart.getBlock().setType(displays[0].getFontData().getMaterial());
+			colonPart.getBlock().setData(displays[0].getFontData().getData());
 		}
 	}
 	
@@ -189,7 +187,7 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 	}
 	
 	private void generateBlankBoard() {
-		generateBlankBoard(SegmentDisplay.baseData);
+		generateBlankBoard(displays[0].getCanvasData());
 	}
 	
 	public void remove() {
@@ -263,48 +261,12 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 		
 		private static final char[] SEGMENTS = new char[] {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
 		
-		private static SimpleBlockData fontData = new SimpleBlockData(Material.WOOL, (byte)14);
-		private static SimpleBlockData baseData = new SimpleBlockData(Material.WOOL, (byte)15);
-		private static boolean dataInitialized = false;
-		
 		private Location firstPointLocation;
-		
 		private BlockFace direction;
-		
-		static {
-			if (!dataInitialized) {
-				dataInitialized = true;
-				
-				try {
-					String[] fontParts = HeavySpleef.getSystemConfig().getString("scoreboards.fontID").split(":");
-					String[] baseParts = HeavySpleef.getSystemConfig().getString("scoreboards.baseID").split(":");
-					
-					byte data = 0;
-					
-					if (fontParts.length > 1) {
-						data = Byte.parseByte(fontParts[1]);
-					}
-					
-					fontData = new SimpleBlockData(Integer.parseInt(fontParts[0]), data);
-					
-					data = 0;
-					
-					if (baseParts.length > 1) {
-						data = Byte.parseByte(baseParts[1]);
-					}
-					
-					baseData = new SimpleBlockData(Integer.parseInt(baseParts[0]), data);
-				} catch (Exception e) {
-					Logger.warning("Could not read scoreboard id and data. Changing to default!");
-				}
-			}
-		}
 		
 		public SegmentDisplay(Location firstPointLocation, BlockFace direction) {
 			this.direction = direction;
 			this.firstPointLocation = firstPointLocation;
-			
-			
 		}
 		
 		public void setSegment(char segment, boolean state) {
@@ -350,11 +312,11 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
-					currentBlock.setType(fontData.getMaterial());
-					currentBlock.setData(fontData.getData());
+					currentBlock.setType(getFontData().getMaterial());
+					currentBlock.setData(getFontData().getData());
 				} else {
-					currentBlock.setType(baseData.getMaterial());
-					currentBlock.setData(baseData.getData());
+					currentBlock.setType(getCanvasData().getMaterial());
+					currentBlock.setData(getCanvasData().getData());
 				}
 				
 				currentBlock = currentBlock.getRelative(direction);
@@ -371,11 +333,11 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
-					currentBlock.setType(fontData.getMaterial());
-					currentBlock.setData(fontData.getData());
+					currentBlock.setType(getFontData().getMaterial());
+					currentBlock.setData(getFontData().getData());
 				} else {
-					currentBlock.setType(baseData.getMaterial());
-					currentBlock.setData(baseData.getData());
+					currentBlock.setType(getCanvasData().getMaterial());
+					currentBlock.setData(getCanvasData().getData());
 				}
 				
 				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
@@ -396,11 +358,11 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
-					currentBlock.setType(fontData.getMaterial());
-					currentBlock.setData(fontData.getData());
+					currentBlock.setType(getFontData().getMaterial());
+					currentBlock.setData(getFontData().getData());
 				} else {
-					currentBlock.setType(baseData.getMaterial());
-					currentBlock.setData(baseData.getData());
+					currentBlock.setType(getCanvasData().getMaterial());
+					currentBlock.setData(getCanvasData().getData());
 				}
 				
 				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
@@ -417,11 +379,11 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
-					currentBlock.setType(fontData.getMaterial());
-					currentBlock.setData(fontData.getData());
+					currentBlock.setType(getFontData().getMaterial());
+					currentBlock.setData(getFontData().getData());
 				} else {
-					currentBlock.setType(baseData.getMaterial());
-					currentBlock.setData(baseData.getData());
+					currentBlock.setType(getCanvasData().getMaterial());
+					currentBlock.setData(getCanvasData().getData());
 				}
 				
 				currentBlock = currentBlock.getRelative(direction);
@@ -437,11 +399,11 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
-					currentBlock.setType(fontData.getMaterial());
-					currentBlock.setData(fontData.getData());
+					currentBlock.setType(getFontData().getMaterial());
+					currentBlock.setData(getFontData().getData());
 				} else {
-					currentBlock.setType(baseData.getMaterial());
-					currentBlock.setData(baseData.getData());
+					currentBlock.setType(getCanvasData().getMaterial());
+					currentBlock.setData(getCanvasData().getData());
 				}
 				
 				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
@@ -453,11 +415,11 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
-					currentBlock.setType(fontData.getMaterial());
-					currentBlock.setData(fontData.getData());
+					currentBlock.setType(getFontData().getMaterial());
+					currentBlock.setData(getFontData().getData());
 				} else {
-					currentBlock.setType(baseData.getMaterial());
-					currentBlock.setData(baseData.getData());
+					currentBlock.setType(getCanvasData().getMaterial());
+					currentBlock.setData(getCanvasData().getData());
 				}
 				
 				currentBlock = currentBlock.getRelative(BlockFace.DOWN);
@@ -473,15 +435,23 @@ public class ScoreBoard extends RegionCuboid implements DatabaseSerializeable {
 			
 			for (int i = 0; i < 3; i++) {
 				if (state) {
-					currentBlock.setType(fontData.getMaterial());
-					currentBlock.setData(fontData.getData());
+					currentBlock.setType(getFontData().getMaterial());
+					currentBlock.setData(getFontData().getData());
 				} else {
-					currentBlock.setType(baseData.getMaterial());
-					currentBlock.setData(baseData.getData());
+					currentBlock.setType(getCanvasData().getMaterial());
+					currentBlock.setData(getCanvasData().getData());
 				}
 				
 				currentBlock = currentBlock.getRelative(direction);
 			}
+		}
+		
+		private SimpleBlockData getFontData() {
+			return HeavySpleef.getSystemConfig().getScoreboardSection().getFontData();
+		}
+		
+		private SimpleBlockData getCanvasData() {
+			return HeavySpleef.getSystemConfig().getScoreboardSection().getCanvasData();
 		}
 		
 	}

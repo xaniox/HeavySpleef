@@ -1,7 +1,7 @@
 /**
- *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   StaffInformer - Inform players about online staff
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,158 +27,214 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.commons.lang.Validate;
+import org.bukkit.ChatColor;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 
-/**
- * This class manages the dynamic loading of a language file.
- * 
- * @author matzefratze123
- */
 public class I18NNew {
-
-	private static Map<String, String> messages = new HashMap<String, String>();
-	private static String locale;
-	private static boolean dynamic;
-
-	private static final File langFolder = new File(HeavySpleef.getInstance().getDataFolder(), "language");
-	private static final String[] languages = new String[] { "en", "de", "fr", "ru" };
-
+	
+	private static final String         ARGUMENT_TARGET = "%a";     
+	
+	private static final String         MESSAGES_FILE   = "messages.xml";
+	private static final String         MESSAGES_TAG    = "messages";
+	private static final String         MESSAGE_ENTRY   = "message";
+	private static final String         ENTRY_ENTRY     = "entry";
+	private static final String         ENTRY_NAME      = "name";
+	private static final String         ID_ATTRIBUTE    = "id";
+	
+	private static final char           TRANSLATE_CHAR  = '&';
+	
+	private static boolean              loaded          = false;
+	private static Map<String, String>  messages;
+	
 	static {
-		if (!langFolder.exists()) {
-			langFolder.mkdir();
-		}
-	}
-
-	public static void setupLocale() {
-		dynamic = HeavySpleef.getSystemConfig().getBoolean("language.editable");
-		locale = HeavySpleef.getSystemConfig().getString("language.language", "en");
-
-		if (dynamic) {
-			copyLangFiles();
+		if (messages == null) {
+			messages = new HashMap<String, String>();
 		}
 		
-		loadLanguage(dynamic);
-		Logger.info("Loaded " + locale + " language file.");
+		File dataFolder = HeavySpleef.getInstance().getDataFolder();
+		dataFolder.mkdir();
+		
+		File destFile = new File(dataFolder, MESSAGES_FILE);
+		System.out.println(destFile.getPath());
+		
+		if (!destFile.exists()) {
+			copyLanguageXml(destFile);
+		}
+		
+		if (!loaded) {
+			loaded = true;
+			loadMessages();
+		}
 	}
 	
-	public static void setLocale(String locale) {
-		I18NNew.locale = locale;
+	public static String getMessage(String path, String... args) {
+		String message = messages.get(path);
 		
-		loadLanguage(dynamic);
-		Logger.info("Set the language to " + locale + "!");
+		if (message == null) {
+			return null;
+		}
+		
+		for (String arg : args) {
+			message = replaceFirst(message, ARGUMENT_TARGET, arg);
+		}
+		
+		message = ChatColor.translateAlternateColorCodes(TRANSLATE_CHAR, message);
+		
+		return message;
 	}
-
-	private static void loadLanguage(boolean dynamic) {
-		InputStream inStream;
+	
+	private static void loadMessages() {
+		InputStream inStream = null;
+		
 		try {
-			File dynamicFile = new File(langFolder, locale + ".yml");
-
-			if (dynamic && dynamicFile.exists()) {
-				inStream = new FileInputStream(dynamicFile);
+			File file = new File(HeavySpleef.getInstance().getDataFolder(), MESSAGES_FILE);
+			if (file.exists()) {
+				inStream = new FileInputStream(file);
 			} else {
-				inStream = I18NNew.class.getResourceAsStream("/resource/" + locale + ".yml");
+				inStream = I18NNew.class.getResourceAsStream('/' + MESSAGES_FILE);
 			}
 			
 			if (inStream == null) {
-				//File is null; there is no language resource; try to load english language file
-				inStream = I18NNew.class.getResourceAsStream("/resource/en.yml");
+				throw new IOException("null");
 			}
 			
-			if (inStream == null) {
-				throw new IOException("Completely failed to load language files. Could not get filestream. !!! EXPECT ERRORS !!!");
-			}
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
 			
-			FileConfiguration yml = YamlConfiguration.loadConfiguration(inStream);
+			Document xml = builder.parse(inStream);
+			NodeList nodes = xml.getChildNodes();
 			
-			for (String key : yml.getKeys(true)) {
-				if (yml.isConfigurationSection(key))
-					continue;
+			for (int i = 0; i < nodes.getLength(); i++) {
+				Node node = nodes.item(i);
 				
-				String value = yml.getString(key);
-				messages.put(key, value);
+				if (node.getNodeName().equalsIgnoreCase(MESSAGES_TAG)) {
+					//Messages entry!
+					readEntry(node, "");
+				}
 			}
-			
-			inStream.close();
-		} catch (IOException e) {
-			Logger.severe("[I18N] Could not load language file " + locale + ": " + e.getMessage());
-		}
-	}
-
-	private static void copyLangFiles() {
-		for (String lang : languages) {
-
-			InputStream inStream = null;
-			OutputStream outStream = null;
-
+		} catch (Exception e) {
+			Logger.severe("Failed to load language messages: " + e.getMessage() + ". EXPECT ERRORS!");
+			e.printStackTrace();
+		} finally {
 			try {
-				final String realFilename = lang + ".yml";
-
-				inStream = I18NNew.class.getResourceAsStream("/resource/"
-						+ realFilename);
-
-				if (inStream == null) {
-					continue;
+				if (inStream != null) {
+					inStream.close();
 				}
-
-				File outFile = new File(langFolder, realFilename);
-				if (!outFile.exists()) {
-					outFile.createNewFile();
-				}
-
-				outStream = new FileOutputStream(outFile);
-
-				int read;
-				byte[] buffer = new byte[1024];
-
-				while ((read = inStream.read(buffer)) > 0) {
-					outStream.write(buffer, 0, read);
-				}
-			} catch (IOException e) {
-				Logger.severe("[I18N] Could not load language files: "
-						+ e.getMessage());
-			} finally {
-				try {
-					if (outStream != null) {
-						outStream.flush();
-						outStream.close();
-					}
-
-					if (inStream != null) {
-						inStream.close();
-					}
-				} catch (IOException e) {}
-			}
+			} catch (Exception e) {}
 		}
 	}
 	
-	public static String getMessage(String key, String... replacements) {
-		if (key == null) {
-			return null;
-		}
+	private static void readEntry(Node node, String parentEntry) {
+		NodeList list = node.getChildNodes();
 		
-		String msg = messages.get(key);
-		if (msg == null) {
-			return null;
-		}
-		
-		if (replacements != null) {
-			for (String replacement : replacements) {
-				if (replacement == null) {
+		for (int i = 0; i < list.getLength(); i++) {
+			Node childNode = list.item(i);
+			String nodeName = childNode.getNodeName();
+			
+			if (nodeName.equalsIgnoreCase(MESSAGE_ENTRY)) {
+				NamedNodeMap attributes = childNode.getAttributes();
+				Node idNode = attributes.getNamedItem(ID_ATTRIBUTE);
+				if (idNode == null) {
+					Logger.warning("Warning: No id for message in " + MESSAGES_FILE + ". Ignoring message...");
 					continue;
 				}
 				
-				msg = msg.replaceFirst("%a", replacement);
+				String id = idNode.getNodeValue();
+				String value = childNode.getTextContent();
+				
+				messages.put(parentEntry + id, value);
+			} else if (nodeName.equalsIgnoreCase(ENTRY_ENTRY)) {
+				NamedNodeMap attributes = childNode.getAttributes();
+				Node nameNode = attributes.getNamedItem(ENTRY_NAME);
+				String entryName = nameNode.getNodeValue();
+				
+				readEntry(childNode, parentEntry + entryName + ".");
+			}
+		}
+	}
+	
+	private static void copyLanguageXml(File destFile) {
+		InputStream inStream = null;
+		OutputStream outStream = null;
+		
+		try {
+			destFile.createNewFile();
+			
+			inStream = I18NNew.class.getResourceAsStream('/' + MESSAGES_FILE);
+			outStream = new FileOutputStream(destFile);
+			
+			final byte[] BUFFER = new byte[1024];
+			int read;
+			
+			while ((read = inStream.read(BUFFER)) > 0) {
+				outStream.write(BUFFER, 0, read);
+			}
+		} catch (IOException e) {
+			Logger.severe("Failed to copy messages file! Using default messages...");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (inStream != null) {
+					inStream.close();
+				}
+				
+				if (outStream != null) {
+					outStream.flush();
+					outStream.close();
+				}
+			} catch (Exception e) {}
+		}
+	}
+	
+	/**
+	 * Replaces the first given target in the given string with the given replacement.</br>
+	 * This version of replaceFirst ignores regexes which is important for replacing arguments.
+	 */
+	private static String replaceFirst(String string, String target, String replacement) {
+		Validate.notNull(string);
+		Validate.notNull(target);
+		Validate.notNull(replacement);
+		
+		if (target.isEmpty()) {
+			return string;
+		}
+		
+		char[] chars = string.toCharArray();
+		char[] targetChars = target.toCharArray();
+		
+		int index = 0;
+		int start = -1;
+		
+		for (int i = 0; i < chars.length; i++) {
+			if (chars[i] == targetChars[index]) {
+				if (index == 0) {
+					start = i;
+				}
+				
+				index++;
+				
+				if (index >= targetChars.length) {
+					String firstPart = string.substring(0, start);
+					String secondPart = string.substring(i + 1, chars.length);
+					
+					return firstPart + replacement + secondPart;
+				}
+			} else {
+				index = 0;
 			}
 		}
 		
-		return msg;
+		return string;
 	}
 	
-	public static String getMessage(String key) {
-		return getMessage(key, (String[])null);
-	}
-
 }

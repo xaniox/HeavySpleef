@@ -36,7 +36,6 @@ import de.matzefratze123.api.sql.Field.Type;
 import de.matzefratze123.api.sql.SQLResult;
 import de.matzefratze123.api.sql.Table;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Logger;
 
@@ -260,7 +259,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 	}
 	
 	public static boolean isDatabaseEnabled() {
-		return HeavySpleef.getSystemConfig().getBoolean(ConfigUtil.STATISTIC_SECTION + "enabled", true);
+		return HeavySpleef.getSystemConfig().getStatisticSection().isEnabled();
 	}
 	
 }

@@ -33,6 +33,7 @@ import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
+import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameComponents;
 import de.matzefratze123.heavyspleef.core.GameManager;
@@ -107,7 +108,7 @@ public class CommandJoin extends HSCommand {
 	}
 	
 	public static void joinAndDoChecks(final Game game, final SpleefPlayer player, Team team) {
-		int jackpotToPay = game.getFlag(ENTRY_FEE) == null ? HeavySpleef.getSystemConfig().getInt("general.defaultToPay", 0) : game.getFlag(ENTRY_FEE);
+		int jackpotToPay = game.getFlag(ENTRY_FEE);
 		
 		if (game.getGameState() == GameState.DISABLED) {
 			player.sendMessage(_("gameIsDisabled"));
@@ -164,7 +165,7 @@ public class CommandJoin extends HSCommand {
 		}
 		
 		if ((game.getGameState() == GameState.COUNTING && !is1vs1) || (game.getGameState() != GameState.COUNTING)) {
-			int pvptimer = HeavySpleef.getSystemConfig().getInt("general.pvptimer");
+			int pvptimer = HeavySpleef.getSystemConfig().getGeneralSection().getPvPTimer();
 			
 			if (pvptimer > 0) {
 				player.sendMessage(_("teleportWillCommence", game.getName(), String.valueOf(pvptimer)));
@@ -203,7 +204,7 @@ public class CommandJoin extends HSCommand {
 		public void run() {
 			if (game.getFlag(TEAM)) {
 				team.join(player);
-				game.broadcast(_("playerJoinedTeam", player.getName(), team.getColor().toMessageColorString()), ConfigUtil.getBroadcast("player-join"));
+				game.broadcast(_("playerJoinedTeam", player.getName(), team.getColor().toMessageColorString()), ConfigUtil.getBroadcast(MessageType.PLAYER_JOIN));
 			}
 			
 			game.join(player);

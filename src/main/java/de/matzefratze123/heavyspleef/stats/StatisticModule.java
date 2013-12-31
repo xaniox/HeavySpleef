@@ -20,9 +20,9 @@
 package de.matzefratze123.heavyspleef.stats;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.config.sections.SettingsSectionLeaderBoard;
 
 
 /**
@@ -123,12 +123,12 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 * <b>formula: 1000 + wins * games - (loses * games / 3)<b>
 	 */
 	public int getScore() {
-		FileConfiguration config = HeavySpleef.getSystemConfig();
+		SettingsSectionLeaderBoard section = HeavySpleef.getSystemConfig().getLeaderboardSection();
 		
-		int pointsWin = config.getInt("leaderboard.win");
-		int pointsLose = config.getInt("leaderboard.lose");
-		int pointsKnockout = config.getInt("leaderboard.knockout");
-		int pointsGamePlayed = config.getInt("leaderboard.gamePlayed");
+		int pointsWin = section.getWinPoints();
+		int pointsLose = section.getLosePoints();
+		int pointsKnockout = section.getKnockoutPoints();
+		int pointsGamePlayed = section.getGamePlayedPoints();
 		
 		return (pointsWin * getWins()) + (pointsLose * getLoses()) + (pointsKnockout * getKnockouts()) + (pointsGamePlayed * getGamesPlayed());
 	}

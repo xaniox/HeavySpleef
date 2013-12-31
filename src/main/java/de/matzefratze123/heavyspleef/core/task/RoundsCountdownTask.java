@@ -24,9 +24,9 @@ import static de.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 
-import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
+import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.BroadcastType;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -47,11 +47,8 @@ public class RoundsCountdownTask extends AbstractCountdown {
 	@Override
 	public void onCount() {
 		if (getTimeRemaining() <= 5){//Do every second countdown
-			if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
-				for (SpleefPlayer player : game.getIngamePlayers())
-					player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, player.getBukkitPlayer().getLocation().getPitch());
-			}
-			
+			for (SpleefPlayer player : game.getIngamePlayers())
+				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, player.getBukkitPlayer().getLocation().getPitch());			
 			game.broadcast(I18N._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
 		} else {//Do pre countdown
 			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
@@ -64,8 +61,8 @@ public class RoundsCountdownTask extends AbstractCountdown {
 		int rounds = game.getFlag(ROUNDS);
 		
 		game.setGameState(GameState.INGAME);
-		game.broadcast(HSCommand.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast("game-countdown"));
-		game.broadcast(I18N._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast("game-start-info"));
+		game.broadcast(HSCommand.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
+		game.broadcast(I18N._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
 		game.removeBoxes();
 		game.cancelTask(TASK_ID_KEY);
 	}

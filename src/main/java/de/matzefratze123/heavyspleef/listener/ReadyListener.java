@@ -31,7 +31,6 @@ import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
-import de.matzefratze123.heavyspleef.util.Util;
 
 public class ReadyListener implements Listener {
 
@@ -51,7 +50,7 @@ public class ReadyListener implements Listener {
 		if (game.getGameState() != GameState.LOBBY)
 			return;
 		
-		SimpleBlockData readyBlock = Util.parseMaterial(HeavySpleef.getSystemConfig().getString("general.ready-block"), false);
+		SimpleBlockData readyBlock = HeavySpleef.getSystemConfig().getGeneralSection().getReadyBlockData();
 		if (readyBlock == null)
 			return;
 		

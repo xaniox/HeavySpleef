@@ -37,7 +37,7 @@ public class GameQueue {
 	public void addPlayer(SpleefPlayer player) {
 		if (queue.contains(player))
 			return;
-		if (!HeavySpleef.getSystemConfig().getBoolean("queues.useQueues", true)) {
+		if (!HeavySpleef.getSystemConfig().getQueuesSection().isUseQueues()) {
 			return;
 		}
 		

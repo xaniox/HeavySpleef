@@ -55,7 +55,7 @@ public class SelectionListener implements Listener {
 			return;
 		if (selManager.getWandType() == WandType.WORLDEDIT)
 			return;
-		if (is == null || is.getTypeId() != HeavySpleef.getSystemConfig().getInt("general.wandItem", 280))
+		if (is == null || is.getType() != HeavySpleef.getSystemConfig().getGeneralSection().getWandItem())
 			return;
 		
 		switch(e.getAction()) {

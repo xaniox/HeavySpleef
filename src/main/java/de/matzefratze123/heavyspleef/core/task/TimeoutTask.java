@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.core.task;
 
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
+import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.StopCause;
 import de.matzefratze123.heavyspleef.util.I18N;
@@ -40,7 +41,7 @@ public class TimeoutTask extends AbstractCountdown {
 			if (getTimeRemaining() <= 5) {
 				String message = I18N._("timeLeftSeconds",
 						String.valueOf(getTimeRemaining()));
-				game.broadcast(message, ConfigUtil.getBroadcast("timeout"));
+				game.broadcast(message, ConfigUtil.getBroadcast(MessageType.TIMEOUT));
 				return;
 			}
 
@@ -55,13 +56,13 @@ public class TimeoutTask extends AbstractCountdown {
 					"timeLeftMinutes", String.valueOf(minutes),
 					String.valueOf(seconds));
 
-			game.broadcast(message, ConfigUtil.getBroadcast("timeout"));
+			game.broadcast(message, ConfigUtil.getBroadcast(MessageType.TIMEOUT));
 		}
 	}
 
 	@Override
 	public void onFinish() {
-		game.broadcast(I18N._("timeoutReached"), ConfigUtil.getBroadcast("timeout"));
+		game.broadcast(I18N._("timeoutReached"), ConfigUtil.getBroadcast(MessageType.TIMEOUT));
 		game.stop(StopCause.DRAW);
 		game.cancelTask(TASK_ID_KEY);
 	}

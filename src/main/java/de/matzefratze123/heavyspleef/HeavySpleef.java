@@ -45,7 +45,7 @@ import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
-import de.matzefratze123.heavyspleef.config.FileConfig;
+import de.matzefratze123.heavyspleef.config.SpleefConfig;
 import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import de.matzefratze123.heavyspleef.database.YamlDatabase;
 import de.matzefratze123.heavyspleef.hooks.Hook;
@@ -81,21 +81,25 @@ import de.matzefratze123.heavyspleef.util.Updater;
 import de.matzefratze123.heavyspleef.util.ViPManager;
 
 public class HeavySpleef extends JavaPlugin implements Listener {
-		
+	
+	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
+	public static final String[] COMMANDS = new String[] {"spleef", "spl", "hspleef"};
+	public static final String PLUGIN_NAME = "HeavySpleef";
+	public static final Random random = new Random();
+	
 	//Instance
 	private static HeavySpleef instance;
 	private static boolean noWorldEdit;
 	
 	//Object instances start
-	private static final Random random = new Random();
+	private SpleefConfig config;
 	private YamlDatabase database;
 	private IStatisticDatabase statisticDatabase;
 	private SelectionManager selectionManager;
 	private InventoryJoinGUI joinGui;
 
 	//Util
-	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
-	public static final String[] COMMANDS = new String[] {"spleef", "spl", "hspleef"};
+	
 	
 	//Tasks
 	private AntiCampingTask antiCampTask;
@@ -111,8 +115,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		//Set the instance first
 		instance = this;
 		
-		new FileConfig(this);
-		
 		if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
 			Logger.warning("WARNING !!! Failed to detect WorldEdit !!! WARNING");
 			Logger.warning(" In order to use HeavySpleef make sure to install ");
@@ -125,6 +127,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			return;
 		}
 		
+		config = new SpleefConfig();
 		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
@@ -196,8 +199,8 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		return statisticDatabase;
 	}
 	
-	public static FileConfiguration getSystemConfig() {
-		return instance.getConfig();
+	public static SpleefConfig getSystemConfig() {
+		return instance.config;
 	}
 	
 	public static IGameManager getAPI() {

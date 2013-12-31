@@ -41,7 +41,7 @@ public class QueuesListener implements Listener {
 			return;
 		if (!QueuesManager.hasQueue(player))
 			return;
-		if (HeavySpleef.getSystemConfig().getBoolean("queues.commandsInQueue", false))
+		if (HeavySpleef.getSystemConfig().getQueuesSection().isAllowCommands())
 			return;
 		
 		if (e.getMessage().equalsIgnoreCase("/spleef leave") || e.getMessage().equalsIgnoreCase("/spl leave"))

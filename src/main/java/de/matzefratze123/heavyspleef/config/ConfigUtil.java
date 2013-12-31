@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.config;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.BroadcastType;
 
 public class ConfigUtil {
@@ -43,16 +44,8 @@ public class ConfigUtil {
 	 * 
 	 * @param name The config message name
 	 */
-	public static BroadcastType getBroadcast(String name) {
-		String str = HeavySpleef.getSystemConfig().getString("messages." + name);
-		if (str == null)
-			return BroadcastType.RADIUS;
-		
-		BroadcastType type = BroadcastType.getBroadcastType(str);
-		if (type == null)
-			return BroadcastType.RADIUS;
-		
-		return type;
+	public static BroadcastType getBroadcast(MessageType msgType) {
+		return HeavySpleef.getSystemConfig().getMessagesSection().getBroadcastType(msgType);
 	}
 	
 }

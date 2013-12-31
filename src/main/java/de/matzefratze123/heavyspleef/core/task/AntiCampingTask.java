@@ -44,19 +44,8 @@ public class AntiCampingTask implements Runnable {
 	
 	private int id;
 	
-	private boolean warnUser;
-	private int     warnAt;
-	private int     teleportAt;
-	
 	private Map<SpleefPlayer, Location> lastLocation = new HashMap<SpleefPlayer, Location>();
 	private Map<SpleefPlayer, Integer> antiCamping = new HashMap<SpleefPlayer, Integer>();
-	
-	public AntiCampingTask() {
-		//Get config values
-		warnAt = HeavySpleef.getSystemConfig().getInt("anticamping.warnAt", 3);
-		warnUser = HeavySpleef.getSystemConfig().getBoolean("anticamping.campWarn", true);
-		teleportAt = HeavySpleef.getSystemConfig().getInt("anticamping.teleportAt", 6);
-	}
 	
 	public void start() {
 		if (taskEnabled) {
@@ -73,10 +62,6 @@ public class AntiCampingTask implements Runnable {
 			Bukkit.getScheduler().cancelTask(id);
 		}
 		
-		warnAt = HeavySpleef.getSystemConfig().getInt("anticamping.warnAt", 3);
-		warnUser = HeavySpleef.getSystemConfig().getBoolean("anticamping.campWarn", true);
-		teleportAt = HeavySpleef.getSystemConfig().getInt("anticamping.teleportAt", 6);
-		
 		id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 20L, 20L);
 	}
 	
@@ -89,6 +74,10 @@ public class AntiCampingTask implements Runnable {
 	
 	@Override
 	public void run() {
+		final boolean warnEnabled = HeavySpleef.getSystemConfig().getAnticampingSection().isWarnEnabled();
+		final int warnAt = HeavySpleef.getSystemConfig().getAnticampingSection().getWarnAt();
+		final int teleportAt = HeavySpleef.getSystemConfig().getAnticampingSection().getTeleportAt();
+		
 		//Check every game
 		for (Game game : GameManager.getGames()) {
 			if (game.getGameState() != GameState.INGAME) {
@@ -115,10 +104,10 @@ public class AntiCampingTask implements Runnable {
 						//Add one second to map
 						current++;
 						
-						if (current == warnAt && warnUser)
+						if (current == warnAt && warnEnabled)
 							player.sendMessage(I18N._("antiCampWarn", String.valueOf(teleportAt - warnAt)));
 						
-						if (current >= teleportAt) {
+						if (current >= HeavySpleef.getSystemConfig().getAnticampingSection().getTeleportAt()) {
 							teleportDown(player);
 							antiCamping.remove(player);
 						} else {

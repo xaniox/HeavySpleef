@@ -199,7 +199,7 @@ public class PlayerListener implements Listener {
 				if (game.contains(block.getLocation())) {
 					if (player.getBukkitPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm()))
 						return;
-					if (!HeavySpleef.getSystemConfig().getBoolean("general.protectArena", true))
+					if (!HeavySpleef.getSystemConfig().getGeneralSection().isProtectArenas())
 						return;
 
 					e.setCancelled(true);
@@ -443,8 +443,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			if (!HeavySpleef.getSystemConfig().getBoolean(
-					"general.protectArena", true)) {
+			if (!HeavySpleef.getSystemConfig().getGeneralSection().isProtectArenas()) {
 				return;
 			}
 
@@ -469,8 +468,7 @@ public class PlayerListener implements Listener {
 		if (cmd.equalsIgnoreCase("/spleef") || cmd.equalsIgnoreCase("/hs")
 				|| cmd.equalsIgnoreCase("/hspleef"))
 			return;
-		List<String> whitelist = HeavySpleef.getSystemConfig().getStringList(
-				"general.commandWhitelist");
+		List<String> whitelist = HeavySpleef.getSystemConfig().getGeneralSection().getCommandWhitelist();
 		for (String c : whitelist) {
 			if (c.equalsIgnoreCase(cmd))
 				return;
@@ -543,8 +541,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent e) {
-		if (!HeavySpleef.getSystemConfig().getBoolean("general.protectArena",
-				true))
+		if (!HeavySpleef.getSystemConfig().getGeneralSection().isProtectArenas())
 			return;
 
 		for (Game game : GameManager.getGames()) {

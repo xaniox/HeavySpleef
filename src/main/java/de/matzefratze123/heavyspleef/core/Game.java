@@ -60,6 +60,7 @@ import de.matzefratze123.heavyspleef.api.event.SpleefJoinEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefLoseEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
+import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
@@ -201,8 +202,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		StatisticModule.pushAsync();
 		broadcast(_("gameHasStarted"), BroadcastType.INGAME);
-		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast("game-start-info"));
-		broadcast(_("startedGameWith", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast("game-start-info"));
+		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
+		broadcast(_("startedGameWith", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
 		components.updateWalls();
 	}
 
@@ -336,7 +337,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 
 		if (winner != null) {
-			broadcast(_("hasWon", ViPManager.colorName(winner.getName()), this.getName()), ConfigUtil.getBroadcast("win"));
+			broadcast(_("hasWon", ViPManager.colorName(winner.getName()), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 			winner.sendMessage(_("win"));
 			winner.getStatistic().addWin();
 			StatisticModule.pushAsync();
@@ -344,11 +345,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			giveRewards(winner, true, 0);
 			SpleefLogger.log(LogType.WIN, this, winner);
 
-			if (HeavySpleef.getSystemConfig().getBoolean("sounds.levelUp", true)) {
+			if (HeavySpleef.getSystemConfig().getSoundsSection().isPlayLevelUpSound()) {
 				winner.getBukkitPlayer().playSound(winner.getBukkitPlayer().getLocation(), Sound.LEVEL_UP, 1.0F, 2.0F);
 			}
 		} else if (cause == StopCause.DRAW) {
-			broadcast(_("endedDraw", getName()), ConfigUtil.getBroadcast("win"));
+			broadcast(_("endedDraw", getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 		}
 
 		state = GameState.JOINABLE;
@@ -400,7 +401,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			player.getBukkitPlayer().setFallDistance(0);
 		}
 
-		broadcast(_("hasWon", "Team " + winnerTeam.getColor().toMessageColorString(), this.getName()), ConfigUtil.getBroadcast("win"));
+		broadcast(_("hasWon", "Team " + winnerTeam.getColor().toMessageColorString(), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 
 		StatisticModule.pushAsync();
 		state = GameState.JOINABLE;
@@ -491,7 +492,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (event.isCancelled())
 			return;
 
-		broadcast(_("playerJoinedGame", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("player-join"));
+		broadcast(_("playerJoinedGame", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast(MessageType.PLAYER_JOIN));
 
 		player.saveState();
 		player.setGame(this);
@@ -519,7 +520,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			player.getBukkitPlayer().teleport(lobby);
 		}
 
-		if (HeavySpleef.getSystemConfig().getBoolean("sounds.plingSound", true)) {
+		if (HeavySpleef.getSystemConfig().getSoundsSection().isPlayPlingSound()) {
 			for (SpleefPlayer inPlayer : inPlayers)
 				inPlayer.getBukkitPlayer().playSound(inPlayer.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, inPlayer.getBukkitPlayer().getLocation().getPitch());
 		}
@@ -577,13 +578,13 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				teleportTask = new PlayerTeleportTask(this);
 				Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
 
-				int countdown = HeavySpleef.getSystemConfig().getInt("general.countdownBetweenRound");
+				int countdown = getFlag(FlagType.COUNTDOWN);
 				RoundsCountdownTask task = new RoundsCountdownTask(countdown, this);
 				int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), task, 0L, 20L);
 				tasks.put(RoundsCountdownTask.TASK_ID_KEY, id);
 
-				broadcast(_("wonRound", ViPManager.colorName(winner.getName()), String.valueOf(roundsPlayed), String.valueOf(getFlag(FlagType.ROUNDS))), ConfigUtil.getBroadcast("win"));
-				broadcast(_("roundsRemaining", String.valueOf(getFlag(FlagType.ROUNDS) - roundsPlayed)), ConfigUtil.getBroadcast("win"));
+				broadcast(_("wonRound", ViPManager.colorName(winner.getName()), String.valueOf(roundsPlayed), String.valueOf(getFlag(FlagType.ROUNDS))), ConfigUtil.getBroadcast(MessageType.WIN));
+				broadcast(_("roundsRemaining", String.valueOf(getFlag(FlagType.ROUNDS) - roundsPlayed)), ConfigUtil.getBroadcast(MessageType.WIN));
 
 				components.updateWalls();
 				components.updateScoreBoards();
@@ -626,22 +627,22 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 					killer.addKnockout();
 					killer.getStatistic().addKnockout();
 
-					broadcast(_("loseCause_lose", ViPManager.colorName(player.getName()), ViPManager.colorName(killer.getName())), ConfigUtil.getBroadcast("player-lose"));
+					broadcast(_("loseCause_lose", ViPManager.colorName(player.getName()), ViPManager.colorName(killer.getName())), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 				} else {
-					broadcast(_("loseCause_lose_unknown", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast("player-lose"));
+					broadcast(_("loseCause_lose_unknown", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 				}
 
 				StatisticModule.pushAsync();
 			} else {
 				SpleefLogger.log(LogType.LEAVE, this, player);
-				broadcast(_("loseCause_leave", ViPManager.colorName(player.getName()), name), ConfigUtil.getBroadcast("player-lose"));
+				broadcast(_("loseCause_leave", ViPManager.colorName(player.getName()), name), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 			}
 
 			safeTeleport(player, getFlag(FlagType.LOSE));
 
 			if (state == GameState.INGAME || state == GameState.COUNTING) {
 				outPlayers.add(player.getBukkitPlayer());
-				broadcast(_("remaining", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast("knockouts"));
+				broadcast(_("remaining", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast(MessageType.KNOCKOUTS));
 			}
 
 			player.clearGameData();
@@ -725,12 +726,12 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		V value = null;
 
 		if (o == null) {
-			String str = HeavySpleef.getSystemConfig().getString("flag-defaults." + flag.getName());
-			if (str == null)
+			value = HeavySpleef.getSystemConfig().getFlagDefaultsSection().getFlagDefault(flag);
+			if (value == null)
 				return flag.getAbsoluteDefault();
-			return flag.parse(null, str, null);
-		} else
+		} else {
 			value = (V) o;
+		}
 
 		return value;
 	}

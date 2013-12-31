@@ -37,7 +37,7 @@ public class PvPTimerManager {
 	private static Map<String, Integer> pvpTimerTasks = new HashMap<String, Integer>();
 	
 	public static void addToTimer(Player player, Runnable target) {
-		int pvptimer = HeavySpleef.getSystemConfig().getInt("general.pvptimer");
+		int pvptimer = HeavySpleef.getSystemConfig().getGeneralSection().getPvPTimer();
 		
 		if (pvpTimerTasks.containsKey(player.getName())) {
 			cancelTimerTask(player);
