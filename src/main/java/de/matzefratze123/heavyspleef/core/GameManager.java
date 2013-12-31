@@ -36,6 +36,10 @@ public class GameManager {
 		}
 		
 		games.add(game);
+		
+		if (HeavySpleef.getInstance().getJoinGUI() != null) {
+			HeavySpleef.getInstance().getJoinGUI().refresh();
+		}
 	}
 
 	public static void deleteGame(String name) {
@@ -47,6 +51,9 @@ public class GameManager {
 		
 		games.remove(game);
 		HeavySpleef.getInstance().getGameDatabase().db.set(name, null);
+		if (HeavySpleef.getInstance().getJoinGUI() != null) {
+			HeavySpleef.getInstance().getJoinGUI().refresh();
+		}
 	}
 
 	public static boolean hasGame(String name) {

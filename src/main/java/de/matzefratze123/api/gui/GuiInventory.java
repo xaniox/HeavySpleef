@@ -105,6 +105,8 @@ public abstract class GuiInventory implements Listener {
 	}
 
 	public void setTitle(String title) {
+		Validate.notNull(title, "title cannot be null");
+		
 		if (title.length() > 32) {
 			title = title.substring(0, 32);
 		}

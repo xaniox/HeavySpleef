@@ -26,7 +26,6 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,7 +43,6 @@ import de.matzefratze123.api.sql.SQLiteDatabase;
 import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
-import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
 import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
 import de.matzefratze123.heavyspleef.database.YamlDatabase;
@@ -97,9 +95,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	private IStatisticDatabase statisticDatabase;
 	private SelectionManager selectionManager;
 	private InventoryJoinGUI joinGui;
-
-	//Util
-	
 	
 	//Tasks
 	private AntiCampingTask antiCampTask;
@@ -128,18 +123,16 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		}
 		
 		config = new SpleefConfig();
+		I18N.loadLanguageFiles();
+		
 		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
 		
-		PREFIX = ChatColor.translateAlternateColorCodes('&', getConfig().getString("general.spleef-prefix", PREFIX));
+		PREFIX = config.getGeneralSection().getPrefix();
 		
-		//Load languages
-		I18N.loadLanguageFiles();
 		ViPManager.initVips();
-		
 		joinGui = new InventoryJoinGUI();
-		
 		initStatisticDatabase();
 		
 		SpleefLogger.logRaw("Starting plugin version " + getDescription().getVersion() + "!");
@@ -255,12 +248,12 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	public void initStatisticDatabase() {
 		if (SQLStatisticDatabase.isDatabaseEnabled()) {
 			//Load authentication data
-			String statsDB = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "dbType");
-			String host = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "host");
-			int port = getConfig().getInt(ConfigUtil.STATISTIC_SECTION + "port", 3306);
-			String databaseName = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "databaseName");
-			String user = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "user");
-			String password = getConfig().getString(ConfigUtil.STATISTIC_SECTION + "password");
+			String statsDB = config.getStatisticSection().getDatabaseType();
+			String host = config.getStatisticSection().getHost();
+			int port = config.getStatisticSection().getPort();
+			String databaseName = config.getStatisticSection().getDbName();
+			String user = config.getStatisticSection().getDbUser();
+			String password = config.getStatisticSection().getDbPassword();
 			
 			AbstractDatabase database;
 			if (statsDB.equalsIgnoreCase("mysql")) {

@@ -91,9 +91,9 @@ public class SettingsSectionGeneral implements SettingsSection {
 
 		final Material defaultMaterial = Material.STICK;
 		String configString = section.getString("wandItem");
-
+		
 		try {
-			wandItem = Material.getMaterial(configString.toUpperCase());
+			wandItem = Material.valueOf(configString.toUpperCase());
 		} catch (Exception e) {
 			// Not a material string
 			if (Util.isNumber(configString)) {

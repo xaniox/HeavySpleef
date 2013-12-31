@@ -62,10 +62,18 @@ public class SettingsSectionStatistic implements SettingsSection {
 	
 	@Override
 	public void reload() {
+		final int defaultPort = 3306;
+		
 		enabled = section.getBoolean("enabled", true);
 		databaseType = section.getString("dbType", "sqlite");
 		host = section.getString("host");
-		port = section.getInt("port");
+		
+		try {
+			port = Integer.parseInt(section.getString("port"));
+		} catch (Exception e) {
+			port = defaultPort;
+		}
+		
 		dbName = section.getString("databaseName");
 		dbUser = section.getString("user");
 		dbPassword = section.getString("password");
