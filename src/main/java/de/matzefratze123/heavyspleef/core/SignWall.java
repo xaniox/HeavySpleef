@@ -149,6 +149,10 @@ public class SignWall extends RegionCuboid implements DatabaseSerializeable {
 			signArray = new Location[maxX - minX + 1];
 			
 			Block block = locations[0].getWorld().getBlockAt(minX, locations[0].getBlockY(), minZ);
+			if (!(block.getState() instanceof Sign)) {
+				return;
+			}
+			
 			Sign sign = (Sign)block.getState();
 			Block attachedBlock = getAttachedBlock(sign);
 			
