@@ -65,7 +65,6 @@ public class I18NNew {
 		dataFolder.mkdir();
 		
 		File destFile = new File(dataFolder, MESSAGES_FILE);
-		System.out.println(destFile.getPath());
 		
 		if (!destFile.exists()) {
 			copyLanguageXml(destFile);
