@@ -1067,6 +1067,10 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			ConfigurationSection flagSection = currentSection.getConfigurationSection(key);
 
 			Flag<?> flag = FlagType.byName(key);
+			if (flag == null) {
+				continue;
+			}
+			
 			Object value = flag.deserialize(flagSection.getString("value"));
 
 			flags.put(flag, value);
