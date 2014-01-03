@@ -98,12 +98,19 @@ public class YamlDatabase {
 		int count = 0;
 		
 		for (String key : db.getKeys(false)) {
-			ConfigurationSection section = db.getConfigurationSection(key);
+			try {
+				ConfigurationSection section = db.getConfigurationSection(key);
+				
+				Game game = Game.deserialize(section);
+				GameManager.addGame(game);
+				
+				count++;
+			} catch (Exception e) {
+				Logger.severe("Failed to load arena " + key + ". Ignoring arena. " + e.getMessage());
+				Logger.severe("Error is printed below: ");
+				e.printStackTrace();
+			}
 			
-			Game game = Game.deserialize(section);
-			GameManager.addGame(game);
-			
-			count++;
 		}
 		
 		
