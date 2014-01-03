@@ -122,6 +122,8 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			return;
 		}
 		
+		getDataFolder().mkdirs();
+		
 		config = new SpleefConfig();
 		I18N.loadLanguageFiles();
 		
