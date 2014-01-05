@@ -65,7 +65,7 @@ public class QueuesManager {
 		if (game == null)
 			return;
 		
-		game.getQueue().addPlayer(player);
+		game.getQueue().push(player);
 	}
 	
 }

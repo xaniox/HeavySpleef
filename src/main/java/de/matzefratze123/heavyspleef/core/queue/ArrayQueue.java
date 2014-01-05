@@ -35,23 +35,23 @@ public class ArrayQueue<T> implements Queue<T> {
 	}
 	
 	public int add(T i) {
-		//Schauen ob Queue voll ist
+		//Lookup if queue is full
 		if (isFull()) {
-			//Queue erweitern
+			//Extend array
 			Object[] newArray = new Object[array.length * 2];
 			
-			//Alte Werte übertragen
+			//Transfer old values
 			for (int in = 0; in < array.length; in++) {
 				newArray[in] = array[in];
 			}
 			
-			//Array neu setzen
+			//Set the new array
 			array = newArray;
 		}
 		
 		int place = 0;
 		
-		//Alles durchgehen und schauen ob bereits Wert enthalten ist
+		//Push item into the first empty place
 		for (int c = 0; c < array.length; c++) {
 			if (array[c] == null) {
 				//Wert hinten einfügen
@@ -75,16 +75,16 @@ public class ArrayQueue<T> implements Queue<T> {
 			return null;
 		}
 		
-		//Ersten Eintrag löschen
+		//Delete first entry
 		T item = ArrayQueue.<T>cast(array[0]);
 		array[0] = null;
 		
-		//Werte nach links nachrücken lassen
+		//Move up values left
 		if (array.length > 1) {
 			for (int i = 1; i < array.length; i++) {
 				array[i - 1] = array[i];
 				
-				//Letzten Eintrag nullen
+				//Remove last entry
 				if (array.length < i + 1) {
 					array[i] = null;
 				}

@@ -19,7 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.core.region;
 
-
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;

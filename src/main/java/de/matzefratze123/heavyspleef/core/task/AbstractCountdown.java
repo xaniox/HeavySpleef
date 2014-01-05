@@ -33,10 +33,10 @@ public abstract class AbstractCountdown implements Runnable {
 	public void run() {
 		if (remaining == 0) {
 			onFinish();
-		} else if (remaining > 0){//Do pre countdown
+		} else if (remaining > 0){
 			onCount();
 			remaining--;
-		} else if (remaining < 0) {//Call the interrupt method, something is going false...
+		} else if (remaining < 0) {//Call the corrupt method, something is going false...
 			onCorrupt();
 		}
 	}

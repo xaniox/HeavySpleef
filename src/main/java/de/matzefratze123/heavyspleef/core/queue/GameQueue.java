@@ -34,7 +34,7 @@ public class GameQueue {
 		this.queue = new ArrayQueue<SpleefPlayer>();
 	}
 	
-	public void addPlayer(SpleefPlayer player) {
+	public void push(SpleefPlayer player) {
 		if (queue.contains(player))
 			return;
 		if (!HeavySpleef.getSystemConfig().getQueuesSection().isUseQueues()) {
@@ -73,7 +73,7 @@ public class GameQueue {
 	}
 
 	public void clear() {
-		
+		queue.clear();
 	}
 	
 }

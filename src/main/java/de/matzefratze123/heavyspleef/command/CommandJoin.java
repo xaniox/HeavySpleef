@@ -137,7 +137,7 @@ public class CommandJoin extends HSCommand {
 		}
 		if (game.getGameState() == GameState.INGAME) {
 			player.sendMessage(_("gameAlreadyRunning"));
-			game.getQueue().addPlayer(player);
+			game.getQueue().push(player);
 			return;
 		}
 		
@@ -146,7 +146,7 @@ public class CommandJoin extends HSCommand {
 		int maxplayers = game.getFlag(MAXPLAYERS);
 		if (maxplayers > 0 && game.getIngamePlayers().size() >= maxplayers) {
 			player.sendMessage(_("maxPlayersReached"));
-			game.getQueue().addPlayer(player);
+			game.getQueue().push(player);
 			return;
 		}
 		
@@ -175,7 +175,7 @@ public class CommandJoin extends HSCommand {
 			PvPTimerManager.addToTimer(player.getBukkitPlayer(), new JoinTimerRunnable(game, player, team));
 		} else if (game.getGameState() == GameState.COUNTING){
 			player.sendMessage(_("gameAlreadyRunning"));
-			game.getQueue().addPlayer(player);
+			game.getQueue().push(player);
 			return;
 		}
 	}

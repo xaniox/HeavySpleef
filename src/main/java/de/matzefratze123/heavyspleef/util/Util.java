@@ -87,7 +87,7 @@ public class Util {
 			return null;
 		}
 		
-		Material material = getMaterialFromName(parts[0]);
+		Material material = getMaterialByName(parts[0]);
 		
 		if (material == null) {
 			return null;
@@ -108,7 +108,7 @@ public class Util {
 		return new SimpleBlockData(material, data);
 	}
 	
-	private static Material getMaterialFromName(String str) {
+	private static Material getMaterialByName(String str) {
 		if (str == null) {
 			return null;
 		}
