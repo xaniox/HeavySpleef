@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -30,11 +31,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.CommandVote;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.util.I18N;
+import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefPlayer {
 
@@ -60,12 +63,28 @@ public class SpleefPlayer {
 		return bukkitPlayer;
 	}
 	
-	public String getName() {
+	public String getRawName() {
 		return bukkitPlayer.getName();
+	}
+	
+	public String getName() {
+		String name = getRawName();
+		
+		if (bukkitPlayer.hasPermission(Permissions.VIP.getPerm())) {
+			name = HeavySpleef.getSystemConfig().getGeneralSection().getVipPrefix() + name;
+		} else if (getRawName().equalsIgnoreCase("matzefratze123")) {
+			name = ChatColor.DARK_RED + name;
+		}
+		
+		return name;
 	}
 	
 	public void sendMessage(String message) {
 		bukkitPlayer.sendMessage(message);
+	}
+	
+	public boolean hasPermission(Permissions permission) {
+		return bukkitPlayer.hasPermission(permission.getPerm());
 	}
 	
 	public Game getGame() {
@@ -148,7 +167,7 @@ public class SpleefPlayer {
 	
 	public StatisticModule getStatistic() {
 		if (statistic == null) {
-			statistic = new StatisticModule(getName());
+			statistic = new StatisticModule(getRawName());
 		}
 		
 		return statistic;

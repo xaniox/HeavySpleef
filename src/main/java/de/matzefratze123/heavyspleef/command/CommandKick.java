@@ -31,7 +31,6 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
-import de.matzefratze123.heavyspleef.util.ViPManager;
 
 @UserType(Type.ADMIN)
 public class CommandKick extends HSCommand {
@@ -65,8 +64,8 @@ public class CommandKick extends HSCommand {
 		
 		Game game = target.getGame();
 		game.leave(target, LoseCause.KICK);
-		target.sendMessage(_("kickedOfToPlayer", ViPManager.colorName(player.getName()), reasonMessage));
-		player.sendMessage(_("kickedOfToKicker", ViPManager.colorName(target.getName()), game.getName(), reasonMessage));
+		target.sendMessage(_("kickedOfToPlayer", player.getName(), reasonMessage));
+		player.sendMessage(_("kickedOfToKicker", target.getName(), game.getName(), reasonMessage));
 	}
 
 	@Override

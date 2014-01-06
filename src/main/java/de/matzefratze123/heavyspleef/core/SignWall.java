@@ -252,7 +252,7 @@ public class SignWall extends RegionCuboid implements DatabaseSerializeable {
 				
 				if (inIterator.hasNext()) {
 					SpleefPlayer player = inIterator.next();
-					String name = player.getName();
+					String name = player.getRawName();
 					
 					Team team = game.getComponents().getTeam(player);
 					String prefix = team == null ? name.equalsIgnoreCase("matzefratze123") ? ChatColor.DARK_RED.toString() : "" : team.getColor().toChatColor().toString();

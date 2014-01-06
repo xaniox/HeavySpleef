@@ -76,7 +76,6 @@ import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Metrics;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Updater;
-import de.matzefratze123.heavyspleef.util.ViPManager;
 
 public class HeavySpleef extends JavaPlugin implements Listener {
 	
@@ -133,7 +132,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		
 		PREFIX = config.getGeneralSection().getPrefix();
 		
-		ViPManager.initVips();
 		joinGui = new InventoryJoinGUI();
 		initStatisticDatabase();
 		
@@ -326,10 +324,10 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		players.add(player);
 		
 		if (SQLStatisticDatabase.isDatabaseEnabled()) {
-			StatisticModule module = statisticDatabase.loadAccount(player.getName());
+			StatisticModule module = statisticDatabase.loadAccount(player.getRawName());
 			player.setStatistic(module);
 		} else {
-			player.setStatistic(new StatisticModule(player.getName()));
+			player.setStatistic(new StatisticModule(player.getRawName()));
 		}
 		
 		return player;

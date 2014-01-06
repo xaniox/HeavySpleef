@@ -85,7 +85,7 @@ public class CommandList extends HSCommand {
 		Set<String> outString = new HashSet<String>();
 		
 		for (SpleefPlayer activePlayer : active) {
-			activeString.add(activePlayer.getName());
+			activeString.add(activePlayer.getName() + ChatColor.AQUA);
 		}
 		
 		for (OfflinePlayer outPlayer : out) {

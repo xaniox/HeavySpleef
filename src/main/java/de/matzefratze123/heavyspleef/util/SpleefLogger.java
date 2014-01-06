@@ -48,7 +48,7 @@ public class SpleefLogger {
 	}
 	
 	public static void log(LogType type, Game game, SpleefPlayer player) {
-		String msg = String.format(type.getMessage(), player.getName());	
+		String msg = String.format(type.getMessage(), player.getRawName());	
 		logRaw("Game " + game.getName() + ": " + msg);
 	}
 	

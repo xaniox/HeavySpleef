@@ -60,7 +60,7 @@ public class TagListener implements Listener {
 			return;
 		}
 		
-		String tag = tags.get(namedPlayer) + namedPlayer.getName();
+		String tag = tags.get(namedPlayer) + namedPlayer.getRawName();
 		if (tag.length() > 16)
 			tag = tag.substring(0, 16);
 		

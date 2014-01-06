@@ -88,7 +88,6 @@ import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.SpleefLogger.LogType;
 import de.matzefratze123.heavyspleef.util.Util;
-import de.matzefratze123.heavyspleef.util.ViPManager;
 
 public abstract class Game implements IGame, DatabaseSerializeable {
 
@@ -189,7 +188,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			Hook<Economy> hook = HookManager.getInstance().getService(VaultHook.class);
 
 			for (SpleefPlayer player : inPlayers) {
-				hook.getHook().withdrawPlayer(player.getName(), getFlag(FlagType.ENTRY_FEE));
+				hook.getHook().withdrawPlayer(player.getRawName(), getFlag(FlagType.ENTRY_FEE));
 				player.sendMessage(_("paidIntoJackpot", hook.getHook().format(getFlag(FlagType.ENTRY_FEE))));
 				jackpot += getFlag(FlagType.ENTRY_FEE);
 			}
@@ -337,7 +336,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 
 		if (winner != null) {
-			broadcast(_("hasWon", ViPManager.colorName(winner.getName()), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
+			broadcast(_("hasWon", winner.getName(), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 			winner.sendMessage(_("win"));
 			winner.getStatistic().addWin();
 			StatisticModule.pushAsync();
@@ -492,7 +491,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		if (event.isCancelled())
 			return;
 
-		broadcast(_("playerJoinedGame", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast(MessageType.PLAYER_JOIN));
+		broadcast(_("playerJoinedGame", player.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_JOIN));
 
 		player.saveState();
 		player.setGame(this);
@@ -583,7 +582,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), task, 0L, 20L);
 				tasks.put(RoundsCountdownTask.TASK_ID_KEY, id);
 
-				broadcast(_("wonRound", ViPManager.colorName(winner.getName()), String.valueOf(roundsPlayed), String.valueOf(getFlag(FlagType.ROUNDS))), ConfigUtil.getBroadcast(MessageType.WIN));
+				broadcast(_("wonRound", winner.getName(), String.valueOf(roundsPlayed), String.valueOf(getFlag(FlagType.ROUNDS))), ConfigUtil.getBroadcast(MessageType.WIN));
 				broadcast(_("roundsRemaining", String.valueOf(getFlag(FlagType.ROUNDS) - roundsPlayed)), ConfigUtil.getBroadcast(MessageType.WIN));
 
 				components.updateWalls();
@@ -627,15 +626,15 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 					killer.addKnockout();
 					killer.getStatistic().addKnockout();
 
-					broadcast(_("loseCause_lose", ViPManager.colorName(player.getName()), ViPManager.colorName(killer.getName())), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
+					broadcast(_("loseCause_lose", player.getName(), killer.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 				} else {
-					broadcast(_("loseCause_lose_unknown", ViPManager.colorName(player.getName())), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
+					broadcast(_("loseCause_lose_unknown", player.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 				}
 
 				StatisticModule.pushAsync();
 			} else {
 				SpleefLogger.log(LogType.LEAVE, this, player);
-				broadcast(_("loseCause_leave", ViPManager.colorName(player.getName()), name), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
+				broadcast(_("loseCause_leave", player.getName(), name), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 			}
 
 			safeTeleport(player, getFlag(FlagType.LOSE));
@@ -877,7 +876,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 					prize = jackpot;
 				}
 
-				EconomyResponse r = econ.depositPlayer(player.getName(), prize);
+				EconomyResponse r = econ.depositPlayer(player.getRawName(), prize);
 				player.sendMessage(_("jackpotReceived", econ.format(r.amount)));
 
 				if (clearJackpot) {
@@ -888,7 +887,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			int reward = getFlag(REWARD);
 
 			if (reward > 0) {
-				EconomyResponse r = econ.depositPlayer(player.getName(), reward);
+				EconomyResponse r = econ.depositPlayer(player.getRawName(), reward);
 				player.sendMessage(_("rewardReceived", econ.format(r.amount)));
 			}
 		}

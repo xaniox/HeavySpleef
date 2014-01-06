@@ -57,12 +57,13 @@ general:
   # (Hit the block)
   ready-block: IRON_BLOCK
   
-  # A list of vips on your server
-  # Vip's will have a dark red name
-  # in spleef broadcasts
-  vip:
-  - someone
-  - anotherone
+  # HeavySpleef has a vip feature. Vips may have the ability
+  # to join full games and have a prefix defined here.
+  # The vip permission is: heavyspleef.vip
+  vip-prefix: '&4'
+  
+  # Should vips have the ability to join full games?
+  vip-join-full: true
   
   # PVP Timer:
   # Some servers don't want that players can instantly
@@ -201,6 +202,6 @@ statistic:
   
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG!
-config-version: 1
+config-version: 2
 
 # How much... No, you've finished the configuration ;)

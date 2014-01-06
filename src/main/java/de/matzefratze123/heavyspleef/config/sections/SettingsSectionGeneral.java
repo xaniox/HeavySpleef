@@ -49,7 +49,8 @@ public class SettingsSectionGeneral implements SettingsSection {
 	private boolean					votesEnabled;
 	private int						votesNeeded;
 	private SimpleBlockData			readyBlockData;
-	private List<String>			vips;
+	private String                  vipPrefix;
+	private boolean                 vipCanJoinFull;
 	private int						pvpTimer;
 	
 	public SettingsSectionGeneral(SpleefConfig config) {
@@ -117,10 +118,8 @@ public class SettingsSectionGeneral implements SettingsSection {
 			readyBlockData = new SimpleBlockData(Material.IRON_BLOCK, (byte) 0);
 		}
 
-		vips = section.getStringList("vip");
-		if (vips == null) {
-			vips = new ArrayList<String>();
-		}
+		vipPrefix = ChatColor.translateAlternateColorCodes('&', section.getString("vip-prefix", "&4"));
+		vipCanJoinFull = section.getBoolean("vip-join-full");
 
 		pvpTimer = section.getInt("pvptimer");
 	}
@@ -161,8 +160,12 @@ public class SettingsSectionGeneral implements SettingsSection {
 		return readyBlockData;
 	}
 
-	public List<String> getVips() {
-		return vips;
+	public String getVipPrefix() {
+		return vipPrefix;
+	}
+	
+	public boolean getVipJoinFull() {
+		return vipCanJoinFull;
 	}
 
 	public int getPvPTimer() {

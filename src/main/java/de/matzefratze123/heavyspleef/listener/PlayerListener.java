@@ -499,7 +499,7 @@ public class PlayerListener implements Listener {
 			Game game = player.getGame();
 			game.leave(player, LoseCause.UNKNOWN);
 
-			dead.add(player.getName());
+			dead.add(player.getRawName());
 		} else if (player.isSpectating()) {
 			player.getGame().leaveSpectate(player);
 		}
@@ -510,7 +510,7 @@ public class PlayerListener implements Listener {
 		final SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
 				e.getPlayer());
 
-		if (!dead.contains(player.getName()))
+		if (!dead.contains(player.getRawName()))
 			return;
 
 		// Player died while spleefing, restore his inventory
@@ -525,7 +525,7 @@ public class PlayerListener implements Listener {
 					}
 				}, 10L);
 
-		dead.remove(player.getName());
+		dead.remove(player.getRawName());
 	}
 
 	@EventHandler

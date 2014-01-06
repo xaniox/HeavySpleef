@@ -387,7 +387,7 @@ public class GameComponents implements IGameComponents {
 	public Team getTeam(SpleefPlayer player) {
 		for (Team team : teams) {
 			for (SpleefPlayer p : team.getPlayers()) {
-				if (player.getName().equalsIgnoreCase(p.getName())) {
+				if (player.getRawName().equalsIgnoreCase(p.getRawName())) {
 					return team;
 				}
 			}

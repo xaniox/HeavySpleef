@@ -121,7 +121,7 @@ public class CommandJoin extends HSCommand {
 		}
 		
 		if (HookManager.getInstance().getService(VaultHook.class).hasHook()) {
-			if (HookManager.getInstance().getService(VaultHook.class).getHook().getBalance(player.getName()) < jackpotToPay) {
+			if (HookManager.getInstance().getService(VaultHook.class).getHook().getBalance(player.getRawName()) < jackpotToPay) {
 				player.sendMessage(_("notEnoughMoneyToJoin"));
 				return;
 			}
@@ -142,9 +142,11 @@ public class CommandJoin extends HSCommand {
 		}
 		
 		boolean is1vs1 = game.getFlag(ONEVSONE);
-		
 		int maxplayers = game.getFlag(MAXPLAYERS);
-		if (maxplayers > 0 && game.getIngamePlayers().size() >= maxplayers) {
+		boolean isVip = player.hasPermission(Permissions.VIP);
+		boolean allowFullJoin = HeavySpleef.getSystemConfig().getGeneralSection().getVipJoinFull();
+		
+		if (maxplayers > 0 && game.getIngamePlayers().size() >= maxplayers && !(isVip && allowFullJoin)) {
 			player.sendMessage(_("maxPlayersReached"));
 			game.getQueue().push(player);
 			return;
