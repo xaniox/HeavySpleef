@@ -81,12 +81,10 @@ public abstract class GuiInventory implements Listener {
 
 		// Copy old values and put them into the new array if possible
 		GuiInventorySlot[][] oldSlots = slots.clone();
-		slots = new GuiInventorySlot[lines][];
+		slots = new GuiInventorySlot[lines][SLOTS_PER_LINE];
 
-		for (int y = 0; y < oldSlots.length && y < slots.length; y++) {
-			slots[y] = new GuiInventorySlot[SLOTS_PER_LINE];
-
-			for (int x = 0; x < oldSlots[y].length && y < slots[y].length; x++) {
+		for (int y = 0; y < slots.length; y++) {
+			for (int x = 0; x < slots[y].length; x++) {
 				if (y < oldSlots.length && x < oldSlots[y].length) {
 					slots[y][x] = oldSlots[y][x];
 				} else {
@@ -117,7 +115,7 @@ public abstract class GuiInventory implements Listener {
 	public GuiInventorySlot getSlot(int x, int y) {
 		Validate.isTrue(y < slots.length && y >= 0, "y out of bounds: " + y);
 		Validate.isTrue(x <= 9 && x >= 0, "x out of bounds: " + x);
-
+		
 		return slots[y][x];
 	}
 
