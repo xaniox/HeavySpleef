@@ -154,6 +154,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		this.name = newName;
 		HeavySpleef.getInstance().getGameDatabase().save();
+		
+		getComponents().updateWalls();
 	}
 
 	@Override

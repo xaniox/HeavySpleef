@@ -53,7 +53,6 @@ public class CommandRename extends HSCommand {
 			game.rename(args[1]);
 			sender.sendMessage(_("gameRenamed", args[0], args[1]));
 		}
-		
 	}
 
 	@Override
