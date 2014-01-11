@@ -21,6 +21,9 @@ package de.matzefratze123.heavyspleef.util;
 
 import javax.swing.JOptionPane;
 
+/**
+ * Ignore this class
+ */
 public class OptionPane {
 
 	/**

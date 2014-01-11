@@ -96,7 +96,7 @@ public class Updater {
 			conn.setConnectTimeout(6000);
 			conn.addRequestProperty("User-Agent",
 					"HeavySpleef-Updater (by matzefratze123)");
-
+			
 			final BufferedReader reader = new BufferedReader(
 					new InputStreamReader(conn.getInputStream()));
 			String query = reader.readLine();
@@ -131,54 +131,15 @@ public class Updater {
 	}
 
 	private void checkVersions(String newVersion) {
-		String longerVersionString;
 		String thisVersion = HeavySpleef.getInstance().getDescription().getVersion();
 		
-		boolean dev = false;
-
 		if (thisVersion.toLowerCase().contains("dev")) {
-			// Cut the "dev "
-			thisVersion = thisVersion.substring(4);
-			dev = true;
-		}
-
-		// Indicate the longer version as we don't want an
-		// ArrayOutOfBoundsException
-		if (newVersion.length() > thisVersion.length()) {
-			longerVersionString = newVersion;
-		} else {
-			longerVersionString = thisVersion;
-		}
-
-		// Split on the point
-		String[] thisParts = thisVersion.split("\\.");
-		String[] newParts = newVersion.split("\\.");
-
-		if (dev && newVersion.equalsIgnoreCase(thisVersion)) {
-			// If we have the same version and the admin uses the dev build he should update to the recommened version
-			updateAvailable = true;
-		} else {
-			for (int i = 0; i < longerVersionString.split("\\.").length; i++) {
-				if (i + 1 > thisParts.length) {
-					break;
-				}
-
-				if (i + 1 > newParts.length) {
-					updateAvailable = true;
-					break;
-				}
-
-				
-				int newPart = Integer.parseInt(newParts[i]);
-				int thisPart = Integer.parseInt(thisParts[i]);
-
-				if (newPart > thisPart) {
-					updateAvailable = true;
-					break;
-				}
-			}
+			return;
 		}
 		
+		if (!thisVersion.equalsIgnoreCase(newVersion)) {
+			updateAvailable = true;
+		}
 	}
 
 	public void update(final CommandSender announceTo) {

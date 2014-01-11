@@ -271,7 +271,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	
 	private void initUpdate() {
 		//Don't check for updates if the user has disabled this function
-		if (!getConfig().getBoolean("auto-update"))
+		if (!config.getRootSection().isAutoUpdate())
 			return;
 		
 		this.updater = new Updater();

@@ -32,6 +32,8 @@ public class SettingsSectionRoot implements SettingsSection {
 	
 	public SettingsSectionRoot(SpleefConfig config) {
 		this.config = config;
+		
+		reload();
 	}
 	
 	@Override
