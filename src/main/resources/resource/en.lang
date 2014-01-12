@@ -78,7 +78,6 @@ invalidColor: &cThis an invalid team-color!
 specifieTeam: &cPlease pick a team! Available Teams: %a
 notASign: &cSome blocks in this selection are not signs!
 
-noSpleefHubSet: &cThe Spleef-HUB wasn't set!
 notLookingAtPortal: &cYou aren't looking at a portal!
 
 teamNeedMorePlayers: &cThe team %a &cneeds at minimum %a players!
@@ -168,13 +167,7 @@ teamRemoved: &7The team with the color %a &7was removed!
 
 gameRenamed: &7Renamed game &6%a &7to &5%a &7!
 
-welcomeToHUB: &7Welcome to the &4&lSpleef-HUB&r&7!
-spleefHubSet: &7Global Spleef HUB set!
-portalRemoved: &7The portal was removed!
-portalAdded: &7Portal added!
-
 taggedAsReady: &7You have been tagged as ready
-teleportingToHub: &7Teleporting to Spleef HUB. Don't move...
 welcomeToSpectate: &7You are now spectating. Use &l/spleef leave &7to leave the spectate mode!
 
 # Broadcast Messages
