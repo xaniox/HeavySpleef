@@ -28,39 +28,44 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.ExperienceBar;
 import de.matzefratze123.heavyspleef.util.I18N;
 
-public class StartCountdownTask extends AbstractCountdown {
-
+public class StartCountdownTask extends Countdown implements CountdownListener {
+	
 	public static final String TASK_ID_KEY = "startCountdown";
+	
 	private Game game;
 	
-	public StartCountdownTask(int start, Game game) {
-		super(start);
+	public StartCountdownTask(Game game, int ticks) {
+		super(ticks);
+		
 		this.game = game;
+		
+		addCountdownListener(this);
 	}
-	
+
+	@Override
+	public void onStart() {}
+
+	@Override
+	public void onCancel() {}
+
 	@Override
 	public void onFinish() {
-		//Start the game
 		for (SpleefPlayer player : game.getIngamePlayers()) {
-			player.getBukkitPlayer().setExp(0.0F);
+			player.getBukkitPlayer().setExp(0f);
 		}
 		
+		cancel();
 		game.start();
 	}
-	
+
 	@Override
-	public void onCorrupt() {
-		game.cancelTask(TASK_ID_KEY);
-	}
-	
-	@Override
-	public void onCount() {
-		game.setCountLeft(getTimeRemaining());
+	public void onTick() {
+		game.setCountLeft(getTicksLeft());
 		
-		int procent = getTimeRemaining() * 100 / getStart();
+		int procent = getTicksLeft() * 100 / getFinishTicks();
 		
 		for (SpleefPlayer player : game.getIngamePlayers()) {
-			if (remaining <= 5) {
+			if (getTicksLeft() <= 5) {
 				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
 			}
 			
@@ -68,13 +73,20 @@ public class StartCountdownTask extends AbstractCountdown {
 			bar.setExp(procent);
 		}
 		
-		if (getTimeRemaining() <= 5){
-			game.broadcast(I18N._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
+		if (getTicksLeft() <= 5){
+			game.broadcast(I18N._("gameIsStarting", String.valueOf(getTicksLeft())), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
 		} else {//Do pre countdown
-			if (getTimeRemaining() % 5 == 0)
+			if (getTicksLeft() % 5 == 0)
 				//Only message if the remaining value is divisible by 5
-				game.broadcast(I18N._("gameIsStarting", String.valueOf(getTimeRemaining())), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
+				game.broadcast(I18N._("gameIsStarting", String.valueOf(getTicksLeft())), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
 		}
 	}
 
+	@Override
+	public void onPause() {}
+
+	@Override
+	public void onUnpause() {}
+	
+	
 }

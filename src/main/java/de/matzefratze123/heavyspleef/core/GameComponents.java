@@ -21,9 +21,7 @@ package de.matzefratze123.heavyspleef.core;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,7 +35,6 @@ import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.core.task.Rollback;
 import de.matzefratze123.heavyspleef.core.task.SaveSchematic;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.util.Util;
 
 public class GameComponents implements IGameComponents {
 

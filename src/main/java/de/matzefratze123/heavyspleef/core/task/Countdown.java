@@ -1,3 +1,22 @@
+/**
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package de.matzefratze123.heavyspleef.core.task;
 
 import java.util.ArrayList;
@@ -7,7 +26,7 @@ import org.bukkit.Bukkit;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 
-public class Countdown implements Runnable {
+public class Countdown implements Runnable, Task {
 
 	private int finishTicks;
 	private int currentTick;
@@ -26,18 +45,20 @@ public class Countdown implements Runnable {
 		this.pid = -1;
 	}
 	
-	public void startCountdown() {
+	public final int start() {
 		if (pid != -1) {
 			throw new IllegalStateException("Countdown already started!");
 		}
 		
-		pid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 20L, 20L);
+		pid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 0L, 20L);
 		for (CountdownListener l : listener) {
 			l.onStart();
 		}
+		
+		return pid;
 	}
 	
-	public void cancelCountdown() {
+	public final void cancel() {
 		if (pid == -1) {
 			return;
 		}
@@ -50,26 +71,35 @@ public class Countdown implements Runnable {
 		pid = -1;
 	}
 	
+	public final boolean isAlive() {
+		return pid != -1;
+	}
+	
 	@Override
-	public void run() {
+	public final void run() {
 		if (!pause) {
-			for (CountdownListener l : listener) {
-				l.onTick();
-			}
-			
-			if (++currentTick <= finishTicks) {
+			if (++currentTick < finishTicks) {
+				for (CountdownListener l : listener) {
+					l.onTick();
+				}
+			} else {
 				for (CountdownListener l : listener) {
 					l.onFinish();
 				}
-				
-				Bukkit.getScheduler().cancelTask(pid);
-				pid = -1;
 			}
 		}
 	}
 	
 	public int currentTick() {
 		return currentTick;
+	}
+	
+	public int getTicksLeft() {
+		return finishTicks - currentTick;
+	}
+	
+	public int getFinishTicks() {
+		return finishTicks;
 	}
 	
 	public void reset() {
@@ -102,7 +132,7 @@ public class Countdown implements Runnable {
 		return pause;
 	}
 	
-	public void addListener(CountdownListener listener) {
+	public void addCountdownListener(CountdownListener listener) {
 		this.listener.add(listener);
 	}
 	

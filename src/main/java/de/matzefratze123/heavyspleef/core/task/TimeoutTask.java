@@ -25,34 +25,50 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.StopCause;
 import de.matzefratze123.heavyspleef.util.I18N;
 
-public class TimeoutTask extends AbstractCountdown {
+public class TimeoutTask extends Countdown implements CountdownListener {
 
 	public static final String TASK_ID_KEY = "timeoutTask";
+	
 	private Game game;
 
-	public TimeoutTask(int start, Game game) {
-		super(start);
+	public TimeoutTask(Game game, int ticks) {
+		super(ticks);
+		
 		this.game = game;
+		addCountdownListener(this);
 	}
 
 	@Override
-	public void onCount() {
-		if (getTimeRemaining() <= 120) {
-			if (getTimeRemaining() <= 5) {
+	public void onStart() {}
+
+	@Override
+	public void onCancel() {}
+
+	@Override
+	public void onFinish() {
+		game.broadcast(I18N._("timeoutReached"), ConfigUtil.getBroadcast(MessageType.TIMEOUT));
+		game.stop(StopCause.DRAW);
+		cancel();
+	}
+
+	@Override
+	public void onTick() {
+		if (getTicksLeft() <= 120) {
+			if (getTicksLeft() <= 5) {
 				String message = I18N._("timeLeftSeconds",
-						String.valueOf(getTimeRemaining()));
+						String.valueOf(getTicksLeft()));
 				game.broadcast(message, ConfigUtil.getBroadcast(MessageType.TIMEOUT));
 				return;
 			}
 
-			if (getTimeRemaining() % 30 != 0)
+			if (getTicksLeft() % 30 != 0)
 				return;
 
-			int minutes = getTimeRemaining() / 60;
-			int seconds = getTimeRemaining() % 60;
+			int minutes = getTicksLeft() / 60;
+			int seconds = getTicksLeft() % 60;
 
 			String message = minutes == 0 ? I18N._("timeLeftSeconds",
-					String.valueOf(getTimeRemaining())) : I18N._(
+					String.valueOf(getTicksLeft())) : I18N._(
 					"timeLeftMinutes", String.valueOf(minutes),
 					String.valueOf(seconds));
 
@@ -61,10 +77,9 @@ public class TimeoutTask extends AbstractCountdown {
 	}
 
 	@Override
-	public void onFinish() {
-		game.broadcast(I18N._("timeoutReached"), ConfigUtil.getBroadcast(MessageType.TIMEOUT));
-		game.stop(StopCause.DRAW);
-		game.cancelTask(TASK_ID_KEY);
-	}
+	public void onPause() {}
+
+	@Override
+	public void onUnpause() {}
 
 }

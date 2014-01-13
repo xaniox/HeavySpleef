@@ -99,15 +99,29 @@ public class PlayerTeleportTask implements Runnable {
 				
 				Block block = loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + i, loc.getBlockZ()).getRelative(face);
 				
-				changedBlocks.add(new SimpleBlockData(block));
+				if (checkBlockSave(block.getLocation())) {
+					changedBlocks.add(new SimpleBlockData(block));
+				}
 				block.setType(Material.GLASS);
 			}
 		}
 	}
 	
-	/**
-	 * This method is called on the start() in Game.java
-	 */
+	private boolean checkBlockSave(Location location) {
+		int x, y, z;
+		x = location.getBlockX();
+		y = location.getBlockY();
+		z = location.getBlockZ();
+		
+		for (SimpleBlockData data : changedBlocks) {
+			if (data.getX() == x && data.getY() == y && data.getZ() == z) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public void removeBoxes() {
 		for (SimpleBlockData data : changedBlocks) {
 			Block block = data.getWorld().getBlockAt(data.getLocation());

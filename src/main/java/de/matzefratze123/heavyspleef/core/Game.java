@@ -50,7 +50,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGame;
@@ -73,6 +72,7 @@ import de.matzefratze123.heavyspleef.core.task.PlayerTeleportTask;
 import de.matzefratze123.heavyspleef.core.task.RegenerationTask;
 import de.matzefratze123.heavyspleef.core.task.RoundsCountdownTask;
 import de.matzefratze123.heavyspleef.core.task.StartCountdownTask;
+import de.matzefratze123.heavyspleef.core.task.Task;
 import de.matzefratze123.heavyspleef.core.task.TimeoutTask;
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.database.Parser;
@@ -100,8 +100,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	private GameState               state;
 
 	// Per game
-	/* A map which saves all task id's */
-	private Map<String, Integer>    tasks       = new HashMap<String, Integer>();
+	private List<Task>              tasks      = new ArrayList<Task>();
 	private List<SpleefPlayer>      inPlayers   = new ArrayList<SpleefPlayer>();
 	private List<OfflinePlayer>     outPlayers  = new ArrayList<OfflinePlayer>();
 	private List<SpleefPlayer>      spectating  = new ArrayList<SpleefPlayer>();
@@ -165,24 +164,22 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 	@Override
 	public void start() {
-		cancelTask(StartCountdownTask.TASK_ID_KEY);
+		cancelTasks(StartCountdownTask.class);
 
 		state = GameState.INGAME;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		removeBoxes();
 
 		if (getFlag(FlagType.TIMEOUT) > 0) {
-			TimeoutTask timeoutTask = new TimeoutTask(getFlag(FlagType.TIMEOUT), this);
-			int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), timeoutTask, 0L, 20L);
-			tasks.put(TimeoutTask.TASK_ID_KEY, id);
+			TimeoutTask timeoutTask = new TimeoutTask(this, getFlag(FlagType.TIMEOUT));
+			timeoutTask.start();
+			tasks.add(timeoutTask);
 		}
 
 		if (getFlag(FlagType.REGEN_INTERVALL) > 0) {
 			RegenerationTask regenTask = new RegenerationTask(this);
-			long intervall = getFlag(FlagType.REGEN_INTERVALL) * 20L;
-
-			int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), regenTask, intervall, intervall);
-			tasks.put(RegenerationTask.TASK_ID_KEY, id);
+			regenTask.start();
+			tasks.add(regenTask);
 		}
 
 		// Subtract entry fee
@@ -288,9 +285,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		components.regenerateFloors();
 
-		StartCountdownTask countdownTask = new StartCountdownTask(getFlag(FlagType.COUNTDOWN), this);
-		int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), countdownTask, 0L, 20L);
-		tasks.put(StartCountdownTask.TASK_ID_KEY, id);
+		StartCountdownTask countdownTask = new StartCountdownTask(this, getFlag(FlagType.COUNTDOWN));
+		countdownTask.start();
+		tasks.add(countdownTask);
 
 		teleportTask = new PlayerTeleportTask(this);
 		Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
@@ -311,9 +308,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 	public void stop(StopCause cause, SpleefPlayer winner) {
 		// Cancel all tasks
-		for (String task : tasks.keySet()) {
-			cancelTask(task);
-		}
+		cancelTasks();
 
 		SpleefFinishEvent event = new SpleefFinishEvent(this, cause, winner);
 		Bukkit.getPluginManager().callEvent(event);
@@ -371,9 +366,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	/* Extra method to stop the game per a winner team */
 	private void stop(Team winnerTeam) {
 		// Cancel all tasks
-		for (String task : tasks.keySet()) {
-			cancelTask(task);
-		}
+		cancelTasks();
 
 		int teamSize = winnerTeam.getPlayers().size();
 
@@ -580,9 +573,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
 
 				int countdown = getFlag(FlagType.COUNTDOWN);
-				RoundsCountdownTask task = new RoundsCountdownTask(countdown, this);
-				int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), task, 0L, 20L);
-				tasks.put(RoundsCountdownTask.TASK_ID_KEY, id);
+				RoundsCountdownTask task = new RoundsCountdownTask(this, countdown);
+				task.start();
+				tasks.add(task);
 
 				broadcast(_("wonRound", winner.getName(), String.valueOf(roundsPlayed), String.valueOf(getFlag(FlagType.ROUNDS))), ConfigUtil.getBroadcast(MessageType.WIN));
 				broadcast(_("roundsRemaining", String.valueOf(getFlag(FlagType.ROUNDS) - roundsPlayed)), ConfigUtil.getBroadcast(MessageType.WIN));
@@ -790,19 +783,19 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 	}
 
-	public void cancelTask(String key) {
-		if (!tasks.containsKey(key)) {
-			return;
+	public void cancelTasks(Class<? extends Task> taskClass) {
+		for (Task task : tasks) {
+			if (task.getClass().isAssignableFrom(taskClass)) {
+				task.cancel();
+			}
 		}
-
-		BukkitScheduler scheduler = Bukkit.getScheduler();
-
-		int id = tasks.get(key);
-		if (!scheduler.isCurrentlyRunning(id) && !scheduler.isQueued(id)) {
-			return;
+	}
+	
+	public void cancelTasks() {
+		//Cancel all tasks
+		for (Task task : tasks) {
+			task.cancel();
 		}
-
-		scheduler.cancelTask(id);
 	}
 
 	public void setCountLeft(int countLeft) {

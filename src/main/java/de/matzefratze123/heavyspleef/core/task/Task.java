@@ -19,18 +19,12 @@
  */
 package de.matzefratze123.heavyspleef.core.task;
 
-public interface CountdownListener {
+public interface Task {
 	
-	public void onStart();
+	public abstract int start();
 	
-	public void onCancel();
+	public abstract void cancel();
 	
-	public void onFinish();
-	
-	public void onTick();
-	
-	public void onPause();
-	
-	public void onUnpause();
-	
+	public abstract boolean isAlive();
+
 }

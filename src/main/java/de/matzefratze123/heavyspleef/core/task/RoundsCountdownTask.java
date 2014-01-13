@@ -33,29 +33,29 @@ import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
 
-public class RoundsCountdownTask extends AbstractCountdown {
+public class RoundsCountdownTask extends Countdown implements CountdownListener {
 
 	public static final String TASK_ID_KEY = "roundsTask";
+	
 	private Game game;
 	
-	public RoundsCountdownTask(int start, Game game) {
-		super(start);
+	public RoundsCountdownTask(Game game, int ticks) {
+		super(ticks);
+		
 		this.game = game;
-		game.setGameState(GameState.COUNTING);
+		addCountdownListener(this);
 	}
-	
+
 	@Override
-	public void onCount() {
-		if (getTimeRemaining() <= 5){//Do every second countdown
-			for (SpleefPlayer player : game.getIngamePlayers())
-				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, player.getBukkitPlayer().getLocation().getPitch());			
-			game.broadcast(I18N._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
-		} else {//Do pre countdown
-			if (getTimeRemaining() % 5 == 0)//Only message if the remaining value is divisible by 5
-				game.broadcast(I18N._("roundStartsIn", String.valueOf(getTimeRemaining())), BroadcastType.INGAME);
-		}
+	public void onStart() {
+		this.game.setGameState(GameState.COUNTING);
 	}
-	
+
+	@Override
+	public void onCancel() {
+		this.game.setGameState(GameState.INGAME);
+	}
+
 	@Override
 	public void onFinish() {
 		int rounds = game.getFlag(ROUNDS);
@@ -64,7 +64,28 @@ public class RoundsCountdownTask extends AbstractCountdown {
 		game.broadcast(HSCommand.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
 		game.broadcast(I18N._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
 		game.removeBoxes();
-		game.cancelTask(TASK_ID_KEY);
+		cancel();
 	}
+
+	@Override
+	public void onTick() {		
+		if (getTicksLeft() <= 5) {
+			for (SpleefPlayer player : game.getIngamePlayers()) {
+				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, player.getBukkitPlayer().getLocation().getPitch());
+			}
+			
+			game.broadcast(I18N._("roundStartsIn", String.valueOf(getTicksLeft())), BroadcastType.INGAME);
+		} else {
+			if (getTicksLeft() % 5 == 0) {
+				game.broadcast(I18N._("roundStartsIn", String.valueOf(getTicksLeft())), BroadcastType.INGAME);
+			}
+		}
+	}
+
+	@Override
+	public void onPause() {}
+
+	@Override
+	public void onUnpause() {}
 
 }
