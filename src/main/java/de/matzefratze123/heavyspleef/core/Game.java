@@ -1,7 +1,7 @@
-/**
+/*
  *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -68,12 +68,12 @@ import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
-import de.matzefratze123.heavyspleef.core.task.PlayerTeleportTask;
-import de.matzefratze123.heavyspleef.core.task.RegenerationTask;
-import de.matzefratze123.heavyspleef.core.task.RoundsCountdownTask;
-import de.matzefratze123.heavyspleef.core.task.StartCountdownTask;
+import de.matzefratze123.heavyspleef.core.task.TaskPlayerTeleport;
+import de.matzefratze123.heavyspleef.core.task.TaskRegeneration;
+import de.matzefratze123.heavyspleef.core.task.CountdownRounds;
+import de.matzefratze123.heavyspleef.core.task.CountdownStart;
 import de.matzefratze123.heavyspleef.core.task.Task;
-import de.matzefratze123.heavyspleef.core.task.TimeoutTask;
+import de.matzefratze123.heavyspleef.core.task.CountdownTimeout;
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.database.Parser;
 import de.matzefratze123.heavyspleef.hooks.Hook;
@@ -109,7 +109,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	private int                     jackpot;
 
 	// Temporary
-	private PlayerTeleportTask      teleportTask;
+	private TaskPlayerTeleport      teleportTask;
 
 	public Game(String name) {
 		this.name = name;
@@ -166,20 +166,20 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 	@Override
 	public void start() {
-		cancelTasks(StartCountdownTask.class);
+		cancelTasks(CountdownStart.class);
 
 		state = GameState.INGAME;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		removeBoxes();
 
 		if (getFlag(FlagType.TIMEOUT) > 0) {
-			TimeoutTask timeoutTask = new TimeoutTask(this, getFlag(FlagType.TIMEOUT));
+			CountdownTimeout timeoutTask = new CountdownTimeout(this, getFlag(FlagType.TIMEOUT));
 			timeoutTask.start();
 			tasks.add(timeoutTask);
 		}
 
 		if (getFlag(FlagType.REGEN_INTERVALL) > 0) {
-			RegenerationTask regenTask = new RegenerationTask(this);
+			TaskRegeneration regenTask = new TaskRegeneration(this);
 			regenTask.start();
 			tasks.add(regenTask);
 		}
@@ -287,11 +287,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		components.regenerateFloors();
 
-		StartCountdownTask countdownTask = new StartCountdownTask(this, getFlag(FlagType.COUNTDOWN));
+		CountdownStart countdownTask = new CountdownStart(this, getFlag(FlagType.COUNTDOWN));
 		countdownTask.start();
 		tasks.add(countdownTask);
 
-		teleportTask = new PlayerTeleportTask(this);
+		teleportTask = new TaskPlayerTeleport(this);
 		Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
 
 		components.updateWalls();
@@ -571,11 +571,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 				components.regenerateFloors();
 
-				teleportTask = new PlayerTeleportTask(this);
+				teleportTask = new TaskPlayerTeleport(this);
 				Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), teleportTask);
 
 				int countdown = getFlag(FlagType.COUNTDOWN);
-				RoundsCountdownTask task = new RoundsCountdownTask(this, countdown);
+				CountdownRounds task = new CountdownRounds(this, countdown);
 				task.start();
 				tasks.add(task);
 

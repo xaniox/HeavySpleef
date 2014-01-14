@@ -1,7 +1,7 @@
-/**
+/*
  *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -33,13 +33,13 @@ import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
 
-public class RoundsCountdownTask extends Countdown implements CountdownListener {
+public class CountdownRounds extends Countdown implements CountdownListener {
 
 	public static final String TASK_ID_KEY = "roundsTask";
 	
 	private Game game;
 	
-	public RoundsCountdownTask(Game game, int ticks) {
+	public CountdownRounds(Game game, int ticks) {
 		super(ticks);
 		
 		this.game = game;

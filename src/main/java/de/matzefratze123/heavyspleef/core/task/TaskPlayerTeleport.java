@@ -1,7 +1,7 @@
-/**
+/*
  *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -33,12 +33,12 @@ import de.matzefratze123.heavyspleef.core.flag.ListFlagLocation.SerializeableLoc
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
-public class PlayerTeleportTask implements Runnable {
+public class TaskPlayerTeleport implements Runnable {
 
 	private Game game;
 	private List<SimpleBlockData> changedBlocks;
 
-	public PlayerTeleportTask(Game game) {
+	public TaskPlayerTeleport(Game game) {
 		this.game = game;
 		this.changedBlocks = new ArrayList<SimpleBlockData>();
 	}

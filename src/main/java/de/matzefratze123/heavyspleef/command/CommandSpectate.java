@@ -1,7 +1,7 @@
-/**
+/*
  *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,15 +20,14 @@
 package de.matzefratze123.heavyspleef.command;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;

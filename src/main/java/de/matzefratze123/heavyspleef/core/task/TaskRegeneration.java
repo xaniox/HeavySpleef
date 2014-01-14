@@ -1,7 +1,7 @@
-/**
+/*
  *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,13 +28,13 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.util.I18N;
 
-public class RegenerationTask implements Runnable, Task {
+public class TaskRegeneration implements Runnable, Task {
 	
 	private Game game;
 	
 	private int pid = -1;
 	
-	public RegenerationTask(Game game) {
+	public TaskRegeneration(Game game) {
 		this.game = game;
 	}
 	

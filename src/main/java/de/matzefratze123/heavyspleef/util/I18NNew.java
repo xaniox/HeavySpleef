@@ -1,5 +1,5 @@
-/**
- *   StaffInformer - Inform players about online staff
+/*
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
  *   Copyright (C) 2013-2014 matzefratze123
  *

@@ -1,7 +1,7 @@
-/**
+/*
  *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
 
-public class AntiCampingTask implements Runnable {
+public class TaskAntiCamping implements Runnable {
 	
 	private static boolean taskEnabled = false;
 	

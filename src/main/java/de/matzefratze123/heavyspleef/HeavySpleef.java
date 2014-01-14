@@ -1,7 +1,7 @@
-/**
+/*
  *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
-import de.matzefratze123.heavyspleef.core.task.AntiCampingTask;
+import de.matzefratze123.heavyspleef.core.task.TaskAntiCamping;
 import de.matzefratze123.heavyspleef.database.YamlDatabase;
 import de.matzefratze123.heavyspleef.hooks.Hook;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
@@ -95,7 +95,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	private InventoryJoinGUI joinGui;
 	
 	//Tasks
-	private AntiCampingTask antiCampTask;
+	private TaskAntiCamping antiCampTask;
 	
 	// Updater
 	private Updater updater;
@@ -104,10 +104,13 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
 	
 	@Override
-	public void onEnable() {
+	public void onLoad() {
 		//Set the instance first
 		instance = this;
-		
+	}
+	
+	@Override
+	public void onEnable() {
 		if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
 			Logger.warning("WARNING !!! Failed to detect WorldEdit !!! WARNING");
 			Logger.warning(" In order to use HeavySpleef make sure to install ");
@@ -146,7 +149,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		//Register our main command
 		getCommand("spleef").setExecutor(new CommandHandler());
 		
-		antiCampTask = new AntiCampingTask();
+		antiCampTask = new TaskAntiCamping();
 		antiCampTask.start();
 		
 		//Command stuff
@@ -207,7 +210,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		return selectionManager;
 	}
 	
-	public AntiCampingTask getAntiCampingTask() {
+	public TaskAntiCamping getAntiCampingTask() {
 		return antiCampTask;
 	}
 	

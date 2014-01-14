@@ -1,7 +1,7 @@
-/**
- *   HeavySpleef - The simple spleef plugin for bukkit
+/*
+ *   HeavySpleef - Advanced spleef plugin for bukkit
  *   
- *   Copyright (C) 2013 matzefratze123
+ *   Copyright (C) 2013-2014 matzefratze123
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
