@@ -50,7 +50,6 @@ import de.matzefratze123.heavyspleef.hooks.Hook;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
-import de.matzefratze123.heavyspleef.listener.PVPTimerListener;
 import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.listener.QueuesListener;
 import de.matzefratze123.heavyspleef.listener.ReadyListener;
@@ -225,7 +224,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		pm.registerEvents(new UpdateListener(), this);
 		pm.registerEvents(new SignWallListener(), this);
 		pm.registerEvents(new QueuesListener(), this);
-		pm.registerEvents(new PVPTimerListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
 		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
 		
@@ -333,12 +331,12 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		return player;
 	}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onLeave(PlayerQuitEvent e) {
 		handleQuit(e);
 	}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onKick(PlayerKickEvent e) {
 		handleQuit(e);
 	}

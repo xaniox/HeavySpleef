@@ -174,7 +174,7 @@ public class CommandJoin extends HSCommand {
 				player.sendMessage(_("dontMove"));
 			}
 			
-			PvPTimerManager.addToTimer(player.getBukkitPlayer(), new JoinTimerRunnable(game, player, team));
+			PvPTimerManager.getInstance().add(player, new JoinTimerRunnable(game, player, team));
 		} else if (game.getGameState() == GameState.COUNTING){
 			player.sendMessage(_("gameAlreadyRunning"));
 			game.getQueue().push(player);
@@ -213,7 +213,6 @@ public class CommandJoin extends HSCommand {
 			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
 			
 			game.getQueue().removePlayer(player);
-			PvPTimerManager.cancelTimerTask(player.getBukkitPlayer());
 		}
 		
 	}
