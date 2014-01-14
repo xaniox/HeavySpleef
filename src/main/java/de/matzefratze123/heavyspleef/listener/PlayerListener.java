@@ -477,12 +477,12 @@ public class PlayerListener implements Listener {
 		e.getPlayer().sendMessage(I18N._("cantUseCommands"));
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		handleQuit(e);
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler
 	public void onPlayerKick(PlayerKickEvent e) {
 		handleQuit(e);
 	}
