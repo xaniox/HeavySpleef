@@ -25,7 +25,7 @@ import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionQueues implements SettingsSection {
 
-	private static final String SECTION_NAME = "queues";
+	private static final String SECTION_PATH = "queues";
 	
 	private SpleefConfig configuration;
 	private ConfigurationSection section;
@@ -35,7 +35,6 @@ public class SettingsSectionQueues implements SettingsSection {
 	
 	public SettingsSectionQueues(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_NAME);
 		
 		reload();
 	}
@@ -57,6 +56,8 @@ public class SettingsSectionQueues implements SettingsSection {
 
 	@Override
 	public void reload() {
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
+		
 		useQueues = section.getBoolean("useQueues", true);
 		allowCommands = section.getBoolean("commandsInQueue");
 	}

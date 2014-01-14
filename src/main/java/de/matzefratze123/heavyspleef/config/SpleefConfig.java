@@ -130,6 +130,7 @@ public class SpleefConfig {
 		if (copyFailed || !CONFIG_FILE.exists()) {
 			//Somehow we failed to load config by file
 			inStream = SpleefConfig.class.getResourceAsStream(RESOURCE_PATH);
+			Logger.severe("Failed to copy default config. Using default values.");
 		} else {
 			try {
 				//Load config by file
@@ -137,6 +138,7 @@ public class SpleefConfig {
 			} catch (FileNotFoundException e) {
 				//Should not be fired, but safety first
 				inStream = SpleefConfig.class.getResourceAsStream(RESOURCE_PATH);
+				Logger.severe("Failed to load config! Using default values.");
 			}
 		}
 		

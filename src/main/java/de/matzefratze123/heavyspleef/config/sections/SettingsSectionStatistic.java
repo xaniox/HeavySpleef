@@ -25,7 +25,7 @@ import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionStatistic implements SettingsSection {
 	
-	private static final String SECTION_NAME = "statistic";
+	private static final String SECTION_PATH = "statistic";
 	
 	private SpleefConfig configuration;
 	private ConfigurationSection section;
@@ -40,7 +40,6 @@ public class SettingsSectionStatistic implements SettingsSection {
 	
 	public SettingsSectionStatistic(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_NAME);
 		
 		reload();
 	}
@@ -62,6 +61,8 @@ public class SettingsSectionStatistic implements SettingsSection {
 	
 	@Override
 	public void reload() {
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
+		
 		final int defaultPort = 3306;
 		
 		enabled = section.getBoolean("enabled", true);

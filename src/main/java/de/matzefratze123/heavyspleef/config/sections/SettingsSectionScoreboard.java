@@ -28,7 +28,7 @@ import de.matzefratze123.heavyspleef.util.Util;
 
 public class SettingsSectionScoreboard implements SettingsSection {
 	
-	private static final String SECTION_NAME = "scoreboards";
+	private static final String SECTION_PATH = "scoreboards";
 	
 	private SpleefConfig configuration;
 	private ConfigurationSection section;
@@ -38,7 +38,6 @@ public class SettingsSectionScoreboard implements SettingsSection {
 	
 	public SettingsSectionScoreboard(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_NAME);
 		
 		reload();
 	}
@@ -60,6 +59,8 @@ public class SettingsSectionScoreboard implements SettingsSection {
 
 	@Override
 	public void reload() {
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
+		
 		final byte redWoolData = (byte)14;
 		final byte blackWoolData = (byte)15;
 		

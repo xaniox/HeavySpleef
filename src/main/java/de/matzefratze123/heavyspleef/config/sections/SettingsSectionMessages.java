@@ -26,14 +26,13 @@ import de.matzefratze123.heavyspleef.core.BroadcastType;
 
 public class SettingsSectionMessages implements SettingsSection {
 
-	private static final String SECTION_NAME = "messages";
+	private static final String SECTION_PATH = "messages";
 	
 	private SpleefConfig configuration;
 	private ConfigurationSection section;
 	
 	public SettingsSectionMessages(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_NAME);
 		
 		reload();
 	}
@@ -55,7 +54,7 @@ public class SettingsSectionMessages implements SettingsSection {
 
 	@Override
 	public void reload() {
-		//Nothing here
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
 	}
 	
 	public BroadcastType getBroadcastType(MessageType messageType) {

@@ -26,14 +26,13 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 
 public class SettingsSectionFlagDefaults implements SettingsSection {
 	
-	private static final String SECTION_NAME = "flag-defaults";
+	private static final String SECTION_PATH = "flag-defaults";
 	
 	private SpleefConfig configuration;
 	private ConfigurationSection section;
 	
 	public SettingsSectionFlagDefaults(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_NAME);
 		
 		reload();
 	}
@@ -55,7 +54,7 @@ public class SettingsSectionFlagDefaults implements SettingsSection {
 
 	@Override
 	public void reload() {
-		//Nothing here
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
 	}
 	
 	public <T extends Flag<V>, V> V getFlagDefault(T flag) {

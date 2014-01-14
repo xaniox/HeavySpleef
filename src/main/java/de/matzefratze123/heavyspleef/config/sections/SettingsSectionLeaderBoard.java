@@ -25,7 +25,7 @@ import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionLeaderBoard implements SettingsSection {
 	
-	private static final String SECTION_NAME = "leaderboard";
+	private static final String SECTION_PATH = "leaderboard";
 	
 	private SpleefConfig configuration;
 	private ConfigurationSection section;
@@ -37,7 +37,6 @@ public class SettingsSectionLeaderBoard implements SettingsSection {
 	
 	public SettingsSectionLeaderBoard(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_NAME);
 		
 		reload();
 	}
@@ -59,6 +58,8 @@ public class SettingsSectionLeaderBoard implements SettingsSection {
 
 	@Override
 	public void reload() {
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
+		
 		winPoints = section.getInt("win");
 		losePoints = section.getInt("lose");
 		knockoutPoints = section.getInt("knockout");

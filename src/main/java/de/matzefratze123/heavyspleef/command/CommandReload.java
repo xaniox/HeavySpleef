@@ -41,7 +41,6 @@ public class CommandReload extends HSCommand {
 	public void execute(CommandSender sender, String[] args) {
 		long millis = System.currentTimeMillis();
 		HeavySpleef.getSystemConfig().reload();
-		plugin.reloadConfig();//First reload our config
 		
 		HeavySpleef.PREFIX = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("general.spleef-prefix", HeavySpleef.PREFIX));
 		HeavySpleef.getInstance().getAntiCampingTask().restart();

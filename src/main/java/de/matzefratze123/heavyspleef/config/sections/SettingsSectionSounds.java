@@ -25,7 +25,7 @@ import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionSounds implements SettingsSection {
 
-	private static final String SECTION_NAME = "sounds";
+	private static final String SECTION_PATH = "sounds";
 	
 	private SpleefConfig configuration;
 	private ConfigurationSection section;
@@ -35,7 +35,6 @@ public class SettingsSectionSounds implements SettingsSection {
 	
 	public SettingsSectionSounds(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_NAME);
 		
 		reload();
 	}
@@ -57,6 +56,8 @@ public class SettingsSectionSounds implements SettingsSection {
 
 	@Override
 	public void reload() {
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
+		
 		playPlingSound = section.getBoolean("plingSound", true);
 		playLevelUpSound = section.getBoolean("levelUp", true);
 	}

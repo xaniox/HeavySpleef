@@ -55,7 +55,6 @@ public class SettingsSectionGeneral implements SettingsSection {
 	
 	public SettingsSectionGeneral(SpleefConfig config) {
 		this.configuration = config;
-		this.section = config.getFileConfiguration().getConfigurationSection(SECTION_PATH);
 		
 		reload();
 	}
@@ -78,6 +77,8 @@ public class SettingsSectionGeneral implements SettingsSection {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void reload() {
+		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
+		
 		broadcastRadius = section.getInt("broadcast-radius", 40);
 		prefix = ChatColor.translateAlternateColorCodes('&', section.getString(ConfigUtil.GENERAL_SECTION + ".spleef-prefix", "&8[&6&lSpleef&8]"));
 		protectArenas = section.getBoolean("protectArena", true);
