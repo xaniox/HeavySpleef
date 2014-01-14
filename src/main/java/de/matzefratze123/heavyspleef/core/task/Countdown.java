@@ -45,6 +45,7 @@ public class Countdown implements Runnable, Task {
 		this.pid = -1;
 	}
 	
+	@Override
 	public final int start() {
 		if (pid != -1) {
 			throw new IllegalStateException("Countdown already started!");
@@ -58,6 +59,7 @@ public class Countdown implements Runnable, Task {
 		return pid;
 	}
 	
+	@Override
 	public final void cancel() {
 		if (pid == -1) {
 			return;
@@ -71,6 +73,7 @@ public class Countdown implements Runnable, Task {
 		pid = -1;
 	}
 	
+	@Override
 	public final boolean isAlive() {
 		return pid != -1;
 	}

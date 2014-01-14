@@ -34,6 +34,7 @@ public class ListFlagLocation extends ListFlag<ListFlagLocation.SerializeableLoc
 		super(name, defaulte);
 	}
 
+	@Override
 	public void putElement(Player player, String input, List<SerializeableLocation> list) {
 		Location location = player.getLocation();
 		SerializeableLocation sLocation = new SerializeableLocation(location);

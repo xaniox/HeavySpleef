@@ -45,7 +45,7 @@ public class CommandStart extends HSCommand {
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer((Player)sender);
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(sender);
 		Game game;
 
 		if (args.length <= 0) {

@@ -252,7 +252,7 @@ public class PlayerListener implements Listener {
 				&& !(e.getEntity() instanceof Egg))
 			return;
 
-		Projectile projectile = (Projectile) e.getEntity();
+		Projectile projectile = e.getEntity();
 
 		if (!(projectile.getShooter() instanceof Player))
 			return;

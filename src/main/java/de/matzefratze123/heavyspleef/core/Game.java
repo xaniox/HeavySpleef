@@ -134,10 +134,12 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 	public abstract Location getRandomLocation();
 
+	@Override
 	public abstract void broadcast(String message, BroadcastType type);
 
 	public abstract Region getRegion();
 
+	@Override
 	public abstract GameType getType();
 
 	@Override

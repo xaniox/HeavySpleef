@@ -64,7 +64,7 @@ public class EnumFlag<E extends Enum<E>> extends Flag<E> {
 			input = input.trim();
 		} else return null;
 		
-		return (E) Enum.valueOf(enumClass, input);
+		return Enum.valueOf(enumClass, input);
 	}
 
 	

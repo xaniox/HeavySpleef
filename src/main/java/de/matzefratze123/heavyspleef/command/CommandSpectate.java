@@ -44,7 +44,7 @@ public class CommandSpectate extends HSCommand {
 	
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer((Player)sender);
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(sender);
 		
 		if (!GameManager.hasGame(args[0])) {
 			sender.sendMessage(_("arenaDoesntExists"));

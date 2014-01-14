@@ -31,7 +31,6 @@ import org.bukkit.event.block.SignChangeEvent;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.CommandJoin;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.SignWall;

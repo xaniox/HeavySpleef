@@ -126,7 +126,7 @@ public enum FlagType {
 			Field[] fields = FlagType.class.getDeclaredFields();
 			for (Field field : fields) {
 				field.setAccessible(true);
-				FlagData data = (FlagData) field.getAnnotation(FlagData.class);
+				FlagData data = field.getAnnotation(FlagData.class);
 				if (data == null)
 					continue;
 				

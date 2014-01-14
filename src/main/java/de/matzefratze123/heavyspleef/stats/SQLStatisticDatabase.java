@@ -67,6 +67,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 		}
 	}
 	
+	@Override
 	public AbstractDatabase getRawDatabase() {
 		return database;
 	}

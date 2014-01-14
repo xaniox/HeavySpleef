@@ -34,6 +34,7 @@ public class ArrayQueue<T> implements Queue<T> {
 		this.array = new Object[initSize];
 	}
 	
+	@Override
 	public int add(T i) {
 		//Lookup if queue is full
 		if (isFull()) {
@@ -70,6 +71,7 @@ public class ArrayQueue<T> implements Queue<T> {
         return (T) item;
     }
 	
+	@Override
 	public T remove() {
 		if (isEmpty()) {
 			return null;
@@ -95,6 +97,7 @@ public class ArrayQueue<T> implements Queue<T> {
 		return item;
 	}
 	
+	@Override
 	public boolean contains(T item) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == null) {
@@ -108,6 +111,7 @@ public class ArrayQueue<T> implements Queue<T> {
 		return false;
 	}
 	
+	@Override
 	public T remove(T item) {
 		T itemFound = null;
 		
@@ -125,6 +129,7 @@ public class ArrayQueue<T> implements Queue<T> {
 		return itemFound;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		boolean empty = true;
 		

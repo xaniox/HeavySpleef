@@ -165,6 +165,7 @@ public abstract class GuiInventory implements Listener {
 
 		Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
+			@Override
 			public void run() {
 				player.closeInventory();
 				views.remove(view);

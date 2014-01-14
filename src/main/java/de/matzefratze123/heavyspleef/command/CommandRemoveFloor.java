@@ -30,7 +30,6 @@ import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.GameType;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.hooks.HookManager;
