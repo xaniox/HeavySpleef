@@ -81,7 +81,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
 	public static final String[] COMMANDS = new String[] {"spleef", "spl", "hspleef"};
 	public static final String PLUGIN_NAME = "HeavySpleef";
-	public static final Random random = new Random();
+	public static final Random RANDOM = new Random();
 	
 	//Instance
 	private static HeavySpleef instance;
@@ -121,6 +121,16 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			noWorldEdit = true;
 			getServer().getPluginManager().disablePlugin(this);
 			return;
+		}
+		
+		//Check tagapi version
+		if (getServer().getPluginManager().getPlugin("TagAPI") != null) {
+			try {
+				Class.forName("org.kitteh.tag.AsyncPlayerReceiveNameTagEvent");
+			} catch (ClassNotFoundException e) {
+				//Ooops, user hasn't installed the latest release of tagapi
+				Logger.info("Warning: Found an outdated version of TagAPI. Please update your TagAPI to v3.0 in order to use team games!");
+			}
 		}
 		
 		getDataFolder().mkdirs();
@@ -179,7 +189,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	}
 	
 	public static Random getRandom() {
-		return random;
+		return RANDOM;
 	}
 	
 	public Updater getUpdater() {
@@ -300,7 +310,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		}
 	}
 	
-	public SpleefPlayer getSpleefPlayer(Object base) {
+	public synchronized SpleefPlayer getSpleefPlayer(Object base) {
 		Player bukkitPlayer = null;
 		
 		if (base instanceof Player) {

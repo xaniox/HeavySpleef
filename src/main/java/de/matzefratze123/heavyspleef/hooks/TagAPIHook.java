@@ -65,7 +65,13 @@ public class TagAPIHook implements Hook<TagAPI> {
 		if (hook == null)
 			hook();
 		
-		return true;
+		try {
+			Class.forName("org.kitteh.tag.AsyncPlayerReceiveNameTagEvent");
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+		
+		return hook != null;
 	}
 	
 	

@@ -19,14 +19,14 @@
  */
 package de.matzefratze123.heavyspleef.listener;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.kitteh.tag.PlayerReceiveNameTagEvent;
+import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 import org.kitteh.tag.TagAPI;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
@@ -36,7 +36,7 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class TagListener implements Listener {
 	
-	private static Map<SpleefPlayer, ChatColor> tags = new HashMap<SpleefPlayer, ChatColor>();
+	private static ConcurrentMap<SpleefPlayer, ChatColor> tags = new ConcurrentHashMap<SpleefPlayer, ChatColor>();
 	
 	public static void setTag(SpleefPlayer player, ChatColor tag) {
 		if (!HookManager.getInstance().getService(TagAPIHook.class).hasHook()) {
@@ -53,7 +53,7 @@ public class TagListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onNameTagReceive(PlayerReceiveNameTagEvent e) {
+	public void onNameTagReceive(AsyncPlayerReceiveNameTagEvent e) {
 		SpleefPlayer namedPlayer = HeavySpleef.getInstance().getSpleefPlayer(e.getNamedPlayer());
 		
 		if (!tags.containsKey(namedPlayer)) {
