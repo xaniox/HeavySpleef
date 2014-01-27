@@ -283,16 +283,17 @@ public class PlayerListener implements Listener {
 				if (hitBlock.getType() != Material.AIR)
 					break;
 			}
-
+			
 			if (!game.canSpleef(player, hitBlock.getLocation()))
 				return;
 
 			World world = arrow.getWorld();
 
-			arrow.remove();
 			if (hitBlock.getType() == Material.TNT) {
 				return;
 			}
+			
+			arrow.remove();
 
 			player.addBrokenBlock(hitBlock);
 			FallingBlock block = world.spawnFallingBlock(
