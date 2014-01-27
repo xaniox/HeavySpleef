@@ -324,7 +324,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				components.getTeam(player).leave(player);
 			}
 
-			if (winner != null && winner != player) {
+			if (winner != player) {
 				safeTeleport(player, getFlag(FlagType.LOSE));
 			}
 
