@@ -38,9 +38,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 @UserType(Type.ADMIN)
 public class CommandTeamFlag implements CommandListener {
 	
-	@Command(value = "teamflag", minArgs = 4, onlyIngame = true)
+	@Command(value = "teamflag", minArgs = 3, onlyIngame = true)
 	@CommandPermissions(value = {Permissions.SET_TEAMFLAG})
-	@CommandHelp(usage = "/spleef setteamflag <game> <team> <maxplayers|minplayers> <number>", description = "Adds a flag to a team")
+	@CommandHelp(usage = "/spleef setteamflag <game> <team> <maxplayers|minplayers|spawnpoint> <number>", description = "Adds a flag to a team")
 	public void execute(Player player, Game game, String color, String flag, String value) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
@@ -53,15 +53,17 @@ public class CommandTeamFlag implements CommandListener {
 			return;
 		}
 		
-		boolean clear = value.equalsIgnoreCase("clear");
-		int number = 0;
+		boolean clear = value != null && value.equalsIgnoreCase("clear");
+		int number = -1;
 		
-		try {
-			number = Integer.parseInt(value);
-		} catch (Exception e) {
-			if (!clear) {
-				player.sendMessage(_("notANumber", value));
-				return;
+		if (value != null) {
+			try {
+				number = Integer.parseInt(value);
+			} catch (Exception e) {
+				if (!clear) {
+					player.sendMessage(_("notANumber", value));
+					return;
+				}
 			}
 		}
 		
@@ -81,7 +83,17 @@ public class CommandTeamFlag implements CommandListener {
 				team.setMinPlayers(number);
 				player.sendMessage(_("flagSet", "minplayers"));
 			}
-		} else player.sendMessage(ChatColor.RED + "Flag doesn't exists!");
+		} else if (flag.equalsIgnoreCase("spawnpoint")) {
+			if (clear) {
+				team.setSpawnpoint(null);
+				player.sendMessage(_("flagCleared", "spawnpoint"));
+			} else {
+				team.setSpawnpoint(player.getLocation());
+				player.sendMessage(_("flagSet", "spawnpoint"));
+			}
+		} else {
+			player.sendMessage(ChatColor.RED + "Flag doesn't exists!");
+		}
 	}
 	
 }

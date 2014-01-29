@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
@@ -36,6 +37,8 @@ public class Team {
 	
 	private int maxplayers = -1;
 	private int minplayers = -1;
+	
+	private Location spawnpoint;
 	
 	public Team(Color color) {
 		this.color = color;
@@ -102,12 +105,20 @@ public class Team {
 		this.minplayers = minplayers;
 	}
 	
+	public void setSpawnpoint(Location spawnpoint) {
+		this.spawnpoint = spawnpoint;
+	}
+	
 	public int getMinPlayers() {
 		return this.minplayers;
 	}
 	
 	public int getMaxPlayers() {
 		return this.maxplayers;
+	}
+	
+	public Location getSpawnpoint() {
+		return spawnpoint;
 	}
 	
 	public int getCurrentKnockouts() {

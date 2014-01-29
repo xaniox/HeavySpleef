@@ -28,6 +28,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.core.flag.ListFlagLocation.SerializeableLocation;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
@@ -54,7 +55,10 @@ public class TaskPlayerTeleport implements Runnable {
 			SpleefPlayer player = players.get(i);
 			Location teleportTo;
 			
-			if (spawnpoints != null && i < spawnpoints.size()) {
+			Team team = game.getComponents().getTeam(player);
+			if (team != null && team.getSpawnpoint() != null) {
+				teleportTo = team.getSpawnpoint();
+			} else if (spawnpoints != null && i < spawnpoints.size()) {
 				Location bukkitLocation = spawnpoints.get(i).getBukkitLocation();
 				
 				teleportTo = bukkitLocation.clone();

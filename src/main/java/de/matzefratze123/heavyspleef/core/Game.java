@@ -968,6 +968,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			teamSection.set("color", color.name());
 			teamSection.set("min-players", minPlayers);
 			teamSection.set("max-players", maxPlayers);
+			if (team.getSpawnpoint() != null) {
+				teamSection.set("spawnpoint", Parser.convertLocationtoString(team.getSpawnpoint()));
+			}
 		}
 
 		/* Serialize flags */
@@ -1053,10 +1056,15 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			Color color = Color.byName(teamSection.getString("color"));
 			int minPlayers = teamSection.getInt("min-players");
 			int maxPlayers = teamSection.getInt("max-players");
+			Location spawnpoint = null;
+			if (teamSection.contains("spawnpoint")) {
+				spawnpoint = Parser.convertStringtoLocation(teamSection.getString("spawnpoint"));
+			}
 
 			Team team = new Team(color);
 			team.setMinPlayers(minPlayers);
 			team.setMaxPlayers(maxPlayers);
+			team.setSpawnpoint(spawnpoint);
 
 			game.getComponents().addTeam(team);
 		}
