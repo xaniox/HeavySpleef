@@ -19,54 +19,41 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
-import org.bukkit.command.CommandSender;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandAddTeam extends HSCommand {
+public class CommandAddTeam implements CommandListener {
 	
-	public CommandAddTeam() {
-		setMinArgs(2);
-		setOnlyIngame(true);
-		setPermission(Permissions.ADD_TEAM);
-	}
-	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		
-		if (!GameManager.hasGame(args[0])) {
-			sender.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "addteam", minArgs = 2, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.ADD_TEAM})
+	@CommandHelp(usage = "/spleef addteam <game> <red|blue|green|yellow|gray>", description = "Adds a team with the given color to the game")
+	public void execute(Player player, Game game, String colorString) {
+		if (game == null) {
+			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		Game game = GameManager.getGame(args[0]);
-		Color color = Color.byName(args[1]);
+		
+		Color color = Color.byName(colorString);
 		if (color == null) {
-			player.sendMessage(getUsage());
+			player.sendMessage(ChatColor.RED + "Invalid color.");
 			return;
 		}
 		
 		game.getComponents().addTeam(color);
 		player.sendMessage(_("teamAdded", color.toMessageColorString()));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef addteam <game> <red|blue|green|yellow|gray>");
-		
-		help.addHelp("Adds a team with the given color to the game");
-		
-		return help;
 	}
 
 }

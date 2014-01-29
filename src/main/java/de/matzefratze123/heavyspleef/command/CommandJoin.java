@@ -23,20 +23,21 @@ import static de.matzefratze123.heavyspleef.core.flag.FlagType.ENTRY_FEE;
 import static de.matzefratze123.heavyspleef.core.flag.FlagType.MAXPLAYERS;
 import static de.matzefratze123.heavyspleef.core.flag.FlagType.ONEVSONE;
 import static de.matzefratze123.heavyspleef.core.flag.FlagType.TEAM;
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
-import org.bukkit.command.CommandSender;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameComponents;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.Team.Color;
@@ -49,33 +50,22 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.PvPTimerManager;
 
 @UserType(Type.PLAYER)
-public class CommandJoin extends HSCommand {
-	
-	public CommandJoin() {
-		setOnlyIngame(true);
-	}
+public class CommandJoin implements CommandListener {
 
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player bukkitPlayer = (Player)sender;
+	@Command(value = "join", onlyIngame = true)
+	@CommandHelp(usage = "/spleef join <game> [team]", description = "Joins a game")
+	public void execute(Player bukkitPlayer, Game game, String teamColor) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
 		
-		if (args.length == 0) {
+		if (game == null) {
 			//Inventory menu
 			if (!bukkitPlayer.hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
-				bukkitPlayer.sendMessage(getUsage());
+				bukkitPlayer.sendMessage(_("noPermission"));
 				return;
 			}
 			
 			HeavySpleef.getInstance().getJoinGUI().open(bukkitPlayer);
 		} else {
-			if (!GameManager.hasGame(args[0].toLowerCase())) {
-				bukkitPlayer.sendMessage(_("arenaDoesntExists"));
-				return;
-			}
-			
-			Game game = GameManager.getGame(args[0].toLowerCase());
-			
 			if (!bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm()) &&
 				!bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm() + "." + game.getName().toLowerCase())) {
 					bukkitPlayer.sendMessage(I18N._("noPermission"));
@@ -84,20 +74,13 @@ public class CommandJoin extends HSCommand {
 			
 			Team team = null;
 			
-			if (args.length == 1) {
+			if (teamColor == null && game.getFlag(FlagType.TEAM)) {
+				team = ((GameComponents)game.getComponents()).getBestAvailableTeam();
+			} else if (teamColor != null) {
 				if (game.getFlag(FlagType.TEAM)) {
-					team = ((GameComponents)game.getComponents()).getBestAvailableTeam();
-				} else {
-					team = null;
-					//joinAndDoChecks(game, player, null);
-				}
-			} else if (args.length >= 2) {
-				if (!game.getFlag(FlagType.TEAM)) {
-					team = null;
-				} else {
-					team = game.getComponents().getTeam(Color.byName(args[1]));
+					team = game.getComponents().getTeam(Color.byName(teamColor));
 					if (team == null) {
-						player.sendMessage(getUsage());
+						player.sendMessage(ChatColor.RED + "/spleef join <game> [team]");
 						return;
 					}
 				}
@@ -180,14 +163,6 @@ public class CommandJoin extends HSCommand {
 			game.getQueue().push(player);
 			return;
 		}
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef join <arena> [team]");
-		help.addHelp("Joins a game");
-		
-		return help;
 	}
 	
 	static class JoinTimerRunnable implements Runnable {

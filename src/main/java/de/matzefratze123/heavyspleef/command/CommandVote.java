@@ -19,14 +19,17 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
@@ -36,16 +39,12 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
-public class CommandVote extends HSCommand {
-
-	public CommandVote() {
-		setPermission(Permissions.VOTE);
-		setOnlyIngame(true);
-	}
+public class CommandVote implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player bukkitPlayer = (Player)sender;
+	@Command(value = "vote", onlyIngame = true)
+	@CommandPermissions(value = {Permissions.VOTE})
+	@CommandHelp(usage = "/spleef vote", description = "Votes to start the game")
+	public void execute(Player bukkitPlayer) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
 		
 		if (!HeavySpleef.getSystemConfig().getGeneralSection().isVotesEnabled()) {
@@ -98,14 +97,6 @@ public class CommandVote extends HSCommand {
 		}
 		
 		game.countdown();
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef vote");
-		help.addHelp("Votes to start the game");
-		
-		return help;
 	}
 
 }

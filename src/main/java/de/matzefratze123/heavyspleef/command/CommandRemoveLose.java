@@ -19,43 +19,30 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandRemoveLose extends HSCommand {
-
-	public CommandRemoveLose() {
-		setMinArgs(2);
-		setOnlyIngame(true);
-		setPermission(Permissions.REMOVE_LOSEZONE);
-	}
+public class CommandRemoveLose implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		
-		int id;
-		try {
-			id = Integer.parseInt(args[1]);
-		} catch (NumberFormatException e) {
-			player.sendMessage(_("notANumber", args[1]));
-			return;
-		}
-		if (!GameManager.hasGame(args[0].toLowerCase())) {
+	@Command(value = "removelose", minArgs = 2, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.REMOVE_LOSEZONE})
+	@CommandHelp(usage = "/spleef removelose <game> <ID>", description = "Removes a losezone from a game")
+	public void execute(Player player, Game game, Integer id) {
+		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
-		Game game = GameManager.getGame(args[0]);
 		
 		if (!game.getComponents().hasLoseZone(id)) {
 			player.sendMessage(_("loseZoneWithIDDoesntExists"));
@@ -64,17 +51,6 @@ public class CommandRemoveLose extends HSCommand {
 		
 		game.getComponents().removeLoseZone(id);
 		player.sendMessage(_("loseZoneRemoved", String.valueOf(id)));
-		return;
-				
-		
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef removelose <Name> <ID>");
-		help.addHelp("Removes a losezone from a game");
-		
-		return help;
 	}
 
 }

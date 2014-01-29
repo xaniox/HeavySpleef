@@ -22,23 +22,23 @@ package de.matzefratze123.heavyspleef.command;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandUpdate extends HSCommand {
-
-	public CommandUpdate() {
-		setPermission(Permissions.UPDATE_PLUGIN);
-	}
+public class CommandUpdate implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		if (!plugin.getConfig().getBoolean("auto-update")) {
+	@Command(value = "update")
+	@CommandPermissions(value = {Permissions.UPDATE_PLUGIN})
+	@CommandHelp(usage = "/spleef update", description = "Updates the plugin if an update is available")
+	public void execute(CommandSender sender) {
+		if (!HeavySpleef.getSystemConfig().getRootSection().isAutoUpdate()) {
 			sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Auto-Updater is disabled!");
 			return;
 		}
@@ -59,15 +59,5 @@ public class CommandUpdate extends HSCommand {
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Version will be auto-installed with the next server reload/restart");
 		HeavySpleef.updateAvaible = false;*/
 	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef update");
-		help.addHelp("Updates the plugin");
-		
-		return help;
-	}
-
-	
 	
 }

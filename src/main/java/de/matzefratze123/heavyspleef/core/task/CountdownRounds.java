@@ -24,7 +24,6 @@ import static de.matzefratze123.heavyspleef.core.flag.FlagType.ROUNDS;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.BroadcastType;
@@ -61,7 +60,7 @@ public class CountdownRounds extends Countdown implements CountdownListener {
 		int rounds = game.getFlag(ROUNDS);
 		
 		game.setGameState(GameState.INGAME);
-		game.broadcast(HSCommand.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
+		game.broadcast(I18N.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
 		game.broadcast(I18N._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
 		game.removeBoxes();
 		cancel();

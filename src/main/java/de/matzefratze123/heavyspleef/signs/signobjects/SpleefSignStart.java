@@ -27,7 +27,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.event.block.SignChangeEvent;
 
 import de.matzefratze123.heavyspleef.command.CommandStart;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.signs.SpleefSign;
@@ -76,7 +75,7 @@ public class SpleefSignStart implements SpleefSign {
 			return;
 		}
 		
-		e.getPlayer().sendMessage(HSCommand._("spleefSignCreated"));
+		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
 		
 		StringBuilder builder = new StringBuilder();
 		if (e.getLine(1).startsWith("[")) {

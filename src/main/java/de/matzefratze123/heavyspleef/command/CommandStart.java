@@ -19,15 +19,18 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
+import org.bukkit.entity.Player;
+
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
@@ -35,19 +38,15 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
-public class CommandStart extends HSCommand {
+public class CommandStart implements CommandListener {
 
-	public CommandStart() {
-		setPermission(Permissions.START_GAME);
-		setOnlyIngame(true);
-	}
-
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(sender);
-		Game game;
-
-		if (args.length <= 0) {
+	@Command(value = "start", onlyIngame = true)
+	@CommandPermissions(value = {Permissions.START_GAME})
+	@CommandHelp(usage = "/spleef start <game>", description = "Starts a game")
+	public void execute(Player bukkitPlayer, Game game) {
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
+		
+		if (game == null) {
 			if (!player.isActive()) {
 				player.sendMessage(_("notIngame"));
 				return;
@@ -55,15 +54,10 @@ public class CommandStart extends HSCommand {
 
 			game = player.getGame();
 		} else {
-			if (!GameManager.hasGame(args[0])) {
-				player.sendMessage(_("arenaDoesntExists"));
-				return;
-			}
-
 			permissionsCheck: {
 				Game playerGame = player.getGame();
 
-				if (playerGame != null && playerGame.getName().equalsIgnoreCase(args[0]))
+				if (playerGame != null && playerGame.getName().equalsIgnoreCase(game.getName()))
 					break permissionsCheck;
 				if (player.getBukkitPlayer().hasPermission(Permissions.START_OTHER_GAME.getPerm()))
 					break permissionsCheck;
@@ -71,8 +65,6 @@ public class CommandStart extends HSCommand {
 				player.sendMessage(_("noPermission"));
 				return;
 			}
-
-			game = GameManager.getGame(args[0]);
 		}
 
 		start(player, game);
@@ -113,14 +105,6 @@ public class CommandStart extends HSCommand {
 
 		game.countdown();
 		player.sendMessage(_("gameStarted"));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef start [name]");
-		help.addHelp("Starts a game");
-		
-		return help;
 	}
 
 }

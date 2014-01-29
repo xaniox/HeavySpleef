@@ -19,63 +19,57 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandAddWall extends HSCommand {
-	
-	public CommandAddWall() {
-		setMinArgs(1);
-		setOnlyIngame(true);
-		setPermission(Permissions.ADD_WALL);
-	}
+public class CommandAddWall implements CommandListener {
 
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player p = (Player)sender;
-		
-		if (!GameManager.hasGame(args[0])) {
-			sender.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "addwall", minArgs = 1, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.ADD_WALL})
+	@CommandHelp(usage = "/spleef addwall <game>", description = "Adds a self updating wall to a game")
+	public void execute(Player player, Game game) {
+		if (game == null) {
+			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
-		
-		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(p);
+		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 		if (!s.hasSelection()) {
-			p.sendMessage(_("needSelection"));
+			player.sendMessage(_("needSelection"));
 			return;
 		}
 		if (s.isTroughWorlds()) {
-			p.sendMessage(_("selectionCantTroughWorlds"));
+			player.sendMessage(_("selectionCantTroughWorlds"));
 			return;
 		}
 		if (!SignWall.oneCoordSame(s.getFirst(), s.getSecond())) {
-			p.sendMessage(_("didntSelectWall"));
+			player.sendMessage(_("didntSelectWall"));
 			return;
 		}
 		if (SignWall.getDifference(s.getFirst(), s.getSecond()) < 2) {
-			p.sendMessage(_("lengthMustBeOver1"));
+			player.sendMessage(_("lengthMustBeOver1"));
 			return;
 		}
 		if (s.getFirst().getBlockY() != s.getSecond().getBlockY()) {
-			p.sendMessage(_("yMustBeSame"));
+			player.sendMessage(_("yMustBeSame"));
 			return;
 		}
 		if (!SignWall.isAllSign(s.getFirst(), s.getSecond())) {
-			p.sendMessage(_("notASign"));
+			player.sendMessage(_("notASign"));
 			return;
 		}
 		
@@ -86,15 +80,7 @@ public class CommandAddWall extends HSCommand {
 		
 		SignWall wall = new SignWall(s.getFirst(), s.getSecond(), game, id);
 		game.getComponents().addSignWall(wall);
-		p.sendMessage(_("signWallAdded"));
+		player.sendMessage(_("signWallAdded"));
 	}
 	
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef addwall <name>");
-		help.addHelp("Adds a self updating wall to a game");
-		
-		return help;
-	}
-
 }

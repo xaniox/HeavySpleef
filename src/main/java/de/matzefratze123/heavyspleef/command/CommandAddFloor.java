@@ -19,51 +19,41 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandAddFloor extends HSCommand {
-
-	public CommandAddFloor() {
-		setMinArgs(1);
-		setOnlyIngame(true);
-		setPermission(Permissions.ADD_FLOOR);
-	}
+public class CommandAddFloor implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player) sender;
-		
-		if (!GameManager.hasGame(args[0])) {
+	@Command(value = "addfloor", minArgs = 1, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.ADD_FLOOR})
+	@CommandHelp(usage = "/spleef addfloor <game> [randomwool]", description = "Creates a new floor based on your selection")
+	public void execute(Player player, Game game, String randomwool) {
+		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
-		Game game = GameManager.getGame(args[0]);
 		
 		Selection selection = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 		
 		Location firstPoint = selection.getFirst();
 		Location secondPoint = selection.getSecond();
 		
-		boolean randomWool = false;
-		
-		if (args.length > 1 && args[1].equalsIgnoreCase("randomwool")) {
-			randomWool = true;
-		}
+		boolean randomWool = randomwool != null && randomwool.equalsIgnoreCase("randomwool");
 		
 		if (!selection.hasSelection()) {
 			player.sendMessage(_("needSelection"));
@@ -86,15 +76,6 @@ public class CommandAddFloor extends HSCommand {
 		
 		game.getComponents().addFloor(floor);
 		player.sendMessage(_("floorCreated", String.valueOf(id + 1)));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef addfloor <game> [randomwool]");
-		
-		help.addHelp("Creates a new floor based on your selection");
-		
-		return help;
 	}
 	
 } 

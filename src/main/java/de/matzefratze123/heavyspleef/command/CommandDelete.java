@@ -19,49 +19,43 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandAliases;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.StopCause;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandDelete extends HSCommand {
-
-	public CommandDelete() {
-		setMinArgs(1);
-		setPermission(Permissions.DELETE_GAME);
-	}
+public class CommandDelete implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		if (!GameManager.hasGame(args[0])) {
+	@Command(value = "delete", minArgs = 1)
+	@CommandPermissions(value = {Permissions.DELETE_GAME})
+	@CommandHelp(usage = "/spleef delete <game>", description = "Deletes a game.")
+	@CommandAliases({"remove"})
+	public void execute(CommandSender sender, Game game) {
+		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
 		if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING || game.getGameState() == GameState.LOBBY) {
 			game.stop(StopCause.STOP);
 		}
 		
 		game.getQueue().clear();
-		GameManager.deleteGame(args[0]);
+		GameManager.deleteGame(game.getName());
 		sender.sendMessage(_("gameDeleted"));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef delete <name>");
-		help.addHelp("Deletes a game");
-		
-		return help;
 	}
 
 }

@@ -19,13 +19,15 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
 import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
@@ -37,16 +39,12 @@ import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandRemoveFloor extends HSCommand {
-
-	public CommandRemoveFloor() {
-		setOnlyIngame(true);
-		setPermission(Permissions.REMOVE_FLOOR);
-	}
+public class CommandRemoveFloor implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
+	@Command(value = "removefloor", onlyIngame = true)
+	@CommandPermissions(value = {Permissions.REMOVE_FLOOR})
+	@CommandHelp(usage = "/spleef removefloor", description = "Removes a floor from a game where you are currently looking")
+	public void execute(Player player) {
 		Block block = player.getTargetBlock(null, 50);
 		if (block == null) {
 			player.sendMessage(_("notLookingAtABlock"));
@@ -67,14 +65,6 @@ public class CommandRemoveFloor extends HSCommand {
 		}
 		
 		player.sendMessage(_("notLookingAtFloor"));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef removefloor");
-		help.addHelp("Removes a floor from a game where you currently looking");
-		
-		return help;
 	}
 
 }

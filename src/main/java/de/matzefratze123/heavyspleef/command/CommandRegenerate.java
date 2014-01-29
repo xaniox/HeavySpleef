@@ -19,40 +19,30 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
-public class CommandRegenerate extends HSCommand {
-
-	public CommandRegenerate() {
-		setMinArgs(1);
-		setPermission(Permissions.RESTORE_FLOORS);
-	}
+public class CommandRegenerate implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		if (!GameManager.hasGame(args[0])) {
+	@Command(value = "regenerate", minArgs = 1)
+	@CommandPermissions(value = {Permissions.RESTORE_FLOORS})
+	@CommandHelp(usage = "/spleef regenerate <game>", description = "Restores all floors of a game.")
+	public void execute(CommandSender sender, Game game) {
+		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
 		game.getComponents().regenerateFloors();
 		sender.sendMessage(_("floorsRegenerated"));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef regenerate <game>");
-		
-		help.addHelp("Restores all floors of a game.");
-		
-		return help;
 	}
 
 }

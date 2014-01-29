@@ -43,6 +43,13 @@ public enum FlagType {
 	
 	public static Set<Flag<?>> customFlags = new HashSet<Flag<?>>();
 	
+	/*
+	 * Used for a constant annotation value
+	 */
+	public static final String FRIENDLY_FLAG_LIST = "1vs1, shovels, shears, team, bowspleef, splegg, boxes, anticamping, blockbreakeffect, " + 
+	                                                "win, lose, lobby, queuelobby, spectate, spawnpoint, nextspawnpoint, itemreward, " + 
+	                                                "minplayers, maxplayers, autostart, countdown, entryfee, reward, timeout, rounds, regen, icon";
+	
 	/* Boolean flags */
 	@FlagData
 	public static final BooleanFlag ONEVSONE = new BooleanFlag("1vs1", false);

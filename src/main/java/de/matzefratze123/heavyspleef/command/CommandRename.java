@@ -19,48 +19,40 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import org.bukkit.entity.Player;
+
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandRename extends HSCommand {
-
-	public CommandRename() {
-		setMinArgs(2);
-		setOnlyIngame(true);
-		setPermission(Permissions.RENAME);
-	}
+public class CommandRename implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		if (!GameManager.hasGame(args[0])) {
-			sender.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "rename", minArgs = 2, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.RENAME})
+	@CommandHelp(usage = "/spleef rename <game> <new-name>", description = "Renames a game")
+	public void execute(Player player, Game game, String newName) {
+		if (game == null) {
+			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
-		
-		if (GameManager.hasGame(args[1])) {
-			sender.sendMessage(_("arenaAlreadyExists"));
+		if (GameManager.hasGame(newName)) {
+			player.sendMessage(_("arenaAlreadyExists"));
 		} else {
-			game.rename(args[1]);
-			sender.sendMessage(_("gameRenamed", args[0], args[1]));
+			String oldName = game.getName();
+			
+			game.rename(newName);
+			player.sendMessage(_("gameRenamed", oldName, newName));
 		}
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef rename <arena> <newName>");
-		help.addHelp("Renames a game");
-		
-		return help;
 	}
 
 }

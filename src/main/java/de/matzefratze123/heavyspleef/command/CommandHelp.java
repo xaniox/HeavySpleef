@@ -19,31 +19,43 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandAliases;
+import de.matzefratze123.api.command.CommandData;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
-public class CommandHelp extends HSCommand {
+public class CommandHelp implements CommandListener {
 	
-	public CommandHelp() {
-		setMinArgs(0);
-	}
-	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		List<HSCommand> commands = new ArrayList<HSCommand>(CommandHandler.getCommands().values());
-		Collections.sort(commands);
+	@Command(value = "help")
+	@de.matzefratze123.api.command.CommandHelp(usage = "/spleef help", description = "Shows Spleef help")
+	@CommandAliases({"?"})
+	public void execute(CommandSender sender) {
+		Map<CommandListener, CommandData[]> commands = HeavySpleef.getInstance().getCommandExecutorService().getCommands();
+		List<CommandPair> cmds = new ArrayList<CommandPair>();
+		
+		for (Entry<CommandListener, CommandData[]> entry : commands.entrySet()) {
+			for (CommandData data : entry.getValue()) {
+				cmds.add(new CommandPair(data, entry.getKey()));
+			}
+		}
+		
+		Collections.sort(cmds);
 		
 		if (!sender.hasPermission(Permissions.HELP_ADMIN.getPerm()) && !sender.hasPermission(Permissions.HELP_USER.getPerm())) {
 			sender.sendMessage(_("noPermission"));
@@ -52,19 +64,12 @@ public class CommandHelp extends HSCommand {
 		
 		sender.sendMessage(ChatColor.GRAY + "   -----   HeavySpleef Help   -----   ");
 		
-		//We don't want to print aliases again...
-		List<Class<?>> printedCommands = new ArrayList<Class<?>>();
-		
-		for (HSCommand cmd : commands) {
-			if (printedCommands.contains(cmd.getClass())) {
+		for (CommandPair cmd : cmds) {
+			if (!cmd.getListener().getClass().isAnnotationPresent(UserType.class)) {
 				continue;
 			}
 			
-			if (!cmd.getClass().isAnnotationPresent(UserType.class)) {
-				continue;
-			}
-			
-			UserType userType = cmd.getClass().getAnnotation(UserType.class);
+			UserType userType = cmd.getListener().getClass().getAnnotation(UserType.class);
 			Type type = userType.value();
 			
 			boolean isPermitted = false;
@@ -78,21 +83,34 @@ public class CommandHelp extends HSCommand {
 			}
 			
 			if (isPermitted) {
-				Help help = new Help(cmd);
-					
-				sender.sendMessage(ChatColor.GRAY + "/spleef " + cmd.getName() + ChatColor.RED + " - " + ChatColor.YELLOW + help.getHelp().get(0));
+				sender.sendMessage(ChatColor.GRAY + "/spleef " + cmd.getData().getName() + ChatColor.RED + " - " + ChatColor.YELLOW + cmd.getData().getDescription());
 			}
-				
-			printedCommands.add(cmd.getClass());
 		}
 	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef help [page]");
-		help.addHelp("Shows Spleef help");
+	
+	private static class CommandPair implements Comparable<CommandPair> {
 		
-		return help;
+		private CommandData data;
+		private CommandListener listener;
+		
+		public CommandPair(CommandData data, CommandListener listener) {
+			this.data = data;
+			this.listener = listener;
+		}
+		
+		public CommandData getData() {
+			return data;
+		}
+		
+		public CommandListener getListener() {
+			return listener;
+		}
+
+		@Override
+		public int compareTo(CommandPair o) {
+			return data.getName().compareTo(o.data.getName());
+		}
+		
 	}
 
 }

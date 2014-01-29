@@ -19,56 +19,53 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandTeamFlag extends HSCommand {
+public class CommandTeamFlag implements CommandListener {
 	
-	public CommandTeamFlag() {
-		setMinArgs(4);
-		setPermission(Permissions.SET_TEAMFLAG);
-		setOnlyIngame(true);
-	}
-	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0])) {
-			sender.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "teamflag", minArgs = 4, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.SET_TEAMFLAG})
+	@CommandHelp(usage = "/spleef setteamflag <game> <team> <maxplayers|minplayers> <number>", description = "Adds a flag to a team")
+	public void execute(Player player, Game game, String color, String flag, String value) {
+		if (game == null) {
+			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
-		Team team = game.getComponents().getTeam(Color.byName(args[1]));
+		Team team = game.getComponents().getTeam(Color.byName(color));
 		if (team == null) {
-			sender.sendMessage(getUsage());
+			player.sendMessage(ChatColor.RED + "This team color doesn't exists!");
 			return;
 		}
 		
-		boolean clear = args[3].equalsIgnoreCase("clear");
+		boolean clear = value.equalsIgnoreCase("clear");
 		int number = 0;
 		
 		try {
-			number = Integer.parseInt(args[3]);
+			number = Integer.parseInt(value);
 		} catch (Exception e) {
 			if (!clear) {
-				player.sendMessage(_("notANumber", args[3]));
+				player.sendMessage(_("notANumber", value));
 				return;
 			}
 		}
 		
-		if (args[2].equalsIgnoreCase("maxplayers")) {
+		if (flag.equalsIgnoreCase("maxplayers")) {
 			if (clear) {
 				team.setMaxPlayers(0);
 				player.sendMessage(_("flagCleared", "maxplayers"));
@@ -76,7 +73,7 @@ public class CommandTeamFlag extends HSCommand {
 				team.setMaxPlayers(number);
 				player.sendMessage(_("flagSet", "maxplayers"));
 			}
-		} else if (args[2].equalsIgnoreCase("minplayers")) {
+		} else if (flag.equalsIgnoreCase("minplayers")) {
 			if (clear) {
 				team.setMinPlayers(0);
 				player.sendMessage(_("flagCleared", "minplayers"));
@@ -84,15 +81,7 @@ public class CommandTeamFlag extends HSCommand {
 				team.setMinPlayers(number);
 				player.sendMessage(_("flagSet", "minplayers"));
 			}
-		} else player.sendMessage(getUsage());
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef setteamflag <arena> <team> <maxplayers|minplayers> <number>");
-		help.addHelp("Adds a flag to a team");
-		
-		return help;
+		} else player.sendMessage(ChatColor.RED + "Flag doesn't exists!");
 	}
 	
 }

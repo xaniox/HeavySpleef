@@ -19,57 +19,42 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandDisable extends HSCommand {
+public class CommandDisable implements CommandListener {
 
-	public CommandDisable() {
-		setMinArgs(1);
-		setPermission(Permissions.DISABLE);
-		setOnlyIngame(true);
-	}
-
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-	
-		if (!GameManager.hasGame(args[0].toLowerCase())) {
-			player.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "disable", minArgs = 1)
+	@CommandPermissions(value = {Permissions.DISABLE})
+	@CommandHelp(usage = "/spleef disable [game]", description = "Disables a game")
+	public void execute(CommandSender sender, Game game) {
+		if (game == null) {
+			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
-		
 		if (game.getGameState() == GameState.DISABLED) {
-			player.sendMessage(_("gameIsAlreadyDisabled"));
+			sender.sendMessage(_("gameIsAlreadyDisabled"));
 			return;
 		}
 		
 		game.disable();
-		game.broadcast(_("gameDisabled", game.getName(), player.getName()), ConfigUtil.getBroadcast(MessageType.GAME_DISABLED));
-		player.sendMessage(_("gameDisabledToPlayer", game.getName()));
+		game.broadcast(_("gameDisabled", game.getName(), sender.getName()), ConfigUtil.getBroadcast(MessageType.GAME_DISABLED));
+		sender.sendMessage(_("gameDisabledToPlayer", game.getName()));
 	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef disable [Name]");
-		help.addHelp("Disables a game");
-		
-		return help;
-	}
-
+	
 }

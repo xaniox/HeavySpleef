@@ -19,46 +19,39 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.ChatColor;
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.command.CommandSender;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandReload extends HSCommand {
-
-	public CommandReload() {
-		setPermission(Permissions.RELOAD);
-	}
+public class CommandReload implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
+	@Command(value = "reload")
+	@CommandPermissions(value = {Permissions.RELOAD})
+	@CommandHelp(usage = "/spleef reload", description = "Reloads the entire spleef plugin")
+	public void execute(CommandSender sender) {
 		long millis = System.currentTimeMillis();
 		HeavySpleef.getSystemConfig().reload();
 		
-		HeavySpleef.PREFIX = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("general.spleef-prefix", HeavySpleef.PREFIX));
+		HeavySpleef.PREFIX = HeavySpleef.getSystemConfig().getGeneralSection().getPrefix();
 		HeavySpleef.getInstance().getAntiCampingTask().restart();
 		
 		I18N.loadLanguageFiles();//Reload languages files
-		plugin.getSelectionManager().setup();//Reload selection
+		HeavySpleef.getInstance().getSelectionManager().setup();//Reload selection
 		HeavySpleef.getInstance().initStatisticDatabase();
 		
 		sender.sendMessage(_("pluginReloaded", HeavySpleef.getInstance().getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
 		//And we're done!
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef reload");
-		help.addHelp("Reloads the entire spleef plugin");
-		
-		return help;
 	}
 
 }

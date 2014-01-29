@@ -25,54 +25,45 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
-public class CommandList extends HSCommand {
+public class CommandList implements CommandListener {
 
-	public CommandList() {
-		setOnlyIngame(true);
-		setPermission(Permissions.LIST);
-	}
-
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player bukkitPlayer = (Player)sender;
+	@Command(value = "list", onlyIngame = true)
+	@CommandPermissions(value = {Permissions.LIST})
+	@CommandHelp(usage = "/spleef list <game>", description = "Lists all spleef games or lists ingame players in an game")
+	public void execute(Player bukkitPlayer, Game game) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
 		
-		if (args.length == 0) {
+		if (game == null) {
 			if (player.isActive()) {
-				Game game = player.getGame();
-				printList(game, player);
+				Game g = player.getGame();
+				printList(g, player);
 			} else {
 				List<Game> games = GameManager.getGames();
 				Set<String> gameNameList = new HashSet<String>();
 				
-				for (Game game : games) {
-					gameNameList.add(game.getName());
+				for (Game g : games) {
+					gameNameList.add(g.getName());
 				}
 				
 				player.sendMessage(ChatColor.GRAY + "All games: " + Util.toFriendlyString(gameNameList, ", "));
 			}
-		} else if (args.length > 0) {
-			if (!GameManager.hasGame(args[0])) {
-				sender.sendMessage(_("arenaDoesntExists"));
-				return;
-			}
-			
-			Game game = GameManager.getGame(args[0]);
+		} else {
 			printList(game, player);
 		}
 	}
@@ -94,14 +85,6 @@ public class CommandList extends HSCommand {
 		
 		player.sendMessage(ChatColor.AQUA + "Active: " + Util.toFriendlyString(activeString, ", "));
 		player.sendMessage(ChatColor.RED + "Out: " + Util.toFriendlyString(outString, ", "));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef list [name]");
-		help.addHelp("Lists all spleef games");
-		
-		return help;
 	}
 	
 }

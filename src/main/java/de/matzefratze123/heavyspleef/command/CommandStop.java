@@ -19,52 +19,39 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.StopCause;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandStop extends HSCommand {
-
-	public CommandStop() {
-		setMinArgs(1);
-		setPermission(Permissions.STOP);
-		setOnlyIngame(true);
-	}
+public class CommandStop implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0].toLowerCase())){
+	@Command(value = "stop", minArgs = 1, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.STOP})
+	@CommandHelp(usage = "/spleef stop <game>", description = "Stops a game")
+	public void execute(Player player, Game game) {
+		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0].toLowerCase());
 		if (game.getGameState() != GameState.INGAME && game.getGameState() != GameState.COUNTING) {
 			player.sendMessage(_("noGameRunning"));
 			return;
 		}
 		
 		game.stop(StopCause.STOP);
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef stop <Name>");
-		help.addHelp("Stops a game");
-		
-		return help;
 	}
 
 }

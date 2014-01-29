@@ -19,31 +19,30 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandRemoveScoreBoard extends HSCommand {
+public class CommandRemoveScoreBoard implements CommandListener {
 
-	public CommandRemoveScoreBoard() {
-		setOnlyIngame(true);
-		setPermission(Permissions.REMOVE_SCOREBOARD);
-	}
-
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player p = (Player)sender;
-		Block targetBlock = p.getTargetBlock(null, 100);
+	@Command(value = "removescoreboard", onlyIngame = true)
+	@CommandPermissions(value = {Permissions.REMOVE_SCOREBOARD})
+	@CommandHelp(usage = "/spleef removescoreboard", description = "Removes the scoreboard where you currently looking")
+	public void execute(Player player) {
+		Block targetBlock = player.getTargetBlock(null, 100);
 		
 		int id = -1;
 		
@@ -54,22 +53,14 @@ public class CommandRemoveScoreBoard extends HSCommand {
 					
 					board.remove();
 					game.getComponents().removeScoreBoard(id);
-					p.sendMessage(_("scoreBoardRemoved"));
+					player.sendMessage(_("scoreBoardRemoved"));
 					return;
 				}
 			}
 		}
 		
-		p.sendMessage(_("notLookingAtScoreBoard"));
+		player.sendMessage(_("notLookingAtScoreBoard"));
 		
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef removescoreboard");
-		help.addHelp("Removes the scoreboard where you currently looking");
-		
-		return help;
 	} 
 	
 }

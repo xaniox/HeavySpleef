@@ -19,34 +19,31 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandAddLose extends HSCommand {
-
-	public CommandAddLose() {
-		setMinArgs(1);
-		setPermission(Permissions.ADD_LOSEZONE);
-		setOnlyIngame(true);
-	}
+public class CommandAddLose implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0])) {
+	@Command(value = "addlose", minArgs = 1, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.ADD_LOSEZONE})
+	@CommandHelp(usage = "/spleef addlose <game>", description = "Creates a new losezone based on your selection")
+	public void execute(Player player, Game game) {
+		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
@@ -62,28 +59,18 @@ public class CommandAddLose extends HSCommand {
 			return;
 		}
 		
-		Game g = GameManager.getGame(args[0]);
 		Location loc1 = s.getFirst();
 		Location loc2 = s.getSecond();
 	
 		int id = 0;
-		while (g.getComponents().hasLoseZone(id)) {
+		while (game.getComponents().hasLoseZone(id)) {
 			id++;
 		}
 		
 		LoseZone loseZone = new LoseZone(loc1, loc2, id);
-		g.getComponents().addLoseZone(loseZone);
+		game.getComponents().addLoseZone(loseZone);
 		
-		player.sendMessage(_("loseZoneCreated", String.valueOf(id), g.getName(), String.valueOf(id)));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef addlose <game>");
-		
-		help.addHelp("Creates a new losezone based on your selection");
-		
-		return help;
+		player.sendMessage(_("loseZoneCreated", String.valueOf(id), game.getName(), String.valueOf(id)));
 	}
 
 }

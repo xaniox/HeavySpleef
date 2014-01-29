@@ -19,12 +19,16 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
@@ -33,47 +37,44 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandKick extends HSCommand {
-
-	public CommandKick() {
-		setMinArgs(1);
-		setOnlyIngame(true);
-		setPermission(Permissions.KICK);
-	}
+public class CommandKick implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		SpleefPlayer target = HeavySpleef.getInstance().getSpleefPlayer(args[0]);
+	@Command(value = "kick", minArgs = 1, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.KICK})
+	@CommandHelp(usage = "/spleef kick <Player> [Reason]", description = "Kicks a player from a game")
+	public void execute(CommandSender sender, Player player, String[] reason) {
+		SpleefPlayer target = HeavySpleef.getInstance().getSpleefPlayer(player);
 		
 		if (target == null) {
-			player.sendMessage(_("playerNotOnline"));
+			sender.sendMessage(_("playerNotOnline"));
 			return;
 		}
 		
 		if (!target.isActive()) {
-			player.sendMessage(_("playerIsntInAnyGame"));
+			sender.sendMessage(_("playerIsntInAnyGame"));
 			return;
 		}
 		
-		String reasonMessage = args.length > 1 ? " for " : "";
-		StringBuilder reasonBuilder = new StringBuilder();
-		for (int i = 1; i < args.length; i++)
-			reasonBuilder.append(args[i]).append(" ");
-		reasonMessage += reasonBuilder.toString();
+		String reasonMessage = "";
+		
+		if (reason != null) {
+			reasonMessage = " for ";
+			StringBuilder reasonBuilder = new StringBuilder();
+			for (int i = 0; i < reason.length; i++) {
+				reasonBuilder.append(reason[i]);
+				
+				if (i + 1 < reason.length) {
+					reasonBuilder.append(" ");
+				}
+			}
+			
+			reasonMessage += reasonBuilder.toString();
+		}
 		
 		Game game = target.getGame();
 		game.leave(target, LoseCause.KICK);
-		target.sendMessage(_("kickedOfToPlayer", player.getName(), reasonMessage));
-		player.sendMessage(_("kickedOfToKicker", target.getName(), game.getName(), reasonMessage));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef kick <Player> [Reason]");
-		help.addHelp("Kicks a player from a game");
-		
-		return help;
+		target.sendMessage(_("kickedOfToPlayer", sender.getName(), reasonMessage));
+		sender.sendMessage(_("kickedOfToKicker", target.getName(), game.getName(), reasonMessage));
 	}
 
 }

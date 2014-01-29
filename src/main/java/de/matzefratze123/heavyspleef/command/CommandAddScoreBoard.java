@@ -19,38 +19,33 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.block.BlockFace;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.ScoreBoard;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandAddScoreBoard extends HSCommand {
+public class CommandAddScoreBoard implements CommandListener {
 
-	public CommandAddScoreBoard() {
-		setMinArgs(1);
-		setOnlyIngame(true);
-		setPermission(Permissions.ADD_SCOREBOARD);
-	}
-
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		
-		if (!GameManager.hasGame(args[0])) {
-			sender.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "addscoreboard", minArgs = 1, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.ADD_SCOREBOARD})
+	@CommandHelp(usage = "/spleef addscoreboard <game>", description = "Creates a new block scoreboard (only 1vs1) in the direction you're currently looking")
+	public void execute(Player player, Game game) {
+		if (game == null) {
+			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
 		BlockFace face = getBlockFace(player.getLocation().getYaw());
 		face = rotateBlockFaceLeft(face);
 		
@@ -64,15 +59,6 @@ public class CommandAddScoreBoard extends HSCommand {
 		
 		game.getComponents().addScoreBoard(scoreboard);
 		player.sendMessage(_("scoreBoardAdded"));
-	}
-	
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef addscoreboard <game>");
-		
-		help.addHelp("Creates a new block scoreboard (only 1vs1) in the direction you're currently looking");
-		
-		return help;
 	}
 	
 	private BlockFace getBlockFace(float yaw) {

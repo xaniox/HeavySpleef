@@ -19,6 +19,7 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +28,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.BooleanFlag;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
@@ -40,66 +42,27 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
-public class CommandFlag extends HSCommand {
-
-	private final String[] flagNames;
+public class CommandFlag implements CommandListener {
 	
-	public CommandFlag() {
-		List<Flag<?>> flags = FlagType.getFlagList();
-		flagNames = new String[flags.size()];
-		
-		for (int i = 0; i < flags.size(); i++) {
-			Flag<?> flag = flags.get(i);
-			
-			flagNames[i] = flag.getName();
-		}
-		
-		setMinArgs(2);
-		setOnlyIngame(true);
-		setPermission(Permissions.SET_FLAG);
-	}
-	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
+	@SuppressWarnings("rawtypes")
+	@Command(value = "flag", minArgs = 2, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.SET_FLAG})
+	@CommandHelp(usage = "/spleef flag <name> <flag> [state]\n§cAvailable flags: " + FlagType.FRIENDLY_FLAG_LIST, description = "Sets a flag for this game")
+	public void execute(CommandSender sender, Game game, Flag fl, String[] values) {
 		Player player = (Player)sender;
 		
-		if (!GameManager.hasGame(args[0])) {
+		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
-		
-		boolean found = false;
-		Flag<?> flag = null;
-		
-		flags: for (Flag<?> f : FlagType.getFlagList()) {
-			if (f.getName().equalsIgnoreCase(args[1])) {
-				found = true;
-				flag = f;
-				break;
-			} else {
-				//Check the aliases
-				String[] aliases = f.getAliases();
-				if (aliases == null) //Aliases null, continue
-					continue;
-				
-				for (String alias : aliases) {
-					if (alias.equalsIgnoreCase(args[1])) {
-						found = true;
-						flag = f;
-						break flags;
-					}
-				}
-			}
-		}
-		
-		if (!found || flag == null) {
+		if (fl == null) {
 			player.sendMessage(_("invalidFlag"));
-			player.sendMessage(__(ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", ")));
+			player.sendMessage(ChatColor.RED + "Available flags: " + FlagType.FRIENDLY_FLAG_LIST);
 			return;
 		}
 		
+		Flag<?> flag = (Flag<?>) fl;
 		
 		//Check required flags
 		for (Flag<?> required : flag.getRequiredFlags()) {
@@ -128,33 +91,38 @@ public class CommandFlag extends HSCommand {
 		}
 		
 		StringBuilder buildArgs = new StringBuilder();
-		for (int i = 2; i < args.length; i++)
-			buildArgs.append(args[i]).append(" ");
+		if (values != null) {
+			for (int i = 0; i < values.length; i++) {
+				buildArgs.append(values[i]);
+
+				if (i + 1 < values.length) {
+					buildArgs.append(" ");
+				}
+			}
+		}
+
+		if (values != null && values[0].equalsIgnoreCase("clear")) {
+			game.setFlag(flag, null);
+			player.sendMessage(_("flagCleared", flag.getName()));
+			return;
+		}
 		
-		if (args.length > 1) {
-			if (args.length > 2 && args[2].equalsIgnoreCase("clear")) {
-				game.setFlag(flag, null);
-				player.sendMessage(_("flagCleared", flag.getName()));
+		try {
+			Object previousValue = game.getFlag(flag);
+			
+			Object value = flag.parse(player, buildArgs.toString(), previousValue);
+			
+			if (value == null) {
+				player.sendMessage(_("invalidFlagFormat"));
+				player.sendMessage(flag.getHelp());
 				return;
 			}
 			
-			try {
-				Object previousValue = game.getFlag(flag);
-				
-				Object value = flag.parse(player, buildArgs.toString(), previousValue);
-				
-				if (value == null) {
-					player.sendMessage(_("invalidFlagFormat"));
-					player.sendMessage(flag.getHelp());
-					return;
-				}
-				
-				setFlag(game, flag, value);
-				player.sendMessage(_("flagSet", flag.getName()));
-			} catch (Exception e) {
-				player.sendMessage(_("invalidFlagFormat"));
-				player.sendMessage(flag.getHelp());
-			}
+			setFlag(game, flag, value);
+			player.sendMessage(_("flagSet", flag.getName()));
+		} catch (Exception e) {
+			player.sendMessage(_("invalidFlagFormat"));
+			player.sendMessage(flag.getHelp());
 		}
 	}
 	
@@ -162,13 +130,5 @@ public class CommandFlag extends HSCommand {
 	public <V> void setFlag(Game game, Flag<V> flag, Object value) {
 		game.setFlag(flag, (V)value);
 	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef flag <name> <flag> [state]\n" + ChatColor.RED + "Available flags: " + Util.toFriendlyString(flagNames, ", "));
-		help.addHelp("Sets a flag for this game");
-		
-		return help;
-	} 
 	
 }

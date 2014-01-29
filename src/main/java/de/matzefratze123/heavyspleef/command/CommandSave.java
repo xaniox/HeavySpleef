@@ -19,39 +19,29 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandSave extends HSCommand {
-
-	public CommandSave() {
-		setPermission(Permissions.SAVE);
-	}
+public class CommandSave implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		long millis = System.currentTimeMillis();
+	@Command(value = "save")
+	@CommandPermissions(value = {Permissions.SAVE})
+	@CommandHelp(usage = "/spleef save", description = "Saves all games to the database")
+	public void execute(CommandSender sender) {
 		HeavySpleef.getInstance().getGameDatabase().save();
 		HeavySpleef.getInstance().getStatisticDatabase().saveAccounts();
 		sender.sendMessage(_("gamesSaved"));
-		sender.sendMessage(__(ChatColor.GRAY + "Took " + (System.currentTimeMillis() - millis) + "ms"));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef save");
-		help.addHelp("Saves all games to the database");
-		
-		return help;
 	}
 
 }

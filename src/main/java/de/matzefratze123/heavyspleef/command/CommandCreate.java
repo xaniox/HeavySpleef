@@ -19,13 +19,17 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
@@ -38,48 +42,38 @@ import de.matzefratze123.heavyspleef.selection.Selection;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandCreate extends HSCommand {
-
-	public CommandCreate() {
-		setMinArgs(2);
-		setOnlyIngame(true);
-		setPermission(Permissions.CREATE_GAME);
-	}
+public class CommandCreate implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		if (GameManager.hasGame(args[0].toLowerCase())) {
+	private static final int INVALID_REGION_ID = -1;
+	
+	@Command(value = "create", minArgs = 2, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.CREATE_GAME})
+	@CommandHelp(usage = "/spleef create <name> cuboid\n" +
+				 "/spleef create <name> cylinder <radius> <height>", description = "Creates a new spleef game")
+	public void execute(Player player, String name, String type, Integer radius, Integer height) {
+		if (GameManager.hasGame(name)) {
 			player.sendMessage(_("arenaAlreadyExists"));
 			return;
 		}
 		
-		if (args[1].equalsIgnoreCase("cylinder") || args[1].equalsIgnoreCase("cyl")) {
+		if (type.equalsIgnoreCase("cylinder") || type.equalsIgnoreCase("cyl")) {
 			//Create a new cylinder game
-			if (args.length < 4) {
-				player.sendMessage(getUsage());
+			if (radius == null || height == null) {
+				player.sendMessage(ChatColor.RED + "Please enter a radius and the height of your arena");
 				return;
 			}
+		
+			Location center = player.getLocation();
 			
-			try {
-				int radius = Integer.parseInt(args[2]);
-				int height = Integer.parseInt(args[3]);
-				
-				Location center = player.getLocation();
-				
-				int minY = center.getBlockY();
-				int maxY = center.getBlockY() + height;
-				
-				RegionCylinder region = new RegionCylinder(-1, center, radius, minY, maxY);
-				Game game = new GameCylinder(args[0], region);
-				GameManager.addGame(game);
-			} catch (NumberFormatException e) {
-				player.sendMessage(_("notANumber", args[2]));
-				return;
-			}
+			int minY = center.getBlockY();
+			int maxY = center.getBlockY() + height;
 			
+			RegionCylinder region = new RegionCylinder(INVALID_REGION_ID, center, radius, minY, maxY);
+			Game game = new GameCylinder(name, region);
+			GameManager.addGame(game);
+		
 			player.sendMessage(_("gameCreated"));
-		} else if (args[1].equalsIgnoreCase("cuboid") || args[1].equalsIgnoreCase("cub")) {
+		} else if (type.equalsIgnoreCase("cuboid") || type.equalsIgnoreCase("cub")) {
 			//Create a new cuboid game
 			Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 			if (!s.hasSelection()) {
@@ -91,8 +85,8 @@ public class CommandCreate extends HSCommand {
 				return;
 			}
 			
-			RegionCuboid region = new RegionCuboid(-1, s.getFirst(), s.getSecond());
-			Game game = new GameCuboid(args[0], region);
+			RegionCuboid region = new RegionCuboid(INVALID_REGION_ID, s.getFirst(), s.getSecond());
+			Game game = new GameCuboid(name, region);
 			
 			GameManager.addGame(game);
 			player.sendMessage(_("gameCreated"));
@@ -100,16 +94,5 @@ public class CommandCreate extends HSCommand {
 			player.sendMessage(_("unknownSpleefType"));
 		}
 	}
-	
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef create <name> cuboid\n" +
-				 "/spleef create <name> cylinder <radius> <height>\n");
-		help.addHelp("Creates a new spleef game");
-		
-		return help;
-	}
-	
-	
 
 }

@@ -19,53 +19,42 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
+import org.bukkit.entity.Player;
+
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
-public class CommandSpectate extends HSCommand {
-
-	public CommandSpectate() {
-		setMinArgs(1);
-		setPermission(Permissions.SPECTATE);
-		setOnlyIngame(true);
-	}
+public class CommandSpectate implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(sender);
-		
-		if (!GameManager.hasGame(args[0])) {
-			sender.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "spectate", minArgs = 1, onlyIngame = true)
+	@CommandPermissions(value = {Permissions.SPECTATE})
+	@CommandHelp(usage = "/spleef spectate <game>", description = "Spectates a game")
+	public void execute(Player bukkitPlayer, Game game) {
+		if (game == null) {
+			bukkitPlayer.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
 		
 		if (game.getFlag(FlagType.SPECTATE) == null) {
-			sender.sendMessage(_("noSpectatePoint"));
+			player.sendMessage(_("noSpectatePoint"));
 			return;
 		}
 		
 		game.spectate(player);
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef spectate <Game>");
-		help.addHelp("Spectates a game");
-		
-		return help;
 	}
 
 }

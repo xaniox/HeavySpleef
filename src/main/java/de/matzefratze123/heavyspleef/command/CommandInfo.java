@@ -19,18 +19,20 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
@@ -38,37 +40,30 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
-public class CommandInfo extends HSCommand {
-
-	public CommandInfo() {
-		setMinArgs(1);
-		setOnlyIngame(true);
-		setPermission(Permissions.INFO);
-	}
+public class CommandInfo implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-		if (!GameManager.hasGame(args[0])) {
+	@Command(value = "info", minArgs = 1)
+	@CommandPermissions(value = {Permissions.INFO})
+	@CommandHelp(usage = "/spleef info <game>", description = "Prints out information about this game")
+	public void execute(CommandSender sender, Game game) {
+		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0]);
-		
-		player.sendMessage(ChatColor.YELLOW + "Name: " + game.getName() + ChatColor.GRAY + ", type: " + game.getType().name());
+		sender.sendMessage(ChatColor.YELLOW + "Name: " + game.getName() + ChatColor.GRAY + ", type: " + game.getType().name());
 		if (game.getFlags().size() > 0) {
-			player.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Flags: " + ChatColor.BLUE + getFriendlyFlagInfo(game));
+			sender.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Flags: " + ChatColor.BLUE + getFriendlyFlagInfo(game));
 		}
 		
-		player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Floors:");
+		sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Floors:");
 		for (IFloor floor : game.getComponents().getFloors()) {
-			player.sendMessage(ChatColor.LIGHT_PURPLE + "# " + floor.asPlayerInfo());
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "# " + floor.asPlayerInfo());
 		}
 		
-		player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "Losezones:");
+		sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "Losezones:");
 		for (LoseZone zone : game.getComponents().getLoseZones()) {
-			player.sendMessage(ChatColor.YELLOW + "# " + zone.asInfo());
+			sender.sendMessage(ChatColor.YELLOW + "# " + zone.asInfo());
 		}
 	}
 	
@@ -83,14 +78,6 @@ public class CommandInfo extends HSCommand {
 		}
 		
 		return Util.toFriendlyString(info, ", ");
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef info <name>");
-		help.addHelp("Prints out information about this game");
-		
-		return help;
 	}
 
 }

@@ -37,13 +37,50 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.tag.TagAPI;
 
+import de.matzefratze123.api.command.CommandExecutorService;
 import de.matzefratze123.api.sql.AbstractDatabase;
 import de.matzefratze123.api.sql.MySQLDatabase;
 import de.matzefratze123.api.sql.SQLiteDatabase;
 import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
-import de.matzefratze123.heavyspleef.command.handler.CommandHandler;
+import de.matzefratze123.heavyspleef.command.CommandAddFloor;
+import de.matzefratze123.heavyspleef.command.CommandAddLose;
+import de.matzefratze123.heavyspleef.command.CommandAddScoreBoard;
+import de.matzefratze123.heavyspleef.command.CommandAddTeam;
+import de.matzefratze123.heavyspleef.command.CommandAddWall;
+import de.matzefratze123.heavyspleef.command.CommandCreate;
+import de.matzefratze123.heavyspleef.command.CommandDelete;
+import de.matzefratze123.heavyspleef.command.CommandDisable;
+import de.matzefratze123.heavyspleef.command.CommandEnable;
+import de.matzefratze123.heavyspleef.command.CommandFlag;
+import de.matzefratze123.heavyspleef.command.CommandHelp;
+import de.matzefratze123.heavyspleef.command.CommandInfo;
+import de.matzefratze123.heavyspleef.command.CommandJoin;
+import de.matzefratze123.heavyspleef.command.CommandKick;
+import de.matzefratze123.heavyspleef.command.CommandLeave;
+import de.matzefratze123.heavyspleef.command.CommandList;
+import de.matzefratze123.heavyspleef.command.CommandRegenerate;
+import de.matzefratze123.heavyspleef.command.CommandReload;
+import de.matzefratze123.heavyspleef.command.CommandRemoveFloor;
+import de.matzefratze123.heavyspleef.command.CommandRemoveLose;
+import de.matzefratze123.heavyspleef.command.CommandRemoveScoreBoard;
+import de.matzefratze123.heavyspleef.command.CommandRemoveTeam;
+import de.matzefratze123.heavyspleef.command.CommandRemoveWall;
+import de.matzefratze123.heavyspleef.command.CommandRename;
+import de.matzefratze123.heavyspleef.command.CommandSave;
+import de.matzefratze123.heavyspleef.command.CommandSpectate;
+import de.matzefratze123.heavyspleef.command.CommandStart;
+import de.matzefratze123.heavyspleef.command.CommandStats;
+import de.matzefratze123.heavyspleef.command.CommandStop;
+import de.matzefratze123.heavyspleef.command.CommandTeamFlag;
+import de.matzefratze123.heavyspleef.command.CommandUpdate;
+import de.matzefratze123.heavyspleef.command.CommandVote;
+import de.matzefratze123.heavyspleef.command.RootCommand;
+import de.matzefratze123.heavyspleef.command.handler.FlagTransformer;
+import de.matzefratze123.heavyspleef.command.handler.GameTransformer;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.task.TaskAntiCamping;
 import de.matzefratze123.heavyspleef.database.YamlDatabase;
 import de.matzefratze123.heavyspleef.hooks.Hook;
@@ -79,6 +116,7 @@ import de.matzefratze123.heavyspleef.util.Updater;
 public class HeavySpleef extends JavaPlugin implements Listener {
 	
 	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
+	public static final String MAIN_COMMAND = "spleef";
 	public static final String[] COMMANDS = new String[] {"spleef", "spl", "hspleef"};
 	public static final String PLUGIN_NAME = "HeavySpleef";
 	public static final Random RANDOM = new Random();
@@ -102,6 +140,8 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	
 	//List of online players
 	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
+	
+	private CommandExecutorService ces;
 	
 	@Override
 	public void onLoad() {
@@ -156,16 +196,17 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		registerEvents();
 		registerSigns();
 		
-		//Register our main command
-		getCommand("spleef").setExecutor(new CommandHandler());
-		
 		antiCampTask = new TaskAntiCamping();
 		antiCampTask.start();
 		
 		//Command stuff
-		CommandHandler.initCommands();
-		CommandHandler.setPluginInstance(this);
-		CommandHandler.setConfigInstance(this);
+		ces = new CommandExecutorService(MAIN_COMMAND, this);
+		ces.registerTransformer(Game.class, new GameTransformer());
+		ces.registerTransformer(Flag.class, new FlagTransformer());
+		ces.setRootCommandExecutor(new RootCommand());
+		ces.setUnknownCommandMessage(I18N._("unknownCommand"));
+		
+		registerCommands();
 		
 		Logger.info("HeavySpleef v" + getDescription().getVersion() + " activated!");
 	}
@@ -190,6 +231,10 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	
 	public static Random getRandom() {
 		return RANDOM;
+	}
+	
+	public CommandExecutorService getCommandExecutorService() {
+		return ces;
 	}
 	
 	public Updater getUpdater() {
@@ -226,6 +271,41 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 	
 	public InventoryJoinGUI getJoinGUI() {
 		return joinGui;
+	}
+	
+	private void registerCommands() {
+		ces.registerListener(new CommandAddFloor());
+		ces.registerListener(new CommandAddLose());
+		ces.registerListener(new CommandAddScoreBoard());
+		ces.registerListener(new CommandAddTeam());
+		ces.registerListener(new CommandAddWall());
+		ces.registerListener(new CommandCreate());
+		ces.registerListener(new CommandDelete());
+		ces.registerListener(new CommandDisable());
+		ces.registerListener(new CommandEnable());
+		ces.registerListener(new CommandFlag());
+		ces.registerListener(new CommandHelp());
+		ces.registerListener(new CommandInfo());
+		ces.registerListener(new CommandJoin());
+		ces.registerListener(new CommandKick());
+		ces.registerListener(new CommandList());
+		ces.registerListener(new CommandLeave());
+		ces.registerListener(new CommandRegenerate());
+		ces.registerListener(new CommandReload());
+		ces.registerListener(new CommandRemoveFloor());
+		ces.registerListener(new CommandRemoveLose());
+		ces.registerListener(new CommandRemoveScoreBoard());
+		ces.registerListener(new CommandRemoveTeam());
+		ces.registerListener(new CommandRemoveWall());
+		ces.registerListener(new CommandRename());
+		ces.registerListener(new CommandSave());
+		ces.registerListener(new CommandSpectate());
+		ces.registerListener(new CommandStart());
+		ces.registerListener(new CommandStats());
+		ces.registerListener(new CommandStop());
+		ces.registerListener(new CommandTeamFlag());
+		ces.registerListener(new CommandUpdate());
+		ces.registerListener(new CommandVote());
 	}
 	
 	private void registerEvents() {

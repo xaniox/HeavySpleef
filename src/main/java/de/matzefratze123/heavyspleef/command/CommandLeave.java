@@ -19,12 +19,16 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
+import static de.matzefratze123.heavyspleef.util.I18N._;
+
 import org.bukkit.entity.Player;
 
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandAliases;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.core.Game;
@@ -34,16 +38,13 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
-public class CommandLeave extends HSCommand {
-
-	public CommandLeave() {
-		setOnlyIngame(true);
-		setPermission(Permissions.LEAVE_GAME);
-	}
+public class CommandLeave implements CommandListener {
 	
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
+	@Command(value = "leave", onlyIngame = true)
+	@CommandPermissions(value = {Permissions.LEAVE_GAME})
+	@CommandHelp(usage = "/spleef leave", description = "Leaves the game/queue/spectate mode")
+	@CommandAliases({"quit"})
+	public void execute(Player player) {
 		leave(HeavySpleef.getInstance().getSpleefPlayer(player));
 	}
 	
@@ -67,14 +68,6 @@ public class CommandLeave extends HSCommand {
 		
 		game.leave(player, LoseCause.LEAVE);
 		player.sendMessage(_("left"));
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef leave");
-		help.addHelp("Leaves the game/queue/spectate mode");
-		
-		return help;
 	}
 
 }

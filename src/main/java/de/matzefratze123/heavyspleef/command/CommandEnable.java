@@ -19,56 +19,43 @@
  */
 package de.matzefratze123.heavyspleef.command;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import static de.matzefratze123.heavyspleef.util.I18N._;
 
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
-import de.matzefratze123.heavyspleef.command.handler.Help;
+import org.bukkit.command.CommandSender;
+
+import de.matzefratze123.api.command.Command;
+import de.matzefratze123.api.command.CommandHelp;
+import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
-public class CommandEnable extends HSCommand {
+public class CommandEnable implements CommandListener {
 
-	public CommandEnable() {
-		setMinArgs(1);
-		setOnlyIngame(true);
-		setPermission(Permissions.ENABLE);
-	}
-
-	@Override
-	public void execute(CommandSender sender, String[] args) {
-		Player player = (Player)sender;
-	
-		if (!GameManager.hasGame(args[0].toLowerCase())){
-			player.sendMessage(_("arenaDoesntExists"));
+	@Command(value = "enable", minArgs = 1)
+	@CommandPermissions(value = {Permissions.ENABLE})
+	@CommandHelp(usage = "/spleef enable <game>", description = "Enables a game.")
+	public void execute(CommandSender sender, Game game) {
+		if (game == null) {
+			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
 		
-		Game game = GameManager.getGame(args[0].toLowerCase());
 		if (game.getGameState() != GameState.DISABLED) {
-			player.sendMessage(_("gameIsAlreadyEnabled"));
+			sender.sendMessage(_("gameIsAlreadyEnabled"));
 			return;
 		}
 		
 		game.enable();
-		game.broadcast(_("gameEnabled", game.getName(), player.getName()), ConfigUtil.getBroadcast(MessageType.GAME_ENABLE));
-		player.sendMessage(_("gameEnabledToPlayer", game.getName()));
+		game.broadcast(_("gameEnabled", game.getName(), sender.getName()), ConfigUtil.getBroadcast(MessageType.GAME_ENABLE));
+		sender.sendMessage(_("gameEnabledToPlayer", game.getName()));
 	
-	}
-
-	@Override
-	public Help getHelp(Help help) {
-		help.setUsage("/spleef enable <Name>");
-		help.addHelp("Enables a game");
-		
-		return help;
 	}
 
 }

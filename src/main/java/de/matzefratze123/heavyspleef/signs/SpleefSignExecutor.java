@@ -36,8 +36,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.command.handler.HSCommand;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefSignExecutor implements Listener {
@@ -116,7 +116,7 @@ public class SpleefSignExecutor implements Listener {
 
 		// Check permissions
 		if (permission != null && !player.hasPermission(permission.getPerm())) {
-			player.sendMessage(HSCommand._("noPermission"));
+			player.sendMessage(I18N._("noPermission"));
 			return;
 		}
 
@@ -131,7 +131,7 @@ public class SpleefSignExecutor implements Listener {
 		}
 		
 		if (!e.getPlayer().hasPermission(Permissions.CREATE_SPLEEF_SIGN.getPerm())) {
-			e.getPlayer().sendMessage(HSCommand._("noPermission"));
+			e.getPlayer().sendMessage(I18N._("noPermission"));
 			e.getBlock().breakNaturally();
 			return;
 		}
