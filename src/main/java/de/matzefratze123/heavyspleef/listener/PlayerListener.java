@@ -54,7 +54,6 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -69,7 +68,6 @@ import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.LoseCause;
 import de.matzefratze123.heavyspleef.core.QueuesManager;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
-import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.FuzzyReflection;
@@ -78,10 +76,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class PlayerListener implements Listener {
 
-	private ArrayList<SpleefPlayer> isCheckOut = new ArrayList<SpleefPlayer>();
 	private List<String> dead = new ArrayList<String>();
 
-	@EventHandler
+	/*@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
 				e.getPlayer());
@@ -134,7 +131,7 @@ public class PlayerListener implements Listener {
 						isCheckOut.remove(player);
 					}
 				}, 20L);
-	}
+	}*/
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {

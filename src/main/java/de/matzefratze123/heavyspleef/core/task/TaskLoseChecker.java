@@ -36,7 +36,7 @@ public class TaskLoseChecker implements Runnable, Task {
 	private Game game;
 	private int pid = -1;
 	
-	public TaskLoseChecker(Game game) {
+	public TaskLoseChecker(Game game) { 
 		this.game = game;
 	}
 	
@@ -71,7 +71,9 @@ public class TaskLoseChecker implements Runnable, Task {
 			return;
 		}
 		
-		for (SpleefPlayer player : game.getIngamePlayers()) {
+		for (int i = 0; i < game.getIngamePlayers().size(); i++) {
+			SpleefPlayer player = game.getIngamePlayers().get(i);
+			
 			if (!player.isActive()) {
 				continue;
 			}

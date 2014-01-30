@@ -68,6 +68,7 @@ import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
+import de.matzefratze123.heavyspleef.core.task.TaskLoseChecker;
 import de.matzefratze123.heavyspleef.core.task.TaskPlayerTeleport;
 import de.matzefratze123.heavyspleef.core.task.TaskRegeneration;
 import de.matzefratze123.heavyspleef.core.task.CountdownRounds;
@@ -171,7 +172,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		state = GameState.INGAME;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		removeBoxes();
-
+		
+		TaskLoseChecker loseCheckerTask = new TaskLoseChecker(this);
+		loseCheckerTask.start();
+		tasks.add(loseCheckerTask);
+		
 		if (getFlag(FlagType.TIMEOUT) > 0) {
 			CountdownTimeout timeoutTask = new CountdownTimeout(this, getFlag(FlagType.TIMEOUT));
 			timeoutTask.start();
