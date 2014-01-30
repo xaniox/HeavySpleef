@@ -62,10 +62,10 @@ public class MySQLDatabase extends AbstractDatabase {
 			connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
 			state = DatabaseState.SUCCESS;
 		} catch (SQLException e) {
-			plugin.getLogger().warning("Failed to connect to the mysql database! Disabling database: " + e.getMessage());
+			plugin.getLogger().warning("Failed to connect to the mysql database! Disabling statistics: " + e.getMessage());
 			state = DatabaseState.FAILED_TO_CONNECT;
 		} catch (ClassNotFoundException e) {
-			plugin.getLogger().warning("Failed to load drivers for mysql database. Disabling database: " + e.getMessage());
+			plugin.getLogger().warning("Failed to load drivers for mysql database. Disabling statistics: " + e.getMessage());
 			state = DatabaseState.NO_DRIVERS;
 		} finally {
 			close();

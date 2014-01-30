@@ -19,11 +19,11 @@
  */
 package de.matzefratze123.api.sql;
 
-import static de.matzefratze123.api.sql.SQLUtils.TICK;
-import static de.matzefratze123.api.sql.SQLUtils.parseWhereClause;
+import static de.matzefratze123.api.sql.SQLUtils.*;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -57,18 +57,26 @@ public class Table {
 	 * @return A ResultSet containing all datasets of this selection
 	 */
 	public SQLResult select(String selection, Map<String, Object> where) {
-		String whereClause = parseWhereClause(where);
-		Statement statement = null;
+		String parameterizedClause = createParameterizedWhereClause(where.keySet());
+		PreparedStatement statement;
+		//Statement statement = null;
 
 		try {
 			Connection conn = database.getConnection();
-			statement = conn.createStatement();
 
 			if (selection.trim().equalsIgnoreCase("*") || selection.trim().equalsIgnoreCase("all")) {
 				selection = "*";
 			}
-
-			ResultSet result = statement.executeQuery("SELECT " + selection + " FROM " + name + (whereClause == null ? "" : whereClause));
+			
+			statement = conn.prepareStatement("SELECT " + selection + " FROM " + name + (parameterizedClause == null ? "" : parameterizedClause));
+			int index = 1;
+			for (Object o : where.values()) {
+				statement.setObject(index, o);
+				
+				index++;
+			}
+			
+			ResultSet result = statement.executeQuery();
 			return new SQLResult(plugin, statement, result);
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("SQL Exception occured while trying to select " + selection + " from table " + name + " in database: " + e.getMessage());
@@ -110,12 +118,11 @@ public class Table {
 	public int insertOrUpdate(Map<String, Object> values, Map<String, Object> where) {
 		int result = Statement.EXECUTE_FAILED;
 
-		Statement statement = null;
+		PreparedStatement statement = null;
 
 		try {
 			Connection conn = database.getConnection();
-			statement = conn.createStatement();
-
+			
 			if (hasRow(where)) {
 				// Update part syntax beginn
 				String parts[] = new String[values.size()];
@@ -123,26 +130,46 @@ public class Table {
 
 				int c = 0;
 				for (String key : keys) {
-					Object value = values.get(key);
-
-					parts[c] = key + " = '" + value + "'";
+					parts[c] = key + " = ?";
 					c++;
 				}
-
+				
 				String update = SQLUtils.toFriendlyString(parts, ", ");
 				// Update Part syntax end
-				String whereClause = parseWhereClause(where);
+				String whereClause = createParameterizedWhereClause(where.keySet());
 
-				result = statement.executeUpdate("UPDATE " + name + " SET " + update + (whereClause == null ? "" : whereClause));
+				statement = conn.prepareStatement("UPDATE " + name + " SET " + update + (whereClause == null ? "" : whereClause));
+				int index = 1;
+				for (Object o : values.values()) {
+					statement.setObject(index, o);
+					index++;
+				}
+				for (Object o : where.values()) {
+					statement.setObject(index, o);
+					index++;
+				}
+				
+				result = statement.executeUpdate();
 			} else {
 				String friendlyKeySet = SQLUtils.toFriendlyString(values.keySet(), ", ");
-				String friendlyValueSet = SQLUtils.toFriendlyString(values.values(), "', '");
+				
+				StringBuilder builder = new StringBuilder();
+				for (int i = 0; i < values.size(); i++) {
+					builder.append("?");
+					if (i + 1 < values.size()) {
+						builder.append(", ");
+					}
+				}
 
-				// Ticks am Ende und anfang hinzufügen
-				friendlyValueSet += "'";
-				friendlyValueSet = "'" + friendlyValueSet;
-
-				result = statement.executeUpdate("INSERT INTO " + name + " (" + friendlyKeySet + ") VALUES (" + friendlyValueSet + ")");
+				statement = conn.prepareStatement("INSERT INTO " + name + "(" + friendlyKeySet + ") VALUES (" + builder.toString() + ")");
+				
+				int index = 1;
+				for (Object o : values.values()) {
+					statement.setObject(index, o);
+					index++;
+				}
+				
+				result = statement.executeUpdate();
 			}
 
 		} catch (SQLException e) {
@@ -168,36 +195,23 @@ public class Table {
 	 * @return True if the row exists, false otherwise
 	 */
 	public boolean hasRow(Map<String, Object> where) {
-		StringBuilder builder = new StringBuilder();
-		Iterator<String> iter = where.keySet().iterator();
-		builder.append(" WHERE ");
+		String parameterizedWhereClause = createParameterizedWhereClause(where.keySet());
 
-		while (iter.hasNext()) {
-			String next = iter.next();
-			if (!hasColumn(next)) {
-				continue;
-			}
-
-			Object value = where.get(next);
-
-			builder.append(next).append("=").append(TICK).append(value).append(TICK);
-			if (iter.hasNext())
-				builder.append(" AND ");
-		}
-
-		String whereClause = builder.toString();
-
-		Statement statement = null;
+		PreparedStatement statement = null;
 		ResultSet set = null;
 
 		try {
 			Connection conn = database.getConnection();
-			statement = conn.createStatement();
+			statement = conn.prepareStatement("SELECT * FROM " + name + parameterizedWhereClause);
 
-			set = statement.executeQuery("SELECT * FROM " + name + whereClause);
-			boolean next = set.next();
-
-			return next;
+			int index = 1;
+			for (Object o : where.values()) {
+				statement.setObject(index, o);
+				index++;
+			}
+			
+			set = statement.executeQuery();
+			return set.next();
 		} catch (SQLException e) {
 			Bukkit.getLogger().severe("SQLException while checking if row exists: " + e.getMessage());
 			e.printStackTrace();

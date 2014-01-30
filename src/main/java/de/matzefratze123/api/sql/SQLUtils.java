@@ -1,6 +1,8 @@
 package de.matzefratze123.api.sql;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +37,26 @@ public class SQLUtils {
 
 		return builder.toString();
 	}
+	
+	static String createParameterizedWhereClause(Collection<?> columns) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(" WHERE ");
+		
+		Iterator<?> iter = columns.iterator();
+		while (iter.hasNext()) {
+			Object column = iter.next();
+			
+			builder.append(column + " = ?");
+			
+			if (iter.hasNext()) {
+				builder.append(" AND ");
+			}
+		}
+		
+		return builder.toString();
+	}
+	
+	
 	
 	/**
 	 * Turns every element of the iterable into a friendly string which can be used in a statement
