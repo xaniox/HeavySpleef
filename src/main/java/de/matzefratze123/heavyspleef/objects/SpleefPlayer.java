@@ -204,8 +204,10 @@ public class SpleefPlayer {
 				try {
 					StatisticModule module = HeavySpleef.getInstance().getStatisticDatabase().loadAccount(getRawName());
 					
-					synchronized (statistic) {
-						statistic.merge(module);
+					if (module != null) {
+						synchronized (statistic) {
+							statistic.merge(module);
+						}
 					}
 					
 					statisticsLoaded = true;
