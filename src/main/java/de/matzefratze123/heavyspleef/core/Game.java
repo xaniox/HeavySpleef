@@ -68,13 +68,13 @@ import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.core.region.FloorCuboid;
 import de.matzefratze123.heavyspleef.core.region.IFloor;
 import de.matzefratze123.heavyspleef.core.region.LoseZone;
+import de.matzefratze123.heavyspleef.core.task.CountdownRounds;
+import de.matzefratze123.heavyspleef.core.task.CountdownStart;
+import de.matzefratze123.heavyspleef.core.task.CountdownTimeout;
+import de.matzefratze123.heavyspleef.core.task.Task;
 import de.matzefratze123.heavyspleef.core.task.TaskLoseChecker;
 import de.matzefratze123.heavyspleef.core.task.TaskPlayerTeleport;
 import de.matzefratze123.heavyspleef.core.task.TaskRegeneration;
-import de.matzefratze123.heavyspleef.core.task.CountdownRounds;
-import de.matzefratze123.heavyspleef.core.task.CountdownStart;
-import de.matzefratze123.heavyspleef.core.task.Task;
-import de.matzefratze123.heavyspleef.core.task.CountdownTimeout;
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 import de.matzefratze123.heavyspleef.database.Parser;
 import de.matzefratze123.heavyspleef.hooks.Hook;
@@ -84,7 +84,6 @@ import de.matzefratze123.heavyspleef.objects.Region;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.RegionCylinder;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
-import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.SpleefLogger.LogType;
@@ -205,7 +204,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			player.getStatistic().addGame();
 		}
 
-		StatisticModule.pushAsync();
+		HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
 		broadcast(_("gameHasStarted"), BroadcastType.INGAME);
 		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
 		broadcast(_("startedGameWith", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
@@ -343,7 +342,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			broadcast(_("hasWon", winner.getName(), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 			winner.sendMessage(_("win"));
 			winner.getStatistic().addWin();
-			StatisticModule.pushAsync();
+			HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
 			safeTeleport(winner, getFlag(FlagType.WIN));
 			giveRewards(winner, true, 0);
 			SpleefLogger.log(LogType.WIN, this, winner);
@@ -404,7 +403,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		broadcast(_("hasWon", "Team " + winnerTeam.getColor().toMessageColorString(), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 
-		StatisticModule.pushAsync();
+		HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
 		state = GameState.JOINABLE;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		
@@ -633,7 +632,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 					broadcast(_("loseCause_lose_unknown", player.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 				}
 
-				StatisticModule.pushAsync();
+				HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
 			} else {
 				SpleefLogger.log(LogType.LEAVE, this, player);
 				broadcast(_("loseCause_leave", player.getName(), name), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));

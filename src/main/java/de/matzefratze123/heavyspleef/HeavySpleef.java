@@ -37,10 +37,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.tag.TagAPI;
 
-import de.matzefratze123.api.command.CommandExecutorService;
-import de.matzefratze123.api.sql.AbstractDatabase;
-import de.matzefratze123.api.sql.MySQLDatabase;
-import de.matzefratze123.api.sql.SQLiteDatabase;
+import de.matzefratze123.api.hs.command.CommandExecutorService;
+import de.matzefratze123.api.hs.sql.AbstractDatabase;
+import de.matzefratze123.api.hs.sql.MySQLDatabase;
+import de.matzefratze123.api.hs.sql.SQLiteDatabase;
 import de.matzefratze123.heavyspleef.api.GameManagerAPI;
 import de.matzefratze123.heavyspleef.api.IGameManager;
 import de.matzefratze123.heavyspleef.command.CommandAddFloor;
@@ -103,9 +103,9 @@ import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignLeave;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignSpectate;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignStart;
 import de.matzefratze123.heavyspleef.signs.signobjects.SpleefSignVote;
+import de.matzefratze123.heavyspleef.stats.AccountException;
 import de.matzefratze123.heavyspleef.stats.IStatisticDatabase;
 import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
-import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.stats.YamlConverter;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Logger;
@@ -217,7 +217,13 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		
 		if (!noWorldEdit) {
 			this.database.save();
-			this.statisticDatabase.saveAccounts();
+			
+			try {
+				this.statisticDatabase.saveAccounts();
+			} catch (AccountException e) {
+				Logger.severe("Failed to save statistics.");
+				e.printStackTrace();
+			}
 		}
 		
 		SpleefLogger.logRaw("Stopping plugin!");
@@ -245,7 +251,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		return database;
 	}
 	
-	public synchronized IStatisticDatabase getStatisticDatabase() {
+	public IStatisticDatabase getStatisticDatabase() {
 		return statisticDatabase;
 	}
 	
@@ -416,13 +422,22 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		players.add(player);
 		
 		if (SQLStatisticDatabase.isDatabaseEnabled()) {
-			StatisticModule module = statisticDatabase.loadAccount(player.getRawName());
-			player.setStatistic(module);
-		} else {
-			player.setStatistic(new StatisticModule(player.getRawName()));
+			player.loadStatistics();
 		}
 		
 		return player;
+	}
+	
+	public SpleefPlayer[] getOnlineSpleefPlayers() {
+		SpleefPlayer[] playersArray = new SpleefPlayer[players.size()];
+		
+		synchronized (players) {
+			for (int i = 0; i < players.size(); i++) {
+				playersArray[i] = players.get(i);
+			}
+		}
+		
+		return playersArray;
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

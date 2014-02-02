@@ -21,19 +21,21 @@ package de.matzefratze123.heavyspleef.stats;
 
 import java.util.List;
 
-import de.matzefratze123.api.sql.AbstractDatabase;
-import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.api.hs.sql.AbstractDatabase;
+import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase.ExceptionHandler;
 
 public interface IStatisticDatabase {
 	
 	public AbstractDatabase getRawDatabase();
 	
-	public void saveAccounts();
+	public void saveAccountsAsync(ExceptionHandler handler);
 	
-	public StatisticModule loadAccount(String holder);
+	public void saveAccountsAsync();
 	
-	public void unloadAccount(SpleefPlayer player);
+	public void saveAccounts() throws AccountException;
 	
-	public List<StatisticModule> loadAccounts();
+	public StatisticModule loadAccount(String holder) throws AccountException;
+	
+	public List<StatisticModule> loadAccounts() throws AccountException;
 	
 }

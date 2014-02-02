@@ -22,7 +22,7 @@ package de.matzefratze123.heavyspleef.objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -35,8 +35,10 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.CommandVote;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.stats.AccountException;
 import de.matzefratze123.heavyspleef.stats.StatisticModule;
 import de.matzefratze123.heavyspleef.util.I18N;
+import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefPlayer {
@@ -53,10 +55,12 @@ public class SpleefPlayer {
 	private PlayerState state;
 	private Location lastLocation;
 	private StatisticModule statistic;
+	private boolean statisticsLoaded;
 	
 	public SpleefPlayer(Player bukkitPlayer) {
 		this.bukkitPlayer = bukkitPlayer;
 		this.isOnline = true;
+		this.statistic = new StatisticModule(bukkitPlayer.getName());
 	}
 	
 	public Player getBukkitPlayer() {
@@ -175,6 +179,43 @@ public class SpleefPlayer {
 	
 	public void setStatistic(StatisticModule module) {
 		this.statistic = module;
+	}
+	
+	public boolean statisticsWereLoaded() {
+		return statisticsLoaded;
+	}
+	
+	public void loadStatistics() {
+		Runnable loader = new Runnable() {
+			
+			@Override
+			public void run() {
+				if (statisticsLoaded) {
+					try {
+						HeavySpleef.getInstance().getStatisticDatabase().saveAccounts();
+					} catch (AccountException e) {
+						Logger.severe("Failed to save accounts. Will not try to load account of player " + getRawName() + ": " + e.getMessage());
+						return;
+					}
+				}
+				
+				statisticsLoaded = false;
+				
+				try {
+					StatisticModule module = HeavySpleef.getInstance().getStatisticDatabase().loadAccount(getRawName());
+					
+					synchronized (statistic) {
+						statistic.merge(module);
+					}
+					
+					statisticsLoaded = true;
+				} catch (AccountException e) {
+					Logger.severe("Failed to load account of player " + getRawName() + ": " + e.getMessage());
+				}
+			}
+		};
+		
+		Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), loader);
 	}
 	
 	@SuppressWarnings("deprecation")

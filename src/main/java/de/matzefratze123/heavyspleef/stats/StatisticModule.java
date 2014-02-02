@@ -19,7 +19,9 @@
  */
 package de.matzefratze123.heavyspleef.stats;
 
-import org.bukkit.Bukkit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.config.sections.SettingsSectionLeaderBoard;
@@ -37,92 +39,74 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	private String name;
 	
-	/**
-	 * How often the player lost
-	 */
-	private int loses;
-	
-	/**
-	 * How often the player won
-	 */
-	private int wins;
-	
-	/**
-	 * How often the player has knocked out another one
-	 */
-	private int knockouts;
-	
-	/**
-	 * How many games the player played
-	 */
-	private int gamesPlayed;
-	
-	/**
-	 * The elo of this player
-	 */
-	private int elo;
+	private Map<StatisticValue, Integer> scores;
 	
 	/**
 	 * Creates a empty statistic with the given name
 	 */
 	public StatisticModule(String name) {
+		scores = new HashMap<StatisticValue, Integer>();
+		
 		this.name = name;
-		this.loses = 0;
-		this.wins = 0;
-		this.knockouts = 0;
-		this.gamesPlayed = 0;
-		this.elo = 1000;
 	}
 	
 	/**
 	 * Creates a empty statistic based on the parameters
 	 */
 	public StatisticModule(String name, int loses, int wins, int knockouts, int gamesPlayed) {
+		scores = new HashMap<StatisticValue, Integer>();
+		
 		this.name = name;
-		this.loses = loses;
-		this.wins = wins;
-		this.knockouts = knockouts;
-		this.gamesPlayed = gamesPlayed;
+		
+		scores.put(StatisticValue.LOSE, loses);
+		scores.put(StatisticValue.WIN, wins);
+		scores.put(StatisticValue.KNOCKOUTS, knockouts);
+		scores.put(StatisticValue.GAMES_PLAYED, gamesPlayed);
 		//this.elo = elo;
 	}
 	
-	/**
-	 * Get's the wins of the player
-	 * @return The wins
-	 */
-	public int getWins() {
-		return this.wins;
+	public void putScore(StatisticValue value, int score) {
+		if (value == StatisticValue.SCORE) {
+			throw new IllegalArgumentException("value cannot be StatisticValue.SCORE");
+		}
+		
+		if (score != 0) {
+			scores.put(value, score);
+		} else {
+			scores.remove(value);
+		}
+		
+		updateScore();
 	}
 	
-	/**
-	 * Get's the loses of the player
-	 * @return The loses
-	 */
-	public int getLoses() {
-		return this.loses;
+	public void addScores(Map<StatisticValue, Integer> scores) {
+		for (Entry<StatisticValue, Integer> entry : scores.entrySet()) {
+			int score = 0;
+			
+			if (entry.getValue() != null) {
+				score = entry.getValue();
+			}
+			
+			scores.put(entry.getKey(), score);
+		}
 	}
 	
-	/**
-	 * Get's the knockouts of the player
-	 * @return The knockouts
-	 */
-	public int getKnockouts() {
-		return this.knockouts;
+	public int getScore(StatisticValue value) {
+		Integer s = scores.get(value);
+		int score = 0;
+		
+		if (s != null) {
+			score = s;
+		}
+		
+		return score;
 	}
 	
-	/**
-	 * Get's the count of played games
-	 * @return The played games
-	 */
-	public int getGamesPlayed() {
-		return this.gamesPlayed;
+	public Map<StatisticValue, Integer> getScores() {
+		return scores;
 	}
 	
-	/**
-	 * Get's the score of the player </br>
-	 * <b>formula: 1000 + wins * games - (loses * games / 3)<b>
-	 */
-	public int getScore() {
+	private void updateScore() {
 		SettingsSectionLeaderBoard section = HeavySpleef.getSystemConfig().getLeaderboardSection();
 		
 		int pointsWin = section.getWinPoints();
@@ -130,16 +114,16 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		int pointsKnockout = section.getKnockoutPoints();
 		int pointsGamePlayed = section.getGamePlayedPoints();
 		
-		return (pointsWin * getWins()) + (pointsLose * getLoses()) + (pointsKnockout * getKnockouts()) + (pointsGamePlayed * getGamesPlayed());
-	}
-	
-	/**
-	 * Get's the elo of this player
-	 * 
-	 * @return The elo
-	 */
-	public int getElo() {
-		return this.elo;
+		int score = (pointsWin * getScore(StatisticValue.WIN)) +
+				    (pointsLose * getScore(StatisticValue.LOSE)) + 
+				    (pointsKnockout * getScore(StatisticValue.KNOCKOUTS)) + 
+				    (pointsGamePlayed * getScore(StatisticValue.GAMES_PLAYED));
+		
+		scores.put(StatisticValue.SCORE, score);
+		
+		for (Entry<StatisticValue, Integer> e : scores.entrySet()) {
+			System.out.println(e.getKey().name() + ": " + e.getValue());
+		}
 	}
 	
 	/**
@@ -147,17 +131,19 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 */
 	public double getKD() {
 		double winsPerGame = 0.0;
-		if (getGamesPlayed() > 0)
-			winsPerGame = (double)getWins() / (double)getGamesPlayed();
 		
-		return round(winsPerGame);
+		if (getScore(StatisticValue.GAMES_PLAYED) > 0) {
+			winsPerGame = getScore(StatisticValue.WIN) / (double)getScore(StatisticValue.GAMES_PLAYED);
+		}
+		
+		return winsPerGame;
 	}
 	
 	/**
 	 * Get's the owner of this statistic
 	 * @return Name of the owner
 	 */
-	public String getName() {
+	public String getHolder() {
 		return this.name;
 	}
 	
@@ -165,35 +151,36 @@ public class StatisticModule implements Comparable<StatisticModule> {
 	 * Add's a win
 	 */
 	public void addWin() {
-		wins++;
+		putScore(StatisticValue.WIN, getScore(StatisticValue.WIN) + 1);
 	}
 	
 	/**
 	 * Add's a lose
 	 */
 	public void addLose() {
-		loses++;
+		putScore(StatisticValue.LOSE, getScore(StatisticValue.LOSE) + 1);
 	}
 	
 	/**
 	 * Add's a knockout
 	 */
 	public void addKnockout() {
-		knockouts++;
+		putScore(StatisticValue.KNOCKOUTS, getScore(StatisticValue.KNOCKOUTS) + 1);
 	}
 	
 	/**
 	 * Add's a game
 	 */
 	public void addGame() {
-		gamesPlayed++;
+		putScore(StatisticValue.GAMES_PLAYED, getScore(StatisticValue.GAMES_PLAYED) + 1);
 	}
 	
-	/**
-	 * Sets the elo of this player
-	 */
-	public void setElo(int elo) {
-		this.elo = elo;
+	public void merge(StatisticModule other) {
+		for (Entry<StatisticValue, Integer> entry : other.scores.entrySet()) {
+			scores.put(entry.getKey(), (scores.get(entry.getKey()) == null ? 0 : scores.get(entry.getKey())) + entry.getValue());
+		}
+		
+		updateScore();
 	}
 	
 	@Override
@@ -203,7 +190,7 @@ public class StatisticModule implements Comparable<StatisticModule> {
 		}
 		
 		StatisticModule module = (StatisticModule) o;
-		if (!module.getName().equalsIgnoreCase(name)) {
+		if (!module.getHolder().equalsIgnoreCase(name)) {
 			return false;
 		}
 		
@@ -212,30 +199,27 @@ public class StatisticModule implements Comparable<StatisticModule> {
 
 	@Override
 	public int compareTo(StatisticModule o) {
-		if (o.getScore() > getScore())
-			return 1;
-		if (o.getScore() < getScore())
-			return -1;
-		if (o.getScore() == getScore())
-			return 0;
+		return Integer.valueOf(getScore(StatisticValue.SCORE)).compareTo(o.getScore(StatisticValue.SCORE));
+	}
+	
+	public enum StatisticValue {
 		
-		return 0;
-	}
-	
-	private double round(double d) {
-		d *= 10000;
-		d = Math.round(d);
-		return d / 10000.0D;
-	}
-	
-	public static void pushAsync() {
-		Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new Runnable() {
-			
-			@Override
-			public void run() {
-				HeavySpleef.getInstance().getStatisticDatabase().saveAccounts();
-			}
-		});
+		WIN("wins"),
+		LOSE("loses"),
+		KNOCKOUTS("knockouts"),
+		GAMES_PLAYED("games"),
+		SCORE("score");
+		
+		private String columnName;
+		
+		private StatisticValue(String columnName) {
+			this.columnName = columnName;
+		}
+		
+		public String getColumnName() {
+			return columnName;
+		}
+		
 	}
 	
 }

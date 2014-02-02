@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.stats;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,10 +28,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import de.matzefratze123.api.sql.AbstractDatabase;
-import de.matzefratze123.api.sql.SQLiteDatabase;
-import de.matzefratze123.api.sql.Table;
+import de.matzefratze123.api.hs.sql.AbstractDatabase;
+import de.matzefratze123.api.hs.sql.SQLiteDatabase;
+import de.matzefratze123.api.hs.sql.Table;
 import de.matzefratze123.heavyspleef.HeavySpleef;
+import de.matzefratze123.heavyspleef.stats.StatisticModule.StatisticValue;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class YamlConverter {
@@ -62,6 +64,7 @@ public class YamlConverter {
 				StatisticModule module = new StatisticModule(key, loses, wins, knockouts, games);
 				
 				writeToSQLite(module);
+				
 				i++;
 			}
 			
@@ -76,7 +79,7 @@ public class YamlConverter {
 		
 	}
 
-	private static void writeToSQLite(StatisticModule module) {
+	private static void writeToSQLite(StatisticModule module) throws SQLException {
 		AbstractDatabase abstractDatabase = HeavySpleef.getInstance().getStatisticDatabase().getRawDatabase();
 		
 		if (!(abstractDatabase instanceof SQLiteDatabase)) {
@@ -86,13 +89,13 @@ public class YamlConverter {
 		SQLiteDatabase database = (SQLiteDatabase) abstractDatabase;
 		Table table = database.getTable(SQLStatisticDatabase.TABLE_NAME);
 		
-		int wins = module.getWins();
-		int loses = module.getLoses();
-		int knockouts = module.getKnockouts();
-		int games = module.getGamesPlayed();
-		int score = module.getScore();
+		int wins = module.getScore(StatisticValue.WIN);
+		int loses = module.getScore(StatisticValue.LOSE);
+		int knockouts = module.getScore(StatisticValue.KNOCKOUTS);
+		int games = module.getScore(StatisticValue.GAMES_PLAYED);
+		int score = module.getScore(StatisticValue.SCORE);
 		
-		String owner = module.getName();
+		String owner = module.getHolder();
 		
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("owner", owner);

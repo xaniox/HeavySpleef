@@ -250,7 +250,7 @@ public class PlayerListener implements Listener {
 			return;
 
 		Projectile projectile = e.getEntity();
-
+		
 		if (!(projectile.getShooter() instanceof Player))
 			return;
 
