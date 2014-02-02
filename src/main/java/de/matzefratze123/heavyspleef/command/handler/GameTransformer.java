@@ -1,7 +1,7 @@
 package de.matzefratze123.heavyspleef.command.handler;
 
-import de.matzefratze123.api.command.transform.TransformException;
-import de.matzefratze123.api.command.transform.Transformer;
+import de.matzefratze123.api.hs.command.transform.TransformException;
+import de.matzefratze123.api.hs.command.transform.Transformer;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 

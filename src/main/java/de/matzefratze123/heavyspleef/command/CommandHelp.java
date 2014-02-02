@@ -30,10 +30,10 @@ import java.util.Map.Entry;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.api.command.Command;
-import de.matzefratze123.api.command.CommandAliases;
-import de.matzefratze123.api.command.CommandData;
-import de.matzefratze123.api.command.CommandListener;
+import de.matzefratze123.api.hs.command.Command;
+import de.matzefratze123.api.hs.command.CommandAliases;
+import de.matzefratze123.api.hs.command.CommandData;
+import de.matzefratze123.api.hs.command.CommandListener;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
@@ -43,7 +43,7 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandHelp implements CommandListener {
 	
 	@Command(value = "help")
-	@de.matzefratze123.api.command.CommandHelp(usage = "/spleef help", description = "Shows Spleef help")
+	@de.matzefratze123.api.hs.command.CommandHelp(usage = "/spleef help", description = "Shows Spleef help")
 	@CommandAliases({"?"})
 	public void execute(CommandSender sender) {
 		Map<CommandListener, CommandData[]> commands = HeavySpleef.getInstance().getCommandExecutorService().getCommands();

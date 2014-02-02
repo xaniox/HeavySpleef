@@ -26,8 +26,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import de.matzefratze123.api.gui.GuiInventory;
-import de.matzefratze123.api.gui.GuiInventorySlot;
+import de.matzefratze123.api.hs.gui.GuiInventory;
+import de.matzefratze123.api.hs.gui.GuiInventorySlot;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.CommandJoin;
 import de.matzefratze123.heavyspleef.core.Game;

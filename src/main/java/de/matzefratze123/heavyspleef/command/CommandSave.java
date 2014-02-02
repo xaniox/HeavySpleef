@@ -23,10 +23,10 @@ import static de.matzefratze123.heavyspleef.util.I18N._;
 
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.api.command.Command;
-import de.matzefratze123.api.command.CommandHelp;
-import de.matzefratze123.api.command.CommandListener;
-import de.matzefratze123.api.command.CommandPermissions;
+import de.matzefratze123.api.hs.command.Command;
+import de.matzefratze123.api.hs.command.CommandHelp;
+import de.matzefratze123.api.hs.command.CommandListener;
+import de.matzefratze123.api.hs.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
@@ -40,7 +40,7 @@ public class CommandSave implements CommandListener {
 	@CommandHelp(usage = "/spleef save", description = "Saves all games to the database")
 	public void execute(CommandSender sender) {
 		HeavySpleef.getInstance().getGameDatabase().save();
-		HeavySpleef.getInstance().getStatisticDatabase().saveAccounts();
+		HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
 		sender.sendMessage(_("gamesSaved"));
 	}
 

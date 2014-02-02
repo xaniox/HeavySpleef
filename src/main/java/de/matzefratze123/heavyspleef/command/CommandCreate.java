@@ -25,10 +25,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.api.command.Command;
-import de.matzefratze123.api.command.CommandHelp;
-import de.matzefratze123.api.command.CommandListener;
-import de.matzefratze123.api.command.CommandPermissions;
+import de.matzefratze123.api.hs.command.Command;
+import de.matzefratze123.api.hs.command.CommandHelp;
+import de.matzefratze123.api.hs.command.CommandListener;
+import de.matzefratze123.api.hs.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
