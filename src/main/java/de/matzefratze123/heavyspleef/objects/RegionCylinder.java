@@ -56,6 +56,10 @@ public class RegionCylinder implements Region {
 
 	@Override
 	public boolean contains(Location location) {
+		if (!location.getWorld().getName().equalsIgnoreCase(region.getWorld().getName())) {
+			return false;
+		}
+		
 		Vector vector = Util.toWorldEditVector(location);
 		
 		return region.contains(vector);
