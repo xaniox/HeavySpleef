@@ -120,10 +120,6 @@ public class StatisticModule implements Comparable<StatisticModule> {
 				    (pointsGamePlayed * getScore(StatisticValue.GAMES_PLAYED));
 		
 		scores.put(StatisticValue.SCORE, score);
-		
-		for (Entry<StatisticValue, Integer> e : scores.entrySet()) {
-			System.out.println(e.getKey().name() + ": " + e.getValue());
-		}
 	}
 	
 	/**
