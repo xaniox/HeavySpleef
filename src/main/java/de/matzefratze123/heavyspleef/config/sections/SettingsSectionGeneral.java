@@ -27,7 +27,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
-import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.selection.SelectionManager.WandType;
@@ -80,7 +79,7 @@ public class SettingsSectionGeneral implements SettingsSection {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
 		
 		broadcastRadius = section.getInt("broadcast-radius", 40);
-		prefix = ChatColor.translateAlternateColorCodes('&', section.getString(ConfigUtil.GENERAL_SECTION + ".spleef-prefix", "&8[&6&lSpleef&8]"));
+		prefix = ChatColor.translateAlternateColorCodes('&', section.getString("spleef-prefix", "&8[&6&lSpleef&8]"));
 		protectArenas = section.getBoolean("protectArena", true);
 
 		String type = section.getString("wandType", HeavySpleef.PLUGIN_NAME);
