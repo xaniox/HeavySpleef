@@ -48,6 +48,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -434,7 +435,7 @@ public class PlayerListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent e) {
 		for (Game game : GameManager.getGames()) {
 			if (!game.contains(e.getBlock().getLocation())) {
-				return;
+				continue;
 			}
 
 			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm())) {
@@ -445,6 +446,28 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
+			e.setCancelled(true);
+			e.getPlayer().sendMessage(I18N._("notAllowedToBuild"));
+		}
+	}
+	
+	@EventHandler
+	public void onBucketEmpty(PlayerBucketEmptyEvent e) {
+		Block block = e.getBlockClicked().getRelative(e.getBlockFace());
+		
+		for (Game game : GameManager.getGames()) {
+			if (!game.contains(block.getLocation())) {
+				continue;
+			}
+			
+			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm())) {
+				return;
+			}
+			
+			if (!HeavySpleef.getSystemConfig().getGeneralSection().isProtectArenas()) {
+				return;
+			}
+			
 			e.setCancelled(true);
 			e.getPlayer().sendMessage(I18N._("notAllowedToBuild"));
 		}
