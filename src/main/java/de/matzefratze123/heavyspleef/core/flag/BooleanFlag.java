@@ -36,7 +36,8 @@ public class BooleanFlag extends Flag<Boolean> {
 		if (input.equalsIgnoreCase("true")
 			|| input.equalsIgnoreCase("on")
 			|| input.equalsIgnoreCase("activate")
-			|| input.equalsIgnoreCase("yes"))
+			|| input.equalsIgnoreCase("yes")
+			|| input.equalsIgnoreCase(""))
 			return true;
 		else if (input.equalsIgnoreCase("false")
 			|| input.equalsIgnoreCase("off")
