@@ -5,6 +5,13 @@ import java.util.Map;
 
 public interface ITable {
 	
+	/**
+	 * Selects a dataset with the specific selection
+	 * 
+	 * @param selection
+	 * @return
+	 * @throws SQLException
+	 */
 	public SQLResult select(String selection) throws SQLException;
 	
 	public SQLResult select(String selection, Map<String, Object> where) throws SQLException;

@@ -105,8 +105,6 @@ public abstract class AbstractDatabase {
 		} catch (SQLException e) {
 			plugin.getLogger().severe("Cannot create table " + name + " on " + getHost() + ": " + e.getMessage());
 			e.printStackTrace();
-		} finally {
-			close();
 		}
 		
 		return null;

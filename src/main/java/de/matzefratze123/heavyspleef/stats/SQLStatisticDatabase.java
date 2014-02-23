@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import de.matzefratze123.api.hs.sql.AbstractDatabase;
@@ -52,6 +53,8 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 	public SQLStatisticDatabase(AbstractDatabase connectionDatabase) {
 		this.cooldown = new Cooldown();
 		this.database = connectionDatabase;
+		
+		checkTables();
 	}
 	
 	static {
@@ -64,6 +67,28 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			columns.put("games", new Field(Type.INT));
 			columns.put("score", new Field(Type.INT));
 		}
+	}
+	
+	private void checkTables() {
+		database.connect();
+		
+		if (!database.hasTable(TABLE_NAME)) {
+			database.createTable(TABLE_NAME, columns);
+		} else {
+			Table table = database.getTable(TABLE_NAME);
+			
+			try {
+				for (Entry<String, Field> entry : columns.entrySet()) {
+					if (!table.hasColumn(entry.getKey())) {
+						table.addColumn(entry.getKey(), entry.getValue());
+					}
+				}
+			} catch (SQLException e) {
+				Logger.severe("Warning: Failed to add missing columns to heavyspleef_statistics table: " + e);
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	@Override
