@@ -79,61 +79,6 @@ public class PlayerListener implements Listener {
 
 	private List<String> dead = new ArrayList<String>();
 
-	/*@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
-
-		Location to = e.getTo();
-
-		if (!player.isActive()) {
-			return;
-		}
-
-		Game game = player.getGame();
-
-		if (game.getGameState() != GameState.INGAME) {
-			return;
-		}
-
-		if (to.getBlock().getType() == Material.WATER
-				|| to.getBlock().getType() == Material.LAVA
-				|| to.getBlock().getType() == Material.STATIONARY_WATER
-				|| to.getBlock().getType() == Material.STATIONARY_LAVA) {
-			out(player, game);
-			return;
-		}
-
-		List<LoseZone> loseZones = game.getComponents().getLoseZones();
-
-		for (int i = 0; i < loseZones.size(); i++) {
-			LoseZone zone = loseZones.get(i);
-
-			if (zone.contains(to)) {
-				out(player, game);
-				return;
-			}
-		}
-
-	}
-
-	private void out(final SpleefPlayer player, Game game) {
-		if (isCheckOut.contains(player)) {
-			return;
-		}
-
-		game.leave(player, LoseCause.LOSE);
-		isCheckOut.add(player);
-
-		Bukkit.getScheduler().scheduleSyncDelayedTask(
-				HeavySpleef.getInstance(), new Runnable() {
-					@Override
-					public void run() {
-						isCheckOut.remove(player);
-					}
-				}, 20L);
-	}*/
-
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());

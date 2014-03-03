@@ -328,11 +328,12 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				components.getTeam(player).leave(player);
 			}
 
+			player.restoreState();
+			
 			if (winner != player) {
 				safeTeleport(player, getFlag(FlagType.LOSE));
 			}
 
-			player.restoreState();
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
 			player.getBukkitPlayer().setFallDistance(0);
@@ -391,8 +392,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				player.getStatistic().addWin();
 			}
 
-			safeTeleport(player, getFlag(FlagType.LOSE));
 			player.restoreState();
+			safeTeleport(player, getFlag(FlagType.LOSE));
 
 			playerTeam.leave(player);
 
@@ -494,7 +495,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		broadcast(_("playerJoinedGame", player.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_JOIN));
 
-		player.saveState();
 		player.setGame(this);
 		
 		inPlayers.add(player);
@@ -519,6 +519,8 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 			player.getBukkitPlayer().teleport(lobby);
 		}
+		
+		player.saveState();
 
 		if (HeavySpleef.getSystemConfig().getSoundsSection().isPlayPlingSound()) {
 			for (SpleefPlayer inPlayer : inPlayers)
@@ -610,8 +612,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				components.getTeam(player).leave(player);
 			}
 
-			player.restoreState();
-
 			SpleefPlayer killer = detectKiller(player);
 
 			if (cause == LoseCause.LOSE) {
@@ -638,6 +638,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				broadcast(_("loseCause_leave", player.getName(), name), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 			}
 
+			player.restoreState();
 			safeTeleport(player, getFlag(FlagType.LOSE));
 
 			if (state == GameState.INGAME || state == GameState.COUNTING) {
