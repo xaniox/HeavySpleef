@@ -290,6 +290,7 @@ public class SpleefPlayer {
 		bukkitPlayer.setLevel(state.getLevel());
 		bukkitPlayer.setExp(state.getExp());
 		bukkitPlayer.setAllowFlight(state.isFly());
+		bukkitPlayer.setGameMode(state.getGamemode());
 		
 		sendMessage(I18N._("stateRestored"));
 		bukkitPlayer.updateInventory();

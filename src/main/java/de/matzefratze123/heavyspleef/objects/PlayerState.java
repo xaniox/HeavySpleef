@@ -103,7 +103,7 @@ public class PlayerState {
 		this.health = health;
 	}
 
-	public GameMode getGm() {
+	public GameMode getGamemode() {
 		return gm;
 	}
 
