@@ -90,7 +90,6 @@ import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 import de.matzefratze123.heavyspleef.listener.PlayerListener;
 import de.matzefratze123.heavyspleef.listener.QueuesListener;
 import de.matzefratze123.heavyspleef.listener.ReadyListener;
-import de.matzefratze123.heavyspleef.listener.SignWallListener;
 import de.matzefratze123.heavyspleef.listener.TagListener;
 import de.matzefratze123.heavyspleef.listener.UpdateListener;
 import de.matzefratze123.heavyspleef.objects.InventoryJoinGUI;
@@ -321,7 +320,6 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		pm.registerEvents(new SelectionListener(this), this);
 		pm.registerEvents(new PlayerListener(), this);
 		pm.registerEvents(new UpdateListener(), this);
-		pm.registerEvents(new SignWallListener(), this);
 		pm.registerEvents(new QueuesListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
 		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
