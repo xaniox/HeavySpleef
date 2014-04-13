@@ -24,6 +24,9 @@ import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.material.Attachable;
+import org.bukkit.material.MaterialData;
 
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
@@ -239,6 +242,17 @@ public class Util {
 		z = vector.getBlockZ();
 		
 		return new Location(BukkitUtil.toWorld(world), x, y, z);
+	}
+	
+	public static Block getAttached(Block block) {
+		MaterialData data = block.getState().getData();
+		
+		if (!(data instanceof Attachable)) {
+			throw new IllegalArgumentException("block is not attachable");
+		}
+		
+		Attachable attachable = (Attachable) data;
+		return block.getRelative(attachable.getAttachedFace());
 	}
 	
 	/**

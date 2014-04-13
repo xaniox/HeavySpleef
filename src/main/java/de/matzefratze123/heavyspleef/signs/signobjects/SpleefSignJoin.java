@@ -33,7 +33,6 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.CommandJoin;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.core.SignWall;
 import de.matzefratze123.heavyspleef.core.Team;
 import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
@@ -41,6 +40,7 @@ import de.matzefratze123.heavyspleef.signs.SpleefSign;
 import de.matzefratze123.heavyspleef.signs.SpleefSignExecutor;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
+import de.matzefratze123.heavyspleef.util.Util;
 
 public class SpleefSignJoin implements SpleefSign {
 
@@ -90,7 +90,7 @@ public class SpleefSignJoin implements SpleefSign {
 					color = Color.byWoolColor(up.getData());
 				}
 				
-				Block attached = SignWall.getAttachedBlock(sign);
+				Block attached = Util.getAttached(sign.getBlock());
 				if (attached != null && attached.getType() == Material.WOOL) {
 					color = Color.byWoolColor(attached.getData());
 				}
