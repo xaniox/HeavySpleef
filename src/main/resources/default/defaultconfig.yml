@@ -121,6 +121,7 @@ flag-defaults:
   boxes: true
   blockbreakeffect: false
   anticamping: true
+  leatherarmor: false
 
 queues:
   

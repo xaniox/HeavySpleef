@@ -133,18 +133,20 @@ public class Team {
 	
 	public enum Color {
 		
-		RED('c', 0xE),
-		BLUE('9', 0xB),
-		YELLOW('e', 0x4),
-		GREEN('a', 0x5),
-		GRAY('7', 0x8);
+		RED('c', 0xE, 0xFF0000),
+		BLUE('9', 0xB, 0x0000FF),
+		YELLOW('e', 0x4, 0xFFFF00),
+		GREEN('a', 0x5, 0x00FF00),
+		GRAY('7', 0x8, 0x808080);
 		
 		private char chatColorChar;
 		private int  woolColor;
+		private int rgb;
 		
-		private Color(char chatColorChar, int woolColor) {
+		private Color(char chatColorChar, int woolColor, int rgb) {
 			this.chatColorChar = chatColorChar;
 			this.woolColor = woolColor;
+			this.rgb = rgb;
 		}
 		
 		public ChatColor toChatColor() {
@@ -157,6 +159,10 @@ public class Team {
 		
 		public int getWoolColor() {
 			return woolColor;
+		}
+		
+		public int asRGB() {
+			return rgb;
 		}
 		
 		public static Color byName(String name) {

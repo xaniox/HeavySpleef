@@ -50,6 +50,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGame;
@@ -265,6 +266,44 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 			items.add(bow);
 			items.add(arrow);
+		}
+		
+		if (getFlag(FlagType.LEATHER_ARMOR) && getFlag(FlagType.TEAM)) {
+			Team team = getComponents().getTeam(player);
+			
+			if (team != null) {
+				Color color = team.getColor();
+				
+				ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+				ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
+				ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
+				ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
+
+				LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
+				LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
+				LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
+				LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
+				
+				helmetMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
+				chestplateMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
+				leggingsMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
+				bootsMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
+				
+				helmetMeta.setDisplayName(color.toChatColor() + "Helmet");
+				chestplateMeta.setDisplayName(color.toChatColor() + "Chestplate");
+				leggingsMeta.setDisplayName(color.toChatColor() + "Leggings");
+				bootsMeta.setDisplayName(color.toChatColor() + "Boots");
+				
+				helmet.setItemMeta(helmetMeta);
+				chestplate.setItemMeta(chestplateMeta);
+				leggings.setItemMeta(leggingsMeta);
+				boots.setItemMeta(bootsMeta);
+				
+				player.getBukkitPlayer().getInventory().setHelmet(helmet);
+				player.getBukkitPlayer().getInventory().setChestplate(chestplate);
+				player.getBukkitPlayer().getInventory().setLeggings(leggings);
+				player.getBukkitPlayer().getInventory().setBoots(boots);
+			}
 		}
 
 		for (ItemStack item : items) {
@@ -639,7 +678,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			}
 
 			player.restoreState();
-			safeTeleport(player, getFlag(FlagType.LOSE));
+			safeTeleport(player, getFlag(FlagType.LEAVEPOINT) != null && cause == LoseCause.LEAVE ? getFlag(FlagType.LEAVEPOINT) : getFlag(FlagType.LOSE));
 
 			if (state == GameState.INGAME || state == GameState.COUNTING) {
 				outPlayers.add(player.getBukkitPlayer());

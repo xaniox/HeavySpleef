@@ -48,7 +48,8 @@ public enum FlagType {
 	 */
 	public static final String FRIENDLY_FLAG_LIST = "1vs1, shovels, shears, team, bowspleef, splegg, boxes, anticamping, blockbreakeffect, " + 
 	                                                "win, lose, lobby, queuelobby, spectate, spawnpoint, nextspawnpoint, itemreward, " + 
-	                                                "minplayers, maxplayers, autostart, countdown, entryfee, reward, timeout, rounds, regen, icon";
+	                                                "minplayers, maxplayers, autostart, countdown, entryfee, reward, timeout, rounds, regen, " +
+	                                                "icon, leavepoint, leatherarmor";
 	
 	/* Boolean flags */
 	@FlagData
@@ -69,6 +70,8 @@ public enum FlagType {
 	public static final BooleanFlag CAMP_DETECTION = new BooleanFlag("anticamping", true);
 	@FlagData
 	public static final BooleanFlag BLOCKBREAKEFFECT = new BooleanFlag("blockbreakeffect", false);
+	@FlagData(aliases = {"coloredarmor"})
+	public static final BooleanFlag LEATHER_ARMOR = new BooleanFlag("leatherarmor", false);
 	
 	/* Location flags */
 	@FlagData(aliases = {"winpoint"})
@@ -83,6 +86,8 @@ public enum FlagType {
 	public static final LocationFlag SPECTATE = new LocationFlag("spectate");
 	@FlagData(aliases = {"spawn"})
 	public static final LocationFlag SPAWNPOINT = new LocationFlag("spawnpoint");
+	@FlagData
+	public static final LocationFlag LEAVEPOINT = new LocationFlag("leavepoint");
 	@FlagData
 	public static final ListFlag<SerializeableLocation> NEXTSPAWNPOINT = new ListFlagLocation("nextspawnpoint", null);
 	@FlagData
@@ -108,6 +113,7 @@ public enum FlagType {
 	@FlagData(aliases = {"regeneration-intervall", "regeneration", "regen-intervall"})
 	public static final IntegerFlag REGEN_INTERVALL = new IntegerFlag("regen", -1);
 	
+	/* Other flags */
 	@FlagData
 	public static final ItemStackFlag ICON = new ItemStackFlag("icon", new ItemStack(Material.DIAMOND_SPADE));
 	
