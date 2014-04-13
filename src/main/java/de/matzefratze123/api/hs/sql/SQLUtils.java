@@ -1,3 +1,22 @@
+/*
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013-2014 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package de.matzefratze123.api.hs.sql;
 
 import java.util.Collection;
@@ -15,6 +34,7 @@ public class SQLUtils {
 	 * A statement tick (e.g. '\'')
 	 */
 	static final char TICK = '\'';
+	static final char HIGH_TICK = '`';
 	
 	static String parseWhereClause(Map<?, ?> where) {
 		if (where == null)
@@ -45,7 +65,7 @@ public class SQLUtils {
 		while (iter.hasNext()) {
 			Object column = iter.next();
 			
-			builder.append(column + " = ?");
+			builder.append(HIGH_TICK + column.toString() + HIGH_TICK + " = ?");
 			
 			if (iter.hasNext()) {
 				builder.append(" AND ");

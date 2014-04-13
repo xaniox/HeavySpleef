@@ -1,12 +1,32 @@
+/*
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013-2014 matzefratze123
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package de.matzefratze123.api.hs.sql;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.Set;
-
-import org.bukkit.plugin.Plugin;
+import java.util.logging.Logger;
 
 /**
  * This class represents an abstract database
@@ -15,17 +35,20 @@ import org.bukkit.plugin.Plugin;
  */
 public abstract class AbstractDatabase {
 	
+	protected static final char HIGH_TICK = '`';
+	protected static final int TABLE_NAME_COLUMN = 3;
+	
 	protected Connection connection;
 	protected DatabaseState state;
-	protected Plugin plugin;
+	protected Logger logger;
 	
 	/**
 	 * Creates a new database
 	 * 
-	 * @param plugin The plugin used for exception handling etc.
+	 * @param logger The plugin used for exception handling etc.
 	 */
-	public AbstractDatabase(Plugin plugin) {
-		this.plugin = plugin;
+	public AbstractDatabase(Logger logger) {
+		this.logger = logger;
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			
@@ -39,7 +62,7 @@ public abstract class AbstractDatabase {
 	/**
 	 * Creates and tries to establish a connection to the sql server
 	 */
-	public abstract void connect();
+	public abstract void connect() throws SQLException;
 	
 	/**
 	 * Returns the instance of the connection, created with {@link #connect()}
@@ -89,7 +112,7 @@ public abstract class AbstractDatabase {
 		for (String key : keys) {
 			Field field = columns.get(key);
 			
-			parts[c] = key + " " + field.toString();
+			parts[c] = HIGH_TICK + key + HIGH_TICK + " " + field.toString();
 			c++;
 		}
 		
@@ -103,8 +126,10 @@ public abstract class AbstractDatabase {
 			statement.executeUpdate(update);
 			return getTable(name);
 		} catch (SQLException e) {
-			plugin.getLogger().severe("Cannot create table " + name + " on " + getHost() + ": " + e.getMessage());
+			logger.severe("Cannot create table " + name + " on " + getHost() + ": " + e.getMessage());
 			e.printStackTrace();
+		} finally {
+			close();
 		}
 		
 		return null;
@@ -129,8 +154,10 @@ public abstract class AbstractDatabase {
 			return null;
 		}
 		
-		return new Table(plugin, this, name);
+		return new Table(logger, this, name);
 	}
+	
+	public abstract Table[] getTables() throws SQLException;
 	
 	/**
 	 * Deletes a table on the database
@@ -146,11 +173,56 @@ public abstract class AbstractDatabase {
 			Statement statement = getConnection().createStatement();
 			statement.executeUpdate("DROP TABLE IF EXISTS " + name);
 		} catch (SQLException e) {
-			plugin.getLogger().severe("Cannot delete table " + name + " on " + getHost() + ": " + e.getMessage());
+			logger.severe("Cannot delete table " + name + " on " + getHost() + ": " + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			close();
 		}
+	}
+	
+	/**
+	 * Executes a query on this database server
+	 * 
+	 * @param sql The sql sentence, mark user inputs as '?'
+	 * @param params An array of objects which should replace the '?' in the sql sentence
+	 * 
+	 * @return A sql-result containing the result of your query
+	 * 
+	 * @throws SQLException If an exception occured
+	 */
+	public SQLResult executeQuery(String sql, Object... params) throws SQLException {
+		connect();
+		
+		PreparedStatement statement = connection.prepareStatement(sql);
+		for (int i = 1; i <= params.length; i++) {
+			statement.setObject(i, params[i - 1]);
+		}
+		
+		ResultSet set = statement.executeQuery();
+		SQLResult result = new SQLResult(logger, statement, set);
+		
+		return result;
+	}
+	
+	/**
+	 * Executes a update on this database server
+	 * 
+	 * @param sql The sql sentence, mark user inputs as '?'
+	 * @param params An array of objects which should replace the '?' in the sql sentence
+	 * 
+	 * @return A return code
+	 * 
+	 * @throws SQLException If an exception occured
+	 */
+	public int executeUpdate(String sql, Object... params) throws SQLException {
+		connect();
+		
+		PreparedStatement statement = connection.prepareStatement(sql);
+		for (int i = 1; i <= params.length; i++) {
+			statement.setObject(i, params[i - 1]);
+		}
+		
+		return statement.executeUpdate();
 	}
 	
 	/**

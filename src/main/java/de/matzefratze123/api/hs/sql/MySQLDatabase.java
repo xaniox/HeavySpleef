@@ -1,7 +1,7 @@
-/**
+/*
  * HeavySpleef - Advanced spleef plugin for bukkit
  *
- * Copyright (C) 2013 matzefratze123
+ * Copyright (C) 2013-2014 matzefratze123
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,14 @@
  */
 package de.matzefratze123.api.hs.sql;
 
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.bukkit.plugin.Plugin;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Represents a MySQL database
@@ -42,8 +44,8 @@ public class MySQLDatabase extends AbstractDatabase {
 	/**
 	 * Constructs a new database with the specified authorization
 	 */
-	public MySQLDatabase(Plugin plugin, String host, int port, String database, String user, String password) {
-		super(plugin);
+	public MySQLDatabase(Logger logger, String host, int port, String database, String user, String password) {
+		super(logger);
 
 		this.host = host;
 		this.port = port;
@@ -62,10 +64,10 @@ public class MySQLDatabase extends AbstractDatabase {
 			connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
 			state = DatabaseState.SUCCESS;
 		} catch (SQLException e) {
-			plugin.getLogger().warning("Failed to connect to the mysql database! Disabling statistics: " + e.getMessage());
+			logger.warning("Failed to connect to the mysql database: " + e.getMessage());
 			state = DatabaseState.FAILED_TO_CONNECT;
 		} catch (ClassNotFoundException e) {
-			plugin.getLogger().warning("Failed to load drivers for mysql database. Disabling statistics: " + e.getMessage());
+			logger.warning("Failed to load drivers for mysql database: " + e.getMessage());
 			state = DatabaseState.NO_DRIVERS;
 		} finally {
 			close();
@@ -76,7 +78,7 @@ public class MySQLDatabase extends AbstractDatabase {
 	 * Connects to the database
 	 */
 	@Override
-	public void connect() {
+	public void connect() throws SQLException {
 		try {
 			if (connection != null && !connection.isClosed()) {
 				return;
@@ -84,9 +86,26 @@ public class MySQLDatabase extends AbstractDatabase {
 
 			connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
 		} catch (SQLException e) {
-			plugin.getLogger().severe("Failed to connect to database: " + e.getMessage());
-			e.printStackTrace();
+			logger.severe("Failed to connect to database: " + e.getMessage());
+			throw e;
 		}
+	}
+	
+	/**
+	 * Gets all tables of this database
+	 */
+	@Override
+	public Table[] getTables() throws SQLException {
+		List<Table> list = new ArrayList<Table>();
+		DatabaseMetaData meta = connection.getMetaData();
+		ResultSet rs = meta.getTables(null, null, "%", null);
+		
+		while (rs.next()) {
+			String name = rs.getString(TABLE_NAME_COLUMN);
+			list.add(new Table(logger, this, name));
+		}
+		
+		return list.toArray(new Table[list.size()]);
 	}
 
 	/**
@@ -112,7 +131,7 @@ public class MySQLDatabase extends AbstractDatabase {
 				}
 			}
 		} catch (SQLException e) {
-			plugin.getLogger().severe("Failed to check table " + name + ": " + e.getMessage());
+			logger.severe("Failed to check table " + name + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -153,6 +172,14 @@ public class MySQLDatabase extends AbstractDatabase {
 	 */
 	public String getPassword() {
 		return this.password;
+	}
+	
+	public void setConnectionData(String host, int port, String database, String user, String password) {
+		this.host = host;
+		this.port = port;
+		this.database = database;
+		this.user = user;
+		this.password = password;
 	}
 
 }

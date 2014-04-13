@@ -1,20 +1,20 @@
-/**
- * HeavySpleef - Advanced spleef plugin for bukkit
+/*
+ *   HeavySpleef - Advanced spleef plugin for bukkit
+ *   
+ *   Copyright (C) 2013-2014 matzefratze123
  *
- * Copyright (C) 2013 matzefratze123
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 package de.matzefratze123.api.hs.sql;
@@ -29,16 +29,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.Set;
-
-import org.bukkit.plugin.Plugin;
+import java.util.logging.Logger;
 
 public class Table implements ITable {
 
-	private Plugin				plugin;
+	private Logger				plugin;
 	private AbstractDatabase	database;
 	private String				name;
+	
+	private static final char HIGH_TICK = '`';
 
-	Table(Plugin plugin, AbstractDatabase database, String name) {
+	Table(Logger plugin, AbstractDatabase database, String name) {
 		this.plugin = plugin;
 		this.database = database;
 		this.name = name;
@@ -128,63 +129,65 @@ public class Table implements ITable {
 		int result = Statement.EXECUTE_FAILED;
 
 		PreparedStatement statement = null;
-
-		try {
-			Connection conn = database.getConnection();
-			
-			if (hasRow(where)) {
-				// Update part syntax beginn
-				String parts[] = new String[values.size()];
-				Set<String> keys = values.keySet();
-
-				int c = 0;
-				for (String key : keys) {
-					parts[c] = key + " = ?";
-					c++;
-				}
+		
+		synchronized (this) {
+			try {
+				Connection conn = database.getConnection();
 				
-				String update = SQLUtils.toFriendlyString(parts, ", ");
-				// Update Part syntax end
-				String whereClause = createParameterizedWhereClause(where.keySet());
-
-				statement = conn.prepareStatement("UPDATE " + name + " SET " + update + (whereClause == null ? "" : whereClause));
-				int index = 1;
-				for (Object o : values.values()) {
-					statement.setObject(index, o);
-					index++;
-				}
-				for (Object o : where.values()) {
-					statement.setObject(index, o);
-					index++;
-				}
-				
-				result = statement.executeUpdate();
-			} else {
-				String friendlyKeySet = SQLUtils.toFriendlyString(values.keySet(), ", ");
-				
-				StringBuilder builder = new StringBuilder();
-				for (int i = 0; i < values.size(); i++) {
-					builder.append("?");
-					if (i + 1 < values.size()) {
-						builder.append(", ");
+				if (where != null && hasRow(where)) {
+					// Update part syntax beginn
+					String parts[] = new String[values.size()];
+					Set<String> keys = values.keySet();
+	
+					int c = 0;
+					for (String key : keys) {
+						parts[c] = HIGH_TICK + key + HIGH_TICK + " = ?";
+						c++;
 					}
+					
+					String update = SQLUtils.toFriendlyString(parts, ", ");
+					// Update Part syntax end
+					String whereClause = createParameterizedWhereClause(where.keySet());
+	
+					statement = conn.prepareStatement("UPDATE " + name + " SET " + update + (whereClause == null ? "" : whereClause));
+					int index = 1;
+					for (Object o : values.values()) {
+						statement.setObject(index, o);
+						index++;
+					}
+					for (Object o : where.values()) {
+						statement.setObject(index, o);
+						index++;
+					}
+					
+					result = statement.executeUpdate();
+				} else {
+					String friendlyKeySet = HIGH_TICK + SQLUtils.toFriendlyString(values.keySet(), HIGH_TICK + ", " + HIGH_TICK) + HIGH_TICK;
+					
+					StringBuilder builder = new StringBuilder();
+					for (int i = 0; i < values.size(); i++) {
+						builder.append("?");
+						if (i + 1 < values.size()) {
+							builder.append(", ");
+						}
+					}
+	
+					statement = conn.prepareStatement("INSERT INTO " + name + "(" + friendlyKeySet + ") VALUES (" + builder.toString() + ")");
+					
+					int index = 1;
+					for (Object o : values.values()) {
+						statement.setObject(index, o);
+						index++;
+					}
+					
+					result = statement.executeUpdate();
 				}
-
-				statement = conn.prepareStatement("INSERT INTO " + name + "(" + friendlyKeySet + ") VALUES (" + builder.toString() + ")");
-				
-				int index = 1;
-				for (Object o : values.values()) {
-					statement.setObject(index, o);
-					index++;
-				}
-				
-				result = statement.executeUpdate();
-			}
-		} finally {
-			if (statement != null) {
-				try {
-					statement.close();
-				} catch (SQLException e) {
+			} finally {
+				if (statement != null) {
+					try {
+						statement.close();
+					} catch (SQLException e) {
+					}
 				}
 			}
 		}
@@ -230,6 +233,34 @@ public class Table implements ITable {
 				}
 			} catch (SQLException e) {}
 		}
+	}
+	
+	public int deleteRow(Map<String, Object> where) throws SQLException {
+		String paramterizedWhereClause = createParameterizedWhereClause(where.keySet());
+		
+		PreparedStatement statement = null;
+		int returnCode = 0;
+		
+		try {
+			Connection conn = database.getConnection();
+			statement = conn.prepareStatement("DELETE FROM " + name + paramterizedWhereClause);
+			
+			int index = 1;
+			for (Object o : where.values()) {
+				statement.setObject(index, o);
+				index++;
+			}
+			
+			returnCode = statement.executeUpdate();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {}
+		}
+		
+		return returnCode;
 	}
 
 	/**
@@ -277,7 +308,30 @@ public class Table implements ITable {
 			Connection conn = database.getConnection();
 
 			statement = conn.createStatement();
-			result = statement.executeUpdate("ALTER TABLE " + this.name + " ADD " + name + " " + field);
+			result = statement.executeUpdate("ALTER TABLE " + this.name + " ADD " + HIGH_TICK + name + HIGH_TICK + " " + field);
+
+			statement.close();
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {}
+			}
+		}
+
+		return result;
+	}
+	
+	public int rename(String newName) throws SQLException {
+		int result = Statement.EXECUTE_FAILED;
+
+		Statement statement = null;
+
+		try {
+			Connection conn = database.getConnection();
+
+			statement = conn.createStatement();
+			result = statement.executeUpdate("RENAME TABLE " + name + " TO " + newName);
 
 			statement.close();
 		} finally {

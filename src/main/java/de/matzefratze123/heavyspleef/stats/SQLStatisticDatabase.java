@@ -70,25 +70,29 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 	}
 	
 	private void checkTables() {
-		database.connect();
-		
-		if (!database.hasTable(TABLE_NAME)) {
-			database.createTable(TABLE_NAME, columns);
-		} else {
-			Table table = database.getTable(TABLE_NAME);
+		try {
+			database.connect();
 			
-			try {
-				for (Entry<String, Field> entry : columns.entrySet()) {
-					if (!table.hasColumn(entry.getKey())) {
-						table.addColumn(entry.getKey(), entry.getValue());
+			if (!database.hasTable(TABLE_NAME)) {
+				database.createTable(TABLE_NAME, columns);
+			} else {
+				Table table = database.getTable(TABLE_NAME);
+				
+				try {
+					for (Entry<String, Field> entry : columns.entrySet()) {
+						if (!table.hasColumn(entry.getKey())) {
+							table.addColumn(entry.getKey(), entry.getValue());
+						}
 					}
+				} catch (SQLException e) {
+					Logger.severe("Warning: Failed to add missing columns to heavyspleef_statistics table: " + e);
+					e.printStackTrace();
 				}
-			} catch (SQLException e) {
-				Logger.severe("Warning: Failed to add missing columns to heavyspleef_statistics table: " + e);
-				e.printStackTrace();
 			}
+		} catch (SQLException e) {
+			Logger.severe("Failed to connect to the SQL database: " + e);
+			e.printStackTrace();
 		}
-		
 	}
 	
 	@Override

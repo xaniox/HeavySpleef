@@ -352,9 +352,9 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			
 			AbstractDatabase database;
 			if (statsDB.equalsIgnoreCase("mysql")) {
-				database = new MySQLDatabase(this, host, port, databaseName, user, password);
+				database = new MySQLDatabase(getLogger(), host, port, databaseName, user, password);
 			} else {
-				database = new SQLiteDatabase(this, SQLStatisticDatabase.SQLITE_FILE);	
+				database = new SQLiteDatabase(getLogger(), SQLStatisticDatabase.SQLITE_FILE);	
 			}
 			
 			statisticDatabase = new SQLStatisticDatabase(database);
