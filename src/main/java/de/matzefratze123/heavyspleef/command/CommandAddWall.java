@@ -21,6 +21,9 @@ package de.matzefratze123.heavyspleef.command;
 
 import static de.matzefratze123.heavyspleef.util.I18N._;
 
+import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.api.hs.command.Command;
@@ -47,29 +50,19 @@ public class CommandAddWall implements CommandListener {
 			return;
 		}
 		
-		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
-		if (!s.hasSelection()) {
+		Selection selection = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
+		if (!selection.hasSelection()) {
 			player.sendMessage(_("needSelection"));
 			return;
 		}
-		if (s.isTroughWorlds()) {
+		
+		if (selection.isTroughWorlds()) {
 			player.sendMessage(_("selectionCantTroughWorlds"));
 			return;
 		}
-		if (!SignWall.oneCoordSame(s.getFirst(), s.getSecond())) {
-			player.sendMessage(_("didntSelectWall"));
-			return;
-		}
-		if (SignWall.getDifference(s.getFirst(), s.getSecond()) < 2) {
-			player.sendMessage(_("lengthMustBeOver1"));
-			return;
-		}
-		if (s.getFirst().getBlockY() != s.getSecond().getBlockY()) {
-			player.sendMessage(_("yMustBeSame"));
-			return;
-		}
-		if (!SignWall.isAllSign(s.getFirst(), s.getSecond())) {
-			player.sendMessage(_("notASign"));
+		
+		if (!validateSelection(selection)) {
+			player.sendMessage(ChatColor.RED + "Invalid selection. Please select one row of signs.");
 			return;
 		}
 		
@@ -78,9 +71,40 @@ public class CommandAddWall implements CommandListener {
 			id++;
 		}
 		
-		SignWall wall = new SignWall(s.getFirst(), s.getSecond(), game, id);
+		SignWall wall = new SignWall(id, selection.getFirst(), selection.getSecond());
 		game.getComponents().addSignWall(wall);
+		game.getComponents().updateWalls();
 		player.sendMessage(_("signWallAdded"));
+	}
+	
+	private boolean validateSelection(Selection selection) {
+		if (selection.getFirst().getBlockY() != selection.getSecond().getBlockY()) {
+			return false;
+		}
+		
+		if (selection.getFirst().getBlockX() != selection.getSecond().getBlockX() &&
+			selection.getFirst().getBlockZ() != selection.getSecond().getBlockZ()) {
+			return false;
+		}
+		
+		int minX = Math.min(selection.getFirst().getBlockX(), selection.getSecond().getBlockX());
+		int maxX = Math.max(selection.getFirst().getBlockX(), selection.getSecond().getBlockX());
+		int minZ = Math.min(selection.getFirst().getBlockZ(), selection.getSecond().getBlockZ());
+		int maxZ = Math.max(selection.getFirst().getBlockZ(), selection.getSecond().getBlockZ());
+		
+		boolean validMaterial = true;
+		
+		for (int x = minX; x <= maxX; x++) {
+			for (int z = minZ; z <= maxZ; z++) {
+				Block block = selection.getFirst().getWorld().getBlockAt(x, selection.getFirst().getBlockY(), z);
+				
+				if (!(block.getState() instanceof Sign)) {
+					validMaterial = false;
+				}
+			}
+		}
+		
+		return validMaterial;
 	}
 	
 }

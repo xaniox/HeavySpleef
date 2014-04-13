@@ -1049,7 +1049,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			ConfigurationSection wallSection = currentSection.getConfigurationSection(key);
 
 			SignWall wall = SignWall.deserialize(wallSection);
-			wall.setGame(game);
 
 			game.getComponents().addSignWall(wall);
 		}

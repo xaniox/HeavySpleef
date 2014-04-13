@@ -233,7 +233,7 @@ public class GameComponents implements IGameComponents {
 	@Override
 	public void updateWalls() {
 		for (SignWall wall : signwalls) {
-			wall.update();
+			wall.drawWall(game);
 		}
 	}
 	
