@@ -19,7 +19,7 @@ public class AccountException extends Exception {
 	
 	@Override
 	public String getMessage() {
-		return detailMessage == null ? super.getMessage() : detailMessage;
+		return parent != null ? parent.getMessage() : detailMessage == null ? super.getMessage() : detailMessage;
 	}
 	
 	@Override
@@ -29,6 +29,11 @@ public class AccountException extends Exception {
 		} else {
 			super.printStackTrace();
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return parent != null ? parent.toString() : toString();
 	}
 	
 }

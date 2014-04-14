@@ -183,7 +183,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 				table.insertOrUpdate(values, where);
 			}
 		} catch (SQLException e) {
-			throw new AccountException("SQLException: " + e.getMessage());
+			throw new AccountException(e);
 		} finally {
 			database.close();
 			cooldown.cooldown();
@@ -233,7 +233,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			
 			return module;
 		} catch (SQLException e) {
-			throw new AccountException("SQLException: " + e.getMessage());
+			throw new AccountException(e);
 		} finally {
 			if (result != null) {
 				result.close();
@@ -278,7 +278,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			
 			return list;
 		} catch (SQLException e) {
-			throw new AccountException("SQLException: " + e.getMessage());
+			throw new AccountException(e);
 		} finally {
 			if (result != null) {
 				result.close();
