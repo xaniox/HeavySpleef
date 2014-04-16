@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -51,6 +52,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.scoreboard.Scoreboard;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGame;
@@ -61,6 +63,7 @@ import de.matzefratze123.heavyspleef.api.event.SpleefLoseEvent;
 import de.matzefratze123.heavyspleef.api.event.SpleefStartEvent;
 import de.matzefratze123.heavyspleef.config.ConfigUtil;
 import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.MessageType;
+import de.matzefratze123.heavyspleef.core.SpleefPlayerGameListener.EventType;
 import de.matzefratze123.heavyspleef.core.Team.Color;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagType;
@@ -86,6 +89,7 @@ import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.RegionCylinder;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
+import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.SpleefLogger.LogType;
 import de.matzefratze123.heavyspleef.util.Util;
@@ -93,30 +97,33 @@ import de.matzefratze123.heavyspleef.util.Util;
 public abstract class Game implements IGame, DatabaseSerializeable {
 
 	// Persistent data
-	private String                  name;
-	private World                   world;
-	private final GameComponents    components;
-	private Map<Flag<?>, Object>    flags       = new HashMap<Flag<?>, Object>();
-	private final GameQueue         queue;
-	private GameState               state;
+	private String							name;
+	private World							world;
+	private final GameComponents			components;
+	private Map<Flag<?>, Object>			flags		= new HashMap<Flag<?>, Object>();
+	private final GameQueue					queue;
+	private GameState						state;
+	private List<SpleefPlayerGameListener>	gameListeners;
 
 	// Per game
-	private List<Task>              tasks      = new ArrayList<Task>();
-	private List<SpleefPlayer>      inPlayers   = new ArrayList<SpleefPlayer>();
-	private List<OfflinePlayer>     outPlayers  = new ArrayList<OfflinePlayer>();
-	private List<SpleefPlayer>      spectating  = new ArrayList<SpleefPlayer>();
-	private int                     countLeft;
-	private int                     roundsPlayed;
-	private int                     jackpot;
+	private List<Task>						tasks		= new ArrayList<Task>();
+	private List<SpleefPlayer>				inPlayers	= new ArrayList<SpleefPlayer>();
+	private List<OfflinePlayer>				outPlayers	= new ArrayList<OfflinePlayer>();
+	private List<SpleefPlayer>				spectating	= new ArrayList<SpleefPlayer>();
+	private int								countLeft;
+	private int								roundsPlayed;
+	private int								jackpot;
 
 	// Temporary
-	private TaskPlayerTeleport      teleportTask;
+	private TaskPlayerTeleport				teleportTask;
+	private SpleefScoreboard				scoreboard;
 
 	public Game(String name) {
 		this.name = name;
 		this.components = new GameComponents(this);
 		this.queue = new GameQueue(this);
 		this.state = GameState.JOINABLE;
+		this.gameListeners = new ArrayList<SpleefPlayerGameListener>();
 	}
 
 	@Override
@@ -156,7 +163,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		this.name = newName;
 		HeavySpleef.getInstance().getGameDatabase().save();
-		
+
 		getComponents().updateWalls();
 	}
 
@@ -172,11 +179,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		state = GameState.INGAME;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		removeBoxes();
-		
+
 		TaskLoseChecker loseCheckerTask = new TaskLoseChecker(this);
 		loseCheckerTask.start();
 		tasks.add(loseCheckerTask);
-		
+
 		if (getFlag(FlagType.TIMEOUT) > 0) {
 			CountdownTimeout timeoutTask = new CountdownTimeout(this, getFlag(FlagType.TIMEOUT));
 			timeoutTask.start();
@@ -267,13 +274,13 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			items.add(bow);
 			items.add(arrow);
 		}
-		
+
 		if (getFlag(FlagType.LEATHER_ARMOR) && getFlag(FlagType.TEAM)) {
 			Team team = getComponents().getTeam(player);
-			
+
 			if (team != null) {
 				Color color = team.getColor();
-				
+
 				ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
 				ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
 				ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
@@ -283,22 +290,22 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
 				LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
 				LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-				
+
 				helmetMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
 				chestplateMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
 				leggingsMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
 				bootsMeta.setColor(org.bukkit.Color.fromRGB(color.asRGB()));
-				
+
 				helmetMeta.setDisplayName(color.toChatColor() + "Helmet");
 				chestplateMeta.setDisplayName(color.toChatColor() + "Chestplate");
 				leggingsMeta.setDisplayName(color.toChatColor() + "Leggings");
 				bootsMeta.setDisplayName(color.toChatColor() + "Boots");
-				
+
 				helmet.setItemMeta(helmetMeta);
 				chestplate.setItemMeta(chestplateMeta);
 				leggings.setItemMeta(leggingsMeta);
 				boots.setItemMeta(bootsMeta);
-				
+
 				player.getBukkitPlayer().getInventory().setHelmet(helmet);
 				player.getBukkitPlayer().getInventory().setChestplate(chestplate);
 				player.getBukkitPlayer().getInventory().setLeggings(leggings);
@@ -315,11 +322,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 	@Override
 	public void countdown() {
-		//Don't count when we're already counting
+		// Don't count when we're already counting
 		if (state == GameState.COUNTING) {
 			return;
 		}
-		
+
 		SpleefStartEvent event = new SpleefStartEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
@@ -329,6 +336,17 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		state = GameState.COUNTING;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		components.regenerateFloors();
+
+		if (getFlag(FlagType.SCOREBOARD)) {
+			if (getFlag(FlagType.TEAM)) {
+				scoreboard = new SpleefScoreboardTeam(this);
+			} else {
+				scoreboard = new SpleefScoreboardFFA(this);
+			}
+
+			scoreboard.updateScoreboard();
+			scoreboard.show();
+		}
 
 		CountdownStart countdownTask = new CountdownStart(this, getFlag(FlagType.COUNTDOWN));
 		countdownTask.start();
@@ -362,13 +380,14 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		while (iterator.hasNext()) {
 			SpleefPlayer player = iterator.next();
 			iterator.remove();
-			
+
 			if (components.getTeam(player) != null) {
 				components.getTeam(player).leave(player);
 			}
 
+			callEvent(EventType.PLAYER_LEAVE, player);
 			player.restoreState();
-			
+
 			if (winner != player) {
 				safeTeleport(player, getFlag(FlagType.LOSE));
 			}
@@ -379,6 +398,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		}
 
 		if (winner != null) {
+			callEvent(EventType.PLAYER_WIN, winner);
 			broadcast(_("hasWon", winner.getName(), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 			winner.sendMessage(_("win"));
 			winner.getStatistic().addWin();
@@ -394,9 +414,13 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			broadcast(_("endedDraw", getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 		}
 
+		if (scoreboard != null) {
+			scoreboard.removeScoreboard();
+		}
+		
 		state = GameState.JOINABLE;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
-		
+
 		outPlayers.clear();
 		removeBoxes();
 
@@ -431,6 +455,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				player.getStatistic().addWin();
 			}
 
+			callEvent(EventType.PLAYER_LEAVE, player);
 			player.restoreState();
 			safeTeleport(player, getFlag(FlagType.LOSE));
 
@@ -443,10 +468,14 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		broadcast(_("hasWon", "Team " + winnerTeam.getColor().toMessageColorString(), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 
+		if (scoreboard != null) {
+			scoreboard.removeScoreboard();
+		}
+		
 		HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
 		state = GameState.JOINABLE;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
-		
+
 		outPlayers.clear();
 		removeBoxes();
 
@@ -467,7 +496,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		state = GameState.JOINABLE;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
-		
+
 		components.updateWalls();
 	}
 
@@ -483,7 +512,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 		state = GameState.DISABLED;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
-		
+
 		components.updateWalls();
 	}
 
@@ -533,17 +562,16 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			return;
 
 		broadcast(_("playerJoinedGame", player.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_JOIN));
-
 		player.setGame(this);
-		
+
 		inPlayers.add(player);
-		
+
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		SpleefLogger.log(LogType.JOIN, this, player);
 
 		if (state == GameState.JOINABLE) {
 			state = GameState.LOBBY;
-			
+
 			HeavySpleef.getInstance().getJoinGUI().refresh();
 		}
 
@@ -558,8 +586,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 
 			player.getBukkitPlayer().teleport(lobby);
 		}
-		
+
 		player.saveState();
+		callEvent(EventType.PLAYER_JOIN, player);
 
 		if (HeavySpleef.getSystemConfig().getSoundsSection().isPlayPlingSound()) {
 			for (SpleefPlayer inPlayer : inPlayers)
@@ -645,8 +674,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			}
 		} else {
 			inPlayers.remove(player);
+			callEvent(EventType.PLAYER_LEAVE, player);
 			HeavySpleef.getInstance().getJoinGUI().refresh();
-			
+
 			if (components.getTeam(player) != null) {
 				components.getTeam(player).leave(player);
 			}
@@ -656,15 +686,16 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			if (cause == LoseCause.LOSE) {
 				player.sendMessage(_("outOfGame"));
 				player.getStatistic().addLose();
-				
+
 				SpleefLoseEvent event = new SpleefLoseEvent(this, player.getBukkitPlayer(), killer, cause);
 				Bukkit.getPluginManager().callEvent(event);
-				
+
 				SpleefLogger.log(LogType.LOSE, this, player);
 
 				if (killer != null) {
 					killer.addKnockout();
 					killer.getStatistic().addKnockout();
+					callEvent(EventType.PLAYER_KNOCKOUT, killer);
 
 					broadcast(_("loseCause_lose", player.getName(), killer.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 				} else {
@@ -825,8 +856,54 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	@Override
 	public void setGameState(GameState state) {
 		this.state = state;
-		
+
 		HeavySpleef.getInstance().getJoinGUI().refresh();
+	}
+
+	public void registerGameListener(SpleefPlayerGameListener listener) {
+		if (gameListeners.contains(listener)) {
+			return;
+		}
+
+		gameListeners.add(listener);
+	}
+
+	public void unregisterGameListener(SpleefPlayerGameListener listener) {
+		if (!gameListeners.contains(listener)) {
+			return;
+		}
+
+		gameListeners.remove(listener);
+	}
+
+	public void callEvent(EventType type, SpleefPlayer player) {
+		Validate.notNull(type, "type cannot be null");
+
+		switch (type) {
+		case PLAYER_JOIN:
+			for (SpleefPlayerGameListener listener : gameListeners) {
+				listener.playerJoin(player);
+			}
+			break;
+		case PLAYER_KNOCKOUT:
+			for (SpleefPlayerGameListener listener : gameListeners) {
+				listener.playerKnockout(player);
+			}
+			break;
+		case PLAYER_LEAVE:
+			for (SpleefPlayerGameListener listener : gameListeners) {
+				listener.playerLeave(player);
+			}
+			break;
+		case PLAYER_WIN:
+			for (SpleefPlayerGameListener listener : gameListeners) {
+				listener.playerWin(player);
+			}
+			break;
+		default:
+			Logger.warning("Unknown event " + type.name() + ". Ignoring game event...");
+			break;
+		}
 	}
 
 	public void cancelTasks(Class<? extends Task> taskClass) {
@@ -836,9 +913,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			}
 		}
 	}
-	
+
 	public void cancelTasks() {
-		//Cancel all tasks
+		// Cancel all tasks
 		for (Task task : tasks) {
 			task.cancel();
 		}
@@ -938,9 +1015,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		
+
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		
+
 		return result;
 	}
 
@@ -952,7 +1029,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		
+
 		Game other = (Game) obj;
 		if (name == null) {
 			if (other.name != null)
@@ -1122,7 +1199,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			if (flag == null) {
 				continue;
 			}
-			
+
 			Object value = flag.deserialize(flagSection.getString("value"));
 
 			flags.put(flag, value);
