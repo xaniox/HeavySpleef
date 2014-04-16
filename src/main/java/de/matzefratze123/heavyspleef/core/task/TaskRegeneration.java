@@ -29,15 +29,15 @@ import de.matzefratze123.heavyspleef.core.flag.FlagType;
 import de.matzefratze123.heavyspleef.util.I18N;
 
 public class TaskRegeneration implements Runnable, Task {
-	
-	private Game game;
-	
-	private int pid = -1;
-	
+
+	private Game	game;
+
+	private int		pid	= -1;
+
 	public TaskRegeneration(Game game) {
 		this.game = game;
 	}
-	
+
 	@Override
 	public void run() {
 		game.getComponents().regenerateFloors();
@@ -49,7 +49,7 @@ public class TaskRegeneration implements Runnable, Task {
 		if (pid != -1) {
 			return -1;
 		}
-		
+
 		long interval = game.getFlag(FlagType.REGEN_INTERVALL) * 20L;
 		pid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 0L, interval);
 		return pid;
@@ -60,7 +60,7 @@ public class TaskRegeneration implements Runnable, Task {
 		if (pid == -1) {
 			return;
 		}
-		
+
 		Bukkit.getScheduler().cancelTask(pid);
 		pid = -1;
 	}
@@ -69,5 +69,5 @@ public class TaskRegeneration implements Runnable, Task {
 	public boolean isAlive() {
 		return pid != -1;
 	}
-	
+
 }

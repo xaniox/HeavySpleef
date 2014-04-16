@@ -43,28 +43,28 @@ import de.matzefratze123.heavyspleef.util.Logger;
  */
 public class YamlDatabase {
 
-	private HeavySpleef plugin;
-	
-	private File databaseFile;
-	
-	public FileConfiguration db;
-	public FileConfiguration globalDb;
-	
+	private HeavySpleef			plugin;
+
+	private File				databaseFile;
+
+	public FileConfiguration	db;
+	public FileConfiguration	globalDb;
+
 	/**
 	 * Constructs a new YamlDatabase
 	 */
 	public YamlDatabase() {
 		this.plugin = HeavySpleef.getInstance();
-		
+
 		File folder = new File(plugin.getDataFolder(), File.separator + "games");
 		folder.mkdirs();
-		
+
 		this.databaseFile = new File(folder, "games.yml");
-		
+
 		if (!databaseFile.exists()) {
 			createDefaultDatabaseFile(databaseFile);
 		}
-		
+
 		this.db = YamlConfiguration.loadConfiguration(databaseFile);
 	}
 
@@ -73,13 +73,13 @@ public class YamlDatabase {
 			file.createNewFile();
 			InputStream inStream = HeavySpleef.class.getResourceAsStream("/default/defaultdatabase.yml");
 			FileOutputStream outStream = new FileOutputStream(databaseFile);
-			
+
 			byte[] buffer = new byte[1024];
 			int read;
-			
-			while((read = inStream.read(buffer)) > 0)
+
+			while ((read = inStream.read(buffer)) > 0)
 				outStream.write(buffer, 0, read);
-			
+
 			inStream.close();
 			outStream.close();
 		} catch (IOException e) {
@@ -92,28 +92,28 @@ public class YamlDatabase {
 	 * Loads all games from the database into the system
 	 */
 	public void load() {
-		//Make sure to clear all other games to provide compatibility with PluginLoaders
+		// Make sure to clear all other games to provide compatibility with
+		// PluginLoaders
 		GameManager.getGames().clear();
-		
+
 		int count = 0;
-		
+
 		for (String key : db.getKeys(false)) {
 			try {
 				ConfigurationSection section = db.getConfigurationSection(key);
-				
+
 				Game game = Game.deserialize(section);
 				GameManager.addGame(game);
-				
+
 				count++;
 			} catch (Exception e) {
 				Logger.severe("Failed to load arena " + key + ". Ignoring arena. " + e.getMessage());
 				Logger.severe("Error is printed below: ");
 				e.printStackTrace();
 			}
-			
+
 		}
-		
-		
+
 		Logger.info("Loaded " + count + " games!");
 		saveConfig();
 	}
@@ -126,23 +126,24 @@ public class YamlDatabase {
 			if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING || game.getGameState() == GameState.LOBBY) {
 				game.stop(StopCause.STOP);
 			}
-			
+
 			ConfigurationSection serialized = game.serialize();
 			db.createSection(game.getName(), serialized.getValues(true));
 		}
-		
+
 		saveConfig();
 	}
 
 	/**
 	 * Gets a configuration section from the database file
 	 * 
-	 * @param name The name of the configuration-section
+	 * @param name
+	 *            The name of the configuration-section
 	 */
 	public ConfigurationSection getConfigurationSection(String name) {
 		return db.getConfigurationSection(name);
 	}
-	
+
 	/**
 	 * Pushes all datas into the physical file
 	 */
@@ -154,5 +155,5 @@ public class YamlDatabase {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

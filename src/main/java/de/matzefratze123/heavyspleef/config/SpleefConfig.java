@@ -45,32 +45,32 @@ import de.matzefratze123.heavyspleef.config.sections.SettingsSectionStatistic;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class SpleefConfig {
-	
-	private static final File   CONFIG_FILE         = new File("plugins/" + HeavySpleef.PLUGIN_NAME + "/config.yml");
-	private static final String RESOURCE_PATH       = "/default/defaultconfig.yml";
-	private static final int    CONFIG_VERSION      = 2;
-	private static final String CONFIG_VERSION_PATH = "config-version";
-	
-	private static final int    BUFFER_SIZE         = 1024;
-	
-	private FileConfiguration   configuration;
-	
-	//Declare sections
-	private SettingsSectionRoot rootSection;
-	private SettingsSectionGeneral generalSection;
-	private SettingsSectionLeaderBoard leaderboardSection;
-	private SettingsSectionMessages messagesSection;
-	private SettingsSectionFlagDefaults flagDefaultsSection;
-	private SettingsSectionQueues queuesSection;
-	private SettingsSectionScoreboard scoreboardSection;
-	private SettingsSectionLanguage languageSection;
-	private SettingsSectionAntiCamping anticampingSection;
-	private SettingsSectionSounds soundsSection;
-	private SettingsSectionStatistic statisticSection;
-	
+
+	private static final File			CONFIG_FILE			= new File("plugins/" + HeavySpleef.PLUGIN_NAME + "/config.yml");
+	private static final String			RESOURCE_PATH		= "/default/defaultconfig.yml";
+	private static final int			CONFIG_VERSION		= 2;
+	private static final String			CONFIG_VERSION_PATH	= "config-version";
+
+	private static final int			BUFFER_SIZE			= 1024;
+
+	private FileConfiguration			configuration;
+
+	// Declare sections
+	private SettingsSectionRoot			rootSection;
+	private SettingsSectionGeneral		generalSection;
+	private SettingsSectionLeaderBoard	leaderboardSection;
+	private SettingsSectionMessages		messagesSection;
+	private SettingsSectionFlagDefaults	flagDefaultsSection;
+	private SettingsSectionQueues		queuesSection;
+	private SettingsSectionScoreboard	scoreboardSection;
+	private SettingsSectionLanguage		languageSection;
+	private SettingsSectionAntiCamping	anticampingSection;
+	private SettingsSectionSounds		soundsSection;
+	private SettingsSectionStatistic	statisticSection;
+
 	public SpleefConfig() {
 		loadConfig();
-		
+
 		rootSection = new SettingsSectionRoot(this);
 		generalSection = new SettingsSectionGeneral(this);
 		leaderboardSection = new SettingsSectionLeaderBoard(this);
@@ -83,30 +83,30 @@ public class SpleefConfig {
 		soundsSection = new SettingsSectionSounds(this);
 		statisticSection = new SettingsSectionStatistic(this);
 	}
-	
+
 	private void loadConfig() {
 		boolean copyFailed = false;
-		
+
 		if (!checkCopy()) {
-			//Copy file first
+			// Copy file first
 			InputStream inStream = null;
 			OutputStream outStream = null;
-			
+
 			try {
 				if (!CONFIG_FILE.exists()) {
 					CONFIG_FILE.createNewFile();
 				}
-				
+
 				inStream = SpleefConfig.class.getResourceAsStream(RESOURCE_PATH);
 				outStream = new FileOutputStream(CONFIG_FILE);
-				
+
 				byte[] buffer = new byte[BUFFER_SIZE];
 				int read;
-				
+
 				while ((read = inStream.read(buffer)) > 0) {
 					outStream.write(buffer, 0, read);
 				}
-				
+
 				outStream.flush();
 			} catch (IOException copyException) {
 				Logger.severe("Failed to copy default config: " + copyException);
@@ -120,48 +120,49 @@ public class SpleefConfig {
 					if (outStream != null) {
 						outStream.close();
 					}
-				} catch (Exception e) {}
+				} catch (Exception e) {
+				}
 			}
 		}
-		
+
 		InputStream inStream;
-		
-		//Ok, now try to load the config
+
+		// Ok, now try to load the config
 		if (copyFailed || !CONFIG_FILE.exists()) {
-			//Somehow we failed to load config by file
+			// Somehow we failed to load config by file
 			inStream = SpleefConfig.class.getResourceAsStream(RESOURCE_PATH);
 			Logger.severe("Failed to copy default config. Using default values.");
 		} else {
 			try {
-				//Load config by file
+				// Load config by file
 				inStream = new FileInputStream(CONFIG_FILE);
 			} catch (FileNotFoundException e) {
-				//Should not be fired, but safety first
+				// Should not be fired, but safety first
 				inStream = SpleefConfig.class.getResourceAsStream(RESOURCE_PATH);
 				Logger.severe("Failed to load config! Using default values.");
 			}
 		}
-		
+
 		configuration = YamlConfiguration.loadConfiguration(inStream);
 	}
-	
-	//Returns true when no copy is needed, false otherwise
+
+	// Returns true when no copy is needed, false otherwise
 	private boolean checkCopy() {
 		if (!CONFIG_FILE.exists()) {
 			return false;
 		}
-		
+
 		int version = YamlConfiguration.loadConfiguration(CONFIG_FILE).getInt(CONFIG_VERSION_PATH);
 		return version == CONFIG_VERSION;
 	}
-	
+
 	public FileConfiguration getFileConfiguration() {
 		return configuration;
 	}
-	
+
 	public void reload() {
 		loadConfig();
-		
+
 		rootSection.reload();
 		generalSection.reload();
 		leaderboardSection.reload();
@@ -222,6 +223,5 @@ public class SpleefConfig {
 	public SettingsSectionStatistic getStatisticSection() {
 		return statisticSection;
 	}
-	
+
 }
- 

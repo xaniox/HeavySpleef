@@ -27,37 +27,37 @@ import org.bukkit.block.Block;
 import com.google.common.collect.ImmutableList;
 
 public class BlockIterator implements Iterator<Block>, Iterable<Block> {
-	
-	public static final int FORWARD = 0;
-	public static final int BACKWARD = 1;
-	
-	private int currentIndex;
-	private int direction;
-	
-	private List<Block> blockList;
-	
+
+	public static final int	FORWARD		= 0;
+	public static final int	BACKWARD	= 1;
+
+	private int				currentIndex;
+	private int				direction;
+
+	private List<Block>		blockList;
+
 	public BlockIterator(Block[] blocks) {
 		direction = FORWARD;
-		
+
 		this.blockList = ImmutableList.copyOf(blocks);
 	}
-	
+
 	public BlockIterator(List<Block> blocks) {
 		direction = FORWARD;
-		
+
 		this.blockList = ImmutableList.copyOf(blocks);
 	}
-	
+
 	public void setDirection(int direction) {
 		this.direction = direction;
-		
+
 		if (direction == FORWARD) {
 			currentIndex = 0;
 		} else if (direction == BACKWARD) {
 			currentIndex = blockList.size() - 1;
 		}
 	}
-	
+
 	public int getDirection() {
 		return direction;
 	}
@@ -70,13 +70,13 @@ public class BlockIterator implements Iterator<Block>, Iterable<Block> {
 	@Override
 	public Block next() {
 		Block block = blockList.get(currentIndex);
-		
+
 		if (direction == FORWARD) {
 			currentIndex++;
 		} else if (direction == BACKWARD) {
 			currentIndex--;
 		}
-		
+
 		return block;
 	}
 
@@ -89,5 +89,5 @@ public class BlockIterator implements Iterator<Block>, Iterable<Block> {
 	public Iterator<Block> iterator() {
 		return this;
 	}
-	
+
 }

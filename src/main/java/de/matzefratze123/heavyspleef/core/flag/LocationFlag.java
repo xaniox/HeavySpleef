@@ -19,7 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.core.flag;
 
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -37,7 +36,7 @@ public class LocationFlag extends Flag<Location> {
 	public Location parse(Player player, String input, Object previousObject) {
 		if (player == null)
 			return null;
-		
+
 		return player.getLocation();
 	}
 
@@ -48,18 +47,18 @@ public class LocationFlag extends Flag<Location> {
 
 	@Override
 	public String serialize(Object value) {
-		Location location = (Location)value;
-		
+		Location location = (Location) value;
+
 		return getName() + ":" + Parser.convertLocationtoString(location);
 	}
 
 	@Override
 	public Location deserialize(String str) {
 		String[] parts = str.split(":");
-		
+
 		if (parts.length < 2)
 			return null;
-		
+
 		this.name = parts[0];
 		return Parser.convertStringtoLocation(parts[1]);
 	}
@@ -68,7 +67,7 @@ public class LocationFlag extends Flag<Location> {
 	public String toInfo(Object value) {
 		return getName() + ": LOCATION";
 	}
-	
+
 	@Override
 	public FlagType getType() {
 		return FlagType.LOCATION_FLAG;

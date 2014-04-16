@@ -40,9 +40,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandRemoveFloor implements CommandListener {
-	
+
 	@Command(value = "removefloor", onlyIngame = true)
-	@CommandPermissions(value = {Permissions.REMOVE_FLOOR})
+	@CommandPermissions(value = { Permissions.REMOVE_FLOOR })
 	@CommandHelp(usage = "/spleef removefloor", description = "Removes a floor from a game where you are currently looking")
 	public void execute(Player player) {
 		Block block = player.getTargetBlock(null, 50);
@@ -50,7 +50,7 @@ public class CommandRemoveFloor implements CommandListener {
 			player.sendMessage(_("notLookingAtABlock"));
 			return;
 		}
-		
+
 		for (Game game : GameManager.getGames()) {
 			if (game.getType() == GameType.CYLINDER && !HookManager.getInstance().getService(WorldEditHook.class).hasHook())
 				continue;
@@ -63,7 +63,7 @@ public class CommandRemoveFloor implements CommandListener {
 				}
 			}
 		}
-		
+
 		player.sendMessage(_("notLookingAtFloor"));
 	}
 

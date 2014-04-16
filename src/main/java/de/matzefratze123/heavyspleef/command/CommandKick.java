@@ -38,39 +38,39 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandKick implements CommandListener {
-	
+
 	@Command(value = "kick", minArgs = 1, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.KICK})
+	@CommandPermissions(value = { Permissions.KICK })
 	@CommandHelp(usage = "/spleef kick <Player> [Reason]", description = "Kicks a player from a game")
 	public void execute(CommandSender sender, Player player, String[] reason) {
 		SpleefPlayer target = HeavySpleef.getInstance().getSpleefPlayer(player);
-		
+
 		if (target == null) {
 			sender.sendMessage(_("playerNotOnline"));
 			return;
 		}
-		
+
 		if (!target.isActive()) {
 			sender.sendMessage(_("playerIsntInAnyGame"));
 			return;
 		}
-		
+
 		String reasonMessage = "";
-		
+
 		if (reason != null) {
 			reasonMessage = " for ";
 			StringBuilder reasonBuilder = new StringBuilder();
 			for (int i = 0; i < reason.length; i++) {
 				reasonBuilder.append(reason[i]);
-				
+
 				if (i + 1 < reason.length) {
 					reasonBuilder.append(" ");
 				}
 			}
-			
+
 			reasonMessage += reasonBuilder.toString();
 		}
-		
+
 		Game game = target.getGame();
 		game.leave(target, LoseCause.KICK);
 		target.sendMessage(_("kickedOfToPlayer", sender.getName(), reasonMessage));

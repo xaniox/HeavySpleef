@@ -104,7 +104,7 @@ public abstract class GuiInventory implements Listener {
 
 	public void setTitle(String title) {
 		Validate.notNull(title, "title cannot be null");
-		
+
 		if (title.length() > 32) {
 			title = title.substring(0, 32);
 		}
@@ -115,7 +115,7 @@ public abstract class GuiInventory implements Listener {
 	public GuiInventorySlot getSlot(int x, int y) {
 		Validate.isTrue(y < slots.length && y >= 0, "y out of bounds: " + y);
 		Validate.isTrue(x <= 9 && x >= 0, "x out of bounds: " + x);
-		
+
 		return slots[y][x];
 	}
 
@@ -186,23 +186,23 @@ public abstract class GuiInventory implements Listener {
 
 		return null;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	protected void refreshOpenInventories() {
 		for (GuiInventoryView view : views) {
 			Player player = view.getPlayer();
 			Inventory inv = view.getInventory();
-			
+
 			for (int y = 0; y < slots.length; y++) {
 				for (int x = 0; x < slots[y].length; x++) {
 					GuiInventorySlot slot = slots[y][x];
-					
+
 					int vanillaSlot = GuiInventoryUtil.toMinecraftSlot(slot.getPoint());
-					
+
 					inv.setItem(vanillaSlot, slot.getItem());
 				}
 			}
-			
+
 			player.updateInventory();
 		}
 	}

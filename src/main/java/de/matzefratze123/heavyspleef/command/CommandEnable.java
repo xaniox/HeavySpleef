@@ -39,23 +39,23 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandEnable implements CommandListener {
 
 	@Command(value = "enable", minArgs = 1)
-	@CommandPermissions(value = {Permissions.ENABLE})
+	@CommandPermissions(value = { Permissions.ENABLE })
 	@CommandHelp(usage = "/spleef enable <game>", description = "Enables a game.")
 	public void execute(CommandSender sender, Game game) {
 		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		if (game.getGameState() != GameState.DISABLED) {
 			sender.sendMessage(_("gameIsAlreadyEnabled"));
 			return;
 		}
-		
+
 		game.enable();
 		game.broadcast(_("gameEnabled", game.getName(), sender.getName()), ConfigUtil.getBroadcast(MessageType.GAME_ENABLE));
 		sender.sendMessage(_("gameEnabledToPlayer", game.getName()));
-	
+
 	}
 
 }

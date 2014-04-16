@@ -20,11 +20,9 @@
 package de.matzefratze123.heavyspleef.core;
 
 public enum BroadcastType {
-	
-	INGAME,
-	RADIUS,
-	GLOBAL;
-	
+
+	INGAME, RADIUS, GLOBAL;
+
 	public static BroadcastType getBroadcastType(String name) {
 		try {
 			return BroadcastType.valueOf(name.toUpperCase());
@@ -32,5 +30,5 @@ public enum BroadcastType {
 			return null;
 		}
 	}
-	
+
 }

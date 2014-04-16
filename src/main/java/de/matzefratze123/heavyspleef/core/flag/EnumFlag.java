@@ -25,18 +25,18 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 
 public class EnumFlag<E extends Enum<E>> extends Flag<E> {
 
-	private Class<E> enumClass;
-	
+	private Class<E>	enumClass;
+
 	public EnumFlag(String name, Class<E> enumClass, E defaulte) {
 		super(name, defaulte);
-		
+
 		this.enumClass = enumClass;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public String serialize(Object object) {
-		E constant = (E)object;
+		E constant = (E) object;
 		return getName() + ":" + constant.name();
 	}
 
@@ -44,16 +44,17 @@ public class EnumFlag<E extends Enum<E>> extends Flag<E> {
 	public E deserialize(String str) {
 		if (str == null)
 			return null;
-		
+
 		String[] parts = str.split(":");
 		if (parts.length < 2)
 			return null;
-		
+
 		this.name = parts[0];
 		try {
 			return Enum.valueOf(enumClass, parts[1].toUpperCase());
-		} catch (Exception e) {}//Nothing here
-		
+		} catch (Exception e) {
+		}// Nothing here
+
 		return null;
 	}
 
@@ -62,17 +63,17 @@ public class EnumFlag<E extends Enum<E>> extends Flag<E> {
 		if (input != null) {
 			input = input.toUpperCase();
 			input = input.trim();
-		} else return null;
-		
+		} else
+			return null;
+
 		return Enum.valueOf(enumClass, input);
 	}
 
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public String toInfo(Object value) {
 		try {
-			E constant = (E)value;
+			E constant = (E) value;
 			return getName() + ":" + constant.name();
 		} catch (Exception e) {
 			return new String();
@@ -88,5 +89,5 @@ public class EnumFlag<E extends Enum<E>> extends Flag<E> {
 	public FlagType getType() {
 		return FlagType.ENUM_FLAG;
 	}
-	
+
 }

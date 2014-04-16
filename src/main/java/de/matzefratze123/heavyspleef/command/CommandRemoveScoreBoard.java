@@ -39,18 +39,18 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandRemoveScoreBoard implements CommandListener {
 
 	@Command(value = "removescoreboard", onlyIngame = true)
-	@CommandPermissions(value = {Permissions.REMOVE_SCOREBOARD})
+	@CommandPermissions(value = { Permissions.REMOVE_SCOREBOARD })
 	@CommandHelp(usage = "/spleef removescoreboard", description = "Removes the scoreboard where you currently looking")
 	public void execute(Player player) {
 		Block targetBlock = player.getTargetBlock(null, 100);
-		
+
 		int id = -1;
-		
+
 		for (Game game : GameManager.getGames()) {
 			for (ScoreBoard board : game.getComponents().getScoreBoards()) {
 				if (board.contains(targetBlock.getLocation())) {
 					id = board.getId();
-					
+
 					board.remove();
 					game.getComponents().removeScoreBoard(id);
 					player.sendMessage(_("scoreBoardRemoved"));
@@ -58,9 +58,9 @@ public class CommandRemoveScoreBoard implements CommandListener {
 				}
 			}
 		}
-		
+
 		player.sendMessage(_("notLookingAtScoreBoard"));
-		
-	} 
-	
+
+	}
+
 }

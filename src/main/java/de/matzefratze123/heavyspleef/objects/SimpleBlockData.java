@@ -33,21 +33,21 @@ import org.bukkit.block.Block;
  * @author matzefratze123
  */
 public class SimpleBlockData implements Serializable {
-	
+
 	/**
 	 * Serial version UID
 	 */
-	private static final long serialVersionUID = -3686717330346290113L;
-	
-	private Material mat;
-	private byte data;
-	
-	private int x = 0;
-	private int y = 0;
-	private int z = 0;
-	
-	private String worldName = "";
-	
+	private static final long	serialVersionUID	= -3686717330346290113L;
+
+	private Material			mat;
+	private byte				data;
+
+	private int					x					= 0;
+	private int					y					= 0;
+	private int					z					= 0;
+
+	private String				worldName			= "";
+
 	public SimpleBlockData(Material mat, byte data, int x, int y, int z, String worldname) {
 		this.mat = mat;
 		this.data = data;
@@ -56,17 +56,17 @@ public class SimpleBlockData implements Serializable {
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	public SimpleBlockData(Material mat, byte data) {
 		this.mat = mat;
 		this.data = data;
 	}
-	
+
 	public SimpleBlockData(int id, byte data) {
 		this.mat = Material.getMaterial(id);
 		this.data = data;
 	}
-	
+
 	public SimpleBlockData(String fromString) {
 		String[] parts = fromString.split(",");
 		this.mat = Material.getMaterial(Integer.parseInt(parts[0]));
@@ -76,7 +76,7 @@ public class SimpleBlockData implements Serializable {
 		this.z = Integer.parseInt(parts[4]);
 		this.worldName = parts[5];
 	}
-	
+
 	public SimpleBlockData(Block block) {
 		this(block.getType(), block.getData(), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ(), block.getWorld().getName());
 	}
@@ -84,48 +84,43 @@ public class SimpleBlockData implements Serializable {
 	public Material getMaterial() {
 		return this.mat;
 	}
-	
+
 	public byte getData() {
 		return this.data;
 	}
-	
+
 	public int getX() {
 		return this.x;
 	}
-	
+
 	public int getY() {
 		return this.y;
 	}
-	
+
 	public int getZ() {
 		return this.z;
 	}
-	
+
 	public World getWorld() {
 		return Bukkit.getWorld(worldName);
 	}
-	
+
 	public Location getLocation() {
 		return new Location(getWorld(), x, y, z);
 	}
-	
+
 	@Override
 	public String toString() {
 		return mat.getId() + "," + data + "," + x + "," + y + "," + z + "," + worldName;
 	}
-	
+
 	public static boolean isSolid(int id) {
-		int[] solidIDs = new int[] {1,2,3,4,5,7,12,13,14,15,16,17,18,19,22,
-									29,33,35,41,42,43,44,45,46,477,48,49,
-									52,53,54,56,57,58,61,6267,68,69,73,74,
-									79,80,82,84,86,87,88,89,91,95,97,98,
-									103,108,109,110,112,113,114,116,118,
-									120,121,123,124,125,128,129,130,133,
-									134,135,136,137,138,152,153,155,158};
+		int[] solidIDs = new int[] { 1, 2, 3, 4, 5, 7, 12, 13, 14, 15, 16, 17, 18, 19, 22, 29, 33, 35, 41, 42, 43, 44, 45, 46, 477, 48, 49, 52, 53, 54, 56, 57, 58, 61, 6267, 68, 69, 73, 74, 79, 80, 82, 84, 86, 87, 88, 89, 91, 95, 97, 98, 103, 108, 109, 110, 112, 113, 114, 116, 118, 120, 121, 123,
+				124, 125, 128, 129, 130, 133, 134, 135, 136, 137, 138, 152, 153, 155, 158 };
 		for (int s : solidIDs)
 			if (s == id)
 				return true;
 		return false;
 	}
-	
+
 }

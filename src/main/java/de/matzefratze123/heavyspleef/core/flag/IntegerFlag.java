@@ -19,7 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.core.flag;
 
-
 import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
@@ -34,14 +33,14 @@ public class IntegerFlag extends Flag<Integer> {
 	@Override
 	public Integer parse(Player player, String input, Object previousObject) {
 		String[] parts = input.split(" ");
-		
+
 		if (!Util.isNumber(parts[0])) {
 			return null;
 		}
-		
+
 		int i = Integer.parseInt(parts[0]);
 		i = Math.abs(i);
-		
+
 		return i;
 	}
 
@@ -52,27 +51,27 @@ public class IntegerFlag extends Flag<Integer> {
 
 	@Override
 	public String serialize(Object value) {
-		int i = (Integer)value;
+		int i = (Integer) value;
 		return getName() + ":" + i;
 	}
 
 	@Override
 	public Integer deserialize(String str) {
 		String[] parts = str.split(":");
-		
+
 		if (parts.length < 2)
 			return 0;
-		
+
 		this.name = parts[0];
 		return Integer.parseInt(parts[1]);
 	}
 
 	@Override
 	public String toInfo(Object value) {
-		Integer i = (Integer)value;
+		Integer i = (Integer) value;
 		return getName() + ": " + i;
 	}
-	
+
 	@Override
 	public FlagType getType() {
 		return FlagType.INTEGER_FLAG;

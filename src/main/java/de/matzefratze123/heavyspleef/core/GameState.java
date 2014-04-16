@@ -21,10 +21,6 @@ package de.matzefratze123.heavyspleef.core;
 
 public enum GameState {
 
-	INGAME,
-	COUNTING,
-	JOINABLE,
-	LOBBY,
-	DISABLED;
-	
+	INGAME, COUNTING, JOINABLE, LOBBY, DISABLED;
+
 }

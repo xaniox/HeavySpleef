@@ -25,22 +25,22 @@ import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionAntiCamping implements SettingsSection {
 
-	private static final String SECTION_PATH = "anticamping";
-	
-	private SpleefConfig configuration;
-	private ConfigurationSection section;
-	
-	private boolean enabled;
-	private boolean warnEnabled;
-	private int warnAt;
-	private int teleportAt;
-	
+	private static final String		SECTION_PATH	= "anticamping";
+
+	private SpleefConfig			configuration;
+	private ConfigurationSection	section;
+
+	private boolean					enabled;
+	private boolean					warnEnabled;
+	private int						warnAt;
+	private int						teleportAt;
+
 	public SettingsSectionAntiCamping(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -59,7 +59,7 @@ public class SettingsSectionAntiCamping implements SettingsSection {
 	@Override
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
-		
+
 		enabled = section.getBoolean("enabled", true);
 		warnEnabled = section.getBoolean("campWarn", true);
 		warnAt = section.getInt("warnAt", 3);
@@ -81,5 +81,5 @@ public class SettingsSectionAntiCamping implements SettingsSection {
 	public int getTeleportAt() {
 		return teleportAt;
 	}
-	
+
 }

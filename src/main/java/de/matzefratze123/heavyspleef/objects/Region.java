@@ -23,19 +23,19 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 public interface Region {
-	
+
 	/**
 	 * Gets the id of this region
 	 * 
 	 * @return Region id
 	 */
 	public int getId();
-	
+
 	/**
 	 * Gets the world of this region
 	 */
 	public World getWorld();
-	
+
 	/**
 	 * Checks if this region contains a location
 	 */

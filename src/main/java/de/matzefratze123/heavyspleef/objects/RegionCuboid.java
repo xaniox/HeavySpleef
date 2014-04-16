@@ -24,10 +24,10 @@ import org.bukkit.World;
 
 public class RegionCuboid implements Region {
 
-	protected Location firstPoint;
-	protected Location secondPoint;
+	protected Location	firstPoint;
+	protected Location	secondPoint;
 
-	protected int id;
+	protected int		id;
 
 	public RegionCuboid(int id, Location firstPoint, Location secondPoint) {
 		this.id = id;
@@ -53,7 +53,7 @@ public class RegionCuboid implements Region {
 	public boolean contains(Location location) {
 		return contains(location, this);
 	}
-	
+
 	public static boolean contains(Location location, RegionCuboid region) {
 		int minX = Math.min(region.firstPoint.getBlockX(), region.secondPoint.getBlockX());
 		int maxX = Math.max(region.firstPoint.getBlockX(), region.secondPoint.getBlockX());
@@ -64,15 +64,12 @@ public class RegionCuboid implements Region {
 		int minZ = Math.min(region.firstPoint.getBlockZ(), region.secondPoint.getBlockZ());
 		int maxZ = Math.max(region.firstPoint.getBlockZ(), region.secondPoint.getBlockZ());
 
-		return location.getWorld() == region.firstPoint.getWorld()
-				&& location.getBlockX() >= minX && location.getBlockX() <= maxX
-				&& location.getBlockY() >= minY && location.getBlockY() <= maxY
-				&& location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
+		return location.getWorld() == region.firstPoint.getWorld() && location.getBlockX() >= minX && location.getBlockX() <= maxX && location.getBlockY() >= minY && location.getBlockY() <= maxY && location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ;
 	}
 
 	@Override
 	public World getWorld() {
 		return firstPoint.getWorld();
 	}
-	
+
 }

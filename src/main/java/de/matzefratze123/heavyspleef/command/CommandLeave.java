@@ -39,33 +39,33 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
 public class CommandLeave implements CommandListener {
-	
+
 	@Command(value = "leave", onlyIngame = true)
-	@CommandPermissions(value = {Permissions.LEAVE_GAME})
+	@CommandPermissions(value = { Permissions.LEAVE_GAME })
 	@CommandHelp(usage = "/spleef leave", description = "Leaves the game/queue/spectate mode")
-	@CommandAliases({"quit"})
+	@CommandAliases({ "quit" })
 	public void execute(Player player) {
 		leave(HeavySpleef.getInstance().getSpleefPlayer(player));
 	}
-	
+
 	public static void leave(SpleefPlayer player) {
 		if (player.isSpectating()) {
 			player.getGame().leaveSpectate(player);
 			return;
 		}
-		
+
 		if (!player.isActive()) {
 			if (!QueuesManager.hasQueue(player)) {
 				player.sendMessage(_("notInQueue"));
 				return;
 			}
-			
+
 			QueuesManager.removeFromQueue(player);
 			return;
 		}
-		
+
 		Game game = player.getGame();
-		
+
 		game.leave(player, LoseCause.LEAVE);
 		player.sendMessage(_("left"));
 	}

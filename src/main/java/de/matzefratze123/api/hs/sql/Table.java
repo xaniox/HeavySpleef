@@ -36,8 +36,8 @@ public class Table implements ITable {
 	private Logger				plugin;
 	private AbstractDatabase	database;
 	private String				name;
-	
-	private static final char HIGH_TICK = '`';
+
+	private static final char	HIGH_TICK	= '`';
 
 	Table(Logger plugin, AbstractDatabase database, String name) {
 		this.plugin = plugin;
@@ -65,18 +65,18 @@ public class Table implements ITable {
 		if (selection.trim().equalsIgnoreCase("*") || selection.trim().equalsIgnoreCase("all")) {
 			selection = "*";
 		}
-		
+
 		statement = conn.prepareStatement("SELECT " + selection + " FROM " + name + (parameterizedClause == null ? "" : parameterizedClause));
-		
+
 		if (where != null) {
 			int index = 1;
 			for (Object o : where.values()) {
 				statement.setObject(index, o);
-				
+
 				index++;
 			}
 		}
-		
+
 		ResultSet result = statement.executeQuery();
 		return new SQLResult(plugin, statement, result);
 	}
@@ -103,11 +103,12 @@ public class Table implements ITable {
 	public SQLResult selectAll() throws SQLException {
 		return select("*");
 	}
-	
+
 	/**
 	 * Selects all columns of this database with the specific where clause
 	 * 
-	 * @param where A where clause in a map
+	 * @param where
+	 *            A where clause in a map
 	 */
 	@Override
 	public SQLResult selectAll(Map<String, Object> where) throws SQLException {
@@ -129,26 +130,26 @@ public class Table implements ITable {
 		int result = Statement.EXECUTE_FAILED;
 
 		PreparedStatement statement = null;
-		
+
 		synchronized (this) {
 			try {
 				Connection conn = database.getConnection();
-				
+
 				if (where != null && hasRow(where)) {
 					// Update part syntax beginn
 					String parts[] = new String[values.size()];
 					Set<String> keys = values.keySet();
-	
+
 					int c = 0;
 					for (String key : keys) {
 						parts[c] = HIGH_TICK + key + HIGH_TICK + " = ?";
 						c++;
 					}
-					
+
 					String update = SQLUtils.toFriendlyString(parts, ", ");
 					// Update Part syntax end
 					String whereClause = createParameterizedWhereClause(where.keySet());
-	
+
 					statement = conn.prepareStatement("UPDATE " + name + " SET " + update + (whereClause == null ? "" : whereClause));
 					int index = 1;
 					for (Object o : values.values()) {
@@ -159,11 +160,11 @@ public class Table implements ITable {
 						statement.setObject(index, o);
 						index++;
 					}
-					
+
 					result = statement.executeUpdate();
 				} else {
 					String friendlyKeySet = HIGH_TICK + SQLUtils.toFriendlyString(values.keySet(), HIGH_TICK + ", " + HIGH_TICK) + HIGH_TICK;
-					
+
 					StringBuilder builder = new StringBuilder();
 					for (int i = 0; i < values.size(); i++) {
 						builder.append("?");
@@ -171,15 +172,15 @@ public class Table implements ITable {
 							builder.append(", ");
 						}
 					}
-	
+
 					statement = conn.prepareStatement("INSERT INTO " + name + "(" + friendlyKeySet + ") VALUES (" + builder.toString() + ")");
-					
+
 					int index = 1;
 					for (Object o : values.values()) {
 						statement.setObject(index, o);
 						index++;
 					}
-					
+
 					result = statement.executeUpdate();
 				}
 			} finally {
@@ -219,7 +220,7 @@ public class Table implements ITable {
 				statement.setObject(index, o);
 				index++;
 			}
-			
+
 			set = statement.executeQuery();
 			return set.next();
 		} finally {
@@ -231,35 +232,37 @@ public class Table implements ITable {
 				if (set != null) {
 					set.close();
 				}
-			} catch (SQLException e) {}
+			} catch (SQLException e) {
+			}
 		}
 	}
-	
+
 	public int deleteRow(Map<String, Object> where) throws SQLException {
 		String paramterizedWhereClause = createParameterizedWhereClause(where.keySet());
-		
+
 		PreparedStatement statement = null;
 		int returnCode = 0;
-		
+
 		try {
 			Connection conn = database.getConnection();
 			statement = conn.prepareStatement("DELETE FROM " + name + paramterizedWhereClause);
-			
+
 			int index = 1;
 			for (Object o : where.values()) {
 				statement.setObject(index, o);
 				index++;
 			}
-			
+
 			returnCode = statement.executeUpdate();
 		} finally {
 			try {
 				if (statement != null) {
 					statement.close();
 				}
-			} catch (SQLException e) {}
+			} catch (SQLException e) {
+			}
 		}
-		
+
 		return returnCode;
 	}
 
@@ -315,13 +318,14 @@ public class Table implements ITable {
 			if (statement != null) {
 				try {
 					statement.close();
-				} catch (SQLException e) {}
+				} catch (SQLException e) {
+				}
 			}
 		}
 
 		return result;
 	}
-	
+
 	public int rename(String newName) throws SQLException {
 		int result = Statement.EXECUTE_FAILED;
 
@@ -338,7 +342,8 @@ public class Table implements ITable {
 			if (statement != null) {
 				try {
 					statement.close();
-				} catch (SQLException e) {}
+				} catch (SQLException e) {
+				}
 			}
 		}
 

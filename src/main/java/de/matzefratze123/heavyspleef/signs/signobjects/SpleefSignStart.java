@@ -39,12 +39,12 @@ public class SpleefSignStart implements SpleefSign {
 	@Override
 	public void onClick(SpleefPlayer player, Sign sign) {
 		String[] lines = SpleefSignExecutor.stripSign(sign);
-		
+
 		if (!GameManager.hasGame(lines[2])) {
 			player.sendMessage(I18N._("arenaDoesntExists"));
 			return;
 		}
-		
+
 		CommandStart.start(player, GameManager.getGame(sign.getLine(2)));
 	}
 
@@ -52,13 +52,13 @@ public class SpleefSignStart implements SpleefSign {
 	public String getId() {
 		return "sign-start";
 	}
-	
+
 	@Override
 	public Map<Integer, String[]> getLines() {
 		Map<Integer, String[]> lines = new HashMap<Integer, String[]>();
-		
-		lines.put(0, new String[]{"[Start]", "Start"});
-		
+
+		lines.put(0, new String[] { "[Start]", "Start" });
+
 		return lines;
 	}
 
@@ -74,20 +74,20 @@ public class SpleefSignStart implements SpleefSign {
 			e.getBlock().breakNaturally();
 			return;
 		}
-		
+
 		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
-		
+
 		StringBuilder builder = new StringBuilder();
 		if (e.getLine(1).startsWith("[")) {
 			builder.append(ChatColor.DARK_GRAY + "[");
 		}
-		
+
 		builder.append(ChatColor.BLUE).append(ChatColor.BOLD).append("Start");
-		
+
 		if (e.getLine(1).endsWith("]")) {
 			builder.append(ChatColor.DARK_GRAY + "]");
 		}
-		
+
 		e.setLine(1, builder.toString());
 	}
 

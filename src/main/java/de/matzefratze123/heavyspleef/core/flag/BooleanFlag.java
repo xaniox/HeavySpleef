@@ -33,18 +33,11 @@ public class BooleanFlag extends Flag<Boolean> {
 	@Override
 	public Boolean parse(Player player, String input, Object previousObject) {
 		input = input.split(" ")[0];
-		if (input.equalsIgnoreCase("true")
-			|| input.equalsIgnoreCase("on")
-			|| input.equalsIgnoreCase("activate")
-			|| input.equalsIgnoreCase("yes")
-			|| input.equalsIgnoreCase(""))
+		if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("on") || input.equalsIgnoreCase("activate") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase(""))
 			return true;
-		else if (input.equalsIgnoreCase("false")
-			|| input.equalsIgnoreCase("off")
-			|| input.equalsIgnoreCase("deactivate")
-			|| input.equalsIgnoreCase("no"))
+		else if (input.equalsIgnoreCase("false") || input.equalsIgnoreCase("off") || input.equalsIgnoreCase("deactivate") || input.equalsIgnoreCase("no"))
 			return false;
-		
+
 		return false;
 	}
 
@@ -55,25 +48,25 @@ public class BooleanFlag extends Flag<Boolean> {
 
 	@Override
 	public String serialize(Object value) {
-		boolean bool = (Boolean)value;
-		
+		boolean bool = (Boolean) value;
+
 		return getName() + ":" + bool;
 	}
 
 	@Override
 	public Boolean deserialize(String str) {
 		String[] parts = str.split(":");
-		
+
 		if (parts.length < 2)
 			return false;
-		
+
 		this.name = parts[0];
 		return Boolean.parseBoolean(parts[1]);
 	}
 
 	@Override
 	public String toInfo(Object value) {
-		boolean bool = (Boolean)value;
+		boolean bool = (Boolean) value;
 		return getName() + ": " + bool;
 	}
 
@@ -81,5 +74,5 @@ public class BooleanFlag extends Flag<Boolean> {
 	public FlagType getType() {
 		return FlagType.BOOLEAN_FLAG;
 	}
-	
+
 }

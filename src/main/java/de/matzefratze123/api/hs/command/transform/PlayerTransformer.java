@@ -8,11 +8,11 @@ public class PlayerTransformer implements Transformer<Player> {
 	@Override
 	public Player transform(String argument) throws TransformException {
 		Player player = Bukkit.getPlayer(argument);
-		
+
 		if (player == null) {
 			throw new TransformException();
 		}
-		
+
 		return player;
 	}
 

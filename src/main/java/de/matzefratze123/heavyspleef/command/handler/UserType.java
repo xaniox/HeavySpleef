@@ -27,14 +27,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface UserType {
-	
+
 	public Type value();
-	
+
 	public static enum Type {
-		
-		PLAYER,
-		ADMIN;
-		
+
+		PLAYER, ADMIN;
+
 	}
-	
+
 }

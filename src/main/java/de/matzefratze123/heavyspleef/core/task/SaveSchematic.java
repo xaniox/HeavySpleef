@@ -37,11 +37,11 @@ import de.matzefratze123.heavyspleef.util.Util;
 
 public class SaveSchematic implements Runnable {
 
-	private IFloor floor;
-	private EditSession editSession;
-	
-	private static final int UNLIMITED_BLOCKS = -1;
-	
+	private IFloor				floor;
+	private EditSession			editSession;
+
+	private static final int	UNLIMITED_BLOCKS	= -1;
+
 	public SaveSchematic(IFloor floor) {
 		this.floor = floor;
 		this.editSession = new EditSession(new BukkitWorld(floor.getWorld()), UNLIMITED_BLOCKS);
@@ -50,19 +50,19 @@ public class SaveSchematic implements Runnable {
 	@Override
 	public void run() {
 		try {
-			File file = new File(((GameComponents)floor.getGame().getComponents()).getFloorFolder(), floor.getId() + "." + IFloor.FILE_EXTENSION);
+			File file = new File(((GameComponents) floor.getGame().getComponents()).getFloorFolder(), floor.getId() + "." + IFloor.FILE_EXTENSION);
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			
+
 			FloorCuboid cuboidFloor = (FloorCuboid) floor;
-			
+
 			Location minL = Util.getMin(cuboidFloor.getFirstPoint(), cuboidFloor.getSecondPoint());
 			Location maxL = Util.getMax(cuboidFloor.getFirstPoint(), cuboidFloor.getSecondPoint());
-			
+
 			Vector min = Util.toWorldEditVector(minL);
 			Vector max = Util.toWorldEditVector(maxL);
-			
+
 			editSession.enableQueue();
 			CuboidClipboard clipboard = new CuboidClipboard(max.subtract(min).add(new Vector(1, 1, 1)), min);
 			clipboard.copy(editSession);

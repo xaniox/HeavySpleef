@@ -25,18 +25,18 @@ import de.matzefratze123.heavyspleef.config.SpleefConfig;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 
 public class SettingsSectionFlagDefaults implements SettingsSection {
-	
-	private static final String SECTION_PATH = "flag-defaults";
-	
-	private SpleefConfig configuration;
-	private ConfigurationSection section;
-	
+
+	private static final String		SECTION_PATH	= "flag-defaults";
+
+	private SpleefConfig			configuration;
+	private ConfigurationSection	section;
+
 	public SettingsSectionFlagDefaults(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -56,19 +56,19 @@ public class SettingsSectionFlagDefaults implements SettingsSection {
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
 	}
-	
+
 	public <T extends Flag<V>, V> V getFlagDefault(T flag) {
 		String defaultString = section.getString(flag.getName());
 		V value;
-		
+
 		try {
 			value = flag.parse(null, defaultString, null);
 		} catch (Exception e) {
-			//Failed to parse default value
+			// Failed to parse default value
 			value = null;
 		}
-		
+
 		return value;
 	}
-	
+
 }

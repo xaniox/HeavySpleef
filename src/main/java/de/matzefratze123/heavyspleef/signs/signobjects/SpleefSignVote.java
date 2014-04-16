@@ -41,9 +41,9 @@ public class SpleefSignVote implements SpleefSign {
 			player.sendMessage(I18N._("onlyLobby"));
 			return;
 		}
-		
+
 		Game game = player.getGame();
-		
+
 		if (game.getGameState() != GameState.LOBBY) {
 			player.sendMessage(I18N._("onlyLobby"));
 			return;
@@ -52,7 +52,7 @@ public class SpleefSignVote implements SpleefSign {
 			player.sendMessage(I18N._("alreadyVoted"));
 			return;
 		}
-		
+
 		player.setReady(true);
 		player.sendMessage(I18N._("successfullyVoted"));
 	}
@@ -65,9 +65,9 @@ public class SpleefSignVote implements SpleefSign {
 	@Override
 	public Map<Integer, String[]> getLines() {
 		Map<Integer, String[]> lines = new HashMap<Integer, String[]>();
-		
-		lines.put(0, new String[]{"[Vote]", "Vote"});
-		
+
+		lines.put(0, new String[] { "[Vote]", "Vote" });
+
 		return lines;
 	}
 
@@ -79,18 +79,18 @@ public class SpleefSignVote implements SpleefSign {
 	@Override
 	public void onPlace(SignChangeEvent e) {
 		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
-		
+
 		StringBuilder builder = new StringBuilder();
 		if (e.getLine(1).startsWith("[")) {
 			builder.append(ChatColor.DARK_GRAY + "[");
 		}
-		
+
 		builder.append(ChatColor.GOLD).append(ChatColor.BOLD).append("Vote");
-		
+
 		if (e.getLine(1).endsWith("]")) {
 			builder.append(ChatColor.DARK_GRAY + "]");
 		}
-		
+
 		e.setLine(1, builder.toString());
 	}
 

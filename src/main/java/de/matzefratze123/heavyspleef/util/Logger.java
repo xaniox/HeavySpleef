@@ -29,19 +29,17 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
  * @author matzefratze123
  */
 public class Logger {
-	
+
 	public static void info(String msg) {
 		HeavySpleef.getInstance().getLogger().log(Level.INFO, msg);
 	}
-	
+
 	public static void warning(String msg) {
 		HeavySpleef.getInstance().getLogger().log(Level.WARNING, msg);
 	}
-	
+
 	public static void severe(String msg) {
 		HeavySpleef.getInstance().getLogger().log(Level.SEVERE, msg);
 	}
-	
+
 }
-
-

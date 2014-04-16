@@ -22,7 +22,7 @@ package de.matzefratze123.heavyspleef.database;
 public interface FlagSerializeable<T> {
 
 	public String serialize(Object object);
-	
+
 	public T deserialize(String str);
-	
+
 }

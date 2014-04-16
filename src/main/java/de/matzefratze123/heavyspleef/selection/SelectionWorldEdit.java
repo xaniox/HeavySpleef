@@ -38,17 +38,17 @@ public class SelectionWorldEdit extends Selection {
 	public Location getFirst() {
 		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
-		
+
 		if (player == null)
 			return null;
 		if (!player.isOnline())
 			return null;
-		
+
 		com.sk89q.worldedit.bukkit.selections.Selection s = we.getSelection(player);
-		
+
 		if (s == null)
 			return null;
-		
+
 		return s.getMinimumPoint();
 	}
 
@@ -56,17 +56,17 @@ public class SelectionWorldEdit extends Selection {
 	public Location getSecond() {
 		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
-		
+
 		if (player == null)
 			return null;
 		if (!player.isOnline())
 			return null;
-		
+
 		com.sk89q.worldedit.bukkit.selections.Selection s = we.getSelection(player);
-		
+
 		if (s == null)
 			return null;
-		
+
 		return s.getMaximumPoint();
 	}
 
@@ -74,17 +74,17 @@ public class SelectionWorldEdit extends Selection {
 	public boolean hasSelection() {
 		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
-		
+
 		if (player == null)
 			return false;
 		if (!player.isOnline())
 			return false;
-		
+
 		com.sk89q.worldedit.bukkit.selections.Selection s = we.getSelection(player);
-		
+
 		if (s == null)
 			return false;
-		
+
 		return s.getMaximumPoint() != null && s.getMinimumPoint() != null;
 	}
 
@@ -92,18 +92,18 @@ public class SelectionWorldEdit extends Selection {
 	public boolean isTroughWorlds() {
 		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
-		
+
 		if (player == null)
 			return false;
 		if (!player.isOnline())
 			return false;
-		
+
 		com.sk89q.worldedit.bukkit.selections.Selection s = we.getSelection(player);
-		
+
 		if (s == null)
 			return false;
-		
+
 		return s.getMinimumPoint().getWorld() != s.getMaximumPoint().getWorld();
 	}
-	
+
 }

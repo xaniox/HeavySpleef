@@ -45,58 +45,58 @@ public class YamlConverter {
 		if (!yamlFile.exists()) {
 			return;
 		}
-		
+
 		try {
 			FileConfiguration yaml = YamlConfiguration.loadConfiguration(yamlFile);
-			
+
 			int i = 0;
-			
+
 			for (String key : yaml.getKeys(false)) {
 				ConfigurationSection section = yaml.getConfigurationSection(key);
-				
+
 				int wins, loses, knockouts, games;
-				
+
 				wins = section.getInt("wins");
 				loses = section.getInt("loses");
 				knockouts = section.getInt("knockouts");
 				games = section.getInt("games");
-				
+
 				StatisticModule module = new StatisticModule(key, loses, wins, knockouts, games);
-				
+
 				writeToSQLite(module);
-				
+
 				i++;
 			}
-			
-			//Converted successfully!
+
+			// Converted successfully!
 			Logger.info("Converted " + i + " statistics into sqlite successfully!");
-			//Finally delete file
+			// Finally delete file
 			yamlFile.delete();
 		} catch (Exception e) {
-			//We catch any exceptions as we may got corrupted files
+			// We catch any exceptions as we may got corrupted files
 			Logger.warning("Warning! Failed to convert old yaml data into sqlite data: " + e.getMessage());
 		}
-		
+
 	}
 
 	private static void writeToSQLite(StatisticModule module) throws SQLException {
 		AbstractDatabase abstractDatabase = HeavySpleef.getInstance().getStatisticDatabase().getRawDatabase();
-		
+
 		if (!(abstractDatabase instanceof SQLiteDatabase)) {
 			return;
 		}
-		
+
 		SQLiteDatabase database = (SQLiteDatabase) abstractDatabase;
 		Table table = database.getTable(SQLStatisticDatabase.TABLE_NAME);
-		
+
 		int wins = module.getScore(StatisticValue.WIN);
 		int loses = module.getScore(StatisticValue.LOSE);
 		int knockouts = module.getScore(StatisticValue.KNOCKOUTS);
 		int games = module.getScore(StatisticValue.GAMES_PLAYED);
 		int score = module.getScore(StatisticValue.SCORE);
-		
+
 		String owner = module.getHolder();
-		
+
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("owner", owner);
 		values.put("wins", wins);
@@ -104,10 +104,10 @@ public class YamlConverter {
 		values.put("knockouts", knockouts);
 		values.put("games", games);
 		values.put("score", score);
-		
+
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("owner", owner);
-		
+
 		table.insertOrUpdate(values, where);
 	}
 

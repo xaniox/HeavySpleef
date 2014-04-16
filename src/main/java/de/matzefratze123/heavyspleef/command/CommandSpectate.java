@@ -37,23 +37,23 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
 public class CommandSpectate implements CommandListener {
-	
+
 	@Command(value = "spectate", minArgs = 1, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.SPECTATE})
+	@CommandPermissions(value = { Permissions.SPECTATE })
 	@CommandHelp(usage = "/spleef spectate <game>", description = "Spectates a game")
 	public void execute(Player bukkitPlayer, Game game) {
 		if (game == null) {
 			bukkitPlayer.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
-		
+
 		if (game.getFlag(FlagType.SPECTATE) == null) {
 			player.sendMessage(_("noSpectatePoint"));
 			return;
 		}
-		
+
 		game.spectate(player);
 	}
 

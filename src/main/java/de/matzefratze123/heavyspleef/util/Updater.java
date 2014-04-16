@@ -46,27 +46,27 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
  */
 public class Updater {
 
-	private static final int PROJECT_ID = 51622;
+	private static final int	PROJECT_ID		= 51622;
 
 	// Keys for extracting file information from JSON response
-	private static final String API_TITLE_VALUE = "name";
-	private static final String API_LINK_VALUE = "downloadUrl";
-	private static final String API_NAME_VALUE = "fileName";
+	private static final String	API_TITLE_VALUE	= "name";
+	private static final String	API_LINK_VALUE	= "downloadUrl";
+	private static final String	API_NAME_VALUE	= "fileName";
 
 	// Static information for querying the API
-	private static final String API_QUERY = "/servermods/files?projectIds=";
-	private static final String API_HOST = "https://api.curseforge.com";
+	private static final String	API_QUERY		= "/servermods/files?projectIds=";
+	private static final String	API_HOST		= "https://api.curseforge.com";
 
-	private File updateFolder;
+	private File				updateFolder;
 
-	private Thread thread;
+	private Thread				thread;
 
-	private boolean updateAvailable;
-	private String fileTitle;
-	private String fileName;
-	private String downloadUrl;
+	private boolean				updateAvailable;
+	private String				fileTitle;
+	private String				fileName;
+	private String				downloadUrl;
 
-	private boolean done = false;
+	private boolean				done			= false;
 
 	public Updater() {
 		this.updateFolder = Bukkit.getServer().getUpdateFolderFile();
@@ -94,11 +94,9 @@ public class Updater {
 			URLConnection conn = url.openConnection();
 
 			conn.setConnectTimeout(6000);
-			conn.addRequestProperty("User-Agent",
-					"HeavySpleef-Updater (by matzefratze123)");
-			
-			final BufferedReader reader = new BufferedReader(
-					new InputStreamReader(conn.getInputStream()));
+			conn.addRequestProperty("User-Agent", "HeavySpleef-Updater (by matzefratze123)");
+
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String query = reader.readLine();
 
 			JSONArray array = (JSONArray) JSONValue.parse(query);
@@ -123,8 +121,7 @@ public class Updater {
 				done = true;
 			}
 		} catch (IOException e) {
-			Logger.severe("Failed querying the curseforge api: "
-					+ e.getMessage());
+			Logger.severe("Failed querying the curseforge api: " + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -132,11 +129,11 @@ public class Updater {
 
 	private void checkVersions(String newVersion) {
 		String thisVersion = HeavySpleef.getInstance().getDescription().getVersion();
-		
+
 		if (thisVersion.toLowerCase().contains("dev")) {
 			return;
 		}
-		
+
 		if (!thisVersion.equalsIgnoreCase(newVersion)) {
 			updateAvailable = true;
 		}
@@ -146,60 +143,60 @@ public class Updater {
 		if (!updateAvailable) {
 			return;
 		}
-		
+
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				
+
 				URL url;
-		
+
 				try {
 					url = new URL(downloadUrl);
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 					return;
 				}
-				
+
 				try {
 					URLConnection conn = url.openConnection();
-					
+
 					InputStream in = conn.getInputStream();
-					
+
 					File folder = Bukkit.getServer().getUpdateFolderFile();
 					File out = new File(folder, fileName);
-					
+
 					if (!out.exists()) {
 						out.createNewFile();
 					}
-					
+
 					FileOutputStream writer = new FileOutputStream(out);
-					
+
 					int read;
 					byte[] buffer = new byte[1024];
-					
+
 					long size = conn.getContentLengthLong();
 					long downloaded = 0;
-					
+
 					int lastPercentPrinted = 0;
-					
+
 					while ((read = in.read(buffer, 0, 1024)) > 0) {
 						downloaded += read;
-						
+
 						writer.write(buffer, 0, read);
-						
-						int percent = (int) ((downloaded / (double)size) * 100);
+
+						int percent = (int) ((downloaded / (double) size) * 100);
 						if (percent % 10 == 0 && announceTo != null && percent != lastPercentPrinted) {
 							announceTo.sendMessage(ChatColor.GREEN + "Progress: " + percent + "%");
 							lastPercentPrinted = percent;
 						}
 					}
-					
+
 					writer.flush();
 					writer.close();
 					in.close();
 					Logger.info("Downloaded " + fileName + " into update-folder " + updateFolder.getAbsolutePath() + "!");
-					
+
 					if (announceTo != null) {
 						announceTo.sendMessage(ChatColor.DARK_GREEN + "Finished! Please " + ChatColor.UNDERLINE + "restart" + ChatColor.DARK_GREEN + " to activate the version.");
 					}

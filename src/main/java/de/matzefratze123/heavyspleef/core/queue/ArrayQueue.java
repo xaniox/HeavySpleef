@@ -20,139 +20,139 @@
 package de.matzefratze123.heavyspleef.core.queue;
 
 public class ArrayQueue<T> implements Queue<T> {
-	
-	private Object[] array;
-	private int size;
-	
+
+	private Object[]	array;
+	private int			size;
+
 	public ArrayQueue() {
 		this(10);
 	}
-	
+
 	public ArrayQueue(int initSize) {
 		if (initSize <= 0)
 			throw new IllegalArgumentException("initSize is lower 0 or less");
 		this.array = new Object[initSize];
 	}
-	
+
 	@Override
 	public int add(T i) {
-		//Lookup if queue is full
+		// Lookup if queue is full
 		if (isFull()) {
-			//Extend array
+			// Extend array
 			Object[] newArray = new Object[array.length * 2];
-			
-			//Transfer old values
+
+			// Transfer old values
 			for (int in = 0; in < array.length; in++) {
 				newArray[in] = array[in];
 			}
-			
-			//Set the new array
+
+			// Set the new array
 			array = newArray;
 		}
-		
+
 		int place = 0;
-		
-		//Push item into the first empty place
+
+		// Push item into the first empty place
 		for (int c = 0; c < array.length; c++) {
 			if (array[c] == null) {
-				//Wert hinten einfügen
+				// Wert hinten einfügen
 				array[c] = i;
 				place = c;
 				break;
 			}
 		}
-		
+
 		++size;
 		return place;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-    static <T> T cast(Object item) {
-        return (T) item;
-    }
-	
+	static <T> T cast(Object item) {
+		return (T) item;
+	}
+
 	@Override
 	public T remove() {
 		if (isEmpty()) {
 			return null;
 		}
-		
-		//Delete first entry
-		T item = ArrayQueue.<T>cast(array[0]);
+
+		// Delete first entry
+		T item = ArrayQueue.<T> cast(array[0]);
 		array[0] = null;
-		
-		//Move up values left
+
+		// Move up values left
 		if (array.length > 1) {
 			for (int i = 1; i < array.length; i++) {
 				array[i - 1] = array[i];
-				
-				//Remove last entry
+
+				// Remove last entry
 				if (array.length < i + 1) {
 					array[i] = null;
 				}
 			}
 		}
-		
+
 		--size;
 		return item;
 	}
-	
+
 	@Override
 	public boolean contains(T item) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == null) {
 				continue;
 			}
-			
+
 			if (item.equals(array[i]))
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public T remove(T item) {
 		T itemFound = null;
-		
+
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == null)
 				continue;
-			
+
 			if (array[i].equals(item)) {
-				itemFound = ArrayQueue.<T>cast(array[i]);
+				itemFound = ArrayQueue.<T> cast(array[i]);
 				array[i] = null;
 				--size;
 			}
 		}
-		
+
 		return itemFound;
 	}
 
 	@Override
 	public boolean isEmpty() {
 		boolean empty = true;
-		
+
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] != null) {
 				empty = false;
 				break;
 			}
 		}
-		
+
 		return empty;
 	}
-	
+
 	private boolean isFull() {
 		boolean full = true;
-		
+
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == null) {
 				full = false;
 				break;
 			}
 		}
-		
+
 		return full;
 	}
 
@@ -161,10 +161,10 @@ public class ArrayQueue<T> implements Queue<T> {
 		if (size < 0) {
 			size = 0;
 		}
-		
+
 		return size;
 	}
-	
+
 	@Override
 	public void clear() {
 		array = new Object[10];

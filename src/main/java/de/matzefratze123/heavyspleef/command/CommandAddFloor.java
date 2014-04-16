@@ -38,44 +38,44 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandAddFloor implements CommandListener {
-	
+
 	@Command(value = "addfloor", minArgs = 1, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.ADD_FLOOR})
+	@CommandPermissions(value = { Permissions.ADD_FLOOR })
 	@CommandHelp(usage = "/spleef addfloor <game> [randomwool]", description = "Creates a new floor based on your selection")
 	public void execute(Player player, Game game, String randomwool) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		Selection selection = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
-		
+
 		Location firstPoint = selection.getFirst();
 		Location secondPoint = selection.getSecond();
-		
+
 		boolean randomWool = randomwool != null && randomwool.equalsIgnoreCase("randomwool");
-		
+
 		if (!selection.hasSelection()) {
 			player.sendMessage(_("needSelection"));
 			return;
 		}
-			
+
 		if (selection.isTroughWorlds()) {
 			player.sendMessage(_("selectionCantTroughWorlds"));
 			return;
 		}
-		
+
 		int id = 0;
-		
+
 		while (game.getComponents().hasFloor(id)) {
 			id++;
 		}
-		
+
 		FloorCuboid floor = new FloorCuboid(id, game, firstPoint, secondPoint);
 		floor.setRandomWool(randomWool);
-		
+
 		game.getComponents().addFloor(floor);
 		player.sendMessage(_("floorCreated", String.valueOf(id + 1)));
 	}
-	
-} 
+
+}

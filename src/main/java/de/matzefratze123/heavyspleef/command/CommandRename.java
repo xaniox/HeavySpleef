@@ -35,21 +35,21 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandRename implements CommandListener {
-	
+
 	@Command(value = "rename", minArgs = 2, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.RENAME})
+	@CommandPermissions(value = { Permissions.RENAME })
 	@CommandHelp(usage = "/spleef rename <game> <new-name>", description = "Renames a game")
 	public void execute(Player player, Game game, String newName) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		if (GameManager.hasGame(newName)) {
 			player.sendMessage(_("arenaAlreadyExists"));
 		} else {
 			String oldName = game.getName();
-			
+
 			game.rename(newName);
 			player.sendMessage(_("gameRenamed", oldName, newName));
 		}

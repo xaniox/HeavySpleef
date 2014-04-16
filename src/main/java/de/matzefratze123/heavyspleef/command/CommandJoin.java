@@ -56,26 +56,25 @@ public class CommandJoin implements CommandListener {
 	@CommandHelp(usage = "/spleef join <game> [team]", description = "Joins a game")
 	public void execute(Player bukkitPlayer, Game game, String teamColor) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
-		
+
 		if (game == null) {
-			//Inventory menu
+			// Inventory menu
 			if (!bukkitPlayer.hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
 				bukkitPlayer.sendMessage(_("noPermission"));
 				return;
 			}
-			
+
 			HeavySpleef.getInstance().getJoinGUI().open(bukkitPlayer);
 		} else {
-			if (!bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm()) &&
-				!bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm() + "." + game.getName().toLowerCase())) {
-					bukkitPlayer.sendMessage(I18N._("noPermission"));
-					return;
+			if (!bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm()) && !bukkitPlayer.hasPermission(Permissions.JOIN_GAME.getPerm() + "." + game.getName().toLowerCase())) {
+				bukkitPlayer.sendMessage(I18N._("noPermission"));
+				return;
 			}
-			
+
 			Team team = null;
-			
+
 			if (teamColor == null && game.getFlag(FlagType.TEAM)) {
-				team = ((GameComponents)game.getComponents()).getBestAvailableTeam();
+				team = ((GameComponents) game.getComponents()).getBestAvailableTeam();
 			} else if (teamColor != null) {
 				if (game.getFlag(FlagType.TEAM)) {
 					team = game.getComponents().getTeam(Color.byName(teamColor));
@@ -85,31 +84,31 @@ public class CommandJoin implements CommandListener {
 					}
 				}
 			}
-			
+
 			joinAndDoChecks(game, player, team);
 		}
 	}
-	
+
 	public static void joinAndDoChecks(final Game game, final SpleefPlayer player, Team team) {
 		int jackpotToPay = game.getFlag(ENTRY_FEE);
-		
+
 		if (game.getGameState() == GameState.DISABLED) {
 			player.sendMessage(_("gameIsDisabled"));
 			return;
 		}
-		
+
 		if (!game.isReadyToPlay()) {
 			player.sendMessage(_("isntReadyToPlay"));
 			return;
 		}
-		
+
 		if (HookManager.getInstance().getService(VaultHook.class).hasHook()) {
 			if (HookManager.getInstance().getService(VaultHook.class).getHook().getBalance(player.getRawName()) < jackpotToPay) {
 				player.sendMessage(_("notEnoughMoneyToJoin"));
 				return;
 			}
 		}
-		
+
 		if (player.isSpectating()) {
 			player.sendMessage(_("alreadySpectating"));
 			return;
@@ -123,73 +122,73 @@ public class CommandJoin implements CommandListener {
 			game.getQueue().push(player);
 			return;
 		}
-		
+
 		boolean is1vs1 = game.getFlag(ONEVSONE);
 		int maxplayers = game.getFlag(MAXPLAYERS);
 		boolean isVip = player.hasPermission(Permissions.VIP);
 		boolean allowFullJoin = HeavySpleef.getSystemConfig().getGeneralSection().getVipJoinFull();
-		
+
 		if (maxplayers > 0 && game.getIngamePlayers().size() >= maxplayers && !(isVip && allowFullJoin)) {
 			player.sendMessage(_("maxPlayersReached"));
 			game.getQueue().push(player);
 			return;
 		}
-		
+
 		if (game.getFlag(FlagType.TEAM)) {
 			if (team == null) {
-				team = ((GameComponents)game.getComponents()).getBestAvailableTeam();
+				team = ((GameComponents) game.getComponents()).getBestAvailableTeam();
 			} else if (team.getMaxPlayers() > 0 && team.getPlayers().size() >= team.getMaxPlayers()) {
 				player.sendMessage(_("maxPlayersInTeam"));
 				return;
 			}
-			
+
 			if (team == null) {
 				player.sendMessage(_("maxPlayersInTeam"));
 				return;
 			}
 		}
-		
+
 		if ((game.getGameState() == GameState.COUNTING && !is1vs1) || (game.getGameState() != GameState.COUNTING)) {
 			int pvptimer = HeavySpleef.getSystemConfig().getGeneralSection().getPvPTimer();
-			
+
 			if (pvptimer > 0) {
 				player.sendMessage(_("teleportWillCommence", game.getName(), String.valueOf(pvptimer)));
 				player.sendMessage(_("dontMove"));
 			}
-			
+
 			PvPTimerManager.getInstance().add(player, new JoinTimerRunnable(game, player, team));
-		} else if (game.getGameState() == GameState.COUNTING){
+		} else if (game.getGameState() == GameState.COUNTING) {
 			player.sendMessage(_("gameAlreadyRunning"));
 			game.getQueue().push(player);
 			return;
 		}
 	}
-	
+
 	static class JoinTimerRunnable implements Runnable {
 
-		private Game game;
-		private SpleefPlayer player;
-		private Team team;
-		
-		public JoinTimerRunnable(Game game, SpleefPlayer player, Team team){
+		private Game			game;
+		private SpleefPlayer	player;
+		private Team			team;
+
+		public JoinTimerRunnable(Game game, SpleefPlayer player, Team team) {
 			this.game = game;
 			this.player = player;
 			this.team = team;
 		}
-		
+
 		@Override
 		public void run() {
 			if (game.getFlag(TEAM)) {
 				team.join(player);
 				game.broadcast(_("playerJoinedTeam", player.getName(), team.getColor().toMessageColorString()), ConfigUtil.getBroadcast(MessageType.PLAYER_JOIN));
 			}
-			
+
 			game.join(player);
 			player.sendMessage(_("playerJoinedToPlayer", game.getName()));
-			
+
 			game.getQueue().removePlayer(player);
 		}
-		
+
 	}
 
 }

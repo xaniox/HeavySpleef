@@ -30,22 +30,22 @@ import de.matzefratze123.heavyspleef.core.region.LoseZone;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class TaskLoseChecker implements Runnable, Task {
-	
-	private static final long CHECK_INTERVAL = 5L;
-	
-	private Game game;
-	private int pid = -1;
-	
-	public TaskLoseChecker(Game game) { 
+
+	private static final long	CHECK_INTERVAL	= 5L;
+
+	private Game				game;
+	private int					pid				= -1;
+
+	public TaskLoseChecker(Game game) {
 		this.game = game;
 	}
-	
+
 	@Override
 	public int start() {
 		if (pid != -1) {
 			throw new IllegalStateException("Task already registered!");
 		}
-		
+
 		pid = Bukkit.getScheduler().scheduleSyncRepeatingTask(HeavySpleef.getInstance(), this, 0L, CHECK_INTERVAL);
 		return pid;
 	}
@@ -55,7 +55,7 @@ public class TaskLoseChecker implements Runnable, Task {
 		if (pid == -1) {
 			return;
 		}
-		
+
 		Bukkit.getScheduler().cancelTask(pid);
 		pid = -1;
 	}
@@ -70,14 +70,14 @@ public class TaskLoseChecker implements Runnable, Task {
 		if (game.getGameState() != GameState.INGAME) {
 			return;
 		}
-		
+
 		for (int i = 0; i < game.getIngamePlayers().size(); i++) {
 			SpleefPlayer player = game.getIngamePlayers().get(i);
-			
+
 			if (!player.isActive()) {
 				continue;
 			}
-			
+
 			Location location = player.getBukkitPlayer().getLocation();
 			if (location.getBlock().isLiquid()) {
 				game.leave(player, LoseCause.LOSE);
@@ -86,12 +86,12 @@ public class TaskLoseChecker implements Runnable, Task {
 					if (!zone.contains(location)) {
 						continue;
 					}
-					
+
 					game.leave(player, LoseCause.LOSE);
 					break;
 				}
 			}
 		}
 	}
-	
+
 }

@@ -28,15 +28,15 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public interface SpleefSign {
-	
+
 	public void onClick(SpleefPlayer player, Sign sign);
-	
+
 	public void onPlace(SignChangeEvent event);
-	
+
 	public String getId();
-	
+
 	public Map<Integer, String[]> getLines();
-	
+
 	public Permissions getPermission();
-	
+
 }

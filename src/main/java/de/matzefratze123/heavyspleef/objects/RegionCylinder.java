@@ -32,19 +32,19 @@ import de.matzefratze123.heavyspleef.util.Util;
 
 public class RegionCylinder implements Region {
 
-	protected CylinderRegion region;
-	protected int id;
-	
+	protected CylinderRegion	region;
+	protected int				id;
+
 	public RegionCylinder(int id, Location center, int radius, int minY, int maxY) {
 		this.id = id;
-		
+
 		LocalWorld localWorld = BukkitUtil.getLocalWorld(center.getWorld());
 		Vector vCenter = Util.toWorldEditVector(center);
 		Vector2D v2DRadius = new Vector2D(radius, radius);
-		
+
 		region = new CylinderRegion(localWorld, vCenter, v2DRadius, minY, maxY);
 	}
-	
+
 	public CylinderRegion getWorldEditRegion() {
 		return region;
 	}
@@ -59,9 +59,9 @@ public class RegionCylinder implements Region {
 		if (!location.getWorld().getName().equalsIgnoreCase(region.getWorld().getName())) {
 			return false;
 		}
-		
+
 		Vector vector = Util.toWorldEditVector(location);
-		
+
 		return region.contains(vector);
 	}
 

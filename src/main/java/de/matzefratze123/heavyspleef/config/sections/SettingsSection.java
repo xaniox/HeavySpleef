@@ -24,13 +24,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public interface SettingsSection {
-	
+
 	public SpleefConfig getConfig();
-	
+
 	public ConfigurationSection getSection();
-	
+
 	public Object getValue(String path);
-	
+
 	public void reload();
-	
+
 }

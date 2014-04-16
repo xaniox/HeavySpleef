@@ -47,33 +47,32 @@ public class SpleefSignJoin implements SpleefSign {
 	@Override
 	public void onClick(SpleefPlayer player, Sign sign) {
 		String[] lines = SpleefSignExecutor.stripSign(sign);
-		
-		//Check wether there is no game on the third line
+
+		// Check wether there is no game on the third line
 		if (lines[2].isEmpty()) {
 			if (!player.getBukkitPlayer().hasPermission(Permissions.JOIN_GAME_INV.getPerm())) {
 				player.sendMessage(I18N._("noPermission"));
 				return;
 			}
-			
-			//Open up Join GUI
+
+			// Open up Join GUI
 			HeavySpleef.getInstance().getJoinGUI().open(player.getBukkitPlayer());
 		} else {
-			//Check if the game exists
+			// Check if the game exists
 			if (!GameManager.hasGame(lines[2])) {
 				player.sendMessage(I18N._("arenaDoesntExists"));
 				return;
 			}
-			
+
 			Game game = GameManager.getGame(lines[2]);
-			
-			if (!player.getBukkitPlayer().hasPermission(Permissions.SIGN_JOIN.getPerm())
-			 && !player.getBukkitPlayer().hasPermission(Permissions.SIGN_JOIN.getPerm() + "." + game.getName().toLowerCase())) {
+
+			if (!player.getBukkitPlayer().hasPermission(Permissions.SIGN_JOIN.getPerm()) && !player.getBukkitPlayer().hasPermission(Permissions.SIGN_JOIN.getPerm() + "." + game.getName().toLowerCase())) {
 				return;
 			}
-			
+
 			Team team;
-			
-			//Check teams
+
+			// Check teams
 			if (!lines[3].isEmpty()) {
 				try {
 					team = game.getComponents().getTeam(Color.byName(lines[3]));
@@ -83,21 +82,21 @@ public class SpleefSignJoin implements SpleefSign {
 				}
 			} else {
 				Color color = null;
-				
-				//Try to calculate team colors via block neighboors
+
+				// Try to calculate team colors via block neighboors
 				Block up = sign.getBlock().getRelative(BlockFace.UP);
 				if (up.getType() == Material.WOOL) {
 					color = Color.byWoolColor(up.getData());
 				}
-				
+
 				Block attached = Util.getAttached(sign.getBlock());
 				if (attached != null && attached.getType() == Material.WOOL) {
 					color = Color.byWoolColor(attached.getData());
 				}
-				
+
 				team = game.getComponents().getTeam(color);
 			}
-			
+
 			CommandJoin.joinAndDoChecks(GameManager.getGame(lines[2]), player, team);
 		}
 	}
@@ -110,9 +109,9 @@ public class SpleefSignJoin implements SpleefSign {
 	@Override
 	public Map<Integer, String[]> getLines() {
 		Map<Integer, String[]> lines = new HashMap<Integer, String[]>();
-		
-		lines.put(0, new String[]{"[Join]", "Join"});
-		
+
+		lines.put(0, new String[] { "[Join]", "Join" });
+
 		return lines;
 	}
 
@@ -128,32 +127,32 @@ public class SpleefSignJoin implements SpleefSign {
 			e.getBlock().breakNaturally();
 			return;
 		}
-		
+
 		if (!e.getLine(3).isEmpty()) {
 			Color color = Color.byName(e.getLine(3));
-			
+
 			if (color == null) {
 				e.getPlayer().sendMessage(I18N._("invalidColor"));
 				e.getBlock().breakNaturally();
 				return;
 			}
-			
+
 			e.setLine(3, color.toMessageColorString());
 		}
-		
+
 		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
-		
+
 		StringBuilder builder = new StringBuilder();
 		if (e.getLine(1).startsWith("[")) {
 			builder.append(ChatColor.DARK_GRAY + "[");
 		}
-		
+
 		builder.append(ChatColor.GREEN).append(ChatColor.BOLD).append("Join");
-		
+
 		if (e.getLine(1).endsWith("]")) {
 			builder.append(ChatColor.DARK_GRAY + "]");
 		}
-		
+
 		e.setLine(1, builder.toString());
 		e.setLine(2, ChatColor.DARK_RED + GameManager.getGame(e.getLine(2)).getName());
 	}

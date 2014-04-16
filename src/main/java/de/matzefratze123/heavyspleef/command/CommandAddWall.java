@@ -42,69 +42,68 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandAddWall implements CommandListener {
 
 	@Command(value = "addwall", minArgs = 1, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.ADD_WALL})
+	@CommandPermissions(value = { Permissions.ADD_WALL })
 	@CommandHelp(usage = "/spleef addwall <game>", description = "Adds a self updating wall to a game")
 	public void execute(Player player, Game game) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		Selection selection = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 		if (!selection.hasSelection()) {
 			player.sendMessage(_("needSelection"));
 			return;
 		}
-		
+
 		if (selection.isTroughWorlds()) {
 			player.sendMessage(_("selectionCantTroughWorlds"));
 			return;
 		}
-		
+
 		if (!validateSelection(selection)) {
 			player.sendMessage(ChatColor.RED + "Invalid selection. Please select one row of signs.");
 			return;
 		}
-		
+
 		int id = 0;
 		while (game.getComponents().hasSignWall(id)) {
 			id++;
 		}
-		
+
 		SignWall wall = new SignWall(id, selection.getFirst(), selection.getSecond());
 		game.getComponents().addSignWall(wall);
 		game.getComponents().updateWalls();
 		player.sendMessage(_("signWallAdded"));
 	}
-	
+
 	private boolean validateSelection(Selection selection) {
 		if (selection.getFirst().getBlockY() != selection.getSecond().getBlockY()) {
 			return false;
 		}
-		
-		if (selection.getFirst().getBlockX() != selection.getSecond().getBlockX() &&
-			selection.getFirst().getBlockZ() != selection.getSecond().getBlockZ()) {
+
+		if (selection.getFirst().getBlockX() != selection.getSecond().getBlockX() && selection.getFirst().getBlockZ() != selection.getSecond().getBlockZ()) {
 			return false;
 		}
-		
+
 		int minX = Math.min(selection.getFirst().getBlockX(), selection.getSecond().getBlockX());
 		int maxX = Math.max(selection.getFirst().getBlockX(), selection.getSecond().getBlockX());
 		int minZ = Math.min(selection.getFirst().getBlockZ(), selection.getSecond().getBlockZ());
 		int maxZ = Math.max(selection.getFirst().getBlockZ(), selection.getSecond().getBlockZ());
-		
+
 		boolean validMaterial = true;
-		
+
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				Block block = selection.getFirst().getWorld().getBlockAt(x, selection.getFirst().getBlockY(), z);
-				
+
 				if (!(block.getState() instanceof Sign)) {
 					validMaterial = false;
 				}
 			}
 		}
-		
+
 		return validMaterial;
 	}
-	
+
 }

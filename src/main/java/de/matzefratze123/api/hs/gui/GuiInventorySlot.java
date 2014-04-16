@@ -33,25 +33,25 @@ public class GuiInventorySlot {
 
 	public void setItem(ItemStack item) {
 		this.item = item;
-		
+
 		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material) {
 		this.item = new ItemStack(material);
-		
+
 		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material, int amount) {
 		this.item = new ItemStack(material, amount);
-		
+
 		inventory.refreshOpenInventories();
 	}
 
 	public void setItem(Material material, int amount, byte data) {
 		this.item = new ItemStack(material, amount, data);
-		
+
 		inventory.refreshOpenInventories();
 	}
 
@@ -63,7 +63,7 @@ public class GuiInventorySlot {
 		stack.setItemMeta(meta);
 
 		this.item = stack;
-		
+
 		inventory.refreshOpenInventories();
 	}
 
@@ -77,14 +77,14 @@ public class GuiInventorySlot {
 		stack.setItemMeta(meta);
 
 		this.item = stack;
-		
+
 		inventory.refreshOpenInventories();
 
 	}
 
 	public void setItem(Material material, byte data) {
 		this.item = new ItemStack(material, 1, data);
-		
+
 		inventory.refreshOpenInventories();
 	}
 

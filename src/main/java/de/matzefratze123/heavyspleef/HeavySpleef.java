@@ -113,41 +113,41 @@ import de.matzefratze123.heavyspleef.util.SpleefLogger;
 import de.matzefratze123.heavyspleef.util.Updater;
 
 public class HeavySpleef extends JavaPlugin implements Listener {
-	
-	public static String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
-	public static final String MAIN_COMMAND = "spleef";
-	public static final String[] COMMANDS = new String[] {"spleef", "spl", "hspleef"};
-	public static final String PLUGIN_NAME = "HeavySpleef";
-	public static final Random RANDOM = new Random();
-	
-	//Instance
-	private static HeavySpleef instance;
-	private static boolean noWorldEdit;
-	
-	//Object instances start
-	private SpleefConfig config;
-	private YamlDatabase database;
-	private IStatisticDatabase statisticDatabase;
-	private SelectionManager selectionManager;
-	private InventoryJoinGUI joinGui;
-	
-	//Tasks
-	private TaskAntiCamping antiCampTask;
-	
+
+	public static String			PREFIX			= ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "]";
+	public static final String		MAIN_COMMAND	= "spleef";
+	public static final String[]	COMMANDS		= new String[] { "spleef", "spl", "hspleef" };
+	public static final String		PLUGIN_NAME		= "HeavySpleef";
+	public static final Random		RANDOM			= new Random();
+
+	// Instance
+	private static HeavySpleef		instance;
+	private static boolean			noWorldEdit;
+
+	// Object instances start
+	private SpleefConfig			config;
+	private YamlDatabase			database;
+	private IStatisticDatabase		statisticDatabase;
+	private SelectionManager		selectionManager;
+	private InventoryJoinGUI		joinGui;
+
+	// Tasks
+	private TaskAntiCamping			antiCampTask;
+
 	// Updater
-	private Updater updater;
-	
-	//List of online players
-	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
-	
-	private CommandExecutorService ces;
-	
+	private Updater					updater;
+
+	// List of online players
+	private List<SpleefPlayer>		players			= new ArrayList<SpleefPlayer>();
+
+	private CommandExecutorService	ces;
+
 	@Override
 	public void onLoad() {
-		//Set the instance first
+		// Set the instance first
 		instance = this;
 	}
-	
+
 	@Override
 	public void onEnable() {
 		if (!HookManager.getInstance().getService(WorldEditHook.class).hasHook()) {
@@ -156,67 +156,67 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			Logger.warning("       WorldEdit before using this plugin!        ");
 			Logger.warning(" ");
 			Logger.warning("Disabling HeavySpleef due to no WorldEdit.");
-			
+
 			noWorldEdit = true;
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-		
-		//Check tagapi version
+
+		// Check tagapi version
 		if (getServer().getPluginManager().getPlugin("TagAPI") != null) {
 			try {
 				Class.forName("org.kitteh.tag.AsyncPlayerReceiveNameTagEvent");
 			} catch (ClassNotFoundException e) {
-				//Ooops, user hasn't installed the latest release of tagapi
+				// Ooops, user hasn't installed the latest release of tagapi
 				Logger.info("Warning: Found an outdated version of TagAPI. Please update your TagAPI to v3.0 in order to use team games!");
 			}
 		}
-		
+
 		getDataFolder().mkdirs();
-		
+
 		config = new SpleefConfig();
 		I18N.loadLanguageFiles();
-		
+
 		selectionManager = new SelectionManager();
 		database = new YamlDatabase();
 		database.load();
-		
+
 		PREFIX = config.getGeneralSection().getPrefix();
-		
+
 		joinGui = new InventoryJoinGUI();
 		initStatisticDatabase();
-		
+
 		SpleefLogger.logRaw("Starting plugin version " + getDescription().getVersion() + "!");
-		
-		//Start metrics
+
+		// Start metrics
 		startMetrics();
-		
+
 		initUpdate();
 		registerEvents();
 		registerSigns();
-		
+
 		antiCampTask = new TaskAntiCamping();
 		antiCampTask.start();
-		
-		//Command stuff
+
+		// Command stuff
 		ces = new CommandExecutorService(MAIN_COMMAND, this);
 		ces.registerTransformer(Game.class, new GameTransformer());
 		ces.registerTransformer(Flag.class, new FlagTransformer());
 		ces.setRootCommandExecutor(new RootCommand());
 		ces.setUnknownCommandMessage(I18N._("unknownCommand"));
-		
+
 		registerCommands();
-		
+
 		Logger.info("HeavySpleef v" + getDescription().getVersion() + " activated!");
 	}
 
 	@Override
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
-		
+
 		if (!noWorldEdit) {
 			this.database.save();
-			
+
 			try {
 				this.statisticDatabase.saveAccounts();
 			} catch (AccountException e) {
@@ -224,60 +224,60 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 				e.printStackTrace();
 			}
 		}
-		
+
 		SpleefLogger.logRaw("Stopping plugin!");
-		
+
 		Logger.info("HeavySpleef disabled!");
 	}
-	
+
 	public static HeavySpleef getInstance() {
 		return instance;
 	}
-	
+
 	public static Random getRandom() {
 		return RANDOM;
 	}
-	
+
 	public CommandExecutorService getCommandExecutorService() {
 		return ces;
 	}
-	
+
 	public Updater getUpdater() {
 		return updater;
 	}
-	
+
 	public YamlDatabase getGameDatabase() {
 		return database;
 	}
-	
+
 	public IStatisticDatabase getStatisticDatabase() {
 		return statisticDatabase;
 	}
-	
+
 	public static SpleefConfig getSystemConfig() {
 		return instance.config;
 	}
-	
+
 	public static IGameManager getAPI() {
 		return GameManagerAPI.getInstance();
 	}
-	
+
 	public static void debug(String msg) {
 		System.out.println("[HeavySpleef] [Debug] " + msg);
 	}
-	
+
 	public SelectionManager getSelectionManager() {
 		return selectionManager;
 	}
-	
+
 	public TaskAntiCamping getAntiCampingTask() {
 		return antiCampTask;
 	}
-	
+
 	public InventoryJoinGUI getJoinGUI() {
 		return joinGui;
 	}
-	
+
 	private void registerCommands() {
 		ces.registerListener(new CommandAddFloor());
 		ces.registerListener(new CommandAddLose());
@@ -312,10 +312,10 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		ces.registerListener(new CommandUpdate());
 		ces.registerListener(new CommandVote());
 	}
-	
+
 	private void registerEvents() {
 		PluginManager pm = this.getServer().getPluginManager();
-		
+
 		pm.registerEvents(this, this);
 		pm.registerEvents(new SelectionListener(this), this);
 		pm.registerEvents(new PlayerListener(), this);
@@ -323,57 +323,57 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 		pm.registerEvents(new QueuesListener(), this);
 		pm.registerEvents(new ReadyListener(), this);
 		pm.registerEvents(SpleefSignExecutor.getInstance(), this);
-		
+
 		Hook<TagAPI> tagAPIHook = HookManager.getInstance().getService(TagAPIHook.class);
 		if (tagAPIHook.hasHook()) {
 			pm.registerEvents(new TagListener(), this);
 		}
 	}
-	
+
 	private void registerSigns() {
 		SpleefSignExecutor executor = SpleefSignExecutor.getInstance();
-		
+
 		executor.registerSign(new SpleefSignJoin());
 		executor.registerSign(new SpleefSignLeave());
 		executor.registerSign(new SpleefSignStart());
 		executor.registerSign(new SpleefSignSpectate());
 		executor.registerSign(new SpleefSignVote());
 	}
-	
+
 	public void initStatisticDatabase() {
 		if (SQLStatisticDatabase.isDatabaseEnabled()) {
-			//Load authentication data
+			// Load authentication data
 			String statsDB = config.getStatisticSection().getDatabaseType();
 			String host = config.getStatisticSection().getHost();
 			int port = config.getStatisticSection().getPort();
 			String databaseName = config.getStatisticSection().getDbName();
 			String user = config.getStatisticSection().getDbUser();
 			String password = config.getStatisticSection().getDbPassword();
-			
+
 			AbstractDatabase database;
 			if (statsDB.equalsIgnoreCase("mysql")) {
 				database = new MySQLDatabase(getLogger(), host, port, databaseName, user, password);
 			} else {
-				database = new SQLiteDatabase(getLogger(), SQLStatisticDatabase.SQLITE_FILE);	
+				database = new SQLiteDatabase(getLogger(), SQLStatisticDatabase.SQLITE_FILE);
 			}
-			
+
 			statisticDatabase = new SQLStatisticDatabase(database);
-			
-			//Convert old yaml statistics
+
+			// Convert old yaml statistics
 			YamlConverter.convertYamlData();
 		}
 	}
-	
+
 	private void initUpdate() {
-		//Don't check for updates if the user has disabled this function
+		// Don't check for updates if the user has disabled this function
 		if (!config.getRootSection().isAutoUpdate())
 			return;
-		
+
 		this.updater = new Updater();
-		
-		//Makes sure the updater thread has completed its work
+
+		// Makes sure the updater thread has completed its work
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if (updater.isUpdateAvailable()) {
@@ -382,9 +382,9 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 				}
 			}
 		}, 50L);
-		
+
 	}
-	
+
 	private void startMetrics() {
 		try {
 			Metrics m = new Metrics(HeavySpleef.this);
@@ -393,65 +393,65 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			Logger.info("An error occured while submitting stats to metrics...");
 		}
 	}
-	
+
 	public synchronized SpleefPlayer getSpleefPlayer(Object base) {
 		Player bukkitPlayer = null;
-		
+
 		if (base instanceof Player) {
 			bukkitPlayer = (Player) base;
 		} else if (base instanceof String) {
-			bukkitPlayer = Bukkit.getPlayer((String)base);
+			bukkitPlayer = Bukkit.getPlayer((String) base);
 		}
-		
+
 		if (bukkitPlayer == null) {
 			return null;
 		}
-		
+
 		SpleefPlayer player;
-		
+
 		for (SpleefPlayer pl : players) {
 			if (pl.getBukkitPlayer() == bukkitPlayer) {
 				return pl;
 			}
 		}
-		
-		//Player isn't registered yet
+
+		// Player isn't registered yet
 		player = new SpleefPlayer(bukkitPlayer);
 		players.add(player);
-		
+
 		if (SQLStatisticDatabase.isDatabaseEnabled()) {
 			player.loadStatistics();
 		}
-		
+
 		return player;
 	}
-	
+
 	public SpleefPlayer[] getOnlineSpleefPlayers() {
 		SpleefPlayer[] playersArray = new SpleefPlayer[players.size()];
-		
+
 		synchronized (players) {
 			for (int i = 0; i < players.size(); i++) {
 				playersArray[i] = players.get(i);
 			}
 		}
-		
+
 		return playersArray;
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onLeave(PlayerQuitEvent e) {
 		handleQuit(e);
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onKick(PlayerKickEvent e) {
 		handleQuit(e);
 	}
-	
+
 	private void handleQuit(PlayerEvent e) {
 		SpleefPlayer player = getSpleefPlayer(e.getPlayer());
 		player.setOnline(false);
 		players.remove(player);
 	}
-	
+
 }

@@ -41,42 +41,42 @@ import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
 public class CommandInfo implements CommandListener {
-	
+
 	@Command(value = "info", minArgs = 1)
-	@CommandPermissions(value = {Permissions.INFO})
+	@CommandPermissions(value = { Permissions.INFO })
 	@CommandHelp(usage = "/spleef info <game>", description = "Prints out information about this game")
 	public void execute(CommandSender sender, Game game) {
 		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		sender.sendMessage(ChatColor.YELLOW + "Name: " + game.getName() + ChatColor.GRAY + ", type: " + game.getType().name());
 		if (game.getFlags().size() > 0) {
 			sender.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Flags: " + ChatColor.BLUE + getFriendlyFlagInfo(game));
 		}
-		
+
 		sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Floors:");
 		for (IFloor floor : game.getComponents().getFloors()) {
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + "# " + floor.asPlayerInfo());
 		}
-		
+
 		sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "Losezones:");
 		for (LoseZone zone : game.getComponents().getLoseZones()) {
 			sender.sendMessage(ChatColor.YELLOW + "# " + zone.asInfo());
 		}
 	}
-	
+
 	private String getFriendlyFlagInfo(Game game) {
 		Map<Flag<?>, Object> flags = game.getFlags();
 		String[] info = new String[flags.size()];
-		
+
 		int i = 0;
 		for (Flag<?> flag : flags.keySet()) {
 			info[i] = flag.toInfo(flags.get(flag));
 			i++;
 		}
-		
+
 		return Util.toFriendlyString(info, ", ");
 	}
 

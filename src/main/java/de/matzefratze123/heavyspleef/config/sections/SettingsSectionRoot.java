@@ -24,18 +24,18 @@ import org.bukkit.configuration.ConfigurationSection;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionRoot implements SettingsSection {
-	
-	private SpleefConfig config;
-	
-	private boolean autoUpdate;
-	private int configVersion;
-	
+
+	private SpleefConfig	config;
+
+	private boolean			autoUpdate;
+	private int				configVersion;
+
 	public SettingsSectionRoot(SpleefConfig config) {
 		this.config = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return config;
@@ -64,5 +64,5 @@ public class SettingsSectionRoot implements SettingsSection {
 	public int getConfigVersion() {
 		return configVersion;
 	}
-	
+
 }

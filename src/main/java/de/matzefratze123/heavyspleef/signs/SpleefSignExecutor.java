@@ -42,9 +42,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SpleefSignExecutor implements Listener {
 
-	private List<SpleefSign> registeredSigns = new ArrayList<SpleefSign>();
+	private List<SpleefSign>			registeredSigns	= new ArrayList<SpleefSign>();
 
-	private static SpleefSignExecutor instance;
+	private static SpleefSignExecutor	instance;
 
 	static {
 		if (instance == null)
@@ -103,15 +103,15 @@ public class SpleefSignExecutor implements Listener {
 
 		Sign sign = (Sign) block.getState();
 		String striped = ChatColor.stripColor(sign.getLine(0));
-		
+
 		if (!striped.equalsIgnoreCase("[Spleef]") && !striped.equalsIgnoreCase("[Splegg]"))
 			return;
 
 		SpleefSign matching = matchSign(sign.getLines());
-		
+
 		if (matching == null)
 			return;
-		
+
 		Permissions permission = matching.getPermission();
 
 		// Check permissions
@@ -129,29 +129,29 @@ public class SpleefSignExecutor implements Listener {
 		if (!e.getLine(0).equalsIgnoreCase("[Spleef]") && !e.getLine(0).equalsIgnoreCase("[Splegg]")) {
 			return;
 		}
-		
+
 		if (!e.getPlayer().hasPermission(Permissions.CREATE_SPLEEF_SIGN.getPerm())) {
 			e.getPlayer().sendMessage(I18N._("noPermission"));
 			e.getBlock().breakNaturally();
 			return;
 		}
-		
+
 		SpleefSign matching = matchSign(e.getLines());
-		
+
 		if (matching == null) {
 			return;
 		}
-		
+
 		boolean containsSpleef = e.getLine(0).toLowerCase().contains("spleef");
 		boolean containsSplegg = e.getLine(0).toLowerCase().contains("splegg");
 		String str = null;
-		
+
 		if (containsSpleef) {
 			str = "Spleef";
 		} else if (containsSplegg) {
 			str = "Splegg";
 		}
-		
+
 		e.setLine(0, ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + str + ChatColor.DARK_GRAY + "]");
 		matching.onPlace(e);
 	}
@@ -159,7 +159,7 @@ public class SpleefSignExecutor implements Listener {
 	private SpleefSign matchSign(String[] lines) {
 		// Go over all SpleefSigns
 		for (SpleefSign spleefSign : registeredSigns) {
-			
+
 			Map<Integer, String[]> spleefSignLines = spleefSign.getLines();
 
 			boolean matching = true;
@@ -170,17 +170,16 @@ public class SpleefSignExecutor implements Listener {
 
 				String line = lines[i];
 				line = ChatColor.stripColor(line);
-				
-				
+
 				String[] spleefSignLine = spleefSignLines.get(offset);
 				if (spleefSignLine == null)
 					continue;
-				
+
 				boolean matchingLine = false;
-				
+
 				for (String alias : spleefSignLine) {
 					alias = ChatColor.stripColor(alias);
-	
+
 					// If one line is false the sign is not matching the current
 					// SpleefSign
 					if (line.equalsIgnoreCase(alias)) {
@@ -188,27 +187,27 @@ public class SpleefSignExecutor implements Listener {
 						break;
 					}
 				}
-				
+
 				if (!matchingLine) {
 					matching = false;
 				}
 			}
-			
+
 			if (matching) {
 				return spleefSign;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public static String[] stripSign(Sign sign) {
 		String[] lines = new String[4];
-		
+
 		for (int i = 0; i < sign.getLines().length; i++) {
 			lines[i] = ChatColor.stripColor(sign.getLine(i));
 		}
-		
+
 		return lines;
 	}
 

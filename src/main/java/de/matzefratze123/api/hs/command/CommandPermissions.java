@@ -15,10 +15,10 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface CommandPermissions {
-	
+
 	/**
 	 * The permissions in form of a string array
 	 */
 	Permissions[] value();
-	
+
 }

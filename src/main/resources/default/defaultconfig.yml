@@ -122,6 +122,7 @@ flag-defaults:
   blockbreakeffect: false
   anticamping: true
   leatherarmor: false
+  scoreboard: false
 
 queues:
   

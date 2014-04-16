@@ -27,23 +27,24 @@ import de.matzefratze123.heavyspleef.core.Game;
 
 public class GameManagerAPI implements IGameManager {
 
-	private static GameManagerAPI instance;
-	
+	private static GameManagerAPI	instance;
+
 	static {
 		if (instance == null) {
 			instance = new GameManagerAPI();
 		}
 	}
-	
-	private GameManagerAPI() {}
-	
+
+	private GameManagerAPI() {
+	}
+
 	public static GameManagerAPI getInstance() {
 		return instance;
 	}
 
 	@Override
 	public void addGame(IGame game) {
-		GameManager.addGame((Game)game);
+		GameManager.addGame((Game) game);
 	}
 
 	@Override
@@ -64,14 +65,12 @@ public class GameManagerAPI implements IGameManager {
 	@Override
 	public List<IGame> getGames() {
 		List<IGame> games = new ArrayList<IGame>();
-		
+
 		for (Game game : GameManager.getGames()) {
 			games.add(game);
 		}
-		
+
 		return games;
 	}
-	
-	
 
 }

@@ -38,19 +38,19 @@ import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class FloorCuboid extends RegionCuboid implements IFloor {
-	
-	private Game game;
-	private boolean randomWool;
-	
+
+	private Game	game;
+	private boolean	randomWool;
+
 	public FloorCuboid(int id, Game game, Location firstPoint, Location secondPoint) {
 		super(id, firstPoint, secondPoint);
 
 		this.game = game;
 	}
-	
+
 	public void generateWool() {
-		byte data = (byte)HeavySpleef.getRandom().nextInt(16);
-		
+		byte data = (byte) HeavySpleef.getRandom().nextInt(16);
+
 		int minX = Math.min(firstPoint.getBlockX(), secondPoint.getBlockX());
 		int maxX = Math.max(firstPoint.getBlockX(), secondPoint.getBlockX());
 
@@ -59,12 +59,12 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 
 		int minZ = Math.min(firstPoint.getBlockZ(), secondPoint.getBlockZ());
 		int maxZ = Math.max(firstPoint.getBlockZ(), secondPoint.getBlockZ());
-		
+
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
 					Block current = getWorld().getBlockAt(x, y, z);
-					
+
 					current.setType(Material.WOOL);
 					current.setData(data);
 				}
@@ -88,35 +88,35 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 	public String asPlayerInfo() {
 		return "ID: " + getId() + ", shape: CUBOID";
 	}
-	
+
 	@Override
 	public ConfigurationSection serialize() {
 		MemorySection section = new MemoryConfiguration();
-		
+
 		section.set("id", id);
 		section.set("shape", "CUBOID");
 		section.set("first", Parser.convertLocationtoString(firstPoint));
 		section.set("second", Parser.convertLocationtoString(secondPoint));
-		
+
 		return section;
 	}
-	
+
 	public static FloorCuboid deserialize(ConfigurationSection section, Game game) {
 		int id = section.getInt("id");
 		String shape = section.getString("shape");
-		
+
 		Location first, second;
-		
+
 		if (shape.equalsIgnoreCase("CUBOID")) {
 			first = Parser.convertStringtoLocation(section.getString("first"));
 			second = Parser.convertStringtoLocation(section.getString("second"));
 		} else if (shape.equalsIgnoreCase("CYLINDER")) {
-			//Convert old cylinder floors into cuboid floors
+			// Convert old cylinder floors into cuboid floors
 			Location center = Parser.convertStringtoLocation(section.getString("center"));
 			int radius = section.getInt("radius");
 			int min = section.getInt("min");
 			int max = section.getInt("max");
-			
+
 			first = new Location(center.getWorld(), center.getBlockX() - radius, min, center.getBlockZ() - radius);
 			second = new Location(center.getWorld(), center.getBlockX() + radius, max, center.getBlockZ() + radius);
 		} else {
@@ -124,15 +124,15 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 			Logger.warning("Failed to load floor " + id + "!");
 			return null;
 		}
-		
+
 		FloorCuboid floor = new FloorCuboid(id, game, first, second);
-		File file = new File(((GameComponents)game.getComponents()).getFloorFolder(), id + "." + FILE_EXTENSION);
-		
+		File file = new File(((GameComponents) game.getComponents()).getFloorFolder(), id + "." + FILE_EXTENSION);
+
 		if (!file.exists()) {
 			SaveSchematic saver = new SaveSchematic(floor);
 			Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), saver);
 		}
-		
+
 		return floor;
 	}
 
@@ -144,8 +144,8 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 	@Override
 	public void delete() {
 		game.getComponents().removeFloor(id);
-		
-		File file = new File(((GameComponents)game.getComponents()).getFloorFolder(), id + "." + FILE_EXTENSION);
+
+		File file = new File(((GameComponents) game.getComponents()).getFloorFolder(), id + "." + FILE_EXTENSION);
 		if (file.exists()) {
 			file.delete();
 		}
@@ -157,7 +157,7 @@ public class FloorCuboid extends RegionCuboid implements IFloor {
 
 	public void setRandomWool(boolean randomWool) {
 		this.randomWool = randomWool;
-		
+
 		if (randomWool) {
 			generateWool();
 		}

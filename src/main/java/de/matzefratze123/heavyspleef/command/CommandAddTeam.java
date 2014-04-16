@@ -36,22 +36,22 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandAddTeam implements CommandListener {
-	
+
 	@Command(value = "addteam", minArgs = 2, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.ADD_TEAM})
+	@CommandPermissions(value = { Permissions.ADD_TEAM })
 	@CommandHelp(usage = "/spleef addteam <game> <red|blue|green|yellow|gray>", description = "Adds a team with the given color to the game")
 	public void execute(Player player, Game game, String colorString) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		Color color = Color.byName(colorString);
 		if (color == null) {
 			player.sendMessage(ChatColor.RED + "Invalid color.");
 			return;
 		}
-		
+
 		game.getComponents().addTeam(color);
 		player.sendMessage(_("teamAdded", color.toMessageColorString()));
 	}

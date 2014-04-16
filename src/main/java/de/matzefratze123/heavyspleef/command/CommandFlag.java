@@ -43,53 +43,53 @@ import de.matzefratze123.heavyspleef.util.Util;
 
 @UserType(Type.ADMIN)
 public class CommandFlag implements CommandListener {
-	
+
 	@SuppressWarnings("rawtypes")
 	@Command(value = "flag", minArgs = 2, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.SET_FLAG})
+	@CommandPermissions(value = { Permissions.SET_FLAG })
 	@CommandHelp(usage = "/spleef flag <name> <flag> [state]\n§cAvailable flags: " + FlagType.FRIENDLY_FLAG_LIST, description = "Sets a flag for this game")
 	public void execute(CommandSender sender, Game game, Flag fl, String[] values) {
-		Player player = (Player)sender;
-		
+		Player player = (Player) sender;
+
 		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		if (fl == null) {
 			player.sendMessage(_("invalidFlag"));
 			player.sendMessage(ChatColor.RED + "Available flags: " + FlagType.FRIENDLY_FLAG_LIST);
 			return;
 		}
-		
+
 		Flag<?> flag = fl;
-		
-		//Check required flags
+
+		// Check required flags
 		for (Flag<?> required : flag.getRequiredFlags()) {
-			if (!game.hasFlag(required) || (required instanceof BooleanFlag && !(Boolean)game.getFlag(required))) {
+			if (!game.hasFlag(required) || (required instanceof BooleanFlag && !(Boolean) game.getFlag(required))) {
 				List<String> flagNames = new ArrayList<String>();
 				for (Flag<?> f : flag.getRequiredFlags()) {
 					flagNames.add(f.getName());
 				}
-				
+
 				player.sendMessage(_("requiringFlags", Util.toFriendlyString(flagNames, ", ")));
 				return;
 			}
 		}
-		
-		//Check conflicting flags
+
+		// Check conflicting flags
 		for (Flag<?> conflicting : flag.getConflictingFlags()) {
-			if (game.hasFlag(conflicting)  || (conflicting instanceof BooleanFlag && (Boolean)game.getFlag(conflicting))) {
+			if (game.hasFlag(conflicting) || (conflicting instanceof BooleanFlag && (Boolean) game.getFlag(conflicting))) {
 				List<String> flagNames = new ArrayList<String>();
 				for (Flag<?> f : flag.getConflictingFlags()) {
 					flagNames.add(f.getName());
 				}
-				
+
 				player.sendMessage(_("conflictingFlags", Util.toFriendlyString(flagNames, ", ")));
 				return;
 			}
 		}
-		
+
 		StringBuilder buildArgs = new StringBuilder();
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
@@ -106,18 +106,18 @@ public class CommandFlag implements CommandListener {
 			player.sendMessage(_("flagCleared", flag.getName()));
 			return;
 		}
-		
+
 		try {
 			Object previousValue = game.getFlag(flag);
-			
+
 			Object value = flag.parse(player, buildArgs.toString(), previousValue);
-			
+
 			if (value == null) {
 				player.sendMessage(_("invalidFlagFormat"));
 				player.sendMessage(flag.getHelp());
 				return;
 			}
-			
+
 			setFlag(game, flag, value);
 			player.sendMessage(_("flagSet", flag.getName()));
 		} catch (Exception e) {
@@ -125,10 +125,10 @@ public class CommandFlag implements CommandListener {
 			player.sendMessage(flag.getHelp());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <V> void setFlag(Game game, Flag<V> flag, Object value) {
-		game.setFlag(flag, (V)value);
+		game.setFlag(flag, (V) value);
 	}
-	
+
 }

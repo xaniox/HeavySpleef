@@ -25,17 +25,17 @@ import de.matzefratze123.api.hs.sql.AbstractDatabase;
 import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase.ExceptionHandler;
 
 public interface IStatisticDatabase {
-	
+
 	public AbstractDatabase getRawDatabase();
-	
+
 	public void saveAccountsAsync(ExceptionHandler handler);
-	
+
 	public void saveAccountsAsync();
-	
+
 	public void saveAccounts() throws AccountException;
-	
+
 	public StatisticModule loadAccount(String holder) throws AccountException;
-	
+
 	public List<StatisticModule> loadAccounts() throws AccountException;
-	
+
 }

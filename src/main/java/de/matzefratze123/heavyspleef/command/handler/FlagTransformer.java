@@ -11,21 +11,21 @@ public class FlagTransformer implements Transformer<Flag> {
 	@Override
 	public Flag<?> transform(String argument) throws TransformException {
 		Flag<?> flag = null;
-		
+
 		for (Flag<?> f : FlagType.getFlagList()) {
 			if (flag != null) {
 				break;
 			}
-			
+
 			if (f.getName().equalsIgnoreCase(argument)) {
 				flag = f;
 				break;
 			} else {
-				//Check the aliases
+				// Check the aliases
 				String[] aliases = f.getAliases();
-				if (aliases == null) //Aliases null, continue
+				if (aliases == null) // Aliases null, continue
 					continue;
-				
+
 				for (String alias : aliases) {
 					if (alias.equalsIgnoreCase(argument)) {
 						flag = f;
@@ -34,11 +34,11 @@ public class FlagTransformer implements Transformer<Flag> {
 				}
 			}
 		}
-		
+
 		if (flag == null) {
 			throw new TransformException();
 		}
-		
+
 		return flag;
 	}
 

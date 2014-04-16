@@ -19,7 +19,6 @@
  */
 package de.matzefratze123.heavyspleef.api.event;
 
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
@@ -29,10 +28,10 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class SpleefFinishEvent extends SpleefEvent {
 
-	private static final HandlerList handlers = new HandlerList();
-	private SpleefPlayer winner;
-	private StopCause cause;
-	
+	private static final HandlerList	handlers	= new HandlerList();
+	private SpleefPlayer				winner;
+	private StopCause					cause;
+
 	public SpleefFinishEvent(IGame game, StopCause cause, SpleefPlayer winner) {
 		super(game);
 		this.cause = cause;
@@ -43,11 +42,11 @@ public class SpleefFinishEvent extends SpleefEvent {
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
+
 	/**
 	 * Gets the stopcause of this game
 	 * 
@@ -57,22 +56,20 @@ public class SpleefFinishEvent extends SpleefEvent {
 	public StopCause getCause() {
 		return this.cause;
 	}
-	
+
 	/**
-	 * Gets the winner of the spleef game
-	 * May be null when there is no winner
+	 * Gets the winner of the spleef game May be null when there is no winner
 	 * 
 	 * @return The winner as a {@link SpleefPlayer}
 	 */
 	public SpleefPlayer getSpleefWinner() {
 		return winner;
 	}
-	
+
 	/**
-	 * Gets the winner of the spleef game</br></br>
-	 * <b>This winner can be null, if the game
-	 * has been stopped manually or the game
-	 * has ended in a draw!</b>
+	 * Gets the winner of the spleef game</br></br> <b>This winner can be null,
+	 * if the game has been stopped manually or the game has ended in a
+	 * draw!</b>
 	 * 
 	 * @return The winner, or null
 	 * @deprecated Deprecated due to {@link #getSpleefWinner()}

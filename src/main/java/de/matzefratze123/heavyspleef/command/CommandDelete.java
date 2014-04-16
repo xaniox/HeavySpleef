@@ -38,21 +38,21 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandDelete implements CommandListener {
-	
+
 	@Command(value = "delete", minArgs = 1)
-	@CommandPermissions(value = {Permissions.DELETE_GAME})
+	@CommandPermissions(value = { Permissions.DELETE_GAME })
 	@CommandHelp(usage = "/spleef delete <game>", description = "Deletes a game.")
-	@CommandAliases({"remove"})
+	@CommandAliases({ "remove" })
 	public void execute(CommandSender sender, Game game) {
 		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.COUNTING || game.getGameState() == GameState.LOBBY) {
 			game.stop(StopCause.STOP);
 		}
-		
+
 		game.getQueue().clear();
 		GameManager.deleteGame(game.getName());
 		sender.sendMessage(_("gameDeleted"));

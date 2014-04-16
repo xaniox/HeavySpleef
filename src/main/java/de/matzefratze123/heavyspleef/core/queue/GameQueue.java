@@ -25,49 +25,49 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
 
 public class GameQueue {
-	
-	private Queue<SpleefPlayer> queue;
-	private Game game;
-	
+
+	private Queue<SpleefPlayer>	queue;
+	private Game				game;
+
 	public GameQueue(Game game) {
 		this.game = game;
 		this.queue = new ArrayQueue<SpleefPlayer>();
 	}
-	
+
 	public void push(SpleefPlayer player) {
 		if (queue.contains(player))
 			return;
 		if (!HeavySpleef.getSystemConfig().getQueuesSection().isUseQueues()) {
 			return;
 		}
-		
+
 		int place = queue.add(player);
 		player.sendMessage(I18N._("addedToQueue", game.getName(), String.valueOf(place + 1)));
 	}
-	
+
 	public void removePlayer(SpleefPlayer player) {
 		if (!queue.contains(player))
 			return;
-		
+
 		queue.remove(player);
 	}
-	
+
 	public boolean contains(SpleefPlayer player) {
 		return queue.contains(player);
 	}
-	
+
 	public void flushQueue() {
 		SpleefPlayer currentItem = null;
-		
+
 		do {
 			currentItem = queue.remove();
-			
-			if (currentItem != null && currentItem.isOnline()) {		
+
+			if (currentItem != null && currentItem.isOnline()) {
 				game.join(currentItem);
 			}
 		} while (currentItem != null);
 	}
-	
+
 	public int size() {
 		return queue.size();
 	}
@@ -75,5 +75,5 @@ public class GameQueue {
 	public void clear() {
 		queue.clear();
 	}
-	
+
 }

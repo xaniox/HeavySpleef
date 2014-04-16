@@ -20,11 +20,11 @@
 package de.matzefratze123.heavyspleef.core.task;
 
 public interface Task {
-	
+
 	public abstract int start();
-	
+
 	public abstract void cancel();
-	
+
 	public abstract boolean isAlive();
 
 }

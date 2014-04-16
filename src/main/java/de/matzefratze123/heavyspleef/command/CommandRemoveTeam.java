@@ -37,24 +37,24 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandRemoveTeam implements CommandListener {
-	
+
 	@Command(value = "removeteam", minArgs = 2, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.REMOVE_TEAM})
+	@CommandPermissions(value = { Permissions.REMOVE_TEAM })
 	@CommandHelp(usage = "/spleef removeteam <game> <red|blue|green|yellow|gray>", description = "Removes a team from a game")
 	public void execute(Player player, Game game, String colorString) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		Color color = Color.byName(colorString);
 		Team team = game.getComponents().getTeam(color);
-		
+
 		if (team == null) {
 			player.sendMessage(ChatColor.RED + "/spleef removeteam <game> <red|blue|green|yellow|gray>");
 			return;
 		}
-		
+
 		game.getComponents().removeTeam(team);
 		player.sendMessage(_("teamRemoved", color.toMessageColorString()));
 	}

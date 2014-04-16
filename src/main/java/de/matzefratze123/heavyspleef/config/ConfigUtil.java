@@ -24,28 +24,27 @@ import de.matzefratze123.heavyspleef.config.sections.SettingsSectionMessages.Mes
 import de.matzefratze123.heavyspleef.core.BroadcastType;
 
 public class ConfigUtil {
-	
-	public static final char   SEPERATOR             = '.';
-	public static final String GENERAL_SECTION       = "general"       + SEPERATOR;
-	public static final String LEADERBOARD_SECTION   = "leaderboard"   + SEPERATOR;
-	public static final String MESSAGES_SECTION      = "messages"      + SEPERATOR;
-	public static final String FLAG_DEFAULTS_SECTION = "flag-defaults" + SEPERATOR;
-	public static final String QUEUES_SECTION        = "queues"        + SEPERATOR;
-	public static final String SCOREBOARDS_SECTION   = "scoreboards"   + SEPERATOR;
-	public static final String LANGUAGE_SECTION      = "language"      + SEPERATOR;
-	public static final String ANTICAMPING_SECTION   = "anticamping"   + SEPERATOR;
-	public static final String EFFECTS_SECTION       = "sounds"        + SEPERATOR;
-	public static final String STATISTIC_SECTION     = "statistic"     + SEPERATOR;
-	
-	
+
+	public static final char	SEPERATOR				= '.';
+	public static final String	GENERAL_SECTION			= "general" + SEPERATOR;
+	public static final String	LEADERBOARD_SECTION		= "leaderboard" + SEPERATOR;
+	public static final String	MESSAGES_SECTION		= "messages" + SEPERATOR;
+	public static final String	FLAG_DEFAULTS_SECTION	= "flag-defaults" + SEPERATOR;
+	public static final String	QUEUES_SECTION			= "queues" + SEPERATOR;
+	public static final String	SCOREBOARDS_SECTION		= "scoreboards" + SEPERATOR;
+	public static final String	LANGUAGE_SECTION		= "language" + SEPERATOR;
+	public static final String	ANTICAMPING_SECTION		= "anticamping" + SEPERATOR;
+	public static final String	EFFECTS_SECTION			= "sounds" + SEPERATOR;
+	public static final String	STATISTIC_SECTION		= "statistic" + SEPERATOR;
+
 	/**
-	 * Gets an broadcast type from the config.
-	 * Internal method
+	 * Gets an broadcast type from the config. Internal method
 	 * 
-	 * @param msgType The config message name
+	 * @param msgType
+	 *            The config message name
 	 */
 	public static BroadcastType getBroadcast(MessageType msgType) {
 		return HeavySpleef.getSystemConfig().getMessagesSection().getBroadcastType(msgType);
 	}
-	
+
 }

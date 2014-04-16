@@ -36,20 +36,20 @@ import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class GameCuboid extends Game {
-	
-	private final RegionCuboid region;
-	
+
+	private final RegionCuboid	region;
+
 	public GameCuboid(String name, RegionCuboid region) {
 		super(name);
-		
+
 		this.region = region;
 		setWorld(region.getWorld());
 	}
-	
+
 	public Location getFirstPoint() {
 		return region.getFirstPoint();
 	}
-	
+
 	public Location getSecondPoint() {
 		return region.getSecondPoint();
 	}
@@ -58,49 +58,64 @@ public class GameCuboid extends Game {
 	public Location getRandomLocation() {
 		List<IFloor> floors = getComponents().getFloors();
 		Collections.sort(floors);
-		
-		FloorCuboid floor = (FloorCuboid)floors.get(floors.size() - 1);
-		
+
+		FloorCuboid floor = (FloorCuboid) floors.get(floors.size() - 1);
+
 		int minX = Math.min(floor.getFirstPoint().getBlockX(), floor.getSecondPoint().getBlockX()) + 1;
 		int minZ = Math.min(floor.getFirstPoint().getBlockZ(), floor.getSecondPoint().getBlockZ()) + 1;
-		
+
 		int maxX = Math.max(floor.getFirstPoint().getBlockX(), floor.getSecondPoint().getBlockX()) - 1;
 		int maxZ = Math.max(floor.getFirstPoint().getBlockZ(), floor.getSecondPoint().getBlockZ()) - 1;
-		
+
 		int differenceX, differenceZ;
-		
-		differenceX = minX < maxX ? maxX - minX : minX - maxX; // Difference between corners X
-		differenceZ = minZ < maxZ ? maxZ - minZ : minZ - maxZ; // Difference between corners Z
-		
-		int randomX = minX + HeavySpleef.getRandom().nextInt(differenceX + 1); // Choose a random X location
-		int randomZ = minZ + HeavySpleef.getRandom().nextInt(differenceZ + 1); // Choose a random Z location
-		
+
+		differenceX = minX < maxX ? maxX - minX : minX - maxX; // Difference
+																// between
+																// corners X
+		differenceZ = minZ < maxZ ? maxZ - minZ : minZ - maxZ; // Difference
+																// between
+																// corners Z
+
+		int randomX = minX + HeavySpleef.getRandom().nextInt(differenceX + 1); // Choose
+																				// a
+																				// random
+																				// X
+																				// location
+		int randomZ = minZ + HeavySpleef.getRandom().nextInt(differenceZ + 1); // Choose
+																				// a
+																				// random
+																				// Z
+																				// location
+
 		double y = floor.getY() + 1.25D;
-		
-		return new Location(getFirstPoint().getWorld(), randomX, y, randomZ); // Return the location;
+
+		return new Location(getFirstPoint().getWorld(), randomX, y, randomZ); // Return
+																				// the
+																				// location;
 	}
 
 	private Location[] get4Points() {
 		Location[] locs = new Location[4];
-	
+
 		int y = getFirstPoint().getBlockY();
-		
+
 		locs[0] = new Location(getFirstPoint().getWorld(), Math.min(getFirstPoint().getBlockX(), getSecondPoint().getBlockX()), y, Math.min(getFirstPoint().getBlockZ(), getSecondPoint().getBlockZ()));
 		locs[1] = new Location(getFirstPoint().getWorld(), Math.min(getFirstPoint().getBlockX(), getSecondPoint().getBlockX()), y, Math.max(getFirstPoint().getBlockZ(), getSecondPoint().getBlockZ()));
 		locs[2] = new Location(getFirstPoint().getWorld(), Math.max(getFirstPoint().getBlockX(), getSecondPoint().getBlockX()), y, Math.min(getFirstPoint().getBlockZ(), getSecondPoint().getBlockZ()));
 		locs[3] = new Location(getFirstPoint().getWorld(), Math.max(getFirstPoint().getBlockX(), getSecondPoint().getBlockX()), y, Math.max(getFirstPoint().getBlockZ(), getSecondPoint().getBlockZ()));
-		
+
 		return locs;
 	}
-	
+
 	/**
 	 * Broadcasts a message to the game
 	 * 
-	 * @param msg Message to broadcast
+	 * @param msg
+	 *            Message to broadcast
 	 */
 	@Override
 	public void broadcast(String msg, BroadcastType type) {
-		switch(type) {
+		switch (type) {
 		case INGAME:
 			for (SpleefPlayer player : getIngamePlayers()) {
 				player.sendMessage(msg);
@@ -113,7 +128,7 @@ public class GameCuboid extends Game {
 			int radius = HeavySpleef.getSystemConfig().getGeneralSection().getBroadcastRadius();
 			int radiusSqared = radius * radius;
 			Location[] corners = get4Points();
-			
+
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (player.getWorld() != corners[0].getWorld())
 					continue;
@@ -121,7 +136,7 @@ public class GameCuboid extends Game {
 					player.sendMessage(msg);
 					continue;
 				}
-				
+
 				for (Location corner : corners) {
 					if (player.getLocation().distanceSquared(corner) <= radiusSqared) {
 						player.sendMessage(msg);
@@ -129,7 +144,7 @@ public class GameCuboid extends Game {
 					}
 				}
 			}
-			
+
 			break;
 		}
 	}
@@ -148,14 +163,14 @@ public class GameCuboid extends Game {
 	public Region getRegion() {
 		return region;
 	}
-	
+
 	@Override
 	public ConfigurationSection serialize() {
 		ConfigurationSection section = super.serialize();
-		
+
 		section.set("first", Parser.convertLocationtoString(region.getFirstPoint()));
 		section.set("second", Parser.convertLocationtoString(region.getSecondPoint()));
-		
+
 		return section;
 	}
 

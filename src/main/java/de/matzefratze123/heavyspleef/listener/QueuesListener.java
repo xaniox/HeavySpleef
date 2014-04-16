@@ -32,44 +32,44 @@ import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 import de.matzefratze123.heavyspleef.util.I18N;
 
 public class QueuesListener implements Listener {
-	
+
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
-		
+
 		if (player == null)
 			return;
 		if (!QueuesManager.hasQueue(player))
 			return;
 		if (HeavySpleef.getSystemConfig().getQueuesSection().isAllowCommands())
 			return;
-		
+
 		if (e.getMessage().equalsIgnoreCase("/spleef leave") || e.getMessage().equalsIgnoreCase("/spl leave"))
 			return;
-		
+
 		e.setCancelled(true);
 		player.sendMessage(I18N._("noCommandsInQueue"));
 	}
-	
+
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		handleQuit(e);
 	}
-	
+
 	@EventHandler
 	public void onKick(PlayerKickEvent e) {
 		handleQuit(e);
 	}
-	
+
 	private void handleQuit(PlayerEvent e) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
-		
+
 		if (player == null)
 			return;
 		if (!QueuesManager.hasQueue(player))
 			return;
-		
-		//Remove the player from the queue if he quits
+
+		// Remove the player from the queue if he quits
 		QueuesManager.removeFromQueue(player);
 	}
 

@@ -31,16 +31,16 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class CommandRegenerate implements CommandListener {
-	
+
 	@Command(value = "regenerate", minArgs = 1)
-	@CommandPermissions(value = {Permissions.RESTORE_FLOORS})
+	@CommandPermissions(value = { Permissions.RESTORE_FLOORS })
 	@CommandHelp(usage = "/spleef regenerate <game>", description = "Restores all floors of a game.")
 	public void execute(CommandSender sender, Game game) {
 		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		game.getComponents().regenerateFloors();
 		sender.sendMessage(_("floorsRegenerated"));
 	}

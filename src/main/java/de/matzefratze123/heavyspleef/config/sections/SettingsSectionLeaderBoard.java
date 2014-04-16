@@ -24,23 +24,23 @@ import org.bukkit.configuration.ConfigurationSection;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionLeaderBoard implements SettingsSection {
-	
-	private static final String SECTION_PATH = "leaderboard";
-	
-	private SpleefConfig configuration;
-	private ConfigurationSection section;
-	
-	private int winPoints;
-	private int losePoints;
-	private int knockoutPoints;
-	private int gamePlayedPoints;
-	
+
+	private static final String		SECTION_PATH	= "leaderboard";
+
+	private SpleefConfig			configuration;
+	private ConfigurationSection	section;
+
+	private int						winPoints;
+	private int						losePoints;
+	private int						knockoutPoints;
+	private int						gamePlayedPoints;
+
 	public SettingsSectionLeaderBoard(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -59,7 +59,7 @@ public class SettingsSectionLeaderBoard implements SettingsSection {
 	@Override
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
-		
+
 		winPoints = section.getInt("win");
 		losePoints = section.getInt("lose");
 		knockoutPoints = section.getInt("knockout");

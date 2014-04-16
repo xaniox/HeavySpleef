@@ -29,31 +29,33 @@ import de.matzefratze123.heavyspleef.util.ExperienceBar;
 import de.matzefratze123.heavyspleef.util.I18N;
 
 public class CountdownStart extends Countdown implements CountdownListener {
-	
-	public static final String TASK_ID_KEY = "startCountdown";
-	
-	private Game game;
-	
+
+	public static final String	TASK_ID_KEY	= "startCountdown";
+
+	private Game				game;
+
 	public CountdownStart(Game game, int ticks) {
 		super(ticks);
-		
+
 		this.game = game;
-		
+
 		addCountdownListener(this);
 	}
 
 	@Override
-	public void onStart() {}
+	public void onStart() {
+	}
 
 	@Override
-	public void onCancel() {}
+	public void onCancel() {
+	}
 
 	@Override
 	public void onFinish() {
 		for (SpleefPlayer player : game.getIngamePlayers()) {
 			player.getBukkitPlayer().setExp(0f);
 		}
-		
+
 		cancel();
 		game.start();
 	}
@@ -61,32 +63,33 @@ public class CountdownStart extends Countdown implements CountdownListener {
 	@Override
 	public void onTick() {
 		game.setCountLeft(getTicksLeft());
-		
+
 		int procent = getTicksLeft() * 100 / getFinishTicks();
-		
+
 		for (SpleefPlayer player : game.getIngamePlayers()) {
 			if (getTicksLeft() <= 5) {
 				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
 			}
-			
+
 			ExperienceBar bar = new ExperienceBar(player.getBukkitPlayer());
 			bar.setExp(procent);
 		}
-		
-		if (getTicksLeft() <= 5){
+
+		if (getTicksLeft() <= 5) {
 			game.broadcast(I18N._("gameIsStarting", String.valueOf(getTicksLeft())), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
-		} else {//Do pre countdown
+		} else {// Do pre countdown
 			if (getTicksLeft() % 5 == 0)
-				//Only message if the remaining value is divisible by 5
+				// Only message if the remaining value is divisible by 5
 				game.broadcast(I18N._("gameIsStarting", String.valueOf(getTicksLeft())), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
 		}
 	}
 
 	@Override
-	public void onPause() {}
+	public void onPause() {
+	}
 
 	@Override
-	public void onUnpause() {}
-	
-	
+	public void onUnpause() {
+	}
+
 }

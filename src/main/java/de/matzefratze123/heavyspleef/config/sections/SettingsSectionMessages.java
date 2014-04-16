@@ -26,17 +26,17 @@ import de.matzefratze123.heavyspleef.core.BroadcastType;
 
 public class SettingsSectionMessages implements SettingsSection {
 
-	private static final String SECTION_PATH = "messages";
-	
-	private SpleefConfig configuration;
-	private ConfigurationSection section;
-	
+	private static final String		SECTION_PATH	= "messages";
+
+	private SpleefConfig			configuration;
+	private ConfigurationSection	section;
+
 	public SettingsSectionMessages(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -56,43 +56,34 @@ public class SettingsSectionMessages implements SettingsSection {
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
 	}
-	
+
 	public BroadcastType getBroadcastType(MessageType messageType) {
 		String str = section.getString(messageType.getConfigKey());
 		if (str == null)
 			return BroadcastType.RADIUS;
-		
+
 		BroadcastType type = BroadcastType.getBroadcastType(str);
 		if (type == null)
 			return BroadcastType.RADIUS;
-		
+
 		return type;
 	}
-	
+
 	public enum MessageType {
-		
-		GAME_DISABLED("game-disable"),
-		GAME_ENABLE("game-enable"),
-		GAME_START_INFO("game-start-info"),
-		GAME_COUNTDOWN("game-countdown"),
-		GAME_STOP("game-stop"),
-		PLAYER_JOIN("player-join"),
-		PLAYER_LOSE("player-lose"),
-		KNOCKOUTS("knockouts"),
-		WIN("win"),
-		TIMEOUT("timeout"),
-		FLOOR_REGENERATION("floor-regeneration");
-		
-		private String configKey;
-		
+
+		GAME_DISABLED("game-disable"), GAME_ENABLE("game-enable"), GAME_START_INFO("game-start-info"), GAME_COUNTDOWN("game-countdown"), GAME_STOP("game-stop"), PLAYER_JOIN("player-join"), PLAYER_LOSE("player-lose"), KNOCKOUTS("knockouts"), WIN("win"), TIMEOUT("timeout"), FLOOR_REGENERATION(
+				"floor-regeneration");
+
+		private String	configKey;
+
 		private MessageType(String configKey) {
 			this.configKey = configKey;
 		}
-		
+
 		public String getConfigKey() {
 			return configKey;
 		}
-		
+
 	}
 
 }

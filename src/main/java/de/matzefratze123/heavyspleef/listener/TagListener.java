@@ -35,36 +35,36 @@ import de.matzefratze123.heavyspleef.hooks.TagAPIHook;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public class TagListener implements Listener {
-	
-	private static ConcurrentMap<SpleefPlayer, ChatColor> tags = new ConcurrentHashMap<SpleefPlayer, ChatColor>();
-	
+
+	private static ConcurrentMap<SpleefPlayer, ChatColor>	tags	= new ConcurrentHashMap<SpleefPlayer, ChatColor>();
+
 	public static void setTag(SpleefPlayer player, ChatColor tag) {
 		if (!HookManager.getInstance().getService(TagAPIHook.class).hasHook()) {
 			return;
 		}
-		
+
 		if (tag == null) {
 			tags.remove(player);
 		} else {
 			tags.put(player, tag);
 		}
-		
+
 		TagAPI.refreshPlayer(player.getBukkitPlayer());
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onNameTagReceive(AsyncPlayerReceiveNameTagEvent e) {
 		SpleefPlayer namedPlayer = HeavySpleef.getInstance().getSpleefPlayer(e.getNamedPlayer());
-		
+
 		if (!tags.containsKey(namedPlayer)) {
 			return;
 		}
-		
+
 		String tag = tags.get(namedPlayer) + namedPlayer.getRawName();
 		if (tag.length() > 16)
 			tag = tag.substring(0, 16);
-		
+
 		e.setTag(tag);
 	}
-	
+
 }

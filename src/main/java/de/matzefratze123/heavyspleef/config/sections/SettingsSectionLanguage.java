@@ -25,21 +25,21 @@ import de.matzefratze123.heavyspleef.config.SpleefConfig;
 import de.matzefratze123.heavyspleef.util.I18N.Language;
 
 public class SettingsSectionLanguage implements SettingsSection {
-	
-	private static final String SECTION_PATH = "language";
-	
-	private SpleefConfig configuration;
-	private ConfigurationSection section;
-	
-	private Language language;
-	private boolean editableFiles;
-	
+
+	private static final String		SECTION_PATH	= "language";
+
+	private SpleefConfig			configuration;
+	private ConfigurationSection	section;
+
+	private Language				language;
+	private boolean					editableFiles;
+
 	public SettingsSectionLanguage(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -58,12 +58,12 @@ public class SettingsSectionLanguage implements SettingsSection {
 	@Override
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
-		
+
 		language = Language.byLanguageCode(section.getString("language"));
 		if (language == null) {
 			language = Language.ENGLISH;
 		}
-		
+
 		editableFiles = section.getBoolean("editable");
 	}
 
@@ -74,5 +74,5 @@ public class SettingsSectionLanguage implements SettingsSection {
 	public boolean isEditableFiles() {
 		return editableFiles;
 	}
-	
+
 }

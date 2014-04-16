@@ -38,18 +38,18 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandAddLose implements CommandListener {
-	
+
 	@Command(value = "addlose", minArgs = 1, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.ADD_LOSEZONE})
+	@CommandPermissions(value = { Permissions.ADD_LOSEZONE })
 	@CommandHelp(usage = "/spleef addlose <game>", description = "Creates a new losezone based on your selection")
 	public void execute(Player player, Game game) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
-		
+
 		if (!s.hasSelection()) {
 			player.sendMessage(_("needSelection"));
 			return;
@@ -58,18 +58,18 @@ public class CommandAddLose implements CommandListener {
 			player.sendMessage(_("selectionCantTroughWorlds"));
 			return;
 		}
-		
+
 		Location loc1 = s.getFirst();
 		Location loc2 = s.getSecond();
-	
+
 		int id = 0;
 		while (game.getComponents().hasLoseZone(id)) {
 			id++;
 		}
-		
+
 		LoseZone loseZone = new LoseZone(loc1, loc2, id);
 		game.getComponents().addLoseZone(loseZone);
-		
+
 		player.sendMessage(_("loseZoneCreated", String.valueOf(id), game.getName(), String.valueOf(id)));
 	}
 

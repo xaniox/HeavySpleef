@@ -30,7 +30,7 @@ import de.matzefratze123.heavyspleef.util.Base64Helper;
 
 public abstract class ListFlag<T> extends Flag<List<T>> {
 
-	private static final String ELEMENT_SEPERATOR = ";";
+	private static final String	ELEMENT_SEPERATOR	= ";";
 
 	public ListFlag(String name, List<T> defaulte) {
 		super(name, defaulte);
@@ -47,20 +47,20 @@ public abstract class ListFlag<T> extends Flag<List<T>> {
 
 		StringBuilder builder = new StringBuilder();
 		Iterator<T> iterator = list.iterator();
-		
+
 		while (iterator.hasNext()) {
 			T element = iterator.next();
-			
+
 			Serializable s = (Serializable) element;
 			String base64String = Base64Helper.toBase64(s);
-			
+
 			builder.append(base64String);
-			
+
 			if (iterator.hasNext()) {
 				builder.append(ELEMENT_SEPERATOR);
 			}
 		}
-		
+
 		return getName() + ":" + builder.toString();
 	}
 
@@ -68,43 +68,44 @@ public abstract class ListFlag<T> extends Flag<List<T>> {
 	@Override
 	public List<T> deserialize(String str) {
 		String[] parts = str.split(":");
-		
+
 		if (parts.length < 2) {
 			return null;
 		}
-		
+
 		String[] elements = parts[1].split(ELEMENT_SEPERATOR);
-		
+
 		List<T> list = new ArrayList<T>();
-		
+
 		for (String e : elements) {
 			Object fromBase64 = Base64Helper.fromBase64(e);
-			
+
 			T element = (T) fromBase64;
 			list.add(element);
 		}
-		
+
 		this.name = parts[0];
 		return list;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> parse(Player player, String input, Object previousObject) {
 		List<T> previousList;
-		
+
 		if (previousObject == null) {
 			previousList = new ArrayList<T>();
 		} else {
-			//Create a copy of the list as we don't want to modificate the list directly (just parse and return it)
+			// Create a copy of the list as we don't want to modificate the list
+			// directly (just parse and return it)
 			previousList = new ArrayList<T>((List<T>) previousObject);
 		}
-		
+
 		putElement(player, input, previousList);
-		
+
 		return previousList;
 	}
-	
+
 	public abstract void putElement(Player player, String input, List<T> existing);
 
 	@Override

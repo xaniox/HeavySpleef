@@ -37,18 +37,18 @@ public class ItemStackFlag extends Flag<ItemStack> {
 
 	@Override
 	public String serialize(Object object) {
-		ItemStack stack = (ItemStack)object;
-		
+		ItemStack stack = (ItemStack) object;
+
 		return getName() + ":" + ItemStackHelper.serialize(stack);
 	}
 
 	@Override
 	public ItemStack deserialize(String str) {
 		String[] parts = str.split(":");
-		
+
 		if (parts.length < 2)
 			return null;
-		
+
 		this.name = parts[0];
 		return ItemStackHelper.deserialize(parts[1]);
 	}
@@ -56,13 +56,13 @@ public class ItemStackFlag extends Flag<ItemStack> {
 	@Override
 	public ItemStack parse(Player player, String input, Object previousObject) {
 		String parts[] = input.split(" ");
-		
+
 		if (parts.length <= 0)
 			return null;
-		
+
 		int amount = 1;
 		SimpleBlockData data = Util.parseMaterial(parts[0], false);
-		
+
 		if (parts.length > 1) {
 			try {
 				amount = Integer.parseInt(parts[1]);
@@ -70,19 +70,19 @@ public class ItemStackFlag extends Flag<ItemStack> {
 				return null;
 			}
 		}
-		
+
 		ItemStack stack = new ItemStack(data.getMaterial(), amount);
 		MaterialData stackData = stack.getData();
 		stackData.setData(data.getData());
 		stack.setData(stackData);
-		
+
 		return stack.getData().toItemStack(amount);
 	}
 
 	@Override
 	public String toInfo(Object value) {
 		ItemStack stack = (ItemStack) value;
-		
+
 		return getName() + ":" + stack.getAmount() + " " + Util.formatMaterial(stack.getType());
 	}
 

@@ -26,8 +26,6 @@ package de.matzefratze123.heavyspleef.core;
  */
 public enum StopCause {
 
-	STOP,
-	WIN,
-	DRAW;
-	
+	STOP, WIN, DRAW;
+
 }

@@ -30,7 +30,7 @@ import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.util.LocationHelper;
 
 public class LoseZone extends RegionCuboid implements DatabaseSerializeable {
-	
+
 	public LoseZone(Location loc1, Location loc2, int id) {
 		super(id, loc1, loc2);
 	}
@@ -42,20 +42,20 @@ public class LoseZone extends RegionCuboid implements DatabaseSerializeable {
 	@Override
 	public ConfigurationSection serialize() {
 		MemorySection section = new MemoryConfiguration();
-		
+
 		section.set("id", id);
 		section.set("first", Parser.convertLocationtoString(firstPoint));
 		section.set("second", Parser.convertLocationtoString(secondPoint));
-		
+
 		return section;
 	}
-	
+
 	public static LoseZone deserialize(ConfigurationSection section) {
 		int id = section.getInt("id");
 		Location first = Parser.convertStringtoLocation(section.getString("first"));
 		Location second = Parser.convertStringtoLocation(section.getString("second"));
-		
+
 		return new LoseZone(first, second, id);
 	}
-	
+
 }

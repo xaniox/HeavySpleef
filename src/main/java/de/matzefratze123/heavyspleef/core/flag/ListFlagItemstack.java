@@ -39,23 +39,23 @@ public class ListFlagItemstack extends ListFlag<ListFlagItemstack.SerializeableI
 	public ListFlagItemstack(String name, List<SerializeableItemStack> defaulte) {
 		super(name, defaulte);
 	}
-	
+
 	@Override
 	public void putElement(Player player, String input, List<SerializeableItemStack> existing) {
 		String[] inputParts = splitStringSafely(input, " ");
-		
+
 		Material material;
 		byte data = 0;
 		int amount = 1;
 		String displayName = null;
 		List<String> lore = null;
-		
+
 		if (inputParts.length < 1) {
 			return;
 		}
-		
+
 		String[] itemData = inputParts[0].split(":");
-		
+
 		if (Util.isNumber(itemData[0])) {
 			material = Material.getMaterial(Integer.parseInt(itemData[0]));
 		} else {
@@ -66,7 +66,7 @@ public class ListFlagItemstack extends ListFlag<ListFlagItemstack.SerializeableI
 				return;
 			}
 		}
-		
+
 		if (itemData.length > 1) {
 			if (Util.isNumber(itemData[1])) {
 				data = Byte.parseByte(itemData[1]);
@@ -75,7 +75,7 @@ public class ListFlagItemstack extends ListFlag<ListFlagItemstack.SerializeableI
 				return;
 			}
 		}
-		
+
 		if (inputParts.length > 1) {
 			if (Util.isNumber(inputParts[1])) {
 				amount = Integer.parseInt(inputParts[1]);
@@ -84,43 +84,43 @@ public class ListFlagItemstack extends ListFlag<ListFlagItemstack.SerializeableI
 				return;
 			}
 		}
-		
+
 		if (inputParts.length > 2) {
-			//DisplayName
+			// DisplayName
 			displayName = ChatColor.translateAlternateColorCodes('&', inputParts[2]);
 		}
-		
+
 		if (inputParts.length > 3) {
-			//Lore
+			// Lore
 			String[] lines = inputParts[3].split("//");
 			for (int i = 0; i < lines.length; i++) {
 				lines[i] = ChatColor.translateAlternateColorCodes('&', lines[i]);
 			}
-			
+
 			lore = Arrays.asList(lines);
 		}
-		
+
 		SerializeableItemStack itemstack = new SerializeableItemStack(material, amount);
 		itemstack.setData(data);
 		itemstack.setDisplayName(displayName);
 		itemstack.setLore(lore);
-		
+
 		existing.add(itemstack);
 	}
-	
+
 	private static String[] splitStringSafely(String str, String regex) {
 		String[] parts = str.split(regex);
 		List<String> safeParts = new ArrayList<String>();
-		
+
 		for (int i = 0; i < parts.length; i++) {
 			String part = parts[i];
-			
+
 			if (part.startsWith("\"") || part.startsWith("'")) {
 				parts[i] = parts[i].substring(1);
-				
+
 				StringBuilder result = new StringBuilder();
 				int j;
-				
+
 				for (j = i; j < parts.length; j++) {
 					if (parts[j].endsWith("\"") || parts[j].endsWith("'")) {
 						parts[j] = parts[j].substring(0, parts[j].length() - 1);
@@ -130,15 +130,15 @@ public class ListFlagItemstack extends ListFlag<ListFlagItemstack.SerializeableI
 						result.append(parts[j]).append(" ");
 					}
 				}
-				
+
 				safeParts.add(result.toString());
 				i = j;
 			} else {
 				safeParts.add(parts[i]);
 			}
-			
+
 		}
-		
+
 		return safeParts.toArray(new String[safeParts.size()]);
 	}
 
@@ -147,43 +147,42 @@ public class ListFlagItemstack extends ListFlag<ListFlagItemstack.SerializeableI
 	public String toInfo(Object value) {
 		List<SerializeableItemStack> list = (List<SerializeableItemStack>) value;
 		Iterator<SerializeableItemStack> iterator = list.iterator();
-		
+
 		StringBuilder builder = new StringBuilder();
-		
+
 		while (iterator.hasNext()) {
 			SerializeableItemStack is = iterator.next();
-			
+
 			builder.append("id:" + is.getMaterial().name() + " ");
 			builder.append("data:" + is.getData() + " ");
 			builder.append("amount:" + is.getAmount() + " ");
-			
+
 			if (iterator.hasNext()) {
 				builder.append(", ");
 			}
 		}
-		
+
 		return getName() + ": " + builder.toString();
 	}
 
 	@Override
 	public String getHelp() {
-		return HeavySpleef.PREFIX + " /spleef flag <name> " + getName() + "<item[:data]> [amount] [itemname] [lore]\n" + 
-			   HeavySpleef.PREFIX + " Adds the next item. Use // to break a line.";
+		return HeavySpleef.PREFIX + " /spleef flag <name> " + getName() + "<item[:data]> [amount] [itemname] [lore]\n" + HeavySpleef.PREFIX + " Adds the next item. Use // to break a line.";
 	}
-	
+
 	public static class SerializeableItemStack implements Serializable {
-		
-		private static final long serialVersionUID = -7146674060307441600L;
-		
-		//General
-		private Material material;
-		private byte data;
-		private int amount;
-		
-		//Meta
-		private String displayName;
-		private List<String> lore;
-		
+
+		private static final long	serialVersionUID	= -7146674060307441600L;
+
+		// General
+		private Material			material;
+		private byte				data;
+		private int					amount;
+
+		// Meta
+		private String				displayName;
+		private List<String>		lore;
+
 		public SerializeableItemStack(Material material, int amount) {
 			this.material = material;
 			this.amount = amount;
@@ -229,25 +228,25 @@ public class ListFlagItemstack extends ListFlag<ListFlagItemstack.SerializeableI
 		public void setLore(List<String> lore) {
 			this.lore = lore;
 		}
-		
+
 		public ItemStack toBukkitStack() {
 			ItemStack itemstack = new ItemStack(material, amount, data);
-			
+
 			ItemMeta meta = itemstack.getItemMeta();
-			
+
 			if (displayName != null) {
 				meta.setDisplayName(displayName);
 			}
-			
+
 			if (lore != null) {
 				meta.setLore(lore);
 			}
-			
+
 			itemstack.setItemMeta(meta);
-			
+
 			return itemstack;
 		}
-		
+
 	}
-	
+
 }

@@ -37,9 +37,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandRemoveWall implements CommandListener {
-	
+
 	@Command(value = "removewall", onlyIngame = true)
-	@CommandPermissions(value = {Permissions.REMOVE_WALL})
+	@CommandPermissions(value = { Permissions.REMOVE_WALL })
 	@CommandHelp(usage = "/spleef removewall", description = "Removes the wall on which you're currently looking")
 	public void execute(Player player) {
 		Block blockLocation = player.getTargetBlock(null, 50);
@@ -52,8 +52,8 @@ public class CommandRemoveWall implements CommandListener {
 				return;
 			}
 		}
-			
+
 		player.sendMessage(_("notLookingAtWall"));
 	}
-	
+
 }

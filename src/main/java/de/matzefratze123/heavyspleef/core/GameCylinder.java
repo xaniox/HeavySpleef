@@ -40,11 +40,11 @@ import de.matzefratze123.heavyspleef.util.Util;
 
 public class GameCylinder extends Game {
 
-	private final RegionCylinder region;
-	
+	private final RegionCylinder	region;
+
 	public GameCylinder(String name, RegionCylinder region) {
 		super(name);
-		
+
 		this.region = region;
 		setWorld(region.getWorld());
 	}
@@ -63,22 +63,22 @@ public class GameCylinder extends Game {
 	public Location getRandomLocation() {
 		List<IFloor> floors = getComponents().getFloors();
 		Collections.sort(floors);
-		
+
 		int y = floors.get(floors.size() - 1).getY() + 1;
 
-	    double i = HeavySpleef.getRandom().nextInt(360) + 1;
-	    double r = HeavySpleef.getRandom().nextInt(region.getWorldEditRegion().getRadius().getBlockX() - 1);
+		double i = HeavySpleef.getRandom().nextInt(360) + 1;
+		double r = HeavySpleef.getRandom().nextInt(region.getWorldEditRegion().getRadius().getBlockX() - 1);
 
-	    double angle = i * Math.PI / 180.0D;
-	    int x = (int)(region.getWorldEditRegion().getCenter().getX() + r * Math.cos(angle));
-	    int z = (int)(region.getWorldEditRegion().getCenter().getZ() + r * Math.sin(angle));
+		double angle = i * Math.PI / 180.0D;
+		int x = (int) (region.getWorldEditRegion().getCenter().getX() + r * Math.cos(angle));
+		int z = (int) (region.getWorldEditRegion().getCenter().getZ() + r * Math.sin(angle));
 
-	    return new Location(BukkitUtil.toWorld(region.getWorldEditRegion().getWorld()), x, y, z);
+		return new Location(BukkitUtil.toWorld(region.getWorldEditRegion().getWorld()), x, y, z);
 	}
 
 	@Override
 	public void broadcast(String message, BroadcastType type) {
-		switch(type) {
+		switch (type) {
 		case INGAME:
 			for (SpleefPlayer player : getIngamePlayers()) {
 				player.sendMessage(message);
@@ -90,19 +90,17 @@ public class GameCylinder extends Game {
 		case RADIUS:
 			int radius = HeavySpleef.getSystemConfig().getGeneralSection().getBroadcastRadius();
 			int radiusSqared = radius * radius;
-			
-			
-			
+
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (player.getWorld() != BukkitUtil.toWorld(region.getWorldEditRegion().getWorld()))
 					continue;
 				double distanceSquared = Util.toBukkitLocation(region.getWorldEditRegion().getWorld(), region.getWorldEditRegion().getCenter()).distanceSquared(player.getLocation());
-				
+
 				if (this.hasPlayer(HeavySpleef.getInstance().getSpleefPlayer(player)) || distanceSquared <= radiusSqared)
 					player.sendMessage(message);
-			
+
 			}
-			
+
 			break;
 		}
 	}
@@ -111,18 +109,18 @@ public class GameCylinder extends Game {
 	public Region getRegion() {
 		return region;
 	}
-	
+
 	@Override
 	public ConfigurationSection serialize() {
 		ConfigurationSection section = super.serialize();
-		
+
 		CylinderRegion weRegion = region.getWorldEditRegion();
-		
+
 		section.set("center", Parser.convertLocationtoString(Util.toBukkitLocation(weRegion.getWorld(), weRegion.getCenter())));
 		section.set("radius", weRegion.getRadius().getBlockX());
 		section.set("min", weRegion.getMinimumY());
 		section.set("max", weRegion.getMaximumY());
-		
+
 		return section;
 	}
 

@@ -77,7 +77,7 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class PlayerListener implements Listener {
 
-	private List<String> dead = new ArrayList<String>();
+	private List<String>	dead	= new ArrayList<String>();
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
@@ -191,17 +191,15 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent e) {
-		if (!(e.getEntity() instanceof Arrow)
-				&& !(e.getEntity() instanceof Egg))
+		if (!(e.getEntity() instanceof Arrow) && !(e.getEntity() instanceof Egg))
 			return;
 
 		Projectile projectile = e.getEntity();
-		
+
 		if (!(projectile.getShooter() instanceof Player))
 			return;
 
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				projectile.getShooter());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(projectile.getShooter());
 
 		if (!player.isActive())
 			return;
@@ -215,9 +213,7 @@ public class PlayerListener implements Listener {
 				return;
 
 			// Use BlockIterator to detect the hit block
-			BlockIterator iterator = new BlockIterator(arrow.getWorld(), arrow
-					.getLocation().toVector(), arrow.getVelocity().normalize(),
-					0, 4);
+			BlockIterator iterator = new BlockIterator(arrow.getWorld(), arrow.getLocation().toVector(), arrow.getVelocity().normalize(), 0, 4);
 			Block hitBlock = null;
 
 			while (iterator.hasNext()) {
@@ -226,7 +222,7 @@ public class PlayerListener implements Listener {
 				if (hitBlock.getType() != Material.AIR)
 					break;
 			}
-			
+
 			if (!game.canSpleef(player, hitBlock.getLocation()))
 				return;
 
@@ -235,19 +231,15 @@ public class PlayerListener implements Listener {
 			if (hitBlock.getType() == Material.TNT) {
 				return;
 			}
-			
+
 			arrow.remove();
 
 			player.addBrokenBlock(hitBlock);
-			FallingBlock block = world.spawnFallingBlock(
-					hitBlock.getLocation(), hitBlock.getType(),
-					hitBlock.getData());
-			block.setMetadata("bowspleef",
-					new FixedMetadataValue(HeavySpleef.getInstance(), true));
+			FallingBlock block = world.spawnFallingBlock(hitBlock.getLocation(), hitBlock.getType(), hitBlock.getData());
+			block.setMetadata("bowspleef", new FixedMetadataValue(HeavySpleef.getInstance(), true));
 
 			if (game.getFlag(FlagType.BLOCKBREAKEFFECT)) {
-				world.playEffect(hitBlock.getLocation(), Effect.STEP_SOUND,
-						hitBlock.getType());
+				world.playEffect(hitBlock.getLocation(), Effect.STEP_SOUND, hitBlock.getType());
 			}
 			hitBlock.setType(Material.AIR);
 		} else if (projectile instanceof Egg) {
@@ -259,7 +251,7 @@ public class PlayerListener implements Listener {
 			// Use BlockIterator to detect the hit block
 			World world = egg.getWorld();
 			BlockIterator iterator = new BlockIterator(egg.getWorld(), egg.getLocation().toVector(), egg.getVelocity().normalize(), 0, 4);
-			
+
 			egg.remove();
 			Block hitBlock = null;
 
@@ -316,8 +308,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getEntity());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getEntity());
 
 		if (player.isActive()) {
 			e.setFoodLevel(20);
@@ -326,8 +317,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onItemPickup(PlayerPickupItemEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 
 		if (!player.isActive()) {
 			return;
@@ -351,8 +341,7 @@ public class PlayerListener implements Listener {
 		if (!(e.getEntity() instanceof Player))
 			return;
 
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getEntity());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getEntity());
 
 		if (player.isActive()) {
 			e.setCancelled(true);
@@ -361,8 +350,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onGamemodeChange(PlayerGameModeChangeEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 
 		if (!player.isActive()) {
 			return;
@@ -395,24 +383,24 @@ public class PlayerListener implements Listener {
 			e.getPlayer().sendMessage(I18N._("notAllowedToBuild"));
 		}
 	}
-	
+
 	@EventHandler
 	public void onBucketEmpty(PlayerBucketEmptyEvent e) {
 		Block block = e.getBlockClicked().getRelative(e.getBlockFace());
-		
+
 		for (Game game : GameManager.getGames()) {
 			if (!game.contains(block.getLocation())) {
 				continue;
 			}
-			
+
 			if (e.getPlayer().hasPermission(Permissions.BUILD_BYPASS.getPerm())) {
 				return;
 			}
-			
+
 			if (!HeavySpleef.getSystemConfig().getGeneralSection().isProtectArenas()) {
 				return;
 			}
-			
+
 			e.setCancelled(true);
 			e.getPlayer().sendMessage(I18N._("notAllowedToBuild"));
 		}
@@ -420,19 +408,16 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 
 		if (!player.isActive() && !player.isSpectating())
 			return;
-		if (e.getPlayer().hasPermission(
-				Permissions.COMMAND_WHITELISTED.getPerm()))
+		if (e.getPlayer().hasPermission(Permissions.COMMAND_WHITELISTED.getPerm()))
 			return;
 
 		String[] split = e.getMessage().split(" ");
 		String cmd = split[0];
-		if (cmd.equalsIgnoreCase("/spleef") || cmd.equalsIgnoreCase("/hs")
-				|| cmd.equalsIgnoreCase("/hspleef"))
+		if (cmd.equalsIgnoreCase("/spleef") || cmd.equalsIgnoreCase("/hs") || cmd.equalsIgnoreCase("/hspleef"))
 			return;
 		List<String> whitelist = HeavySpleef.getSystemConfig().getGeneralSection().getCommandWhitelist();
 		for (String c : whitelist) {
@@ -473,31 +458,28 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e) {
-		final SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		final SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 
 		if (!dead.contains(player.getRawName()))
 			return;
 
 		// Player died while spleefing, restore his inventory
-		Bukkit.getScheduler().scheduleSyncDelayedTask(
-				HeavySpleef.getInstance(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(HeavySpleef.getInstance(), new Runnable() {
 
-					@Override
-					public void run() {
-						if (player.getBukkitPlayer().isOnline()) {
-							player.restoreState();
-						}
-					}
-				}, 10L);
+			@Override
+			public void run() {
+				if (player.getBukkitPlayer().isOnline()) {
+					player.restoreState();
+				}
+			}
+		}, 10L);
 
 		dead.remove(player.getRawName());
 	}
 
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent e) {
-		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(
-				e.getPlayer());
+		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 
 		if (!player.isActive())
 			return;
@@ -532,9 +514,7 @@ public class PlayerListener implements Listener {
 	}
 
 	private boolean shouldFix(Location pLoc, Location bLoc) {
-		return pLoc.getBlockX() == bLoc.getBlockX()
-				&& pLoc.getBlockZ() == bLoc.getBlockZ()
-				&& pLoc.getY() > bLoc.getY();
+		return pLoc.getBlockX() == bLoc.getBlockX() && pLoc.getBlockZ() == bLoc.getBlockZ() && pLoc.getY() > bLoc.getY();
 	}
 
 }

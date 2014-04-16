@@ -39,22 +39,22 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandDisable implements CommandListener {
 
 	@Command(value = "disable", minArgs = 1)
-	@CommandPermissions(value = {Permissions.DISABLE})
+	@CommandPermissions(value = { Permissions.DISABLE })
 	@CommandHelp(usage = "/spleef disable [game]", description = "Disables a game")
 	public void execute(CommandSender sender, Game game) {
 		if (game == null) {
 			sender.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		if (game.getGameState() == GameState.DISABLED) {
 			sender.sendMessage(_("gameIsAlreadyDisabled"));
 			return;
 		}
-		
+
 		game.disable();
 		game.broadcast(_("gameDisabled", game.getName(), sender.getName()), ConfigUtil.getBroadcast(MessageType.GAME_DISABLED));
 		sender.sendMessage(_("gameDisabledToPlayer", game.getName()));
 	}
-	
+
 }

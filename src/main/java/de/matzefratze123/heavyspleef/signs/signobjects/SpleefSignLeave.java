@@ -47,9 +47,9 @@ public class SpleefSignLeave implements SpleefSign {
 	@Override
 	public Map<Integer, String[]> getLines() {
 		Map<Integer, String[]> lines = new HashMap<Integer, String[]>();
-		
-		lines.put(0, new String[]{"[Leave]", "Leave"});
-		
+
+		lines.put(0, new String[] { "[Leave]", "Leave" });
+
 		return lines;
 	}
 
@@ -61,18 +61,18 @@ public class SpleefSignLeave implements SpleefSign {
 	@Override
 	public void onPlace(SignChangeEvent e) {
 		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
-		
+
 		StringBuilder builder = new StringBuilder();
 		if (e.getLine(1).startsWith("[")) {
 			builder.append(ChatColor.DARK_GRAY + "[");
 		}
-		
+
 		builder.append(ChatColor.DARK_RED).append(ChatColor.BOLD).append("Leave");
-		
+
 		if (e.getLine(1).endsWith("]")) {
 			builder.append(ChatColor.DARK_GRAY + "]");
 		}
-		
+
 		e.setLine(1, builder.toString());
 	}
 

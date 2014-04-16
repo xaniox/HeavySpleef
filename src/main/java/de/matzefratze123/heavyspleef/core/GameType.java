@@ -21,7 +21,6 @@ package de.matzefratze123.heavyspleef.core;
 
 public enum GameType {
 
-	CUBOID,
-	CYLINDER;
-	
+	CUBOID, CYLINDER;
+
 }

@@ -41,11 +41,11 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandStart implements CommandListener {
 
 	@Command(value = "start", onlyIngame = true)
-	@CommandPermissions(value = {Permissions.START_GAME})
+	@CommandPermissions(value = { Permissions.START_GAME })
 	@CommandHelp(usage = "/spleef start <game>", description = "Starts a game")
 	public void execute(Player bukkitPlayer, Game game) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
-		
+
 		if (game == null) {
 			if (!player.isActive()) {
 				player.sendMessage(_("notIngame"));
@@ -89,9 +89,7 @@ public class CommandStart implements CommandListener {
 		if (game.getFlag(FlagType.TEAM)) {
 			for (Team team : game.getComponents().getTeams()) {
 				if (team.getPlayers().size() < team.getMinPlayers()) {
-					player.sendMessage(_("teamNeedMorePlayers", team.getColor()
-							.toMessageColorString(),
-							String.valueOf(team.getMinPlayers())));
+					player.sendMessage(_("teamNeedMorePlayers", team.getColor().toMessageColorString(), String.valueOf(team.getMinPlayers())));
 
 				}
 			}

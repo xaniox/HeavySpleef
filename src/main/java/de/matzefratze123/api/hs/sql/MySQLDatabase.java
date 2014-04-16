@@ -90,7 +90,7 @@ public class MySQLDatabase extends AbstractDatabase {
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * Gets all tables of this database
 	 */
@@ -99,12 +99,12 @@ public class MySQLDatabase extends AbstractDatabase {
 		List<Table> list = new ArrayList<Table>();
 		DatabaseMetaData meta = connection.getMetaData();
 		ResultSet rs = meta.getTables(null, null, "%", null);
-		
+
 		while (rs.next()) {
 			String name = rs.getString(TABLE_NAME_COLUMN);
 			list.add(new Table(logger, this, name));
 		}
-		
+
 		return list.toArray(new Table[list.size()]);
 	}
 
@@ -173,7 +173,7 @@ public class MySQLDatabase extends AbstractDatabase {
 	public String getPassword() {
 		return this.password;
 	}
-	
+
 	public void setConnectionData(String host, int port, String database, String user, String password) {
 		this.host = host;
 		this.port = port;

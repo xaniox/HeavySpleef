@@ -34,31 +34,31 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 public class SelectionListener implements Listener {
 
-	private SelectionManager selManager;
-	private HeavySpleef plugin;
-	
+	private SelectionManager	selManager;
+	private HeavySpleef			plugin;
+
 	public SelectionListener(HeavySpleef instance) {
 		this.plugin = instance;
 		this.selManager = plugin.getSelectionManager();
 	}
-	
+
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		Player player = e.getPlayer();
 		Block block = e.getClickedBlock();
 		ItemStack is = player.getItemInHand();
-		
+
 		if (block == null)
 			return;
 		if (!player.hasPermission(Permissions.SELECTION.getPerm()))
 			return;
 		if (selManager.getWandType() == WandType.WORLDEDIT)
 			return;
-		
+
 		if (is == null || is.getType() != HeavySpleef.getSystemConfig().getGeneralSection().getWandItem())
 			return;
-		
-		switch(e.getAction()) {
+
+		switch (e.getAction()) {
 		case LEFT_CLICK_BLOCK:
 			addFirstSelection(block.getLocation(), player);
 			e.setCancelled(true);
@@ -71,27 +71,27 @@ public class SelectionListener implements Listener {
 			break;
 		}
 	}
-	
+
 	public void addFirstSelection(Location loc, Player player) {
 		Selection selection = selManager.getSelection(player);
-		
+
 		if (selection.getFirst() != null && selection.getFirst().equals(loc)) {
 			return;
 		}
-		
+
 		selection.setFirst(loc);
 		player.sendMessage(ChatColor.DARK_BLUE + "First point set (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")");
 	}
-	
+
 	public void addSecondSelection(Location loc, Player player) {
 		Selection selection = selManager.getSelection(player);
-		
+
 		if (selection.getSecond() != null && selection.getSecond().equals(loc)) {
 			return;
 		}
-		
+
 		selManager.getSelection(player).setSecond(loc);
 		player.sendMessage(ChatColor.DARK_BLUE + "Second point set (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")");
 	}
-	
+
 }

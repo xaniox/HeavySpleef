@@ -38,30 +38,30 @@ public class ReadyListener implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(e.getPlayer());
 		Block block = e.getClickedBlock();
-		
+
 		if (player == null)
 			return;
 		if (block == null)
 			return;
 		if (!player.isActive())
 			return;
-		
+
 		Game game = player.getGame();
 		if (game.getGameState() != GameState.LOBBY)
 			return;
-		
+
 		SimpleBlockData readyBlock = HeavySpleef.getSystemConfig().getGeneralSection().getReadyBlockData();
 		if (readyBlock == null)
 			return;
-		
+
 		Material mat = readyBlock.getMaterial();
 		byte data = readyBlock.getData();
-		
+
 		if (mat != block.getType())
 			return;
 		if (data != block.getData())
 			return;
-		
+
 		if (player.isReady()) {
 			player.sendMessage(I18N._("alreadyVoted"));
 		} else {
@@ -69,5 +69,5 @@ public class ReadyListener implements Listener {
 			player.sendMessage(I18N._("taggedAsReady"));
 		}
 	}
-	
+
 }

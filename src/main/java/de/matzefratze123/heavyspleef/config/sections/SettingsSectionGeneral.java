@@ -33,9 +33,9 @@ import de.matzefratze123.heavyspleef.selection.SelectionManager.WandType;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class SettingsSectionGeneral implements SettingsSection {
-	
-	private static final String SECTION_PATH = "general";
-	
+
+	private static final String		SECTION_PATH	= "general";
+
 	private SpleefConfig			configuration;
 	private ConfigurationSection	section;
 
@@ -48,16 +48,16 @@ public class SettingsSectionGeneral implements SettingsSection {
 	private boolean					votesEnabled;
 	private int						votesNeeded;
 	private SimpleBlockData			readyBlockData;
-	private String                  vipPrefix;
-	private boolean                 vipCanJoinFull;
+	private String					vipPrefix;
+	private boolean					vipCanJoinFull;
 	private int						pvpTimer;
-	
+
 	public SettingsSectionGeneral(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -77,7 +77,7 @@ public class SettingsSectionGeneral implements SettingsSection {
 	@Override
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
-		
+
 		broadcastRadius = section.getInt("broadcast-radius", 40);
 		prefix = ChatColor.translateAlternateColorCodes('&', section.getString("spleef-prefix", "&8[&6&lSpleef&8]"));
 		protectArenas = section.getBoolean("protectArena", true);
@@ -92,7 +92,7 @@ public class SettingsSectionGeneral implements SettingsSection {
 
 		final Material defaultMaterial = Material.STICK;
 		String configString = section.getString("wandItem");
-		
+
 		try {
 			wandItem = Material.valueOf(configString.toUpperCase());
 		} catch (Exception e) {
@@ -163,7 +163,7 @@ public class SettingsSectionGeneral implements SettingsSection {
 	public String getVipPrefix() {
 		return vipPrefix;
 	}
-	
+
 	public boolean getVipJoinFull() {
 		return vipCanJoinFull;
 	}

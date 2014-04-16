@@ -23,9 +23,9 @@ import org.bukkit.Location;
 
 public class SelectionHeavySpleef extends Selection {
 
-	private Location first;
-	private Location second;
-	
+	private Location	first;
+	private Location	second;
+
 	public SelectionHeavySpleef(String owner) {
 		super(owner);
 	}
@@ -39,25 +39,25 @@ public class SelectionHeavySpleef extends Selection {
 	public Location getSecond() {
 		return this.second;
 	}
-	
+
 	@Override
 	public boolean hasSelection() {
-		return this.first != null && this.second != null; 
+		return this.first != null && this.second != null;
 	}
-	
+
 	@Override
 	public boolean isTroughWorlds() {
 		if (this.first == null || this.second == null)
 			return false;
-		
+
 		return this.first.getWorld() != this.second.getWorld();
 	}
-	
+
 	@Override
 	public void setFirst(Location location) {
 		this.first = location;
 	}
-	
+
 	@Override
 	public void setSecond(Location location) {
 		this.second = location;

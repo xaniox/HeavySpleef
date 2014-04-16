@@ -35,9 +35,9 @@ import java.util.logging.Logger;
  */
 public class SQLiteDatabase extends AbstractDatabase {
 
-	private static final String SQLITE_MASTER_TABLE = "sqlite_master";
-	
-	private File file;
+	private static final String	SQLITE_MASTER_TABLE	= "sqlite_master";
+
+	private File				file;
 
 	/**
 	 * Constructs a connection to a sqlite database If the database doesn't
@@ -82,18 +82,18 @@ public class SQLiteDatabase extends AbstractDatabase {
 			throw e;
 		}
 	}
-	
+
 	@Override
 	public Table[] getTables() throws SQLException {
 		SQLResult sqlr = executeQuery("SELECT * FROM " + SQLITE_MASTER_TABLE + " WHERE type = 'table'");
 		ResultSet rs = sqlr.getResultSet();
-		
+
 		List<Table> list = new ArrayList<Table>();
-		
+
 		while (rs.next()) {
 			list.add(new Table(logger, this, rs.getString(TABLE_NAME_COLUMN)));
 		}
-		
+
 		return list.toArray(new Table[list.size()]);
 	}
 
@@ -141,7 +141,7 @@ public class SQLiteDatabase extends AbstractDatabase {
 	}
 
 	public void setConnectionData(File file) {
-		
+
 	}
 
 }

@@ -34,9 +34,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandSave implements CommandListener {
-	
+
 	@Command(value = "save")
-	@CommandPermissions(value = {Permissions.SAVE})
+	@CommandPermissions(value = { Permissions.SAVE })
 	@CommandHelp(usage = "/spleef save", description = "Saves all games to the database")
 	public void execute(CommandSender sender) {
 		HeavySpleef.getInstance().getGameDatabase().save();

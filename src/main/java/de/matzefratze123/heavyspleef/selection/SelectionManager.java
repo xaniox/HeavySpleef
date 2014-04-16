@@ -29,63 +29,61 @@ import de.matzefratze123.heavyspleef.hooks.HookManager;
 import de.matzefratze123.heavyspleef.hooks.WorldEditHook;
 
 /**
- * Contains selections for players
- * and methods to modify them
+ * Contains selections for players and methods to modify them
  * 
  * @author matzefratze123
  */
 public class SelectionManager {
-	
+
 	/** The ArrayList containing all locations and selections of players **/
-	private List<Selection> selections = new ArrayList<Selection>();
-	private WandType type;
-	
+	private List<Selection>	selections	= new ArrayList<Selection>();
+	private WandType		type;
+
 	public SelectionManager() {
 		setup();
 	}
-	
+
 	public void setup() {
 		type = HeavySpleef.getSystemConfig().getGeneralSection().getWandType();
 	}
-	
+
 	public Selection getSelection(Player player) {
 		Selection s = getRawSelection(player);
-		
+
 		if (s == null && HookManager.getInstance().getService(WorldEditHook.class).hasHook() && getWandType() == WandType.WORLDEDIT)
 			s = new SelectionWorldEdit(player.getName());
-		
+
 		if (s == null) {
 			addHSSelection(player);
 			s = getRawSelection(player);
 		}
-		
+
 		return s;
 	}
-	
+
 	private Selection getRawSelection(Player player) {
 		for (Selection s : selections) {
 			if (s.getOwner().equalsIgnoreCase(player.getName()))
 				return s;
 		}
-		
+
 		return null;
 	}
-	
+
 	protected void addHSSelection(Player player) {
 		if (selections.contains(player.getName()))
 			return;
 		selections.add(new SelectionHeavySpleef(player.getName()));
 	}
-	
+
 	public WandType getWandType() {
 		return this.type;
 	}
-	
+
 	public static enum WandType {
-		
-		HEAVYSPLEEF,
-		WORLDEDIT;
-		
+
+		HEAVYSPLEEF, WORLDEDIT;
+
 	}
 
 }

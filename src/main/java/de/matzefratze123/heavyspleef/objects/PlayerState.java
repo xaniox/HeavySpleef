@@ -24,29 +24,27 @@ import java.util.Collection;
 import org.bukkit.GameMode;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerState {
 
-	private ItemStack[] contents;
-	private ItemStack helmet;
-	private ItemStack chestplate;
-	private ItemStack leggings;
-	private ItemStack boots;
-	private float exhaustion;
-	private float saturation;
-	private int foodLevel;
-	private double health;
-	private GameMode gm;
-	private Collection<PotionEffect> potioneffects;
-	private float exp;
-	private int level;
-	private boolean fly;
+	private ItemStack[]					contents;
+	private ItemStack					helmet;
+	private ItemStack					chestplate;
+	private ItemStack					leggings;
+	private ItemStack					boots;
+	private float						exhaustion;
+	private float						saturation;
+	private int							foodLevel;
+	private double						health;
+	private GameMode					gm;
+	private Collection<PotionEffect>	potioneffects;
+	private float						exp;
+	private int							level;
+	private boolean						fly;
+	private Scoreboard					board;
 
-	public PlayerState(ItemStack[] invContents, ItemStack helmet,
-			ItemStack chestplate, ItemStack leggings, ItemStack boots,
-			float exhaustion, float saturation, int foodLevel, double health,
-			GameMode gm, Collection<PotionEffect> potionEffects, float exp,
-			int level, boolean fly) {
+	public PlayerState(ItemStack[] invContents, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, float exhaustion, float saturation, int foodLevel, double health, GameMode gm, Collection<PotionEffect> potionEffects, float exp, int level, boolean fly, Scoreboard board) {
 		this.setContents(invContents);
 		this.setHelmet(helmet);
 		this.setChestplate(chestplate);
@@ -61,6 +59,7 @@ public class PlayerState {
 		this.setExp(exp);
 		this.setLevel(level);
 		this.fly = fly;
+		this.board = board;
 	}
 
 	public ItemStack[] getContents() {
@@ -173,6 +172,14 @@ public class PlayerState {
 
 	public boolean isFly() {
 		return this.fly;
+	}
+
+	public Scoreboard getBoard() {
+		return board;
+	}
+
+	public void setBoard(Scoreboard board) {
+		this.board = board;
 	}
 
 }

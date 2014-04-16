@@ -27,75 +27,41 @@ package de.matzefratze123.heavyspleef.util;
 public enum Permissions {
 
 	// Command
-	KICK("heavyspleef.kick"),
-	SET_FLAG("heavyspleef.flag"),
-	SET_TEAMFLAG("heavyspleef.setteamflag"),
-	
-	DISABLE("heavyspleef.disable"),
-	ENABLE("heavyspleef.enable"),
-	HELP_ADMIN("heavyspleef.help.admin"),
-	HELP_USER("heavyspleef.help.user"),
-	
-	ADD_FLOOR("heavyspleef.addfloor"),
-	REMOVE_FLOOR("heavyspleef.removefloor"),
-	ADD_LOSEZONE("heavyspleef.addlose"),
-	REMOVE_LOSEZONE("heavyspleef.removelose"),
-	
-	JOIN_GAME("heavyspleef.join"),
-	JOIN_GAME_INV("heavyspleef.join.inventory"),
-	LEAVE_GAME("heavyspleef.leave"),
-	START_GAME("heavyspleef.start"),
-	START_OTHER_GAME("heavyspleef.start.other"),
-	SPECTATE("heavyspleef.spectate"),
-	RESTORE_FLOORS("heavyspleef.restorefloor"),
-	
-	CREATE_GAME("heavyspleef.create"),
-	DELETE_GAME("heavyspleef.delete"),
-	RENAME("heavyspleef.rename"),
-	SAVE("heavyspleef.save"),
-	STOP("heavyspleef.stop"),
-	
+	KICK("heavyspleef.kick"), SET_FLAG("heavyspleef.flag"), SET_TEAMFLAG("heavyspleef.setteamflag"),
+
+	DISABLE("heavyspleef.disable"), ENABLE("heavyspleef.enable"), HELP_ADMIN("heavyspleef.help.admin"), HELP_USER("heavyspleef.help.user"),
+
+	ADD_FLOOR("heavyspleef.addfloor"), REMOVE_FLOOR("heavyspleef.removefloor"), ADD_LOSEZONE("heavyspleef.addlose"), REMOVE_LOSEZONE("heavyspleef.removelose"),
+
+	JOIN_GAME("heavyspleef.join"), JOIN_GAME_INV("heavyspleef.join.inventory"), LEAVE_GAME("heavyspleef.leave"), START_GAME("heavyspleef.start"), START_OTHER_GAME("heavyspleef.start.other"), SPECTATE("heavyspleef.spectate"), RESTORE_FLOORS("heavyspleef.restorefloor"),
+
+	CREATE_GAME("heavyspleef.create"), DELETE_GAME("heavyspleef.delete"), RENAME("heavyspleef.rename"), SAVE("heavyspleef.save"), STOP("heavyspleef.stop"),
+
 	COMMAND_WHITELISTED("heavyspleef.whitelistcommand"),
-	
-	STATS("heavyspleef.statistic"),
-	STATS_OTHERS("heavyspleef.statistic.others"),
-	ADD_SCOREBOARD("heavyspleef.addscoreboard"),
-	REMOVE_SCOREBOARD("heavyspleef.removescoreboard"),
-	UPDATE_SCOREBOARD("heavyspleef.updatescoreboard"),
-	
-	UPDATE_PLUGIN("heavyspleef.updateplugin"),
-	ADD_WALL("heavyspleef.addwall"),
-	REMOVE_WALL("heavyspleef.removewall"),
-	ADD_TEAM("heavyspleef.addteam"),
-	REMOVE_TEAM("heavyspleef.removeteam"),
-	
-	LIST("heavyspleef.list"),
-	RELOAD("heavyspleef.reload"),
-	INFO("heavyspleef.info"),
-	VOTE("heavyspleef.vote"),
-	
+
+	STATS("heavyspleef.statistic"), STATS_OTHERS("heavyspleef.statistic.others"), ADD_SCOREBOARD("heavyspleef.addscoreboard"), REMOVE_SCOREBOARD("heavyspleef.removescoreboard"), UPDATE_SCOREBOARD("heavyspleef.updatescoreboard"),
+
+	UPDATE_PLUGIN("heavyspleef.updateplugin"), ADD_WALL("heavyspleef.addwall"), REMOVE_WALL("heavyspleef.removewall"), ADD_TEAM("heavyspleef.addteam"), REMOVE_TEAM("heavyspleef.removeteam"),
+
+	LIST("heavyspleef.list"), RELOAD("heavyspleef.reload"), INFO("heavyspleef.info"), VOTE("heavyspleef.vote"),
+
 	// Bypass
 	BUILD_BYPASS("heavyspleef.build.bypass"),
-	
+
 	// Selection
 	SELECTION("heavyspleef.selection"),
-	
+
 	// Sign
-	CREATE_SPLEEF_SIGN("heavyspleef.createsign"),
-	SIGN_JOIN("heavyspleef.sign.join"),
-	SIGN_LEAVE("heavyspleef.sign.leave"),
-	SIGN_START("heavyspleef.sign.start"),
-	SIGN_VOTE("heavyspleef.sign.vote"),
-	SIGN_SPECTATE("heavyspleef.sign.spectate"),
-	
+	CREATE_SPLEEF_SIGN("heavyspleef.createsign"), SIGN_JOIN("heavyspleef.sign.join"), SIGN_LEAVE("heavyspleef.sign.leave"), SIGN_START("heavyspleef.sign.start"), SIGN_VOTE("heavyspleef.sign.vote"), SIGN_SPECTATE("heavyspleef.sign.spectate"),
+
 	VIP("heavyspleef.vip");
-	
-	
-	private String perm;
+
+	private String	perm;
+
 	private Permissions(String perm) {
 		this.perm = perm;
 	}
-	
+
 	/**
 	 * Get's the permissions string
 	 * 

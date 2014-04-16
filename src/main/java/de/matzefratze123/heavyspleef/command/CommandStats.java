@@ -54,12 +54,12 @@ public class CommandStats implements CommandListener {
 	@CommandHelp(usage = "/spleef stats [player|top [page]]", description = "Shows spleef statistics")
 	public void execute(final Player player, String arg, Integer page) {
 		SpleefPlayer spleefPlayer = HeavySpleef.getInstance().getSpleefPlayer(player);
-		
+
 		if (!SQLStatisticDatabase.isDatabaseEnabled()) {
 			player.sendMessage(ChatColor.RED + "Statistics are disabled!");
 			return;
 		}
-		
+
 		if (arg == null) {
 			if (!player.hasPermission(Permissions.STATS.getPerm())) {
 				player.sendMessage(_("noPermission"));
@@ -86,21 +86,21 @@ public class CommandStats implements CommandListener {
 
 			final Player target = Bukkit.getPlayerExact(arg);
 			final OfflinePlayer offlineTarget = Bukkit.getOfflinePlayer(arg);
-			
+
 			SpleefPlayer targetSpleefPlayer = HeavySpleef.getInstance().getSpleefPlayer(target);
-			
+
 			if (targetSpleefPlayer != null) {
 				printStatistics(targetSpleefPlayer.getStatistic(), player);
 			} else if (offlineTarget != null) {
 				Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new Runnable() {
-					
+
 					@Override
 					public void run() {
-						//Get statistic via cache
+						// Get statistic via cache
 						CachedStatistics cache = CachedStatistics.getInstance();
-						
+
 						StatisticModule module = cache.cacheStatistic(offlineTarget.getName());
-						
+
 						if (module.getHolder().equalsIgnoreCase(CachedStatistics.INVALID_MODULE)) {
 							player.sendMessage(ChatColor.RED + "This player doesn't have statistics!");
 						} else {
@@ -120,30 +120,29 @@ public class CommandStats implements CommandListener {
 		} else {
 			player.sendMessage("--- " + GREEN + "Your statistics" + WHITE + " ---");
 		}
-		
-		player.sendMessage(GREEN + "Wins: "         + WHITE + module.getScore(StatisticValue.WIN));
-		player.sendMessage(RED   + "Loses: "        + WHITE + module.getScore(StatisticValue.LOSE));
-		player.sendMessage(GREEN + "Knockouts: "    + WHITE + module.getScore(StatisticValue.KNOCKOUTS));
+
+		player.sendMessage(GREEN + "Wins: " + WHITE + module.getScore(StatisticValue.WIN));
+		player.sendMessage(RED + "Loses: " + WHITE + module.getScore(StatisticValue.LOSE));
+		player.sendMessage(GREEN + "Knockouts: " + WHITE + module.getScore(StatisticValue.KNOCKOUTS));
 		player.sendMessage(GREEN + "Games played: " + WHITE + module.getScore(StatisticValue.GAMES_PLAYED));
-		player.sendMessage(GREEN + "Wins / Game: "  + WHITE + module.getKD());
-		player.sendMessage(GREEN + "Score: "        + WHITE + module.getScore(StatisticValue.SCORE));
-	}
-	
-	public static void showLeaderboard(final Player player, final int page) {
-        Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new LeaderboardShower(player, page));
+		player.sendMessage(GREEN + "Wins / Game: " + WHITE + module.getKD());
+		player.sendMessage(GREEN + "Score: " + WHITE + module.getScore(StatisticValue.SCORE));
 	}
 
-	
+	public static void showLeaderboard(final Player player, final int page) {
+		Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new LeaderboardShower(player, page));
+	}
+
 	private static class LeaderboardShower implements Runnable {
-        
-        private Player player;
-        private int page;
-        
-        public LeaderboardShower(Player player, int page) {
-                this.player = player;
-                this.page = page;
-        }
-        
+
+		private Player	player;
+		private int		page;
+
+		public LeaderboardShower(Player player, int page) {
+			this.player = player;
+			this.page = page;
+		}
+
 		@Override
 		public void run() {
 			List<StatisticModule> list = null;

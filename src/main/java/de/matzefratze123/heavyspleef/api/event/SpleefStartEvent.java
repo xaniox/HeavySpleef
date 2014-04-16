@@ -26,9 +26,9 @@ import de.matzefratze123.heavyspleef.api.IGame;
 
 public class SpleefStartEvent extends SpleefEvent implements Cancellable {
 
-	private static final HandlerList handlers = new HandlerList();
-	private boolean cancelled;
-	
+	private static final HandlerList	handlers	= new HandlerList();
+	private boolean						cancelled;
+
 	public SpleefStartEvent(IGame game) {
 		super(game);
 	}
@@ -37,7 +37,7 @@ public class SpleefStartEvent extends SpleefEvent implements Cancellable {
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	public HandlerList getHandlerList() {
 		return handlers;
 	}
@@ -51,5 +51,5 @@ public class SpleefStartEvent extends SpleefEvent implements Cancellable {
 	public void setCancelled(boolean cancel) {
 		this.cancelled = cancel;
 	}
-	
+
 }

@@ -22,32 +22,32 @@ package de.matzefratze123.heavyspleef.util;
 import org.bukkit.Location;
 
 public class LocationHelper {
-	
+
 	public static double getDistance2D(Location loc1, Location loc2) {
 		if (!loc1.getWorld().getName().equalsIgnoreCase(loc2.getWorld().getName()))
 			return -1.0D;
-		
+
 		int minX = Math.min(loc1.getBlockX(), loc2.getBlockX());
 		int maxX = Math.max(loc1.getBlockX(), loc2.getBlockX());
-		
+
 		int minZ = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
 		int maxZ = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
-		
+
 		int distanceX = maxX - minX;
 		int distanceZ = maxZ - minZ;
-		
+
 		int realDistanceSqared = (distanceX * distanceX) + (distanceZ * distanceZ);
 		return realDistanceSqared;
 	}
-	
+
 	public static String toFriendlyString(Location location) {
 		String world = location.getWorld().getName();
-		
+
 		int x = location.getBlockX();
 		int y = location.getBlockY();
 		int z = location.getBlockZ();
-		
+
 		return "[World: " + world + ", x: " + x + ", y: " + y + ", z: " + z + "]";
 	}
-	
+
 }

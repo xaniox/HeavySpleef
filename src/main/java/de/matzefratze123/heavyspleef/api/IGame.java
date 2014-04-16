@@ -36,34 +36,35 @@ import de.matzefratze123.heavyspleef.core.queue.GameQueue;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
 
 public interface IGame {
-	
+
 	/**
 	 * Gets the name of this game
 	 */
 	public String getName();
-	
+
 	/**
 	 * Gets the type of this game
 	 */
 	public GameType getType();
-	
+
 	/**
 	 * Gets the world of this game
 	 */
 	public World getWorld();
-	
+
 	/**
 	 * Renames this game
 	 * 
-	 * @param newName The new name of the game
+	 * @param newName
+	 *            The new name of the game
 	 */
 	public void rename(String newName);
-	
+
 	/**
 	 * Gets the components of this game
 	 */
 	public IGameComponents getComponents();
-	
+
 	/**
 	 * Checks if the game contains a block
 	 */
@@ -73,133 +74,145 @@ public interface IGame {
 	 * Starts this game
 	 */
 	public void start();
-	
+
 	/**
 	 * Countdowns this game
 	 */
 	public void countdown();
-	
+
 	/**
 	 * Stops this game
 	 */
 	public void stop();
-	
+
 	/**
 	 * Stops the game with the given cause
 	 */
 	public void stop(StopCause cause);
-	
+
 	/**
 	 * Enables this game
 	 */
 	public void enable();
-	
+
 	/**
 	 * Disables this game
 	 */
 	public void disable();
-	
+
 	/**
-	 * 
 	 * Joins a game
 	 * 
-	 * @param player The player to join
+	 * @param player
+	 *            The player to join
 	 */
 	public void join(SpleefPlayer player);
-	
+
 	/**
 	 * Leaves a game
 	 * 
-	 * @param player The player to leave
+	 * @param player
+	 *            The player to leave
 	 */
 	public void leave(SpleefPlayer player);
-	
+
 	/**
 	 * Leaves a game with the given cause
 	 * 
-	 * @param player The player to leave
-	 * @param cause The cause of the leave
+	 * @param player
+	 *            The player to leave
+	 * @param cause
+	 *            The cause of the leave
 	 */
 	public void leave(SpleefPlayer player, LoseCause cause);
-	
+
 	/**
 	 * Checks if a player is ingame
 	 */
 	public boolean hasPlayer(SpleefPlayer player);
-	
+
 	/**
 	 * Gets all ingame players
 	 */
 	public List<SpleefPlayer> getIngamePlayers();
-	
+
 	/**
 	 * Gets all out players
 	 */
 	public List<OfflinePlayer> getOutPlayers();
-	
+
 	/**
 	 * Gets a flag
 	 * 
-	 * @param flag The flag to get
+	 * @param flag
+	 *            The flag to get
 	 * @return The value of the flag
 	 */
 	public <T extends Flag<V>, V> V getFlag(T flag);
-	
+
 	/**
 	 * Sets a flag
 	 * 
-	 * @param flag The flag to set
-	 * @param value The flags generic value (e.g. a boolean, when a boolean flag is given)
+	 * @param flag
+	 *            The flag to set
+	 * @param value
+	 *            The flags generic value (e.g. a boolean, when a boolean flag
+	 *            is given)
 	 */
 	public <T extends Flag<V>, V> void setFlag(T flag, V value);
-	
+
 	/**
 	 * Checks if this game has a flag
 	 * 
-	 * @param flag The flag to check
+	 * @param flag
+	 *            The flag to check
 	 */
 	public boolean hasFlag(Flag<?> flag);
-	
+
 	/**
-	 * Gets all flags 
+	 * Gets all flags
 	 */
 	public Map<Flag<?>, Object> getFlags();
-	
+
 	/**
 	 * Checks if the player can spleef at the given location
 	 * 
-	 * @param player The player to check
-	 * @param location The location to check
+	 * @param player
+	 *            The player to check
+	 * @param location
+	 *            The location to check
 	 */
 	public boolean canSpleef(SpleefPlayer player, Location location);
-	
+
 	/**
 	 * Broadscasts a message to the game
 	 * 
-	 * @param message The message to send
-	 * @param type The BroadcastType of this broadcast
+	 * @param message
+	 *            The message to send
+	 * @param type
+	 *            The BroadcastType of this broadcast
 	 */
 	public void broadcast(String message, BroadcastType type);
-	
+
 	/**
 	 * Broadscasts a message to the game
 	 * 
 	 * @param message
 	 */
 	public void broadcast(String message);
-	
+
 	/**
 	 * Gets the state of this game
 	 */
 	public GameState getGameState();
-	
+
 	/**
 	 * Sets the state of this game
 	 * 
 	 * @param state
 	 */
 	public void setGameState(GameState state);
-	
+
 	/**
 	 * Gets the queue of this game
 	 */

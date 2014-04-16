@@ -41,67 +41,67 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
 public class CommandHelp implements CommandListener {
-	
+
 	@Command(value = "help")
 	@de.matzefratze123.api.hs.command.CommandHelp(usage = "/spleef help", description = "Shows Spleef help")
-	@CommandAliases({"?"})
+	@CommandAliases({ "?" })
 	public void execute(CommandSender sender) {
 		Map<CommandListener, CommandData[]> commands = HeavySpleef.getInstance().getCommandExecutorService().getCommands();
 		List<CommandPair> cmds = new ArrayList<CommandPair>();
-		
+
 		for (Entry<CommandListener, CommandData[]> entry : commands.entrySet()) {
 			for (CommandData data : entry.getValue()) {
 				cmds.add(new CommandPair(data, entry.getKey()));
 			}
 		}
-		
+
 		Collections.sort(cmds);
-		
+
 		if (!sender.hasPermission(Permissions.HELP_ADMIN.getPerm()) && !sender.hasPermission(Permissions.HELP_USER.getPerm())) {
 			sender.sendMessage(_("noPermission"));
 			return;
 		}
-		
+
 		sender.sendMessage(ChatColor.GRAY + "   -----   HeavySpleef Help   -----   ");
-		
+
 		for (CommandPair cmd : cmds) {
 			if (!cmd.getListener().getClass().isAnnotationPresent(UserType.class)) {
 				continue;
 			}
-			
+
 			UserType userType = cmd.getListener().getClass().getAnnotation(UserType.class);
 			Type type = userType.value();
-			
+
 			boolean isPermitted = false;
-			
+
 			if (type == Type.ADMIN) {
 				isPermitted = sender.hasPermission(Permissions.HELP_ADMIN.getPerm());
 			}
-			
+
 			if (type == Type.PLAYER) {
 				isPermitted = sender.hasPermission(Permissions.HELP_USER.getPerm());
 			}
-			
+
 			if (isPermitted) {
 				sender.sendMessage(ChatColor.GRAY + "/spleef " + cmd.getData().getName() + ChatColor.RED + " - " + ChatColor.YELLOW + cmd.getData().getDescription());
 			}
 		}
 	}
-	
+
 	private static class CommandPair implements Comparable<CommandPair> {
-		
-		private CommandData data;
-		private CommandListener listener;
-		
+
+		private CommandData		data;
+		private CommandListener	listener;
+
 		public CommandPair(CommandData data, CommandListener listener) {
 			this.data = data;
 			this.listener = listener;
 		}
-		
+
 		public CommandData getData() {
 			return data;
 		}
-		
+
 		public CommandListener getListener() {
 			return listener;
 		}
@@ -110,7 +110,7 @@ public class CommandHelp implements CommandListener {
 		public int compareTo(CommandPair o) {
 			return data.getName().compareTo(o.data.getName());
 		}
-		
+
 	}
 
 }

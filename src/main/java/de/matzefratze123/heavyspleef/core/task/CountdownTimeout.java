@@ -27,22 +27,24 @@ import de.matzefratze123.heavyspleef.util.I18N;
 
 public class CountdownTimeout extends Countdown implements CountdownListener {
 
-	public static final String TASK_ID_KEY = "timeoutTask";
-	
-	private Game game;
+	public static final String	TASK_ID_KEY	= "timeoutTask";
+
+	private Game				game;
 
 	public CountdownTimeout(Game game, int ticks) {
 		super(ticks);
-		
+
 		this.game = game;
 		addCountdownListener(this);
 	}
 
 	@Override
-	public void onStart() {}
+	public void onStart() {
+	}
 
 	@Override
-	public void onCancel() {}
+	public void onCancel() {
+	}
 
 	@Override
 	public void onFinish() {
@@ -55,8 +57,7 @@ public class CountdownTimeout extends Countdown implements CountdownListener {
 	public void onTick() {
 		if (getTicksLeft() <= 120) {
 			if (getTicksLeft() <= 5) {
-				String message = I18N._("timeLeftSeconds",
-						String.valueOf(getTicksLeft()));
+				String message = I18N._("timeLeftSeconds", String.valueOf(getTicksLeft()));
 				game.broadcast(message, ConfigUtil.getBroadcast(MessageType.TIMEOUT));
 				return;
 			}
@@ -67,19 +68,18 @@ public class CountdownTimeout extends Countdown implements CountdownListener {
 			int minutes = getTicksLeft() / 60;
 			int seconds = getTicksLeft() % 60;
 
-			String message = minutes == 0 ? I18N._("timeLeftSeconds",
-					String.valueOf(getTicksLeft())) : I18N._(
-					"timeLeftMinutes", String.valueOf(minutes),
-					String.valueOf(seconds));
+			String message = minutes == 0 ? I18N._("timeLeftSeconds", String.valueOf(getTicksLeft())) : I18N._("timeLeftMinutes", String.valueOf(minutes), String.valueOf(seconds));
 
 			game.broadcast(message, ConfigUtil.getBroadcast(MessageType.TIMEOUT));
 		}
 	}
 
 	@Override
-	public void onPause() {}
+	public void onPause() {
+	}
 
 	@Override
-	public void onUnpause() {}
+	public void onUnpause() {
+	}
 
 }

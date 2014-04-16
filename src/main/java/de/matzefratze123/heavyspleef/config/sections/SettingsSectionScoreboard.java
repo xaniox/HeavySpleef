@@ -27,21 +27,21 @@ import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 import de.matzefratze123.heavyspleef.util.Util;
 
 public class SettingsSectionScoreboard implements SettingsSection {
-	
-	private static final String SECTION_PATH = "scoreboards";
-	
-	private SpleefConfig configuration;
-	private ConfigurationSection section;
-	
-	private SimpleBlockData fontData;
-	private SimpleBlockData canvasData;
-	
+
+	private static final String		SECTION_PATH	= "scoreboards";
+
+	private SpleefConfig			configuration;
+	private ConfigurationSection	section;
+
+	private SimpleBlockData			fontData;
+	private SimpleBlockData			canvasData;
+
 	public SettingsSectionScoreboard(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -60,13 +60,13 @@ public class SettingsSectionScoreboard implements SettingsSection {
 	@Override
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
-		
-		final byte redWoolData = (byte)14;
-		final byte blackWoolData = (byte)15;
-		
+
+		final byte redWoolData = (byte) 14;
+		final byte blackWoolData = (byte) 15;
+
 		fontData = Util.parseMaterial(section.getString("fontID"), true);
 		canvasData = Util.parseMaterial(section.getString("baseID"), true);
-		
+
 		if (fontData == null)
 			fontData = new SimpleBlockData(Material.WOOL, redWoolData);
 		if (canvasData == null)

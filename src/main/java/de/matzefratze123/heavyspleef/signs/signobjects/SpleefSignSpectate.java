@@ -40,19 +40,19 @@ public class SpleefSignSpectate implements SpleefSign {
 	@Override
 	public void onClick(SpleefPlayer player, Sign sign) {
 		String[] lines = SpleefSignExecutor.stripSign(sign);
-		
+
 		if (!GameManager.hasGame(lines[2])) {
 			player.sendMessage(I18N._("arenaDoesntExists"));
 			return;
 		}
-		
+
 		Game game = GameManager.getGame(lines[2]);
-		
+
 		if (game.getFlag(FlagType.SPECTATE) == null) {
 			player.sendMessage(I18N._("noSpectatePoint"));
 			return;
 		}
-		
+
 		game.spectate(player);
 	}
 
@@ -64,9 +64,9 @@ public class SpleefSignSpectate implements SpleefSign {
 	@Override
 	public Map<Integer, String[]> getLines() {
 		Map<Integer, String[]> lines = new HashMap<Integer, String[]>();
-		
-		lines.put(0, new String[]{"[Spectate]", "Spectate"});
-		
+
+		lines.put(0, new String[] { "[Spectate]", "Spectate" });
+
 		return lines;
 	}
 
@@ -82,20 +82,20 @@ public class SpleefSignSpectate implements SpleefSign {
 			e.getBlock().breakNaturally();
 			return;
 		}
-		
+
 		e.getPlayer().sendMessage(I18N._("spleefSignCreated"));
-		
+
 		StringBuilder builder = new StringBuilder();
 		if (e.getLine(1).startsWith("[")) {
 			builder.append(ChatColor.DARK_GRAY + "[");
 		}
-		
+
 		builder.append(ChatColor.DARK_AQUA + "Spectate");
-		
+
 		if (e.getLine(1).endsWith("]")) {
 			builder.append(ChatColor.DARK_GRAY + "]");
 		}
-		
+
 		e.setLine(1, builder.toString());
 	}
 

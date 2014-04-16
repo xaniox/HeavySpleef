@@ -37,25 +37,25 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandTeamFlag implements CommandListener {
-	
+
 	@Command(value = "teamflag", minArgs = 3, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.SET_TEAMFLAG})
+	@CommandPermissions(value = { Permissions.SET_TEAMFLAG })
 	@CommandHelp(usage = "/spleef setteamflag <game> <team> <maxplayers|minplayers|spawnpoint> <number>", description = "Adds a flag to a team")
 	public void execute(Player player, Game game, String color, String flag, String value) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		Team team = game.getComponents().getTeam(Color.byName(color));
 		if (team == null) {
 			player.sendMessage(ChatColor.RED + "This team color doesn't exists!");
 			return;
 		}
-		
+
 		boolean clear = value != null && value.equalsIgnoreCase("clear");
 		int number = -1;
-		
+
 		if (value != null) {
 			try {
 				number = Integer.parseInt(value);
@@ -66,7 +66,7 @@ public class CommandTeamFlag implements CommandListener {
 				}
 			}
 		}
-		
+
 		if (flag.equalsIgnoreCase("maxplayers")) {
 			if (clear) {
 				team.setMaxPlayers(0);
@@ -95,5 +95,5 @@ public class CommandTeamFlag implements CommandListener {
 			player.sendMessage(ChatColor.RED + "Flag doesn't exists!");
 		}
 	}
-	
+
 }

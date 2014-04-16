@@ -34,21 +34,21 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandRemoveLose implements CommandListener {
-	
+
 	@Command(value = "removelose", minArgs = 2, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.REMOVE_LOSEZONE})
+	@CommandPermissions(value = { Permissions.REMOVE_LOSEZONE })
 	@CommandHelp(usage = "/spleef removelose <game> <ID>", description = "Removes a losezone from a game")
 	public void execute(Player player, Game game, Integer id) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		if (!game.getComponents().hasLoseZone(id)) {
 			player.sendMessage(_("loseZoneWithIDDoesntExists"));
 			return;
 		}
-		
+
 		game.getComponents().removeLoseZone(id);
 		player.sendMessage(_("loseZoneRemoved", String.valueOf(id)));
 	}

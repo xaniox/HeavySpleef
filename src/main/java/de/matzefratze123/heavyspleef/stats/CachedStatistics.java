@@ -34,24 +34,23 @@ import de.matzefratze123.heavyspleef.util.Logger;
  */
 public class CachedStatistics {
 
-	private static CachedStatistics instance;
-	
+	private static CachedStatistics			instance;
+
 	/**
-	 * A key for an invalid statistic module. Cache does not allow
-	 * null values which means that we have to mark an empty module
-	 * with an invalid holder.
+	 * A key for an invalid statistic module. Cache does not allow null values
+	 * which means that we have to mark an empty module with an invalid holder.
 	 */
-	public static final String INVALID_MODULE = "__INVALID__";
-	
+	public static final String				INVALID_MODULE	= "__INVALID__";
+
 	/**
 	 * The cache which stores current statistics
 	 */
-	private Cache<String, StatisticModule> cache;
+	private Cache<String, StatisticModule>	cache;
 	/**
 	 * The cacheloader
 	 */
-	private StatisticCacheLoader loader;
-	
+	private StatisticCacheLoader			loader;
+
 	/**
 	 * Gets the instance of the statistic cacher
 	 */
@@ -59,23 +58,21 @@ public class CachedStatistics {
 		if (instance == null) {
 			instance = new CachedStatistics();
 		}
-		
+
 		return instance;
 	}
-	
+
 	private CachedStatistics() {
 		loader = new StatisticCacheLoader();
-		
-		cache = CacheBuilder.newBuilder().
-				maximumSize(100).
-				expireAfterAccess(2, TimeUnit.MINUTES).
-				build(loader);
+
+		cache = CacheBuilder.newBuilder().maximumSize(100).expireAfterAccess(2, TimeUnit.MINUTES).build(loader);
 	}
-	
+
 	/**
 	 * Caches and returns the statistic
 	 * 
-	 * @param holder The holder of the statistic
+	 * @param holder
+	 *            The holder of the statistic
 	 */
 	public StatisticModule cacheStatistic(String holder) {
 		try {
@@ -83,23 +80,23 @@ public class CachedStatistics {
 		} catch (ExecutionException e) {
 			Logger.warning("Could not cache statistic for user " + holder + ": " + e.getMessage());
 		}
-		
+
 		return null;
 	}
-	
+
 	static class StatisticCacheLoader extends CacheLoader<String, StatisticModule> {
 
 		@Override
 		public StatisticModule load(String owner) throws Exception {
 			StatisticModule module = HeavySpleef.getInstance().getStatisticDatabase().loadAccount(owner);
-			
+
 			if (module == null) {
 				module = new StatisticModule(INVALID_MODULE);
 			}
-			
+
 			return module;
 		}
-		
+
 	}
 
 }

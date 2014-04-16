@@ -26,17 +26,17 @@ import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGame;
 
 public class GameManager {
-	
-	//Main list which contains all games
-	public static List<Game> games = new ArrayList<Game>();
-	
+
+	// Main list which contains all games
+	public static List<Game>	games	= new ArrayList<Game>();
+
 	public static void addGame(Game game) {
 		if (hasGame(game.getName())) {
 			throw new IllegalStateException("Game " + game.getName() + " already exist!");
 		}
-		
+
 		games.add(game);
-		
+
 		if (HeavySpleef.getInstance().getJoinGUI() != null) {
 			HeavySpleef.getInstance().getJoinGUI().refresh();
 		}
@@ -44,11 +44,11 @@ public class GameManager {
 
 	public static void deleteGame(String name) {
 		IGame game = getGame(name);
-		
+
 		if (game == null) {
 			return;
 		}
-		
+
 		games.remove(game);
 		HeavySpleef.getInstance().getGameDatabase().db.set(name, null);
 		if (HeavySpleef.getInstance().getJoinGUI() != null) {
@@ -62,7 +62,7 @@ public class GameManager {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -72,12 +72,12 @@ public class GameManager {
 				return game;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public static List<Game> getGames() {
 		return games;
 	}
-	
+
 }

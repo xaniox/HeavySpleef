@@ -35,23 +35,24 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandReload implements CommandListener {
-	
+
 	@Command(value = "reload")
-	@CommandPermissions(value = {Permissions.RELOAD})
+	@CommandPermissions(value = { Permissions.RELOAD })
 	@CommandHelp(usage = "/spleef reload", description = "Reloads the entire spleef plugin")
 	public void execute(CommandSender sender) {
 		long millis = System.currentTimeMillis();
 		HeavySpleef.getSystemConfig().reload();
-		
+
 		HeavySpleef.PREFIX = HeavySpleef.getSystemConfig().getGeneralSection().getPrefix();
 		HeavySpleef.getInstance().getAntiCampingTask().restart();
-		
-		I18N.loadLanguageFiles();//Reload languages files
-		HeavySpleef.getInstance().getSelectionManager().setup();//Reload selection
+
+		I18N.loadLanguageFiles();// Reload languages files
+		HeavySpleef.getInstance().getSelectionManager().setup();// Reload
+																// selection
 		HeavySpleef.getInstance().initStatisticDatabase();
-		
+
 		sender.sendMessage(_("pluginReloaded", HeavySpleef.getInstance().getDescription().getVersion(), String.valueOf(System.currentTimeMillis() - millis)));
-		//And we're done!
+		// And we're done!
 	}
 
 }

@@ -33,9 +33,9 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandUpdate implements CommandListener {
-	
+
 	@Command(value = "update")
-	@CommandPermissions(value = {Permissions.UPDATE_PLUGIN})
+	@CommandPermissions(value = { Permissions.UPDATE_PLUGIN })
 	@CommandHelp(usage = "/spleef update", description = "Updates the plugin if an update is available")
 	public void execute(CommandSender sender) {
 		if (!HeavySpleef.getSystemConfig().getRootSection().isAutoUpdate()) {
@@ -46,18 +46,30 @@ public class CommandUpdate implements CommandListener {
 			sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " There is no new update avaible!");
 			return;
 		}
-		
+
 		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Updating plugin, please wait...");
 		HeavySpleef.getInstance().getUpdater().update(sender);
-		//long start = System.currentTimeMillis();
-		
-		/*new Updater(plugin, "heavyspleef", HeavySpleef.pluginFile, UpdateType.NO_VERSION_CHECK, true);
-		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Done! Took " + (System.currentTimeMillis() - start) + "ms!");
-		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " You find the HeavySpleef.jar in the folder \"plugins/" + YamlConfiguration.loadConfiguration(new File("bukkit.yml")).getString("settings.update-folder") + "/HeavySpleef.jar\"");
-		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " You may have to" + ChatColor.UNDERLINE + " delete " + ChatColor.RESET + ChatColor.DARK_PURPLE + "your config.yml!");
-		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Visit http://dev.bukkit.org/server-mods/heavyspleef/ for more information!");
-		sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE + " Version will be auto-installed with the next server reload/restart");
-		HeavySpleef.updateAvaible = false;*/
+		// long start = System.currentTimeMillis();
+
+		/*
+		 * new Updater(plugin, "heavyspleef", HeavySpleef.pluginFile,
+		 * UpdateType.NO_VERSION_CHECK, true);
+		 * sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE +
+		 * " Done! Took " + (System.currentTimeMillis() - start) + "ms!");
+		 * sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE +
+		 * " You find the HeavySpleef.jar in the folder \"plugins/" +
+		 * YamlConfiguration.loadConfiguration(new
+		 * File("bukkit.yml")).getString("settings.update-folder") +
+		 * "/HeavySpleef.jar\""); sender.sendMessage(HeavySpleef.PREFIX +
+		 * ChatColor.DARK_PURPLE + " You may have to" + ChatColor.UNDERLINE +
+		 * " delete " + ChatColor.RESET + ChatColor.DARK_PURPLE +
+		 * "your config.yml!"); sender.sendMessage(HeavySpleef.PREFIX +
+		 * ChatColor.DARK_PURPLE +
+		 * " Visit http://dev.bukkit.org/server-mods/heavyspleef/ for more information!"
+		 * ); sender.sendMessage(HeavySpleef.PREFIX + ChatColor.DARK_PURPLE +
+		 * " Version will be auto-installed with the next server reload/restart"
+		 * ); HeavySpleef.updateAvaible = false;
+		 */
 	}
-	
+
 }

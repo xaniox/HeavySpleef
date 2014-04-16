@@ -21,28 +21,30 @@ package de.matzefratze123.heavyspleef.selection;
 
 import org.bukkit.Location;
 
-public abstract class Selection {	
-	
-	protected String owner;
-	
+public abstract class Selection {
+
+	protected String	owner;
+
 	public Selection(String owner) {
 		this.owner = owner;
 	}
-	
+
 	public abstract Location getFirst();
-	
+
 	public abstract Location getSecond();
-	
+
 	public abstract boolean hasSelection();
-	
+
 	public abstract boolean isTroughWorlds();
-	
-	public void setFirst(Location location) {};
-	
-	public void setSecond(Location location) {};
-	
+
+	public void setFirst(Location location) {
+	};
+
+	public void setSecond(Location location) {
+	};
+
 	public String getOwner() {
 		return this.owner;
 	}
-	
+
 }

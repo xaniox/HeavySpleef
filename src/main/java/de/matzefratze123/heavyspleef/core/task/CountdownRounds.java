@@ -34,13 +34,13 @@ import de.matzefratze123.heavyspleef.util.I18N;
 
 public class CountdownRounds extends Countdown implements CountdownListener {
 
-	public static final String TASK_ID_KEY = "roundsTask";
-	
-	private Game game;
-	
+	public static final String	TASK_ID_KEY	= "roundsTask";
+
+	private Game				game;
+
 	public CountdownRounds(Game game, int ticks) {
 		super(ticks);
-		
+
 		this.game = game;
 		addCountdownListener(this);
 	}
@@ -58,7 +58,7 @@ public class CountdownRounds extends Countdown implements CountdownListener {
 	@Override
 	public void onFinish() {
 		int rounds = game.getFlag(ROUNDS);
-		
+
 		game.setGameState(GameState.INGAME);
 		game.broadcast(I18N.__(ChatColor.GREEN + "GO!"), ConfigUtil.getBroadcast(MessageType.GAME_COUNTDOWN));
 		game.broadcast(I18N._("roundStarted", String.valueOf(game.getRoundsPlayed() + 1), String.valueOf(rounds)), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
@@ -67,12 +67,12 @@ public class CountdownRounds extends Countdown implements CountdownListener {
 	}
 
 	@Override
-	public void onTick() {		
+	public void onTick() {
 		if (getTicksLeft() <= 5) {
 			for (SpleefPlayer player : game.getIngamePlayers()) {
 				player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.NOTE_PLING, 4.0F, player.getBukkitPlayer().getLocation().getPitch());
 			}
-			
+
 			game.broadcast(I18N._("roundStartsIn", String.valueOf(getTicksLeft())), BroadcastType.INGAME);
 		} else {
 			if (getTicksLeft() % 5 == 0) {
@@ -82,9 +82,11 @@ public class CountdownRounds extends Countdown implements CountdownListener {
 	}
 
 	@Override
-	public void onPause() {}
+	public void onPause() {
+	}
 
 	@Override
-	public void onUnpause() {}
+	public void onUnpause() {
+	}
 
 }

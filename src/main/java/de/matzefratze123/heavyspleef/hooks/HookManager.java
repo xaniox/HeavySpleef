@@ -21,38 +21,36 @@ package de.matzefratze123.heavyspleef.hooks;
 
 public class HookManager {
 
-	private static HookManager instance;
-	
-	private Hook<?>[] hooks = new Hook<?>[3];
-	
+	private static HookManager	instance;
+
+	private Hook<?>[]			hooks	= new Hook<?>[3];
+
 	private HookManager() {
 		hooks[0] = new VaultHook();
 		hooks[1] = new WorldEditHook();
 		hooks[2] = new TagAPIHook();
 	}
-	
+
 	public static HookManager getInstance() {
 		if (instance == null) {
 			instance = new HookManager();
 		}
-		
+
 		return instance;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <V> Hook<V> getService(Class<? extends Hook<V>> clazz) {
 		Hook<V> found = null;
-		
+
 		for (Hook<?> hook : hooks) {
 			if (!hook.getClass().equals(clazz))
 				continue;
-			
-			found = (Hook<V>)hook;
+
+			found = (Hook<V>) hook;
 		}
-	
+
 		return found;
 	}
-	
-}
 
-	
+}

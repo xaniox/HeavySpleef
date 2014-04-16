@@ -40,23 +40,23 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.PLAYER)
 public class CommandVote implements CommandListener {
-	
+
 	@Command(value = "vote", onlyIngame = true)
-	@CommandPermissions(value = {Permissions.VOTE})
+	@CommandPermissions(value = { Permissions.VOTE })
 	@CommandHelp(usage = "/spleef vote", description = "Votes to start the game")
 	public void execute(Player bukkitPlayer) {
 		SpleefPlayer player = HeavySpleef.getInstance().getSpleefPlayer(bukkitPlayer);
-		
+
 		if (!HeavySpleef.getSystemConfig().getGeneralSection().isVotesEnabled()) {
 			player.sendMessage(_("votesDisabled"));
 			return;
 		}
-		
+
 		if (!player.isActive()) {
 			player.sendMessage(_("onlyLobby"));
 			return;
 		}
-		
+
 		Game game = player.getGame();
 		if (game.getGameState() != GameState.LOBBY) {
 			player.sendMessage(_("onlyLobby"));
@@ -66,36 +66,36 @@ public class CommandVote implements CommandListener {
 			player.sendMessage(_("alreadyVoted"));
 			return;
 		}
-		
+
 		player.setReady(true);
 		player.sendMessage(_("successfullyVoted"));
 	}
-	
+
 	public static void tryStart(Game game) {
 		int percentNeeded = HeavySpleef.getSystemConfig().getGeneralSection().getVotesNeeded();
 		int minPlayers = game.getFlag(FlagType.MINPLAYERS);
 		List<SpleefPlayer> ingame = game.getIngamePlayers();
-		
+
 		if (game.hasFlag(FlagType.MINPLAYERS) && minPlayers >= 2 && ingame.size() < minPlayers) {
 			return;
 		}
 		if (ingame.size() < 2) {
 			return;
 		}
-		
+
 		int voted = 0;
-		
+
 		for (SpleefPlayer player : ingame) {
 			if (player.isReady()) {
 				voted++;
 			}
 		}
-		
-		int percentVoted = (voted * 100)/ingame.size();
+
+		int percentVoted = (voted * 100) / ingame.size();
 		if (percentVoted < percentNeeded) {
 			return;
 		}
-		
+
 		game.countdown();
 	}
 

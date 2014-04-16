@@ -21,11 +21,6 @@ package de.matzefratze123.heavyspleef.core;
 
 public enum LoseCause {
 
-	QUIT,
-	LEAVE,
-	KICK,
-	LOSE,
-	PLUGIN,
-	UNKNOWN;
-	
+	QUIT, LEAVE, KICK, LOSE, PLUGIN, UNKNOWN;
+
 }

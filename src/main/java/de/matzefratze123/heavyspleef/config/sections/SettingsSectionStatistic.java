@@ -24,26 +24,26 @@ import org.bukkit.configuration.ConfigurationSection;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
 
 public class SettingsSectionStatistic implements SettingsSection {
-	
-	private static final String SECTION_PATH = "statistic";
-	
-	private SpleefConfig configuration;
-	private ConfigurationSection section;
-	
-	private boolean enabled;
-	private String databaseType;
-	private String host;
-	private int port;
-	private String dbName;
-	private String dbUser;
-	private String dbPassword;
-	
+
+	private static final String		SECTION_PATH	= "statistic";
+
+	private SpleefConfig			configuration;
+	private ConfigurationSection	section;
+
+	private boolean					enabled;
+	private String					databaseType;
+	private String					host;
+	private int						port;
+	private String					dbName;
+	private String					dbUser;
+	private String					dbPassword;
+
 	public SettingsSectionStatistic(SpleefConfig config) {
 		this.configuration = config;
-		
+
 		reload();
 	}
-	
+
 	@Override
 	public SpleefConfig getConfig() {
 		return configuration;
@@ -58,23 +58,23 @@ public class SettingsSectionStatistic implements SettingsSection {
 	public Object getValue(String path) {
 		return section.get(path);
 	}
-	
+
 	@Override
 	public void reload() {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
-		
+
 		final int defaultPort = 3306;
-		
+
 		enabled = section.getBoolean("enabled", true);
 		databaseType = section.getString("dbType", "sqlite");
 		host = section.getString("host");
-		
+
 		try {
 			port = Integer.parseInt(section.getString("port"));
 		} catch (Exception e) {
 			port = defaultPort;
 		}
-		
+
 		dbName = section.getString("databaseName");
 		dbUser = section.getString("user");
 		dbPassword = section.getString("password");
@@ -107,5 +107,5 @@ public class SettingsSectionStatistic implements SettingsSection {
 	public String getDbPassword() {
 		return dbPassword;
 	}
-	
+
 }

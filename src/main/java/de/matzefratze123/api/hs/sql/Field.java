@@ -25,143 +25,130 @@ package de.matzefratze123.api.hs.sql;
  * @author matzefratze123
  */
 public class Field {
-	
+
 	/**
 	 * An enum which contains raw field types
 	 * 
 	 * @author matzefratze123
 	 */
 	public static enum Type {
-		
-		//General
-		INT,
-		VARCHAR,
-		TEXT,
-		DATE,
-		
-		//Numeric
-		TINYINT,
-		SMALLINT,
-		MEDIUMINT,
-		BIGINT,
-		
-		DECIMAL,
-		FLOAT,
-		DOUBLE,
-		REAL,
-		
-		BIT,
-		BOOLEAN,
-		SERIAL,
-		
-		//Date
-		DATETIME,
-		TIMESTAMP,
-		TIME,
-		YEAR,
-		
-		//String
+
+		// General
+		INT, VARCHAR, TEXT, DATE,
+
+		// Numeric
+		TINYINT, SMALLINT, MEDIUMINT, BIGINT,
+
+		DECIMAL, FLOAT, DOUBLE, REAL,
+
+		BIT, BOOLEAN, SERIAL,
+
+		// Date
+		DATETIME, TIMESTAMP, TIME, YEAR,
+
+		// String
 		CHAR,
-		
-		TINYTEXT,
-		MEDIUMTEXT,
-		LONGTEXT,
-		
-		BINARY,
-		VARBINARY,
-		
-		TINYBLOB,
-		MEDIUMBLOB,
-		BLOB,
-		LONGBLOB,
-		
-		ENUM,
-		SET;
-	
+
+		TINYTEXT, MEDIUMTEXT, LONGTEXT,
+
+		BINARY, VARBINARY,
+
+		TINYBLOB, MEDIUMBLOB, BLOB, LONGBLOB,
+
+		ENUM, SET;
+
 	}
-	
-	private int length = -1;
-	private Type type;
-	private boolean notNull;
-	private Object defaulte;
-	
+
+	private int		length	= -1;
+	private Type	type;
+	private boolean	notNull;
+	private Object	defaulte;
+
 	/**
 	 * Creates a new field with the given type
 	 * 
-	 * @param type The type of this field
+	 * @param type
+	 *            The type of this field
 	 */
 	public Field(Type type) {
 		this.type = type;
 	}
-	
+
 	/**
-	 * Creates a new field with the given type and length 
-	 * (the CHAR type for example needs the length of chars that can be stored at maximum)
+	 * Creates a new field with the given type and length (the CHAR type for
+	 * example needs the length of chars that can be stored at maximum)
 	 * 
-	 * @param type The type of this field
-	 * @param length The length of this field (as described above)
+	 * @param type
+	 *            The type of this field
+	 * @param length
+	 *            The length of this field (as described above)
 	 */
 	public Field(Type type, int length) {
 		this(type);
-		
+
 		this.length = length;
 	}
-	
+
 	/**
 	 * Creates a new field with the given type, length and a notnull option
 	 * 
-	 * @param type The type of this field
-	 * @param length The length of this field
-	 * @param notNull Wether this field is a non-null field
+	 * @param type
+	 *            The type of this field
+	 * @param length
+	 *            The length of this field
+	 * @param notNull
+	 *            Wether this field is a non-null field
 	 */
 	public Field(Type type, int length, boolean notNull) {
 		this(type, length);
-		
+
 		this.notNull = notNull;
 	}
-	
+
 	public Field(Type type, int length, boolean notNull, Object defaulte) {
 		this(type, length, notNull);
-		
+
 		this.defaulte = defaulte;
 	}
-	
+
 	public Field(Type type, int length, Object defaulte) {
 		this(type, length);
-		
+
 		this.defaulte = defaulte;
 	}
-	
+
 	public Field(Type type, Object defaulte) {
 		this(type);
-		
+
 		this.defaulte = defaulte;
 	}
-	
+
 	public Field(Type type, boolean notNull, Object defaulte) {
 		this(type, notNull);
-		
+
 		this.defaulte = defaulte;
 	}
-	
+
 	/**
 	 * Creates a new field with the given type and a notnull option
 	 * 
-	 * @param type The type of this field
-	 * @param notNull Wether this field is a non-null field
+	 * @param type
+	 *            The type of this field
+	 * @param notNull
+	 *            Wether this field is a non-null field
 	 */
 	public Field(Type type, boolean notNull) {
 		this(type);
-		
+
 		this.notNull = notNull;
 	}
-	
+
 	/**
-	 * Turns this field into a string which can be used in a sql statement  
+	 * Turns this field into a string which can be used in a sql statement
 	 */
 	@Override
 	public String toString() {
 		return type.name() + (length < 0 ? "" : "(" + length + ")") + (notNull ? " NOT NULL" : "") + (defaulte == null ? "" : " DEFAULT '" + defaulte + "'");
 	}
-	
+
 }

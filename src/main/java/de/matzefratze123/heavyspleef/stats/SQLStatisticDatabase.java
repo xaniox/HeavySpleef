@@ -40,23 +40,23 @@ import de.matzefratze123.heavyspleef.stats.StatisticModule.StatisticValue;
 import de.matzefratze123.heavyspleef.util.Logger;
 
 public class SQLStatisticDatabase implements IStatisticDatabase {
-	
-	public static final String TABLE_NAME = "heavyspleef_statistics";
-	public static final File SQLITE_FILE = new File(HeavySpleef.getInstance().getDataFolder(), "statistic/statistic.db");
-	
-	private static Map<String, Field> columns;
-	
-	//Database current cooldown (time to close connection etc. write-lock)
-	private Cooldown cooldown;
-	private AbstractDatabase database;
-	
+
+	public static final String			TABLE_NAME	= "heavyspleef_statistics";
+	public static final File			SQLITE_FILE	= new File(HeavySpleef.getInstance().getDataFolder(), "statistic/statistic.db");
+
+	private static Map<String, Field>	columns;
+
+	// Database current cooldown (time to close connection etc. write-lock)
+	private Cooldown					cooldown;
+	private AbstractDatabase			database;
+
 	public SQLStatisticDatabase(AbstractDatabase connectionDatabase) {
 		this.cooldown = new Cooldown();
 		this.database = connectionDatabase;
-		
+
 		checkTables();
 	}
-	
+
 	static {
 		if (columns == null) {
 			columns = new HashMap<String, Field>();
@@ -68,16 +68,16 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			columns.put("score", new Field(Type.INT));
 		}
 	}
-	
+
 	private void checkTables() {
 		try {
 			database.connect();
-			
+
 			if (!database.hasTable(TABLE_NAME)) {
 				database.createTable(TABLE_NAME, columns);
 			} else {
 				Table table = database.getTable(TABLE_NAME);
-				
+
 				try {
 					for (Entry<String, Field> entry : columns.entrySet()) {
 						if (!table.hasColumn(entry.getKey())) {
@@ -94,16 +94,16 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public AbstractDatabase getRawDatabase() {
 		return database;
 	}
-	
+
 	@Override
 	public void saveAccountsAsync(final ExceptionHandler exceptionHandler) {
 		Bukkit.getScheduler().runTaskAsynchronously(HeavySpleef.getInstance(), new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -111,7 +111,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 				} catch (final AccountException e) {
 					if (exceptionHandler != null) {
 						Bukkit.getScheduler().runTask(HeavySpleef.getInstance(), new Runnable() {
-							
+
 							@Override
 							public void run() {
 								exceptionHandler.exceptionThrown(e);
@@ -124,12 +124,12 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			}
 		});
 	}
-	
+
 	@Override
 	public void saveAccountsAsync() {
 		saveAccountsAsync(null);
 	}
-	
+
 	@Override
 	public synchronized void saveAccounts() throws AccountException {
 		if (!cooldown.isExpired()) {
@@ -138,18 +138,18 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 		if (!isDatabaseEnabled()) {
 			return;
 		}
-		
+
 		if (!database.hasTable(TABLE_NAME)) {
 			database.createTable(TABLE_NAME, columns);
 		}
-		
+
 		try {
 			Table table = database.getTable(TABLE_NAME);
 			for (String columnName : columns.keySet()) {
 				if (!table.hasColumn(columnName))
 					table.addColumn(columnName, columns.get(columnName));
 			}
-			
+
 			for (SpleefPlayer player : HeavySpleef.getInstance().getOnlineSpleefPlayers()) {
 				if (!player.statisticsWereLoaded()) {
 					continue;
@@ -157,29 +157,29 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 				if (!player.isOnline()) {
 					continue;
 				}
-				
+
 				StatisticModule stat = player.getStatistic();
-				
+
 				Map<StatisticValue, Integer> scores = stat.getScores();
-				
+
 				String owner = stat.getHolder();
-				
+
 				Map<String, Object> values = new HashMap<String, Object>();
 				values.put("owner", stat.getHolder());
-				
+
 				for (StatisticValue v : StatisticValue.values()) {
 					int score = 0;
-					
+
 					if (scores.containsKey(v)) {
 						score = scores.get(v);
 					}
-					
+
 					values.put(v.getColumnName(), score);
 				}
-				
+
 				Map<String, Object> where = new HashMap<String, Object>();
 				where.put("owner", owner);
-				
+
 				table.insertOrUpdate(values, where);
 			}
 		} catch (SQLException e) {
@@ -202,7 +202,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 
 		Table table = database.getTable(TABLE_NAME);
 		SQLResult result = null;
-		
+
 		try {
 			for (String columnName : columns.keySet()) {
 				if (!table.hasColumn(columnName))
@@ -220,17 +220,17 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			ResultSet set = result.getResultSet();
 
 			StatisticModule module = null;
-			
+
 			if (set.next()) {
 				String owner = set.getString("owner");
 				int wins = set.getInt("wins");
 				int loses = set.getInt("loses");
 				int knockouts = set.getInt("knockouts");
 				int games = set.getInt("games");
-				
+
 				module = new StatisticModule(owner, loses, wins, knockouts, games);
 			}
-			
+
 			return module;
 		} catch (SQLException e) {
 			throw new AccountException(e);
@@ -238,7 +238,7 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			if (result != null) {
 				result.close();
 			}
-			
+
 			database.close();
 		}
 	}
@@ -248,34 +248,34 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 		if (!isDatabaseEnabled()) {
 			return null;
 		}
-		
+
 		if (!database.hasTable(TABLE_NAME))
 			throw new AccountException("Table heavyspleef_statistics doesn't exists");
-		
+
 		SQLResult result = null;
-		
+
 		try {
 			Table table = database.getTable(TABLE_NAME);
 			for (String columnName : columns.keySet()) {
 				if (!table.hasColumn(columnName))
 					table.addColumn(columnName, columns.get(columnName));
 			}
-			
+
 			List<StatisticModule> list = new ArrayList<StatisticModule>();
 			result = table.selectAll();
 			ResultSet set = result.getResultSet();
-			
+
 			while (set.next()) {
 				String owner = set.getString("owner");
 				int wins = set.getInt("wins");
 				int loses = set.getInt("loses");
 				int knockouts = set.getInt("knockouts");
 				int games = set.getInt("games");
-				
+
 				StatisticModule module = new StatisticModule(owner, loses, wins, knockouts, games);
 				list.add(module);
 			}
-			
+
 			return list;
 		} catch (SQLException e) {
 			throw new AccountException(e);
@@ -283,23 +283,23 @@ public class SQLStatisticDatabase implements IStatisticDatabase {
 			if (result != null) {
 				result.close();
 			}
-			
+
 			database.close();
 		}
 	}
-	
+
 	public static Map<String, Field> getColumns() {
 		return columns;
 	}
-	
+
 	public static boolean isDatabaseEnabled() {
 		return HeavySpleef.getSystemConfig().getStatisticSection().isEnabled();
 	}
-	
+
 	public static interface ExceptionHandler {
-		
+
 		public void exceptionThrown(AccountException exception);
-		
+
 	}
-	
+
 }

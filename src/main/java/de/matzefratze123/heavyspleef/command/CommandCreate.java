@@ -43,38 +43,37 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandCreate implements CommandListener {
-	
-	private static final int INVALID_REGION_ID = -1;
-	
+
+	private static final int	INVALID_REGION_ID	= -1;
+
 	@Command(value = "create", minArgs = 2, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.CREATE_GAME})
-	@CommandHelp(usage = "/spleef create <name> cuboid\n" +
-				 "/spleef create <name> cylinder <radius> <height>", description = "Creates a new spleef game")
+	@CommandPermissions(value = { Permissions.CREATE_GAME })
+	@CommandHelp(usage = "/spleef create <name> cuboid\n" + "/spleef create <name> cylinder <radius> <height>", description = "Creates a new spleef game")
 	public void execute(Player player, String name, String type, Integer radius, Integer height) {
 		if (GameManager.hasGame(name)) {
 			player.sendMessage(_("arenaAlreadyExists"));
 			return;
 		}
-		
+
 		if (type.equalsIgnoreCase("cylinder") || type.equalsIgnoreCase("cyl")) {
-			//Create a new cylinder game
+			// Create a new cylinder game
 			if (radius == null || height == null) {
 				player.sendMessage(ChatColor.RED + "Please enter a radius and the height of your arena");
 				return;
 			}
-		
+
 			Location center = player.getLocation();
-			
+
 			int minY = center.getBlockY();
 			int maxY = center.getBlockY() + height;
-			
+
 			RegionCylinder region = new RegionCylinder(INVALID_REGION_ID, center, radius, minY, maxY);
 			Game game = new GameCylinder(name, region);
 			GameManager.addGame(game);
-		
+
 			player.sendMessage(_("gameCreated"));
 		} else if (type.equalsIgnoreCase("cuboid") || type.equalsIgnoreCase("cub")) {
-			//Create a new cuboid game
+			// Create a new cuboid game
 			Selection s = HeavySpleef.getInstance().getSelectionManager().getSelection(player);
 			if (!s.hasSelection()) {
 				player.sendMessage(_("needSelection"));
@@ -84,10 +83,10 @@ public class CommandCreate implements CommandListener {
 				player.sendMessage(_("selectionCantTroughWorlds"));
 				return;
 			}
-			
+
 			RegionCuboid region = new RegionCuboid(INVALID_REGION_ID, s.getFirst(), s.getSecond());
 			Game game = new GameCuboid(name, region);
-			
+
 			GameManager.addGame(game);
 			player.sendMessage(_("gameCreated"));
 		} else {

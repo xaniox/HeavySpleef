@@ -29,13 +29,13 @@ import java.io.Serializable;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 public class Base64Helper {
-	
+
 	public static Object fromBase64(String s) {
 		byte[] data = Base64Coder.decode(s);
-		
+
 		ObjectInputStream ois;
 		Object o = null;
-		
+
 		try {
 			ois = new ObjectInputStream(new ByteArrayInputStream(data));
 			o = ois.readObject();
@@ -47,12 +47,12 @@ public class Base64Helper {
 			Logger.severe("Could not recognize base64 class: " + e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		return o;
 	}
 
 	public static String toBase64(Serializable o) {
-		
+
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -63,7 +63,7 @@ public class Base64Helper {
 			Logger.severe("Could not write base64 string: " + e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 

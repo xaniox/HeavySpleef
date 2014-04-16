@@ -22,11 +22,11 @@ package de.matzefratze123.heavyspleef.util;
 import java.util.ArrayList;
 
 public class ArrayHelper {
-	
+
 	public static <T> ArrayList<T> mergeArrays(T[]... arrays) {
-		
+
 		ArrayList<T> list = new ArrayList<T>();
-		
+
 		for (T[] array : arrays) {
 			if (array.length <= 0)
 				continue;
@@ -34,8 +34,8 @@ public class ArrayHelper {
 				list.add(t);
 			}
 		}
-		
+
 		return list;
 	}
-	
+
 }

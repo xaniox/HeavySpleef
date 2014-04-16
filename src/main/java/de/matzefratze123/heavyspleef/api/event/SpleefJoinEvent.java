@@ -27,28 +27,28 @@ import de.matzefratze123.heavyspleef.api.IGame;
 
 public class SpleefJoinEvent extends SpleefEvent implements Cancellable {
 
-	public static final HandlerList handlers = new HandlerList();
-	private Player player = null;
-	
-	private boolean cancel = false;
-	
+	public static final HandlerList	handlers	= new HandlerList();
+	private Player					player		= null;
+
+	private boolean					cancel		= false;
+
 	public SpleefJoinEvent(IGame game, Player player) {
 		super(game);
 		this.player = player;
 	}
-	
+
 	/**
 	 * Gets the player that joined the game
 	 */
 	public Player getPlayer() {
 		return this.player;
 	}
-	
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
@@ -62,7 +62,5 @@ public class SpleefJoinEvent extends SpleefEvent implements Cancellable {
 	public void setCancelled(boolean cancelled) {
 		this.cancel = cancelled;
 	}
-
-	
 
 }

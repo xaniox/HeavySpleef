@@ -26,19 +26,19 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.database.DatabaseSerializeable;
 
 public interface IFloor extends Comparable<IFloor>, DatabaseSerializeable {
-	
-	public String FILE_EXTENSION = "schematic";
-	
+
+	public String	FILE_EXTENSION	= "schematic";
+
 	public int getId();
-	
+
 	public Game getGame();
-	
+
 	public World getWorld();
-	
+
 	public boolean contains(Location location);
-	
+
 	public void delete();
-	
+
 	public int getY();
 
 	public String asPlayerInfo();

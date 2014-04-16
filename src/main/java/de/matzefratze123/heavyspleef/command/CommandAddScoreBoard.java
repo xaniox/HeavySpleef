@@ -38,66 +38,66 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 public class CommandAddScoreBoard implements CommandListener {
 
 	@Command(value = "addscoreboard", minArgs = 1, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.ADD_SCOREBOARD})
+	@CommandPermissions(value = { Permissions.ADD_SCOREBOARD })
 	@CommandHelp(usage = "/spleef addscoreboard <game>", description = "Creates a new block scoreboard (only 1vs1) in the direction you're currently looking")
 	public void execute(Player player, Game game) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		BlockFace face = getBlockFace(player.getLocation().getYaw());
 		face = rotateBlockFaceLeft(face);
-		
+
 		int id = 0;
 		while (game.getComponents().hasScoreBoard(id)) {
 			id++;
 		}
-		
+
 		ScoreBoard scoreboard = new ScoreBoard(id, player.getLocation(), face);
 		scoreboard.generate('0', '0', '0', '0');
-		
+
 		game.getComponents().addScoreBoard(scoreboard);
 		player.sendMessage(_("scoreBoardAdded"));
 	}
-	
+
 	private BlockFace getBlockFace(float yaw) {
 		if (yaw < 45 && yaw > -45) {
 			return BlockFace.SOUTH;
 		}
-		
+
 		if (yaw < -45 && yaw > -135) {
 			return BlockFace.EAST;
 		}
-		
+
 		if (yaw < -135 || yaw > 135) {
 			return BlockFace.NORTH;
 		}
-		
+
 		if (yaw < 135 && yaw > 45) {
 			return BlockFace.WEST;
 		}
-		
+
 		return BlockFace.SOUTH;
 	}
-	
+
 	private BlockFace rotateBlockFaceLeft(BlockFace face) {
 		if (face == BlockFace.SOUTH) {
 			return BlockFace.EAST;
 		}
-		
+
 		if (face == BlockFace.EAST) {
 			return BlockFace.NORTH;
 		}
-		
+
 		if (face == BlockFace.NORTH) {
 			return BlockFace.WEST;
 		}
-		
+
 		if (face == BlockFace.WEST) {
 			return BlockFace.SOUTH;
 		}
-		
+
 		return face;
 	}
 

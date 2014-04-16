@@ -38,7 +38,7 @@ public class ListFlagLocation extends ListFlag<ListFlagLocation.SerializeableLoc
 	public void putElement(Player player, String input, List<SerializeableLocation> list) {
 		Location location = player.getLocation();
 		SerializeableLocation sLocation = new SerializeableLocation(location);
-		
+
 		list.add(sLocation);
 	}
 
@@ -49,23 +49,22 @@ public class ListFlagLocation extends ListFlag<ListFlagLocation.SerializeableLoc
 
 	@Override
 	public String getHelp() {
-		return HeavySpleef.PREFIX + " /spleef flag <name> " + getName() + "\n" + 
-			   HeavySpleef.PREFIX + " Adds the next location.";
+		return HeavySpleef.PREFIX + " /spleef flag <name> " + getName() + "\n" + HeavySpleef.PREFIX + " Adds the next location.";
 	}
-	
+
 	public static class SerializeableLocation implements Serializable {
 
 		/* Serial Version UID */
-		private static final long serialVersionUID = 6983776452848943576L;
-		
-		private double x, y, z;
-		private String world;
-		
-		private float pitch;
-		private float yaw;
-		
-		private transient Location holding;
-		
+		private static final long	serialVersionUID	= 6983776452848943576L;
+
+		private double				x, y, z;
+		private String				world;
+
+		private float				pitch;
+		private float				yaw;
+
+		private transient Location	holding;
+
 		public SerializeableLocation(Location holding) {
 			setBukkitLocation(holding);
 		}
@@ -122,22 +121,22 @@ public class ListFlagLocation extends ListFlag<ListFlagLocation.SerializeableLoc
 			if (holding == null) {
 				holding = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 			}
-			
+
 			return holding;
 		}
 
 		public void setBukkitLocation(Location holding) {
 			this.holding = holding;
-			
+
 			setX(holding.getX());
 			setY(holding.getY());
 			setZ(holding.getZ());
-			
+
 			setWorld(holding.getWorld().getName());
 			setPitch(holding.getPitch());
 			setYaw(holding.getYaw());
 		}
-		
+
 	}
-	
+
 }

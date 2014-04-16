@@ -34,38 +34,38 @@ public class QueuesManager {
 
 	public static boolean hasQueue(SpleefPlayer player) {
 		boolean has = false;
-		
+
 		for (Game game : getGames()) {
 			has = game.getQueue().contains(player);
-			if (has) { 
+			if (has) {
 				break;
 			}
 		}
-		
+
 		return has;
 	}
-	
+
 	public static void removeFromQueue(SpleefPlayer player) {
 		for (Game game : getGames()) {
 			game.getQueue().removePlayer(player);
 		}
 	}
-	
+
 	public static Game getQueue(SpleefPlayer player) {
 		for (Game game : getGames()) {
 			if (game.getQueue().contains(player)) {
 				return game;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public static void addToQueue(SpleefPlayer player, Game game, ChatColor color) {
 		if (game == null)
 			return;
-		
+
 		game.getQueue().push(player);
 	}
-	
+
 }

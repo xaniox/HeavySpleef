@@ -36,21 +36,21 @@ import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
 public class CommandStop implements CommandListener {
-	
+
 	@Command(value = "stop", minArgs = 1, onlyIngame = true)
-	@CommandPermissions(value = {Permissions.STOP})
+	@CommandPermissions(value = { Permissions.STOP })
 	@CommandHelp(usage = "/spleef stop <game>", description = "Stops a game")
 	public void execute(Player player, Game game) {
 		if (game == null) {
 			player.sendMessage(_("arenaDoesntExists"));
 			return;
 		}
-		
+
 		if (game.getGameState() != GameState.INGAME && game.getGameState() != GameState.COUNTING) {
 			player.sendMessage(_("noGameRunning"));
 			return;
 		}
-		
+
 		game.stop(StopCause.STOP);
 	}
 

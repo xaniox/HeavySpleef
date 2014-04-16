@@ -12,7 +12,7 @@ public class GameTransformer implements Transformer<Game> {
 		if (!GameManager.hasGame(argument)) {
 			throw new TransformException();
 		}
-		
+
 		return GameManager.getGame(argument);
 	}
 

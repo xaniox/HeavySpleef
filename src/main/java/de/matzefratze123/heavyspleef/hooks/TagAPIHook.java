@@ -25,20 +25,20 @@ import org.kitteh.tag.TagAPI;
 
 public class TagAPIHook implements Hook<TagAPI> {
 
-	private TagAPI hook;
-	
+	private TagAPI	hook;
+
 	@Override
 	public void hook() {
 		Plugin plugin = Bukkit.getPluginManager().getPlugin("TagAPI");
-		
+
 		if (plugin == null)
 			return;
 		if (!plugin.isEnabled())
 			return;
 		if (!(plugin instanceof TagAPI))
 			return;
-		
-		TagAPI api = (TagAPI)plugin;
+
+		TagAPI api = (TagAPI) plugin;
 		hook = api;
 	}
 
@@ -47,33 +47,31 @@ public class TagAPIHook implements Hook<TagAPI> {
 		if (hook == null) {
 			hook();
 		}
-		
+
 		return this.hook;
 	}
 
 	@Override
 	public boolean hasHook() {
 		Plugin plugin = Bukkit.getPluginManager().getPlugin("TagAPI");
-		
+
 		if (plugin == null)
 			return false;
 		if (!plugin.isEnabled())
 			return false;
 		if (!(plugin instanceof TagAPI))
 			return false;
-		
+
 		if (hook == null)
 			hook();
-		
+
 		try {
 			Class.forName("org.kitteh.tag.AsyncPlayerReceiveNameTagEvent");
 		} catch (ClassNotFoundException e) {
 			return false;
 		}
-		
+
 		return hook != null;
 	}
-	
-	
-	
+
 }
