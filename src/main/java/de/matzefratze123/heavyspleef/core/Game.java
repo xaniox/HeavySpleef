@@ -52,7 +52,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.scoreboard.Scoreboard;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.api.IGame;
@@ -183,7 +182,18 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		TaskLoseChecker loseCheckerTask = new TaskLoseChecker(this);
 		loseCheckerTask.start();
 		tasks.add(loseCheckerTask);
+		
+		if (getFlag(FlagType.SCOREBOARD)) {
+			if (getFlag(FlagType.TEAM)) {
+				scoreboard = new SpleefScoreboardTeam(this);
+			} else {
+				scoreboard = new SpleefScoreboardFFA(this);
+			}
 
+			scoreboard.updateScoreboard();
+			scoreboard.show();
+		}
+		
 		if (getFlag(FlagType.TIMEOUT) > 0) {
 			CountdownTimeout timeoutTask = new CountdownTimeout(this, getFlag(FlagType.TIMEOUT));
 			timeoutTask.start();
@@ -336,17 +346,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 		state = GameState.COUNTING;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 		components.regenerateFloors();
-
-		if (getFlag(FlagType.SCOREBOARD)) {
-			if (getFlag(FlagType.TEAM)) {
-				scoreboard = new SpleefScoreboardTeam(this);
-			} else {
-				scoreboard = new SpleefScoreboardFFA(this);
-			}
-
-			scoreboard.updateScoreboard();
-			scoreboard.show();
-		}
 
 		CountdownStart countdownTask = new CountdownStart(this, getFlag(FlagType.COUNTDOWN));
 		countdownTask.start();
@@ -639,6 +638,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			winner.addWin();
 			winner.addKnockout();
 			roundsPlayed++;
+			callEvent(EventType.PLAYER_KNOCKOUT, winner);
 
 			if (roundsPlayed < getFlag(FlagType.ROUNDS)) {
 				// Play one round more

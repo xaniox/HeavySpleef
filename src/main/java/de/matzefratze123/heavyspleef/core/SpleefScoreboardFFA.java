@@ -64,6 +64,8 @@ public class SpleefScoreboardFFA implements SpleefScoreboard, SpleefPlayerGameLi
 	
 	@Override
 	public void show() {
+		lastIngamePlayers = ImmutableList.copyOf(game.getIngamePlayers());
+		
 		for (SpleefPlayer player : game.getIngamePlayers()) {
 			player.getBukkitPlayer().setScoreboard(scoreboard);
 		}
