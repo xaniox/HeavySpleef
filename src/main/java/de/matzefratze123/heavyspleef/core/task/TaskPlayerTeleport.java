@@ -58,8 +58,8 @@ public class TaskPlayerTeleport implements Runnable {
 			Team team = game.getComponents().getTeam(player);
 			if (team != null && team.getSpawnpoint() != null) {
 				teleportTo = team.getSpawnpoint();
-			} else if (spawnpoints != null && i < spawnpoints.size()) {
-				Location bukkitLocation = spawnpoints.get(i).getBukkitLocation();
+			} else if (spawnpoints != null) {
+				Location bukkitLocation = spawnpoints.get(i % spawnpoints.size()).getBukkitLocation();
 
 				teleportTo = bukkitLocation.clone();
 			} else if (defaultSpawnpoint != null) {
@@ -73,8 +73,8 @@ public class TaskPlayerTeleport implements Runnable {
 			if (game.getFlag(FlagType.BOXES) && game.getFlag(FlagType.ONEVSONE)) {
 				generateBox(teleportTo);
 
-				// Add a half block to prevent box glitches
 				teleportTo = new Location(teleportTo.getWorld(), teleportTo.getBlockX(), teleportTo.getBlockY(), teleportTo.getBlockZ());
+				// Add a half block to prevent box glitches
 				teleportTo.add(0.5, 0, 0.5);
 			}
 
