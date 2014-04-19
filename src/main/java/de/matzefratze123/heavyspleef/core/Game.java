@@ -674,7 +674,6 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			}
 		} else {
 			inPlayers.remove(player);
-			callEvent(EventType.PLAYER_LEAVE, player);
 			HeavySpleef.getInstance().getJoinGUI().refresh();
 
 			if (components.getTeam(player) != null) {
@@ -716,6 +715,7 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				broadcast(_("remaining", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast(MessageType.KNOCKOUTS));
 			}
 
+			callEvent(EventType.PLAYER_LEAVE, player);
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
 			player.getBukkitPlayer().setFallDistance(0);

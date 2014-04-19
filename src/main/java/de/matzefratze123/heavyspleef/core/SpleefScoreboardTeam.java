@@ -101,9 +101,7 @@ public class SpleefScoreboardTeam implements SpleefScoreboard, SpleefPlayerGameL
 	}
 
 	@Override
-	public void playerKnockout(SpleefPlayer player) {
-		updateScoreboard();
-	}
+	public void playerKnockout(SpleefPlayer player) {}
 
 	@Override
 	public void playerWin(SpleefPlayer player) {}

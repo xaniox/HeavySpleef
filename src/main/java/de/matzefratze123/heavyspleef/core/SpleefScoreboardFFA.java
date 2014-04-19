@@ -119,9 +119,7 @@ public class SpleefScoreboardFFA implements SpleefScoreboard, SpleefPlayerGameLi
 	}
 
 	@Override
-	public void playerKnockout(SpleefPlayer player) {
-		updateScoreboard();
-	}
+	public void playerKnockout(SpleefPlayer player) {}
 
 	@Override
 	public void playerWin(SpleefPlayer player) {}
