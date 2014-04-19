@@ -38,14 +38,14 @@ public class SelectionWorldEdit extends Selection {
 	public Location getFirst() {
 		WorldEditPlugin we = HookManager.getInstance().getService(WorldEditHook.class).getHook();
 		Player player = Bukkit.getPlayer(owner);
-
+		
 		if (player == null)
 			return null;
 		if (!player.isOnline())
 			return null;
 
 		com.sk89q.worldedit.bukkit.selections.Selection s = we.getSelection(player);
-
+		
 		if (s == null)
 			return null;
 

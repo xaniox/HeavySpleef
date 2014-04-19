@@ -78,6 +78,8 @@ public class SpleefScoreboardTeam implements SpleefScoreboard, SpleefPlayerGameL
 		for (SpleefPlayer player : game.getIngamePlayers()) {
 			player.getBukkitPlayer().setScoreboard(scoreboard);
 		}
+		
+		lastIngameTeams = ImmutableList.copyOf(game.getComponents().getActiveTeams());
 	}
 
 	@Override

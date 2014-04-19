@@ -20,6 +20,7 @@
 package de.matzefratze123.heavyspleef.objects;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.GameMode;
 import org.bukkit.inventory.ItemStack;
@@ -43,8 +44,9 @@ public class PlayerState {
 	private int							level;
 	private boolean						fly;
 	private Scoreboard					board;
+	private List<SpleefPlayer>			hiddenPlayers;
 
-	public PlayerState(ItemStack[] invContents, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, float exhaustion, float saturation, int foodLevel, double health, GameMode gm, Collection<PotionEffect> potionEffects, float exp, int level, boolean fly, Scoreboard board) {
+	public PlayerState(ItemStack[] invContents, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, float exhaustion, float saturation, int foodLevel, double health, GameMode gm, Collection<PotionEffect> potionEffects, float exp, int level, boolean fly, Scoreboard board, List<SpleefPlayer> hiddenPlayers) {
 		this.setContents(invContents);
 		this.setHelmet(helmet);
 		this.setChestplate(chestplate);
@@ -60,6 +62,7 @@ public class PlayerState {
 		this.setLevel(level);
 		this.fly = fly;
 		this.board = board;
+		this.hiddenPlayers = hiddenPlayers;
 	}
 
 	public ItemStack[] getContents() {
@@ -180,6 +183,14 @@ public class PlayerState {
 
 	public void setBoard(Scoreboard board) {
 		this.board = board;
+	}
+	
+	public List<SpleefPlayer> getCantSee() {
+		return hiddenPlayers;
+	}
+	
+	public void setCantSee(List<SpleefPlayer> cantSee) {
+		this.hiddenPlayers = cantSee;
 	}
 
 }

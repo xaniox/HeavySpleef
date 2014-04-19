@@ -251,9 +251,18 @@ public class SpleefPlayer {
 
 		boolean fly = bukkitPlayer.getAllowFlight();
 		Scoreboard board = bukkitPlayer.getScoreboard();
+		
+		List<SpleefPlayer> hiddenPlayers = new ArrayList<SpleefPlayer>();
+		
+		for (SpleefPlayer onlinePlayer : HeavySpleef.getInstance().getOnlineSpleefPlayers()) {
+			if (!bukkitPlayer.canSee(onlinePlayer.getBukkitPlayer())) {
+				hiddenPlayers.add(onlinePlayer);
+				bukkitPlayer.showPlayer(onlinePlayer.getBukkitPlayer());
+			}
+		}
 
 		// Save state
-		state = new PlayerState(contents, helmet, chestplate, leggings, boots, exhaustion, saturation, foodLevel, health, gm, potionEffects, exp, level, fly, board);
+		state = new PlayerState(contents, helmet, chestplate, leggings, boots, exhaustion, saturation, foodLevel, health, gm, potionEffects, exp, level, fly, board, hiddenPlayers);
 
 		// Set to default state
 		bukkitPlayer.setFoodLevel(20);
@@ -297,7 +306,17 @@ public class SpleefPlayer {
 		bukkitPlayer.setExp(state.getExp());
 		bukkitPlayer.setAllowFlight(state.isFly());
 		bukkitPlayer.setGameMode(state.getGamemode());
-
+		
+		List<SpleefPlayer> hiddenPlayers = state.getCantSee();
+		
+		for (SpleefPlayer hiddenPlayer : hiddenPlayers) {
+			if (!hiddenPlayer.isOnline()) {
+				continue;
+			}
+			
+			bukkitPlayer.hidePlayer(hiddenPlayer.getBukkitPlayer());
+		}
+		
 		sendMessage(I18N._("stateRestored"));
 		bukkitPlayer.updateInventory();
 		state = null;
