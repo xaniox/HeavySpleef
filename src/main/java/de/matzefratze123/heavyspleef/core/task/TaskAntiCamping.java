@@ -81,7 +81,7 @@ public class TaskAntiCamping implements Runnable {
 		// Check every game
 		for (Game game : GameManager.getGames()) {
 			if (game.getGameState() != GameState.INGAME) {
-				return;
+				continue;
 			}
 
 			if (!game.getFlag(FlagType.CAMP_DETECTION)) {
