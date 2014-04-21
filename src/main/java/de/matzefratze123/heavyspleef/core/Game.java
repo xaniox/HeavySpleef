@@ -707,15 +707,16 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 				broadcast(_("loseCause_leave", player.getName(), name), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 			}
 
-			player.restoreState();
-			safeTeleport(player, getFlag(FlagType.LEAVEPOINT) != null && cause == LoseCause.LEAVE ? getFlag(FlagType.LEAVEPOINT) : getFlag(FlagType.LOSE));
-
 			if (state == GameState.INGAME || state == GameState.COUNTING) {
 				outPlayers.add(player.getBukkitPlayer());
 				broadcast(_("remaining", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast(MessageType.KNOCKOUTS));
 			}
-
+			
 			callEvent(EventType.PLAYER_LEAVE, player);
+			
+			player.restoreState();
+			safeTeleport(player, getFlag(FlagType.LEAVEPOINT) != null && cause == LoseCause.LEAVE ? getFlag(FlagType.LEAVEPOINT) : getFlag(FlagType.LOSE));
+
 			player.clearGameData();
 			player.getBukkitPlayer().setFireTicks(0);
 			player.getBukkitPlayer().setFallDistance(0);
