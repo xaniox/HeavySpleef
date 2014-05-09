@@ -48,7 +48,7 @@ public class SpleefConfig {
 
 	private static final File			CONFIG_FILE			= new File("plugins/" + HeavySpleef.PLUGIN_NAME + "/config.yml");
 	private static final String			RESOURCE_PATH		= "/default/defaultconfig.yml";
-	private static final int			CONFIG_VERSION		= 2;
+	private static final int			CONFIG_VERSION		= 3;
 	private static final String			CONFIG_VERSION_PATH	= "config-version";
 
 	private static final int			BUFFER_SIZE			= 1024;
