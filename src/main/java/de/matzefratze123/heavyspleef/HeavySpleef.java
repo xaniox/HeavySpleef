@@ -81,6 +81,7 @@ import de.matzefratze123.heavyspleef.command.handler.GameTransformer;
 import de.matzefratze123.heavyspleef.config.SpleefConfig;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.task.TaskAdvancedAntiCamping;
 import de.matzefratze123.heavyspleef.core.task.TaskAntiCamping;
 import de.matzefratze123.heavyspleef.database.YamlDatabase;
 import de.matzefratze123.heavyspleef.hooks.Hook;
@@ -133,6 +134,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 
 	// Tasks
 	private TaskAntiCamping			antiCampTask;
+	private TaskAdvancedAntiCamping advancedAntiCampingTask;
 
 	// Updater
 	private Updater					updater;
@@ -167,7 +169,7 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 			try {
 				Class.forName("org.kitteh.tag.AsyncPlayerReceiveNameTagEvent");
 			} catch (ClassNotFoundException e) {
-				// Ooops, user hasn't installed the latest release of tagapi
+				// Whoops, user hasn't installed the latest release of tagapi
 				Logger.info("Warning: Found an outdated version of TagAPI. Please update your TagAPI to v3.0 in order to use team games!");
 			}
 		}
@@ -197,6 +199,11 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 
 		antiCampTask = new TaskAntiCamping();
 		antiCampTask.start();
+		
+		if (config.getAnticampingSection().isAdvancedAnticampingEnabled()) {
+			advancedAntiCampingTask = new TaskAdvancedAntiCamping();
+			advancedAntiCampingTask.start();
+		}
 
 		// Command stuff
 		ces = new CommandExecutorService(MAIN_COMMAND, this);
@@ -272,6 +279,14 @@ public class HeavySpleef extends JavaPlugin implements Listener {
 
 	public TaskAntiCamping getAntiCampingTask() {
 		return antiCampTask;
+	}
+	
+	public TaskAdvancedAntiCamping getAdvancedAntiCampingTask() {
+		return advancedAntiCampingTask;
+	}
+	
+	public void setAdvancedAntiCampingTask(TaskAdvancedAntiCamping advancedAntiCampingTask) {
+		this.advancedAntiCampingTask = advancedAntiCampingTask;
 	}
 
 	public InventoryJoinGUI getJoinGUI() {

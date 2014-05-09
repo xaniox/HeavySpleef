@@ -31,6 +31,7 @@ public class SettingsSectionAntiCamping implements SettingsSection {
 	private ConfigurationSection	section;
 
 	private boolean					enabled;
+	private boolean					advancedAnticampingEnabled;
 	private boolean					warnEnabled;
 	private int						warnAt;
 	private int						teleportAt;
@@ -61,6 +62,7 @@ public class SettingsSectionAntiCamping implements SettingsSection {
 		this.section = configuration.getFileConfiguration().getConfigurationSection(SECTION_PATH);
 
 		enabled = section.getBoolean("enabled", true);
+		advancedAnticampingEnabled = section.getBoolean("advanced-anticamping");
 		warnEnabled = section.getBoolean("campWarn", true);
 		warnAt = section.getInt("warnAt", 3);
 		teleportAt = section.getInt("teleportAt", 6);
@@ -68,6 +70,10 @@ public class SettingsSectionAntiCamping implements SettingsSection {
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	public boolean isAdvancedAnticampingEnabled() {
+		return advancedAnticampingEnabled;
 	}
 
 	public boolean isWarnEnabled() {

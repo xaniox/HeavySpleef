@@ -165,6 +165,15 @@ anticamping:
   # If true, players can't camp in corners to win
   # the game! They will be teleported a floor down if they camp...
   enabled: true
+  
+  # Advanced anticamping detects if players
+  # really camp. The way how it does this is by
+  # checking if the player stands on a plattform
+  # and calculates wether any other player could
+  # jump on that platform.
+  #
+  # This is still an experimental feature.  
+  advanced-anticamping: false
 
   # Should a player be warned of camping before he gets teleported down?
   campWarn: true
@@ -204,6 +213,6 @@ statistic:
   
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG!
-config-version: 2
+config-version: 3
 
 # How much... No, you've finished the configuration ;)

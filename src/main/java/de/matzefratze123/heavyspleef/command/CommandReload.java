@@ -30,6 +30,7 @@ import de.matzefratze123.api.hs.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
+import de.matzefratze123.heavyspleef.core.task.TaskAdvancedAntiCamping;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
@@ -45,6 +46,22 @@ public class CommandReload implements CommandListener {
 
 		HeavySpleef.PREFIX = HeavySpleef.getSystemConfig().getGeneralSection().getPrefix();
 		HeavySpleef.getInstance().getAntiCampingTask().restart();
+		
+		boolean advancedAntiCampingEnabled = HeavySpleef.getSystemConfig().getAnticampingSection().isAdvancedAnticampingEnabled();
+		
+		TaskAdvancedAntiCamping advancedAntiCampingTask = HeavySpleef.getInstance().getAdvancedAntiCampingTask();
+		
+		if (advancedAntiCampingTask != null) {
+			if (advancedAntiCampingEnabled) {
+				advancedAntiCampingTask.restart();
+			} else {
+				advancedAntiCampingTask.stop();
+			}
+		} else if (advancedAntiCampingEnabled) {
+				advancedAntiCampingTask = new TaskAdvancedAntiCamping();
+				
+				HeavySpleef.getInstance().setAdvancedAntiCampingTask(advancedAntiCampingTask);
+		}
 
 		I18N.loadLanguageFiles();// Reload languages files
 		HeavySpleef.getInstance().getSelectionManager().setup();// Reload

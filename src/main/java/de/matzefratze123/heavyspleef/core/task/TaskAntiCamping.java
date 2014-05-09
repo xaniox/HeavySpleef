@@ -124,7 +124,7 @@ public class TaskAntiCamping implements Runnable {
 		}
 	}
 
-	private void teleportDown(SpleefPlayer player) {
+	static void teleportDown(SpleefPlayer player) {
 		Location location = player.getBukkitPlayer().getLocation();
 
 		Game game = player.getGame();
