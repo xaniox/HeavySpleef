@@ -37,5 +37,27 @@ public class ArrayHelper {
 
 		return list;
 	}
+	
+	public static <T> boolean contains(T[] array, T element) {
+		for (T t : array) {
+			if (t == element) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static <T> int getIndex(T[] array, T element) {
+		for (int i = 0; i < array.length; i++) {
+			T t = array[i];
+			
+			if (t == element) {
+				return i;
+			}
+		}
+		
+		return -1;
+	}
 
 }
