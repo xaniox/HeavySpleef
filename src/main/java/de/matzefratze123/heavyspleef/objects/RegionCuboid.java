@@ -22,6 +22,8 @@ package de.matzefratze123.heavyspleef.objects;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import de.matzefratze123.heavyspleef.util.RegionIterator;
+
 public class RegionCuboid implements Region {
 
 	protected Location	firstPoint;
@@ -42,6 +44,10 @@ public class RegionCuboid implements Region {
 
 	public Location getSecondPoint() {
 		return secondPoint;
+	}
+	
+	public RegionIterator getRegionIterator() {
+		return new RegionIterator(firstPoint, secondPoint);
 	}
 
 	@Override
