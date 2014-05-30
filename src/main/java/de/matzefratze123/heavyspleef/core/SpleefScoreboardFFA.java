@@ -97,7 +97,12 @@ public class SpleefScoreboardFFA implements SpleefScoreboard, SpleefPlayerGameLi
 	}
 	
 	private OfflinePlayer getFakeOfflinePlayer(OfflinePlayer player, boolean ingame) {
-		return Bukkit.getOfflinePlayer((ingame ? "" : ChatColor.GRAY) + player.getName());
+		String fakeName = (ingame ? "" : ChatColor.GRAY) + player.getName();
+		if (fakeName.length() > 16) {
+			fakeName = fakeName.substring(0, 16);
+		}
+		
+		return Bukkit.getOfflinePlayer(fakeName);
 	}
 
 	@Override

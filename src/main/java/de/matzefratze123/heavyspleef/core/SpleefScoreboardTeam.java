@@ -55,7 +55,12 @@ public class SpleefScoreboardTeam implements SpleefScoreboard, SpleefPlayerGameL
 	}
 	
 	private OfflinePlayer getFakeOfflinePlayer(Team team, boolean hasPlayersLeft) {
-		return Bukkit.getOfflinePlayer((hasPlayersLeft ? team.getColor().toChatColor() : ChatColor.GRAY) + team.getColor().toString());
+		String fakeName = (hasPlayersLeft ? team.getColor().toChatColor() : ChatColor.GRAY) + team.getColor().toString();
+		if (fakeName.length() > 16) {
+			fakeName = fakeName.substring(0, 16);
+		}
+		
+		return Bukkit.getOfflinePlayer(fakeName);
 	}
 
 	@Override
