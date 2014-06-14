@@ -107,7 +107,7 @@ flag-defaults:
   maxplayers: 0
   autostart: 0
   countdown: 10
-  jackpotamount: 0
+  entryfee: 0
   reward: 0
   chances: 0
   timeout: 0
