@@ -15,8 +15,13 @@ public interface Messages {
 		public static final String GAME_DISABLED = PREFIX + "game-disabled";
 		public static final String GAME_ENABLED = PREFIX + "game-enabled";
 		public static final String GAME_JOIN_IS_DISABLED = PREFIX + "game-join-is-disabled";
+		public static final String GAME_STARTED = "game-started";
+		public static final String GAME_STOPPED = "game-stopped";
 		public static final String PLAYER_NOT_FOUND = PREFIX + "player-not-found"; // $[player]
 		public static final String PLAYER_NOT_IN_GAME = PREFIX + "player-not-in-game"; //$[player]
+		public static final String PLAYER_KICKED = PREFIX + "player-kicked";
+		public static final String NOT_INGAME = "not-ingame";
+		public static final String MUST_BE_A_PLAYER = "must-be-a-player";
 		
 	}
 	
@@ -25,6 +30,8 @@ public interface Messages {
 		public static final String PREFIX = "broadcast.";
 		
 		public static final String PLAYER_LEFT_GAME = PREFIX + "player-left-game"; // $[player]
+		public static final String GAME_STARTED = PREFIX + "game-started";
+		public static final String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message";
 		
 	}
 	
@@ -32,8 +39,8 @@ public interface Messages {
 	
 		public static final String PREFIX = "player.";
 		
-		public static final String PLAYER_LEAVE = "player-leave";
-		public static final String PLAYER_KICK = "player-kick"; // $[kicker]; $[message]
+		public static final String PLAYER_LEAVE = PREFIX + "player-leave";
+		public static final String PLAYER_KICK = PREFIX + "player-kick"; // $[kicker]; $[message]
 		
 	}
 	
