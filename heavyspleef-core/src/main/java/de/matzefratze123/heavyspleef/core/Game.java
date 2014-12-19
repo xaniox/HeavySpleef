@@ -23,6 +23,7 @@ import de.matzefratze123.heavyspleef.core.event.EventManager;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
+import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
@@ -94,9 +95,11 @@ public class Game {
 		boolean countdownEnabled = event.isCountdownEnabled();
 		int countdownLength = event.getCountdownLength();		
 		
+		state = GameState.STARTING;
+		
 		if (countdownEnabled && countdownLength > 0) {
-			//TODO: Add message
-			BasicTask task = new CountdownRunnable(heavySpleef.getPlugin(), countdownLength, this::start, () -> broadcast(""));
+			BasicTask task = new CountdownRunnable(heavySpleef.getPlugin(), countdownLength, this::start,
+					() -> broadcast(heavySpleef.getMessage(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)));
 			
 			task.start();
 		} else {
@@ -106,7 +109,11 @@ public class Game {
 	}
 	
 	public void start() {
+		GameStartEvent event = new GameStartEvent(this);
+		eventManager.callEvent(event);
 		
+		state = GameState.INGAME;
+		broadcast(heavySpleef.getMessage(Messages.Broadcast.GAME_STARTED));
 	}
 	
 	public void stop() {
@@ -238,14 +245,21 @@ public class Game {
 				message = (String) args[1];
 			}
 			
-			String finalMessage = heavySpleef.getMessage(Messages.Player.PLAYER_KICK);
+			String finalMessage = heavySpleef.getVarMessage(Messages.Player.PLAYER_KICK)
+					.setVariable("message", message)
+					.setVariable("kicker", clientPlayer.getName())
+					.toString();
+			
+			player.sendMessage(finalMessage);
 			break;
 		case SELF:
+			player.sendMessage(heavySpleef.getMessage(Messages.Player.PLAYER_LEAVE));
 			break;
 		default:
 			break;
 		}
-		//TODO: Player left game, inform the player
+		
+		broadcast(heavySpleef.getMessage(Messages.Broadcast.PLAYER_LEFT_GAME));
 	}
 	
 	public void requestLose(SpleefPlayer player) {
