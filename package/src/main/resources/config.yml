@@ -1,0 +1,8 @@
+# Configuration file for HeavySpleef
+
+default-game-properties:
+  instant-break: true
+  join-on-countdown: true
+  
+localization:
+  locale: en

@@ -1,0 +1,53 @@
+# Database configuration for HeavySpleef
+# This config includes database connections
+# and other details for database modules
+
+# Manage your database modules here
+# Please note that you can only use
+# a sql database for statistics due
+# to performance issues on xml
+database-modules:
+  statistics:
+    enabled: true
+  games:
+    # Valid values: xml, sql
+    persistence-type: xml
+
+# This is for advanced users only.
+# HeavySpleef automatically handles
+# your required database connections if
+# you keep this untouched.
+#
+# Specify your database connection
+# details here. 
+# 
+# Use the {basedir} variable for a reference to
+# the HeavySpleef working directory
+persistence-connection:
+  xml:
+    # Define the file for xml
+    file: {basedir}/persistence/
+  sql:
+    # Default available drivers:
+    #   - MySQL: com.mysql.jdbc.Driver
+    #   - SQLite: org.sqlite.JDBC
+    driver: org.sqlite.JDBC
+    
+    # Database connection url
+    #
+    # MySQL scheme: "jdbc:mysql://{host}/{database}"
+    # MySQL example: "jdbc:mysql://localhost/heavyspleef"
+    #
+    # SQLite scheme: "jdbc:sqlite://{path-to-file}"
+    # SQLite example: "jdbc:sqlite://{basedir}/persistence/database.db"
+    #
+    url: "jdbc:sqlite:{basedir}/persistence/database.db"
+    
+    # Specify an database user for use with MySQL
+    # This value is not needed if you prefer using
+    # a SQLite database
+    username: root
+    
+    # Only for MySQL
+    # Defines your password for the database user as defined above
+    password: password
