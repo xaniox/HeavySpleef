@@ -1,6 +1,11 @@
 package de.matzefratze123.heavyspleef.commands;
 
+import mkremins.fanciful.FancyMessage;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 import de.matzefratze123.heavyspleef.commands.internal.Command;
 import de.matzefratze123.heavyspleef.commands.internal.CommandContext;
@@ -21,6 +26,9 @@ public class CommandManager {
 				return sender.hasPermission(permission);
 			}
 		};
+		
+		PluginCommand spleefCommand = plugin.getPlugin().getCommand("spleef");
+		spleefCommand.setExecutor(service);
 	}
 	
 	/**
@@ -47,8 +55,23 @@ public class CommandManager {
 			CommandStats.class,
 			CommandStop.class
 	})
-	public void onSpleefCommand(CommandContext context) {
+	public void onSpleefCommand(CommandContext context, HeavySpleef heavySpleef) {
+		CommandSender sender = context.getSender();
+		PluginDescriptionFile desc = heavySpleef.getPlugin().getDescription();
 		
+		// Send a nice, formatted message to the player
+		new FancyMessage(desc.getName())
+				.color(ChatColor.GRAY)
+				.style(ChatColor.BOLD)
+			.then(" version " + desc.getVersion() + "\nType ")
+				.color(ChatColor.GOLD)
+			.then("/spleef help")
+				.command("/spleef help")
+			.then(" for help or click ")
+			.then("here")
+				.color(ChatColor.GRAY)
+				.command("/spleef help")
+			.send(sender);
 	}
 	
 }

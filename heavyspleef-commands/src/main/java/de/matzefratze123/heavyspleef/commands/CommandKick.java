@@ -46,6 +46,7 @@ public class CommandKick {
 		}
 		
 		game.kickPlayer(targetSpleefPlayer, message);
+		sender.sendMessage(heavySpleef.getMessage(Messages.Command.PLAYER_KICKED));
 	}
 	
 }

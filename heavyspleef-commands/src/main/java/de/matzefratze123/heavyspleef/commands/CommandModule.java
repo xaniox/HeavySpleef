@@ -11,14 +11,12 @@ public class CommandModule extends SimpleModule {
 
 	@Override
 	public void enable() {
-		// TODO Auto-generated method stub
-		
+		// Bukkit keeps a reference of the CommandManagerService
+		CommandManager manager = new CommandManager(getHeavySpleef());
+		manager.init();
 	}
 
 	@Override
-	public void disable() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void disable() {}
 
 }
