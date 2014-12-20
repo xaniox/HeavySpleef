@@ -191,7 +191,10 @@ public class Game {
 		Location location = event.getTeleportationLocation();
 		player.teleport(location);
 		
-		//TODO Broadcast Message
+		broadcast(heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_JOINED_GAME)
+				.setVariable("player", player.getName())
+				.toString());
+		
 		if (event.isStartGame()) {
 			countdown();
 		}
