@@ -19,8 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Maps;
 
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
-
 public abstract class CommandManagerService implements CommandExecutor {
 	
 	private static final Properties DEFAULT_MESSAGES;
@@ -34,18 +32,18 @@ public abstract class CommandManagerService implements CommandExecutor {
 		DEFAULT_MESSAGES.put("message.usage_format", "Usage: %s");
 	}
 	
-	private HeavySpleef heavySpleef;
-	private JavaPlugin plugin;
-	private Logger logger;
+	private final JavaPlugin plugin;
+	private final Logger logger;
+	private Object[] args;
 	private Instantiator instantiator;
 	private Map<String, CommandContainer> commandMap;
 	private Map<Class<?>, Transformer<?>> transformers;
 	private Properties messageProperties;
 	
-	public CommandManagerService(HeavySpleef heavySpleef, Logger logger) {
-		this.heavySpleef = heavySpleef;
-		this.plugin = heavySpleef.getPlugin();
+	public CommandManagerService(JavaPlugin plugin, Logger logger, Object... args) {
+		this.plugin = plugin;
 		this.logger = logger;
+		this.args = args;
 		this.instantiator = new UnsafeInstantiator();
 		this.commandMap = Maps.newHashMap();
 		this.transformers = Maps.newHashMap(BaseTransformers.BASE_TRANSFORMERS);
@@ -181,10 +179,15 @@ public abstract class CommandManagerService implements CommandExecutor {
 						break;
 					} else if (plugin.getClass() == parameterType) {
 						parameterValues[i] = plugin;
-					} else if (heavySpleef.getClass() == parameterType) {
-						parameterValues[i] = heavySpleef;
 					} else if (parameterType.isPrimitive()) {
 						parameterValues[i] = getDefaultPrimitiveValue(parameterType);
+					} else {
+						for (Object arg : args) {
+							if (parameterType.isInstance(arg)) {
+								parameterValues[i] = arg;
+								break;
+							}
+						}
 					}
 				}
 				

@@ -18,7 +18,7 @@ public class CommandManager {
 	private CommandManagerService service;
 	
 	public CommandManager(HeavySpleef plugin) {
-		service = new CommandManagerService(plugin, plugin.getLogger()) {
+		service = new CommandManagerService(plugin.getPlugin(), plugin.getLogger(), plugin) {
 			
 			@Override
 			public boolean checkPermission(CommandSender sender, String permission) {
