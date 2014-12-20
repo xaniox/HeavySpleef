@@ -13,13 +13,16 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
+
 import org.apache.commons.lang.Validate;
 import org.dom4j.DocumentException;
+
 
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+
 
 
 import de.matzefratze123.heavyspleef.core.Game;
@@ -28,7 +31,6 @@ import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.schematic.FloorSchematicCodec;
 import de.matzefratze123.heavyspleef.core.floor.schematic.FloorSchematicCodec.FloorEntry;
-import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
 
 public class CachingReadWriteHandler implements ReadWriteHandler {
 	
@@ -173,6 +175,11 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		games.forEach(this::loadAndInjectFloors);
 		
 		return games;
+	}
+	
+	@Override
+	public void deleteGame(Game game) {
+		gameDatabaseController.delete(game);
 	}
 	
 	private void loadAndInjectFloors(Game game) {

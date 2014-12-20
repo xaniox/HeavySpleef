@@ -2,7 +2,6 @@ package de.matzefratze123.heavyspleef.persistence;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
-import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
 
 public class PersistenceModule extends SimpleModule {
 

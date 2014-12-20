@@ -18,6 +18,8 @@ public interface AsyncReadWriteHandler {
 	
 	public void getGames(FutureCallback<List<Game>> callback);
 	
+	public void deleteGame(Game game, FutureCallback<Void> callback);
+	
 	public void saveStatistics(Iterable<Statistic> statistics, FutureCallback<Void> callback);
 	
 	public void saveStatistic(Statistic statistic, FutureCallback<Void> callback);

@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
-import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
 
 public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 
@@ -53,6 +52,11 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	@Override
 	public void getGames(FutureCallback<List<Game>> callback) {
 		invokeDelegate(callback, delegate::getGames);
+	}
+	
+	@Override
+	public void deleteGame(Game game, FutureCallback<Void> callback) {
+		invokeVoidDelegate(callback, () -> delegate.deleteGame(game));
 	}
 	
 	@Override

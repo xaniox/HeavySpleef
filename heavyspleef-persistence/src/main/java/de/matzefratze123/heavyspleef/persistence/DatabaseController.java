@@ -45,4 +45,6 @@ public interface DatabaseController {
 		return !result.isEmpty() ? result.get(0) : null;
 	}
 	
+	public int delete(Object obj);
+	
 }

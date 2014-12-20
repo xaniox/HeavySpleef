@@ -98,16 +98,123 @@ public class JAXBController implements DatabaseController {
 	
 	@Override
 	public void update(Object object, Object cookie) {
-		Map<String, Object> identifierMap = Maps.newHashMap();
-		String objRootElementName = DEFAULT_OBJECT_ROOT_ELEMENT_NAME;
+		Class<?> objectClass = object.getClass();
 		
-		Class<?> clazz = object.getClass();
-		if (clazz.isAnnotationPresent(XmlRootElement.class)) {
-			XmlRootElement rootElementAnnotation = clazz.getAnnotation(XmlRootElement.class);
-			
-			objRootElementName = rootElementAnnotation.name();
+		Element rootElement = document.getDocumentElement();
+		Node objectNode = getObjectNode(object);
+		
+		String objectRootElementName = DEFAULT_OBJECT_ROOT_ELEMENT_NAME;
+		if (objectClass.isAnnotationPresent(XmlRootElement.class)) {
+			objectRootElementName = objectClass.getAnnotation(XmlRootElement.class).name();
 		}
 		
+		if (objectNode == null) {
+			objectNode = document.createElement(objectRootElementName);
+			rootElement.appendChild(objectNode);
+		}
+		
+		try {
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.marshal(object, objectNode);
+		} catch (JAXBException e) {
+			throw new RuntimeException(e);
+		}
+		
+		if (autoFlush) {
+			try {
+				flushXml();
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to flush document to xml file", e);
+			}
+		}
+	}
+
+	@Override
+	public List<Object> query(String key, Object value, Object cookie, String orderBy, int limit) {
+		Element element = document.getDocumentElement();
+		NodeList childNodes = element.getChildNodes();
+		List<Node> selectedNodes = Lists.newArrayList();
+		
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node node = childNodes.item(i);
+			
+			NamedNodeMap attributes = node.getAttributes();
+			Node idAttribute = attributes.getNamedItem(key);
+			
+			if (idAttribute == null || !idAttribute.getTextContent().equals(value.toString())) {
+				continue;
+			}
+			
+			//This child nodes seems to match so add it to our selected nodes
+			selectedNodes.add(node);
+		}
+		
+		Unmarshaller unmarshaller;
+		List<Object> result;
+		
+		try {
+			unmarshaller = context.createUnmarshaller();
+			
+			Function<? super Node, ? extends Object> mapFunction = node -> {
+				try {
+					return unmarshaller.unmarshal(node);
+				} catch (JAXBException e) {
+					throw new RuntimeException(e);
+				}
+			};
+			
+			Stream<Object> objStream = selectedNodes.stream().map(mapFunction);
+			if (orderBy != null && !orderBy.isEmpty()) {
+				Validate.isTrue(cookie instanceof Class<?>, "Cannot sort result when no class cookie is given");
+				Class<?> objClass = (Class<?>) cookie;
+				
+				ObjectComparator comparator = new ObjectComparator(orderBy, objClass);
+				objStream = objStream.sorted(comparator);
+				
+				comparator.release();
+			}
+			
+			if (limit != NO_LIMIT) {
+				objStream = objStream.limit(limit);
+			}
+			
+			result = objStream.collect(Collectors.toList());
+		} catch (JAXBException e) {
+			throw new RuntimeException(e);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public int delete(Object object) {
+		Node objectNode = getObjectNode(object);
+		
+		if (objectNode == null) {
+			return 0;
+		}
+		
+		Element rootElement = document.getDocumentElement();
+		rootElement.removeChild(objectNode);
+		
+		if (autoFlush) {
+			try {
+				flushXml();
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to flush document to xml file", e);
+			}
+		}
+		
+		return 1;
+	}
+	
+	private Node getObjectNode(Object object) {
+		Map<String, Object> identifierMap = Maps.newHashMap();
+		
+		Class<?> clazz = object.getClass();
+		
+		//We use xml attributes as unique identifiers so
+		//lookup each field which is annotated with XmlAttribute
 		for (Field field : clazz.getDeclaredFields()) {
 			if (!field.isAnnotationPresent(XmlAttribute.class)) {
 				continue;
@@ -168,82 +275,7 @@ public class JAXBController implements DatabaseController {
 			throw new RuntimeException("Illegal XPath expression \"" + expression + "\"", e);
 		}
 		
-		if (objNode == null) {
-			objNode = document.createElement(objRootElementName);
-			rootElement.appendChild(objNode);
-		}
-		
-		try {
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.marshal(object, objNode);
-		} catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
-		
-		if (autoFlush) {
-			try {
-				flushXml();
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to flush document to xml file", e);
-			}
-		}
-	}
-
-	@Override
-	public List<Object> query(String key, Object value, Object cookie, String orderBy, int limit) {
-		Element element = document.getDocumentElement();
-		NodeList childNodes = element.getChildNodes();
-		List<Node> selectedNodes = Lists.newArrayList();
-		
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node node = childNodes.item(i);
-			
-			NamedNodeMap attributes = node.getAttributes();
-			Node idAttribute = attributes.getNamedItem(key);
-			
-			if (idAttribute == null || !idAttribute.getTextContent().equals(value.toString())) {
-				continue;
-			}
-			
-			//This child nodes seems to match so add it to our selected nodes
-			selectedNodes.add(node);
-		}
-		
-		Unmarshaller unmarshaller;
-		List<Object> result;
-		
-		try {
-			unmarshaller = context.createUnmarshaller();
-			
-			Function<? super Node, ? extends Object> mapFunction = n -> {
-				try {
-					return unmarshaller.unmarshal(n);
-				} catch (JAXBException e) {
-					throw new RuntimeException(e);
-				}
-			};
-			
-			Stream<Object> objStream = selectedNodes.stream().map(mapFunction);
-			if (orderBy != null && !orderBy.isEmpty()) {
-				Validate.isTrue(cookie instanceof Class<?>, "Cannot sort result when no class cookie is given");
-				Class<?> objClass = (Class<?>) cookie;
-				
-				ObjectComparator comparator = new ObjectComparator(orderBy, objClass);
-				objStream = objStream.sorted(comparator);
-				
-				comparator.release();
-			}
-			
-			if (limit != NO_LIMIT) {
-				objStream = objStream.limit(limit);
-			}
-			
-			result = objStream.collect(Collectors.toList());
-		} catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
-		
-		return result;
+		return objNode;
 	}
 	
 	public void flushXml() throws Exception {

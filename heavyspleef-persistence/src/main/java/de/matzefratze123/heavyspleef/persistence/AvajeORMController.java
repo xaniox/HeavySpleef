@@ -144,6 +144,26 @@ public class AvajeORMController implements DatabaseController {
 		return result;
 	}
 	
+	@Override
+	public int delete(Object object) {
+		Transaction transaction = null;
+		
+		try {
+			transaction = ebeanServer.beginTransaction();
+			transaction.setLogLevel(LogLevel.NONE);
+			
+			ebeanServer.delete(object);
+			
+			transaction.commit();
+		} finally {
+			if (transaction != null) {
+				transaction.end();
+			}
+		}
+		
+		return 1;
+	}
+	
 	private void setupDatabase(Properties props) throws Exception {
 		try {
 			// Disable ugly database logging
