@@ -1,5 +1,7 @@
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.Properties;
+
 import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.ChatColor;
@@ -12,12 +14,13 @@ import de.matzefratze123.heavyspleef.commands.internal.CommandContext;
 import de.matzefratze123.heavyspleef.commands.internal.CommandManagerService;
 import de.matzefratze123.heavyspleef.commands.internal.NestedCommands;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandManager {
 	
 	private CommandManagerService service;
 	
-	public CommandManager(HeavySpleef plugin) {
+	public CommandManager(final HeavySpleef plugin) {
 		service = new CommandManagerService(plugin.getPlugin(), plugin.getLogger(), plugin) {
 			
 			@Override
@@ -25,6 +28,35 @@ public class CommandManager {
 				//Use the built-in bukkit permission check
 				return sender.hasPermission(permission);
 			}
+			
+			@Override
+			public String getMessage(String key, String... messageArgs) {
+				String message = null;
+				
+				switch (key) {
+				case "message.player_only":
+					message = plugin.getMessage(Messages.Command.PLAYER_ONLY);
+					break;
+				case "message.no_permission":
+					message = plugin.getMessage(Messages.Command.NO_PERMISSION);
+					break;
+				case "message.description_format":
+					message = plugin.getVarMessage(Messages.Command.DESCRIPTION_FORMAT)
+						.setVariable("description", messageArgs[0])
+						.toString();
+					break;
+				case "message.usage_format":
+					message = plugin.getVarMessage(Messages.Command.USAGE_FORMAT)
+						.setVariable("usage", messageArgs[0])
+						.toString();
+					break;
+				default:
+					break;
+				}
+				
+				return message;
+			}
+			
 		};
 		
 		PluginCommand spleefCommand = plugin.getPlugin().getCommand("spleef");

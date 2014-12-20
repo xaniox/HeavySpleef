@@ -39,7 +39,6 @@ public abstract class CommandManagerService implements CommandExecutor {
 	private Instantiator instantiator;
 	private Map<String, CommandContainer> commandMap;
 	private Map<Class<?>, Transformer<?>> transformers;
-	private Properties messageProperties;
 	
 	public CommandManagerService(JavaPlugin plugin, Logger logger, Object... args) {
 		this.plugin = plugin;
@@ -51,6 +50,17 @@ public abstract class CommandManagerService implements CommandExecutor {
 	}
 	
 	public abstract boolean checkPermission(CommandSender sender, String permission);
+	
+	public abstract String getMessage(String key, String... messageArgs);
+	
+	public String getMessage0(String key, String... messageArgs) {
+		String message = getMessage(key, messageArgs);
+		if (message == null) {
+			message = DEFAULT_MESSAGES.getProperty(key);
+		}
+		
+		return message;
+	}
 	
 	public void registerCommands(Class<?> clazz) {
 		Validate.notNull(clazz);
@@ -93,10 +103,6 @@ public abstract class CommandManagerService implements CommandExecutor {
 		this.instantiator = instantiator;
 	}
 	
-	public void setMessages(Properties props) {
-		this.messageProperties = props;
-	}
-	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		String name = cmd.getName();
@@ -125,12 +131,12 @@ public abstract class CommandManagerService implements CommandExecutor {
 		}
 		
 		if (!(sender instanceof Player) && command.isPlayerOnly()) {
-			sender.sendMessage(messageProperties.getProperty("message.player_only"));
+			sender.sendMessage(getMessage0("message.player_only"));
 			return true;
 		}
 		
 		if (!command.getPermission().isEmpty() && !checkPermission(sender, command.getPermission())) {
-			sender.sendMessage(messageProperties.getProperty("message.no_permission"));
+			sender.sendMessage(getMessage0("message.no_permission"));
 			return true;
 		}
 		
@@ -139,12 +145,12 @@ public abstract class CommandManagerService implements CommandExecutor {
 		System.arraycopy(args, index, cutArgs, 0, args.length - index);
 		
 		if (cutArgs.length > 0 && isHelpArg(cutArgs[0])) {
-			sender.sendMessage(String.format(messageProperties.getProperty("message.description_format"), command.getDescription()));
+			sender.sendMessage(getMessage0("message.description_format", command.getDescription()));
 			return true;
 		}
 		
 		if (cutArgs.length < command.getMinArgs()) {
-			sender.sendMessage(String.format(messageProperties.getProperty("message.usage_format"), command.getUsage()));
+			sender.sendMessage(getMessage0("message.usage_format", command.getUsage()));
 			return true;
 		}
 		
