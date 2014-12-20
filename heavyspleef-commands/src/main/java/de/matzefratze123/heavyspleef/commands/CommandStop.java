@@ -26,7 +26,7 @@ public class CommandStop {
 		if (context.argsLength() > 0) {
 			game = manager.getGame(context.getString(0));
 		} else {
-			CommandValidate.isTrue(sender instanceof Player, heavySpleef.getMessage(Messages.Command.MUST_BE_A_PLAYER));
+			CommandValidate.isTrue(sender instanceof Player, heavySpleef.getMessage(Messages.Command.PLAYER_ONLY));
 			SpleefPlayer player = heavySpleef.getSpleefPlayer(sender);
 			
 			game = manager.getGame(player);

@@ -6,6 +6,11 @@ public interface Messages {
 	
 		public static final String PREFIX = "command.";
 		
+		public static final String PLAYER_ONLY = "player-only";
+		public static final String NO_PERMISSION = "no-permission";
+		public static final String DESCRIPTION_FORMAT = "description-format"; // $[description]
+		public static final String USAGE_FORMAT = "usage-format"; // $[usage]
+		
 		public static final String GAME_CREATED = PREFIX + "game-created";
 		public static final String GAME_ALREADY_EXIST = PREFIX + "game-already-exist";
 		public static final String GAME_DOESNT_EXIST = PREFIX + "game-doesnt-exist";
@@ -21,7 +26,6 @@ public interface Messages {
 		public static final String PLAYER_NOT_IN_GAME = PREFIX + "player-not-in-game"; //$[player]
 		public static final String PLAYER_KICKED = PREFIX + "player-kicked";
 		public static final String NOT_INGAME = "not-ingame";
-		public static final String MUST_BE_A_PLAYER = "must-be-a-player";
 		
 	}
 	
@@ -30,8 +34,9 @@ public interface Messages {
 		public static final String PREFIX = "broadcast.";
 		
 		public static final String PLAYER_LEFT_GAME = PREFIX + "player-left-game"; // $[player]
-		public static final String GAME_STARTED = PREFIX + "game-started";
+		public static final String GAME_STARTED = PREFIX + PREFIX + "game-started";
 		public static final String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message";
+		public static final String PLAYER_JOINED_GAME = PREFIX + "player-joined-game"; // $[player]
 		
 	}
 	
