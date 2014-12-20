@@ -2,6 +2,7 @@ package de.matzefratze123.heavyspleef.commands.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -229,13 +230,7 @@ public abstract class CommandManagerService implements CommandExecutor {
 	}
 	
 	private boolean isHelpArg(String arg) {
-		for (String helpIdentifier : HELP_IDENTIFIERS) {
-			if (helpIdentifier.equalsIgnoreCase(arg)) {
-				return true;
-			}
-		}
-		
-		return false;
+		return Arrays.stream(HELP_IDENTIFIERS).anyMatch(arg::equalsIgnoreCase);
 	}
  	
 }
