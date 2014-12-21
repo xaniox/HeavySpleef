@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -42,16 +43,16 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	private DatabaseController gameDatabaseController;
 	private DatabaseController statisticDatabaseController;
 	
-	private Cache<String, Statistic> statisticCache;
-	private final CacheLoader<String, Statistic> statisticCacheLoader = new CacheLoader<String, Statistic>() {
+	private Cache<UUID, Statistic> statisticCache;
+	private final CacheLoader<UUID, Statistic> statisticCacheLoader = new CacheLoader<UUID, Statistic>() {
 		
 		@Override
-		public Statistic load(String player) throws Exception {
+		public Statistic load(UUID uuid) throws Exception {
 			if (statisticDatabaseController == null) {
 				throw new IllegalStateException("Statistic database has not been initialized");
 			}
 			
-			Statistic statistic = (Statistic) statisticDatabaseController.queryUnique(Statistic.NAME_ATTRIBUTE, player, Statistic.class);
+			Statistic statistic = (Statistic) statisticDatabaseController.queryUnique(Statistic.UUID_ATTRIBUTE, uuid, Statistic.class);
 			return statistic;
 		}
 	};
@@ -215,13 +216,13 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	}
 
 	@Override
-	public Statistic getStatistic(String player) {
+	public Statistic getStatistic(UUID uuid) {
 		validateStatisticDatabaseSetup();
 		
 		Statistic statistic;
 		
 		try {
-			statistic = statisticCache.get(player);
+			statistic = statisticCache.get(uuid);
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e.getCause());
 		}

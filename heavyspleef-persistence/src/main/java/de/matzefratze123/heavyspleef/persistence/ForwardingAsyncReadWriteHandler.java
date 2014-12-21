@@ -2,6 +2,7 @@ package de.matzefratze123.heavyspleef.persistence;
 
 import java.util.List;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -112,12 +113,12 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void getStatistic(final String player, FutureCallback<Statistic> callback) {
+	public void getStatistic(final UUID uuid, FutureCallback<Statistic> callback) {
 		runCallableThreadDynamic(new Callable<Statistic>() {
 
 			@Override
 			public Statistic call() throws Exception {
-				return delegate.getStatistic(player);
+				return delegate.getStatistic(uuid);
 			}
 		}, callback);
 	}

@@ -2,6 +2,7 @@ package de.matzefratze123.heavyspleef.core.persistence;
 
 import java.util.List;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import com.google.common.util.concurrent.FutureCallback;
 
@@ -24,7 +25,7 @@ public interface AsyncReadWriteHandler {
 	
 	public void saveStatistic(Statistic statistic, FutureCallback<Void> callback);
 	
-	public void getStatistic(String player, FutureCallback<Statistic> callback);
+	public void getStatistic(UUID uuid, FutureCallback<Statistic> callback);
 	
 	public void getTopStatistics(int limit, FutureCallback<TreeSet<Statistic>> callback);
 	
