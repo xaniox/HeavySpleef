@@ -6,7 +6,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -72,6 +74,11 @@ public class AvajeORMController implements DatabaseController {
 	}
 	
 	@Override
+	public void update(Object object) {
+		update(object, null);
+	}
+	
+	@Override
 	public void update(Object object, Object cookie) {
 		Validate.notNull(object);
 		
@@ -89,6 +96,57 @@ public class AvajeORMController implements DatabaseController {
 			
 			//Submit the object
 			ebeanServer.save(object);
+			
+			//Commit transaction
+			transaction.commit();
+		} finally {
+			if (transaction != null) {
+				//End transaction
+				transaction.end();
+			}
+		}
+	}
+	
+	@Override
+	public void update(Object[] objects) {
+		update(objects, null);
+	}
+	
+	@Override
+	public void update(Object[] objects, Object cookie) {
+		update(Arrays.asList(objects), cookie);
+	}
+	
+	@Override
+	public void update(Iterable<?> iterable) {
+		update(iterable, null);
+	}
+	
+	/* Method for bulk inserts */
+	@Override
+	public void update(Iterable<?> iterable, Object cookie) {
+		Validate.notNull(iterable);
+		Iterator<?> iterator = iterable.iterator();
+		
+		Transaction transaction = null;
+		boolean classValidated = false;
+		
+		try {
+			//Begin a new transaction
+			transaction = ebeanServer.beginTransaction();
+			transaction.setLogLevel(LogLevel.NONE);
+			
+			while (iterator.hasNext()) {
+				Object nextObj = iterator.next();
+				
+				if (!classValidated) {
+					//Lazily validate class
+					Validate.isTrue(beanClasses.contains(nextObj.getClass()), "object.getClass() must be a registered class");
+				}
+				
+				//Save the object
+				ebeanServer.save(nextObj);
+			}
 			
 			//Commit transaction
 			transaction.commit();
@@ -142,6 +200,22 @@ public class AvajeORMController implements DatabaseController {
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public List<Object> query(String key, Object value, String orderBy, int limit) {
+		return query(key, value, orderBy, limit);
+	}
+	
+	@Override
+	public Object queryUnique(String key, Object value) {
+		return queryUnique(key, value, null);
+	}
+	
+	@Override
+	public Object queryUnique(String key, Object value, Object cookie) {
+		List<?> result = query(key, value, cookie, null, 1);
+		return !result.isEmpty() ? result.get(0) : null;
 	}
 	
 	@Override

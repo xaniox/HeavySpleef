@@ -1,5 +1,8 @@
 package de.matzefratze123.heavyspleef.core.floor.schematic;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +37,13 @@ import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
 
 public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.FloorEntry> {
 	
-	public static final FilenameFilter FILENAME_FILTER = (dir, name) -> name.endsWith(".floor");
+	public static final FilenameFilter FILENAME_FILTER = new FilenameFilter() {
+		
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.endsWith(".floor");
+		}
+	};
 	
 	/* Singleton class, encapsulated */
 	private static FloorSchematicCodec instance;
@@ -49,6 +58,13 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 	}
 	
 	private FloorSchematicCodec() {}
+	
+	@Override
+	public FloorEntry load(File file) throws CodecException, IOException {
+		try (InputStream inputStream = new FileInputStream(file)) {
+			return load(inputStream);			
+		}
+	}
 	
 	@Override
 	public FloorEntry load(InputStream inputStream) throws CodecException, IOException {
@@ -204,6 +220,13 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		
 		Floor floor = new SimpleCuboidFloor(name, clipboard);
 		return new FloorEntry(game, floor);
+	}
+	
+	@Override
+	public void save(FloorEntry obj, File file) throws CodecException, IOException {
+		try (OutputStream outputStream = new FileOutputStream(file)) {
+			save(obj, outputStream);
+		}
 	}
 
 	@Override

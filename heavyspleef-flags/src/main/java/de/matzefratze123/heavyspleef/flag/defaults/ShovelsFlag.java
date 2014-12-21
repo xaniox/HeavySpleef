@@ -16,6 +16,7 @@ import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
 @Flag(name = "shovels")
@@ -54,13 +55,13 @@ public abstract class ShovelsFlag extends BooleanFlag {
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();
 		
-		game.getPlayers().forEach(player -> {
+		for (SpleefPlayer player : game.getPlayers()) {
 			Player bukkitPlayer = player.getBukkitPlayer();
 			Inventory inv = bukkitPlayer.getInventory();
 			inv.addItem(shovelStack);
 			
 			bukkitPlayer.updateInventory();
-		});
+		}
 	}
 	
 }

@@ -11,9 +11,7 @@ public interface Floor {
 	
 	public CuboidClipboard getClipboard();
 	
-	public default boolean contains(Block block) {
-		return contains(block.getLocation());
-	}
+	public boolean contains(Block block);
 	
 	public boolean contains(Location location);
 	

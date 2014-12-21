@@ -68,7 +68,14 @@ public class ParsedMessage {
 	}
 	
 	public ParsedMessage setVariable(String name, String value) {
-		variables.stream().filter(var -> var.getName().equals(name)).forEach(var -> var.setValue(value));
+		for (MessageVariable var : variables) {
+			if (!var.getName().equals(name)) {
+				continue;
+			}
+			
+			var.setValue(value);
+		}
+		
 		return this;
 	}
 	
@@ -98,7 +105,7 @@ public class ParsedMessage {
 		
 	}
 	
-	private static class MessageVariable {
+	static class MessageVariable {
 		
 		private int startIndex;
 		private int endIndex;

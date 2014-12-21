@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.FutureCallback;
 
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage;
@@ -71,8 +72,9 @@ public final class HeavySpleef {
 		
 		this.moduleManager = new ModuleManager();
 		this.flagRegistry = new FlagRegistry(flagDir, plugin.getLogger());
-		this.i18n = new I18N(getConfiguration(ConfigType.DEFAULT_CONFIG), localeDir, logger);
-		this.gameManager = new GameManager();
+		
+		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
+		this.i18n = new I18N(defaultConfig, localeDir, logger);
 		this.playerManager = new PlayerManager(plugin);
 	}
 	
@@ -82,7 +84,9 @@ public final class HeavySpleef {
 			
 			@Override
 			public void onSuccess(List<Game> result) {
-				result.forEach(gameManager::addGame);
+				for (Game game : result) {
+					gameManager.addGame(game);
+				}
 			}
 			
 			@Override
@@ -90,6 +94,8 @@ public final class HeavySpleef {
 				logger.log(Level.SEVERE, "Could not load games from database", t);
 			}
 		});
+		
+		gameManager = new GameManager(databaseHandler);
 	}
 	
 	public void disable() {

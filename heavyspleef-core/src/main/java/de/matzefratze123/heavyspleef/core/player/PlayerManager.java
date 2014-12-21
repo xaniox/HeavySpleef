@@ -1,10 +1,8 @@
 package de.matzefratze123.heavyspleef.core.player;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,6 +13,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 
 public class PlayerManager implements Listener {
@@ -27,21 +26,46 @@ public class PlayerManager implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	
-	public SpleefPlayer getSpleefPlayer(Player bukkitPlayer) {
-		return getUniquePlayer(player -> player.getBukkitPlayer() == bukkitPlayer);
+	public SpleefPlayer getSpleefPlayer(final Player bukkitPlayer) {
+		return getUniquePlayer(new Predicate<SpleefPlayer>() {
+
+			@Override
+			public boolean apply(SpleefPlayer input) {
+				return input.getName().equalsIgnoreCase(bukkitPlayer.getName());
+			}
+		});
 	}
 	
-	public SpleefPlayer getSpleefPlayer(String name) {
-		return getUniquePlayer(player -> player.getName().equalsIgnoreCase(name));
+	public SpleefPlayer getSpleefPlayer(final String name) {
+		return getUniquePlayer(new Predicate<SpleefPlayer>() {
+
+			@Override
+			public boolean apply(SpleefPlayer input) {
+				return input.getName().equalsIgnoreCase(name);
+			}
+		});
 	}
 	
-	public SpleefPlayer getSpleefPlayer(UUID uuid) {
-		return getUniquePlayer(player -> player.getUniqueId().equals(uuid));
+	public SpleefPlayer getSpleefPlayer(final UUID uuid) {
+		return getUniquePlayer(new Predicate<SpleefPlayer>() {
+
+			@Override
+			public boolean apply(SpleefPlayer input) {
+				return input.getUniqueId().equals(uuid);
+			}
+		});
 	}
 	
 	private SpleefPlayer getUniquePlayer(Predicate<SpleefPlayer> predicate) {
-		Optional<SpleefPlayer> optional = onlineSpleefPlayers.stream().filter(predicate).findFirst();
-		return optional.isPresent() ? optional.get() : null;
+		for (SpleefPlayer player : onlineSpleefPlayers) {
+			if (!predicate.apply(player)) {
+				continue;
+			}
+			
+			return player;
+		}
+		
+		return null;
 	}
 	
 	public Set<SpleefPlayer> getSpleefPlayers() {

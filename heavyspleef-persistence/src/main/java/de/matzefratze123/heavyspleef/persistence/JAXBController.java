@@ -3,13 +3,11 @@ package de.matzefratze123.heavyspleef.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -97,6 +95,11 @@ public class JAXBController implements DatabaseController {
 	}
 	
 	@Override
+	public void update(Object object) {
+		update(object, null);
+	}
+	
+	@Override
 	public void update(Object object, Object cookie) {
 		Class<?> objectClass = object.getClass();
 		
@@ -128,6 +131,30 @@ public class JAXBController implements DatabaseController {
 			}
 		}
 	}
+	
+	@Override
+	public void update(Iterable<?> iterable) {
+		update(iterable, iterable);
+	}
+	
+	@Override
+	public void update(Iterable<?> iterable, Object cookie) {
+		for (Object obj : iterable) {
+			update(obj);
+		}
+	}
+	
+	@Override
+	public void update(Object[] objects) {
+		update(objects, null);
+	}
+	
+	@Override
+	public void update(Object[] objects, Object cookie) {
+		for (Object object : objects) {
+			update(object, cookie);
+		}
+	}
 
 	@Override
 	public List<Object> query(String key, Object value, Object cookie, String orderBy, int limit) {
@@ -141,7 +168,7 @@ public class JAXBController implements DatabaseController {
 			NamedNodeMap attributes = node.getAttributes();
 			Node idAttribute = attributes.getNamedItem(key);
 			
-			if (idAttribute == null || !idAttribute.getTextContent().equals(value.toString())) {
+			if (idAttribute == null || !idAttribute.getNodeValue().equals(value.toString())) {
 				continue;
 			}
 			
@@ -150,40 +177,57 @@ public class JAXBController implements DatabaseController {
 		}
 		
 		Unmarshaller unmarshaller;
-		List<Object> result;
+		List<Object> result = Lists.newArrayListWithCapacity(selectedNodes.size());
 		
 		try {
 			unmarshaller = context.createUnmarshaller();
 			
-			Function<? super Node, ? extends Object> mapFunction = node -> {
+			for (Node node : selectedNodes) {
+				Object object;
+				
 				try {
-					return unmarshaller.unmarshal(node);
+					object = unmarshaller.unmarshal(node);
 				} catch (JAXBException e) {
 					throw new RuntimeException(e);
 				}
-			};
+				
+				result.add(object);
+			}
 			
-			Stream<Object> objStream = selectedNodes.stream().map(mapFunction);
 			if (orderBy != null && !orderBy.isEmpty()) {
 				Validate.isTrue(cookie instanceof Class<?>, "Cannot sort result when no class cookie is given");
 				Class<?> objClass = (Class<?>) cookie;
 				
 				ObjectComparator comparator = new ObjectComparator(orderBy, objClass);
-				objStream = objStream.sorted(comparator);
+				Collections.sort(result, comparator);
 				
 				comparator.release();
 			}
 			
-			if (limit != NO_LIMIT) {
-				objStream = objStream.limit(limit);
+			if (limit != NO_LIMIT && limit <= result.size()) {
+				result = result.subList(0, limit);
 			}
-			
-			result = objStream.collect(Collectors.toList());
 		} catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public List<Object> query(String key, Object value, String orderBy, int limit) {
+		return query(key, value, null, orderBy, limit);
+	}
+	
+	@Override
+	public Object queryUnique(String key, Object value) {
+		return queryUnique(key, value, null);
+	}
+	
+	@Override
+	public Object queryUnique(String key, Object value, Object cookie) {
+		List<Object> result = query(key, value, cookie, null, 1);
+		return result.size() > 0 ? result.get(0) : null;
 	}
 	
 	@Override

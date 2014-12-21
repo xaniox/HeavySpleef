@@ -30,9 +30,13 @@ public class EventManager {
 	}
 	
 	public void callEvent(GameEvent event) {
-		registeredEventListeners.stream()
-			.filter(method -> method.getGameEventType() == event.getClass())
-			.forEach(method -> method.invoke(event));
+		for (EventListenerMethod method : registeredEventListeners) {
+			if (method.getGameEventType() != event.getClass()) {
+				continue;
+			}
+			
+			method.invoke(event);
+		}
 	}
 	
 	private void validateMethod(Method method) {

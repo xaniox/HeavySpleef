@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.Localization;
+import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage.MessageVariable;
 
 public class I18N {
 	
@@ -59,7 +61,8 @@ public class I18N {
 			logger.log(Level.SEVERE, "Illegal message \"" + message + "\"", e);
 			
 			//Return something to prevent expections
-			return new ParsedMessage(message, Sets.newHashSet());
+			Set<MessageVariable> emptySet = Sets.newHashSet();
+			return new ParsedMessage(message, emptySet);
 		}
 	}
 	

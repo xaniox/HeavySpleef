@@ -18,7 +18,9 @@ public class ModuleManager {
 	}
 	
 	public void disableModules() {
-		modules.forEach(Module::disable);
+		for (Module module : modules) {
+			module.disable();
+		}
 	}
 	
 }

@@ -236,7 +236,13 @@ public abstract class CommandManagerService implements CommandExecutor {
 	}
 	
 	private boolean isHelpArg(String arg) {
-		return Arrays.stream(HELP_IDENTIFIERS).anyMatch(arg::equalsIgnoreCase);
+		for (String identifier : HELP_IDENTIFIERS) {
+			if (identifier.equalsIgnoreCase(arg)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
  	
 }

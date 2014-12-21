@@ -3,6 +3,7 @@ package de.matzefratze123.heavyspleef.core.floor;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
@@ -42,6 +43,11 @@ public class SimpleCuboidFloor implements Floor {
 		return floorClipboard;
 	}
 
+	@Override
+	public boolean contains(Block block) {
+		return contains(block.getLocation());
+	}
+	
 	@Override
 	public boolean contains(Location location) {
 		Vector vector = BukkitUtil.toVector(location);

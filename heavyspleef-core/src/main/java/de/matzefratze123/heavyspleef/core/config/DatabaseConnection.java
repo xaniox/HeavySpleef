@@ -13,7 +13,9 @@ public class DatabaseConnection {
 		this.identifier = connectionSection.getName();
 		
 		/* Save all properties from the section */
-		connectionSection.getKeys(false).forEach(key -> properties.put(key, connectionSection.get(key)));
+		for (String key : connectionSection.getKeys(false)) {
+			properties.put(key, connectionSection.get(key));
+		}
 	}
 	
 	public String getIdentifier() {
@@ -25,7 +27,12 @@ public class DatabaseConnection {
 	}
 
 	public Object getOrDefault(Object key, Object defaultValue) {
-		return properties.getOrDefault(key, defaultValue);
+		Object value = properties.get(key);
+		if (value == null) {
+			value = defaultValue;
+		}
+		
+		return value;
 	}
 	
 }

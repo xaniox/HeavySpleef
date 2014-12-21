@@ -20,7 +20,7 @@ public class MoreFutures {
 	public static <T> void addBukkitSyncCallback(final Plugin plugin, ListenableFuture<T> future, final FutureCallback<T> callback) {
 		Futures.addCallback(future, new FutureCallback<T>() {
 			@Override
-			public void onFailure(Throwable cause) {
+			public void onFailure(final Throwable cause) {
 				Bukkit.getScheduler().runTask(plugin, new Runnable() {
 					
 					@Override
@@ -30,7 +30,7 @@ public class MoreFutures {
 				});
 			}
 			@Override
-			public void onSuccess(T result) {
+			public void onSuccess(final T result) {
 				Bukkit.getScheduler().runTask(plugin, new Runnable() {
 					
 					@Override

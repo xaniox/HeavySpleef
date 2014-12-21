@@ -33,73 +33,126 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 		ExecutorService plainService = Executors.newCachedThreadPool();
 		this.executorService = MoreExecutors.listeningDecorator(plainService);
 	}
+	
+	@Override
+	public void saveGames(final Iterable<Game> iterable, FutureCallback<Void> callback) {
+		runCallableThreadDynamic(new VoidCallable() {
+			
+			@Override
+			public void voidCall() throws Exception {
+				delegate.saveGames(iterable);
+			}
+		}, callback);
+	}
 
 	@Override
-	public void saveGames(Iterable<Game> iterable, FutureCallback<Void> callback) {
-		invokeVoidDelegate(callback, () -> delegate.saveGames(iterable));
+	public void saveGame(final Game game, FutureCallback<Void> callback) {
+		runCallableThreadDynamic(new VoidCallable() {
+			
+			@Override
+			public void voidCall() throws Exception {
+				delegate.saveGame(game);
+			}
+		}, callback);
 	}
-	
+
 	@Override
-	public void saveGame(Game game, FutureCallback<Void> callback) {
-		invokeVoidDelegate(callback, () -> delegate.saveGame(game));
+	public void getGame(final String name, FutureCallback<Game> callback) {
+		runCallableThreadDynamic(new Callable<Game>() {
+
+			@Override
+			public Game call() throws Exception {
+				return delegate.getGame(name);
+			}
+		}, callback);
 	}
-	
-	@Override
-	public void getGame(String name, FutureCallback<Game> callback) {
-		invokeDelegate(callback, () -> delegate.getGame(name));
-	}
-	
+
 	@Override
 	public void getGames(FutureCallback<List<Game>> callback) {
-		invokeDelegate(callback, delegate::getGames);
+		runCallableThreadDynamic(new Callable<List<Game>>() {
+
+			@Override
+			public List<Game> call() throws Exception {
+				return delegate.getGames();
+			}
+		}, callback);
 	}
-	
+
 	@Override
-	public void deleteGame(Game game, FutureCallback<Void> callback) {
-		invokeVoidDelegate(callback, () -> delegate.deleteGame(game));
+	public void deleteGame(final Game game, FutureCallback<Void> callback) {
+		runCallableThreadDynamic(new VoidCallable() {
+			
+			@Override
+			public void voidCall() throws Exception {
+				delegate.deleteGame(game);
+			}
+		}, callback);
 	}
-	
+
 	@Override
-	public void saveStatistics(Iterable<Statistic> statistics, FutureCallback<Void> callback) {
-		invokeVoidDelegate(callback, () -> delegate.saveStatistics(statistics));
+	public void saveStatistics(final Iterable<Statistic> statistics, FutureCallback<Void> callback) {
+		runCallableThreadDynamic(new VoidCallable() {
+			
+			@Override
+			public void voidCall() throws Exception {
+				delegate.saveStatistics(statistics);
+			}
+		}, callback);
 	}
-	
+
 	@Override
-	public void saveStatistic(Statistic statistic, FutureCallback<Void> callback) {
-		invokeVoidDelegate(callback, () -> delegate.saveStatistic(statistic));
+	public void saveStatistic(final Statistic statistic, FutureCallback<Void> callback) {
+		runCallableThreadDynamic(new VoidCallable() {
+			
+			@Override
+			public void voidCall() throws Exception {
+				delegate.saveStatistic(statistic);
+			}
+		}, callback);
 	}
-	
+
 	@Override
-	public void getStatistic(String player, FutureCallback<Statistic> callback) {
-		invokeDelegate(callback, () -> delegate.getStatistic(player));
+	public void getStatistic(final String player, FutureCallback<Statistic> callback) {
+		runCallableThreadDynamic(new Callable<Statistic>() {
+
+			@Override
+			public Statistic call() throws Exception {
+				return delegate.getStatistic(player);
+			}
+		}, callback);
 	}
-	
+
 	@Override
-	public void getTopStatistics(int limit, FutureCallback<TreeSet<Statistic>> callback) {
-		invokeDelegate(callback, () -> delegate.getTopStatistics(limit));
+	public void getTopStatistics(final int limit, FutureCallback<TreeSet<Statistic>> callback) {
+		runCallableThreadDynamic(new Callable<TreeSet<Statistic>>() {
+
+			@Override
+			public TreeSet<Statistic> call() throws Exception {
+				return delegate.getTopStatistics(limit);
+			}
+		}, callback);
 	}
 	
-	private <T> void invokeDelegate(FutureCallback<T> callback, Callable<T> callable) {
+	public <R> void runCallableThreadDynamic(Callable<R> callable, FutureCallback<R> callback) {
 		if (isServerThread() || forceAsync) {
-			ListenableFuture<T> future = executorService.submit(callable);
+			ListenableFuture<R> future = executorService.submit(callable);
 			
 			if (callback != null) {
 				MoreFutures.addBukkitSyncCallback(plugin, future, callback);
 			}
 		} else {
-			//This seems not to be the server thread so just execute it
-			Exception cause = null;
-			T result = null;
+			Throwable throwableThrown = null;
+			R result = null;
 			
 			try {
 				result = callable.call();
 			} catch (Exception e) {
-				cause = e;
+				throwableThrown = e;
 			}
 			
 			if (callback != null) {
-				if (cause != null) {
-					callback.onFailure(cause);
+				if (throwableThrown != null) {
+					callback.onFailure(throwableThrown);
 				} else {
 					callback.onSuccess(result);
 				}
@@ -107,24 +160,19 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 		}
 	}
 	
-	private void invokeVoidDelegate(FutureCallback<Void> callback, VoidCallable callable) {
-		invokeDelegate(callback, callable);
-	}
-	
 	private static boolean isServerThread() {
 		return Bukkit.isPrimaryThread();
 	}
 	
-	@FunctionalInterface
-	public interface VoidCallable extends Callable<Void> {
+	public abstract class VoidCallable implements Callable<Void> {
 		
 		@Override
-		public default Void call() throws Exception {
+		public Void call() throws Exception {
 			voidCall();
 			return (Void) null;
 		}
 		
-		public void voidCall();
+		public abstract void voidCall() throws Exception;
 		
 	}
 	

@@ -2,24 +2,27 @@ package de.matzefratze123.heavyspleef.core;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Maps;
 
+import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 @XmlRootElement(name = "games")
 public class GameManager {
 
+	@XmlTransient
+	private AsyncReadWriteHandler databaseHandler;
 	private Map<String, Game> games;
 	
-	public GameManager() {
-		games = Maps.newHashMap();
+	public GameManager(AsyncReadWriteHandler databaseHandler) {
+		this.databaseHandler = databaseHandler;
+		this.games = Maps.newHashMap();
 	}
 	
 	public void addGame(Game game) {
@@ -30,7 +33,10 @@ public class GameManager {
 	}
 	
 	public Game deleteGame(String name) {
-		return games.remove(name);
+		Game game = games.remove(name);
+		
+		databaseHandler.deleteGame(game, null);
+		return game;
 	}
 	
 	public boolean hasGame(String name) {
@@ -42,16 +48,17 @@ public class GameManager {
 	}
 	
 	public Game getGame(SpleefPlayer player) {
-		Optional<Game> optional = games.values().stream().filter(game -> game.getPlayers().contains(player)).findFirst();
-		return optional.isPresent() ? optional.get() : null;
+		for (Game game : games.values()) {
+			if (game.getPlayers().contains(player)) {
+				return game;
+			}
+		}
+		
+		return null;
 	}
 	
 	public Collection<Game> getGames() {
 		return games.values();
-	}
-	
-	public void forEach(Consumer<? super Game> action) {
-		games.values().forEach(action);
 	}
 	
 }

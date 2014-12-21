@@ -2,7 +2,6 @@ package de.matzefratze123.heavyspleef.persistence;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -10,20 +9,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-
 
 import org.apache.commons.lang.Validate;
 import org.dom4j.DocumentException;
 
-
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -122,7 +116,9 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	public void saveGames(Iterable<Game> iterable) {
 		gameDatabaseController.update(iterable, Game.class);
 		
-		iterable.forEach(this::writeFloors);
+		for (Game game : iterable) {
+			writeFloors(game);
+		}
 	}
 
 	@Override
@@ -135,7 +131,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	private void writeFloors(Game game) {
 		final FloorSchematicCodec codec = FloorSchematicCodec.getInstance();
 		
-		game.getFloors().forEach(floor -> {
+		for (Floor floor : game.getFloors()) {
 			FloorEntry entry = new FloorEntry(game.getName(), floor);
 			
 			File schematicDir = new File(dataFolder, "persistent/floor-schematics/" + game.getName());
@@ -152,7 +148,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, "Could not save floor schematic " + floor.getName(), e);
 			}
-		});
+		}
 	}
 
 	@Override
@@ -166,13 +162,18 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	
 	@Override
 	public List<Game> getGames() {
-		List<Game> games = gameDatabaseController.query(null, null, Game.class, null, DatabaseController.NO_LIMIT)
-				.stream()
-				.filter(o -> o instanceof Game)
-				.map(o -> ((Game)o))
-				.collect(Collectors.toList());
-		
-		games.forEach(this::loadAndInjectFloors);
+		List<?> queryResult = gameDatabaseController.query(null, null, Game.class, null, DatabaseController.NO_LIMIT);
+		List<Game> games = Lists.newArrayList();
+		for (Object resultObj : queryResult) {
+			if (!(resultObj instanceof Game)) {
+				continue;
+			}
+			
+			Game game = (Game) resultObj;
+			games.add(game);
+			
+			loadAndInjectFloors(game);
+		}
 		
 		return games;
 	}
@@ -187,16 +188,16 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		File[] childs = schematicDir.listFiles(FloorSchematicCodec.FILENAME_FILTER);
 		
 		final FloorSchematicCodec codec = FloorSchematicCodec.getInstance();
-		Arrays.stream(childs).forEach(child -> {
+		for (File child : childs) {
 			try {
 				FloorEntry entry = codec.load(child);
 				
 				Floor floor = entry.getFloor();
 				game.addFloor(floor);
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Could not load back floor schematic file " + child.getPath(), e);
+				logger.log(Level.SEVERE, "Could not load floor schematic file " + child.getPath(), e);
 			}
-		});
+		}
 	}
 
 	@Override
@@ -232,8 +233,16 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	public TreeSet<Statistic> getTopStatistics(int limit) {
 		validateStatisticDatabaseSetup();
 		
-		List<? extends Object> result = statisticDatabaseController.query(null, null, Statistic.class, Statistic.RATING_ATTRIBUTE, limit);
-		TreeSet<Statistic> statistics = result.stream().filter(obj -> obj instanceof Statistic).map(obj -> (Statistic)obj).collect(Collectors.toCollection(TreeSet::new));
+		List<?> result = statisticDatabaseController.query(null, null, Statistic.class, Statistic.RATING_ATTRIBUTE, limit);
+		TreeSet<Statistic> statistics = Sets.newTreeSet();
+		for (Object statisticObj : result) {
+			if (!(statisticObj instanceof Statistic)) {
+				continue;
+			}
+			
+			Statistic statistic = (Statistic) statisticObj;
+			statistics.add(statistic);
+		}
 		
 		return statistics;
 	}

@@ -2,8 +2,8 @@ package de.matzefratze123.heavyspleef.core;
 
 import java.lang.reflect.Method;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
@@ -55,12 +55,16 @@ public class FlagManager {
 			return;
 		}
 		
-		flags.remove(name);
+		AbstractFlag<?> flag = flags.remove(name);
 		
-		AbstractFlag<?> flag = flags.get(name);
-		Optional<GamePropertyBundle> optional = propertyBundles.stream().filter(bundle -> bundle.getRelatingFlag() != null && bundle.getRelatingFlag() == flag).findFirst();
-		if (optional.isPresent()) {
-			propertyBundles.remove(optional.get());
+		Iterator<GamePropertyBundle> iterator = propertyBundles.iterator();
+		while (iterator.hasNext()) {
+			GamePropertyBundle bundle = iterator.next();
+			if (bundle.getRelatingFlag() == null || bundle.getRelatingFlag() != flag) {
+				continue;
+			}
+			
+			iterator.remove();
 		}
 	}
 	
@@ -88,16 +92,20 @@ public class FlagManager {
 	}
 	
 	private DefaultGamePropertyBundle getDefaultBundle() {
-		Optional<GamePropertyBundle> optional = propertyBundles.stream().filter(bundle -> bundle instanceof DefaultGamePropertyBundle).findFirst();
-		DefaultGamePropertyBundle bundle;
-		if (optional.isPresent()) {
-			bundle = (DefaultGamePropertyBundle) optional.get();
-		} else {
-			Map<GameProperty, Object> requestedProperties = new EnumMap<GameProperty, Object>(GameProperty.class);
-			bundle = new DefaultGamePropertyBundle(requestedProperties);
+		DefaultGamePropertyBundle defaultBundle = null;
+		for (GamePropertyBundle bundle : propertyBundles) {
+			if (bundle instanceof DefaultGamePropertyBundle) {
+				defaultBundle = (DefaultGamePropertyBundle) bundle;
+				break;
+			}
 		}
 		
-		return bundle;
+		if (defaultBundle == null) {
+			Map<GameProperty, Object> requestedProperties = new EnumMap<GameProperty, Object>(GameProperty.class);
+			defaultBundle = new DefaultGamePropertyBundle(requestedProperties);
+		}
+		
+		return defaultBundle;
 	}
 	
 	private static class GamePropertyBundle extends ForwardingMap<GameProperty, Object> implements Comparable<GamePropertyBundle> {

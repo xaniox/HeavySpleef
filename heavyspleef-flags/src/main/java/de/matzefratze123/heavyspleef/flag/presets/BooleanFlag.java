@@ -14,9 +14,14 @@ public abstract class BooleanFlag extends AbstractFlag<Boolean> {
 	
 	@Override
 	public Boolean parseInput(Player player, String input) {
-		boolean isTrue = TRUE_MATCHING_KEYWORDS.stream().anyMatch(input::equals);
+		boolean bool = false;
+		for (String keyword : TRUE_MATCHING_KEYWORDS) {
+			if (keyword.equals(input)) {
+				bool = true;
+			}
+		}
 		
-		return Boolean.valueOf(isTrue);
+		return Boolean.valueOf(bool);
 	}
 	
 }

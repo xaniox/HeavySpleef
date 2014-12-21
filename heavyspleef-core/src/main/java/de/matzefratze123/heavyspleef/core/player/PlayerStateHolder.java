@@ -1,10 +1,8 @@
 package de.matzefratze123.heavyspleef.core.player;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -13,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+
+import com.google.common.collect.Lists;
 
 public class PlayerStateHolder {
 	
@@ -65,8 +65,16 @@ public class PlayerStateHolder {
 		stateHolder.setFallDistance(player.getFallDistance());
 		stateHolder.setFireTicks(player.getFireTicks());
 		
-		List<WeakReference<Player>> cantSee = Arrays.stream(Bukkit.getOnlinePlayers()).filter(p -> !player.canSee(p))
-				.map(p -> new WeakReference<Player>(p)).collect(Collectors.toList());
+		List<WeakReference<Player>> cantSee = Lists.newArrayList();
+		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+			if (player.canSee(onlinePlayer)) {
+				continue;
+			}
+			
+			WeakReference<Player> ref = new WeakReference<Player>(onlinePlayer);
+			cantSee.add(ref);
+		}
+		
 		stateHolder.setCantSee(cantSee);
 		
 		return stateHolder;
@@ -99,7 +107,13 @@ public class PlayerStateHolder {
 		player.setFallDistance(0);
 		player.setFireTicks(0);
 		
-		Arrays.stream(Bukkit.getOnlinePlayers()).filter(p -> !player.canSee(p)).forEach(player::showPlayer);
+		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+			if (player.canSee(player)) {
+				continue;
+			}
+			
+			player.showPlayer(onlinePlayer);
+		}
 	}
 	
 	public void apply(Player player) {
@@ -140,7 +154,20 @@ public class PlayerStateHolder {
 			player.teleport(location);
 		}
 		
-		cantSee.stream().filter(ref -> ref.get() != null).map(WeakReference::get).filter(Player::isOnline).forEach(player::hidePlayer);
+		for (WeakReference<Player> ref : cantSee) {
+			Player cantSeePlayer = ref.get();
+			
+			if (cantSeePlayer == null) {
+				// Player object has been garbage-collected
+				continue;
+			}
+			
+			if (!cantSeePlayer.isOnline()) {
+				continue;
+			}
+			
+			player.hidePlayer(cantSeePlayer);
+		}
 	}
 	
 	public ItemStack[] getInventory() {

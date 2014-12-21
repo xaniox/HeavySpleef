@@ -76,7 +76,9 @@ public class Game {
 		eventManager.callEvent(event);
 		
 		// Regenerate all floors
-		floors.values().forEach(Floor::regenerate);
+		for (Floor floor : floors.values()) {
+			floor.regenerate();
+		}
 		
 		List<Location> spawnLocations = event.getSpawnLocations();
 		if (spawnLocations == null) {
@@ -98,9 +100,7 @@ public class Game {
 		state = GameState.STARTING;
 		
 		if (countdownEnabled && countdownLength > 0) {
-			BasicTask task = new CountdownRunnable(heavySpleef.getPlugin(), countdownLength, this::start,
-					() -> broadcast(heavySpleef.getMessage(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)));
-			
+			BasicTask task = new CountdownRunnable(heavySpleef, countdownLength, this);
 			task.start();
 		} else {
 			//Countdown is not enabled so just start the game
@@ -132,7 +132,9 @@ public class Game {
 			//Create a copy of current ingame players to prevent
 			//a ConcurrentModificationException
 			Set<SpleefPlayer> ingamePlayersCopy = Sets.newHashSet(ingamePlayers);
-			ingamePlayersCopy.forEach(this::leave);
+			for (SpleefPlayer player : ingamePlayersCopy) {
+				leave(player);
+			}
 		}
 		
 		state = GameState.DISABLED;
@@ -338,7 +340,9 @@ public class Game {
 			Bukkit.broadcastMessage(PREFIX + message);
 			break;
 		case INGAME:
-			ingamePlayers.forEach(player -> player.sendMessage(message));
+			for (SpleefPlayer player : ingamePlayers) {
+				player.sendMessage(message);
+			}
 			break;
 		default:
 			break;

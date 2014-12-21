@@ -16,7 +16,13 @@ import com.google.common.collect.Maps;
 
 public class FlagRegistry {
 	
-	private static final FilenameFilter CLASS_FILE_FILTER = (dir, name) -> name.toLowerCase().endsWith(".class");
+	private static final FilenameFilter CLASS_FILE_FILTER = new FilenameFilter() {
+		
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.toLowerCase().endsWith(".class");
+		}
+	};
 	
 	private File customFlagFolder;
 	private Logger logger;
