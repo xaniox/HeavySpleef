@@ -25,7 +25,7 @@ public class CountdownRunnable extends SimpleBasicTask {
 			game.start();
 			cancel();
 		} else if (remaining % 10 != 0 || remaining <= 5) {
-			game.broadcast(heavySpleef.getVarMessage(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
+			game.broadcast(BroadcastTarget.INGAME, heavySpleef.getVarMessage(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
 					.setVariable("remaining", String.valueOf(remaining))
 					.toString());
 		}
