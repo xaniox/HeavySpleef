@@ -2,6 +2,7 @@ package de.matzefratze123.heavyspleef.core;
 
 import static de.matzefratze123.heavyspleef.core.HeavySpleef.PREFIX;
 
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +87,7 @@ public class Game {
 		this.name = name;
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.state = GameState.WAITING;
-		this.flagManager = new FlagManager();
+		this.flagManager = new FlagManager(heavySpleef.getPlugin());
 		
 		//Concurrent map for database schematic
 		this.floors = new ConcurrentHashMap<String, Floor>();

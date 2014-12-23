@@ -17,6 +17,8 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	public abstract boolean hasGameProperties();
 	
+	public abstract boolean hasBukkitListenerMethods();
+	
 	public abstract void getDescription(List<String> description);
 	
 	public abstract T parseInput(Player player, String input) throws InputParseException;

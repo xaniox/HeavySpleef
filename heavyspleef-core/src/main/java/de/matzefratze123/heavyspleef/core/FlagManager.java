@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.Maps;
@@ -19,12 +22,14 @@ import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
 
 public class FlagManager {
 	
+	private final JavaPlugin plugin;
 	private Map<String, AbstractFlag<?>> flags;
 	private Set<GamePropertyBundle> propertyBundles;
 	
-	public FlagManager() {
-		flags = Maps.newLinkedHashMap();
-		propertyBundles = Sets.newTreeSet();
+	public FlagManager(JavaPlugin plugin) {
+		this.plugin = plugin;
+		this.flags = Maps.newLinkedHashMap();
+		this.propertyBundles = Sets.newTreeSet();
 	}
 	
 	public void addFlag(AbstractFlag<?> flag) {
@@ -41,6 +46,10 @@ public class FlagManager {
 		
 		flags.put(name, flag);
 		
+		if (flag.hasBukkitListenerMethods()) {
+			Bukkit.getPluginManager().registerEvents(flag, plugin);
+		}
+		
 		Map<GameProperty, Object> flagGamePropertiesMap = new EnumMap<GameProperty, Object>(GameProperty.class);
 		flag.defineGameProperties(flagGamePropertiesMap);
 		
@@ -56,6 +65,9 @@ public class FlagManager {
 		}
 		
 		AbstractFlag<?> flag = flags.remove(name);
+		if (flag.hasBukkitListenerMethods()) {
+			HandlerList.unregisterAll(flag);
+		}
 		
 		Iterator<GamePropertyBundle> iterator = propertyBundles.iterator();
 		while (iterator.hasNext()) {
