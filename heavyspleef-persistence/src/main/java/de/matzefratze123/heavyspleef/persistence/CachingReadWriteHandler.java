@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.dom4j.DocumentException;
 
 import com.google.common.cache.Cache;
@@ -26,6 +28,8 @@ import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.schematic.FloorSchematicCodec;
 import de.matzefratze123.heavyspleef.core.floor.schematic.FloorSchematicCodec.FloorEntry;
+import de.matzefratze123.heavyspleef.core.uuid.GameProfile;
+import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 
 public class CachingReadWriteHandler implements ReadWriteHandler {
 	
@@ -39,6 +43,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	
 	private final File dataFolder;
 	private final Logger logger;
+	private final UUIDManager uuidManager = new UUIDManager();
 	
 	private DatabaseController gameDatabaseController;
 	private DatabaseController statisticDatabaseController;
@@ -215,6 +220,22 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		gameDatabaseController.update(statistic, Statistic.class);
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public Statistic getStatistic(String playerName) {
+		GameProfile profile;
+		
+		try {
+			profile = uuidManager.getProfile(playerName);
+		} catch (ExecutionException e) {
+			logger.log(Level.SEVERE, "Could not receive player uuid from mojang api, using OfflinePlayer#getUniqueId()", e);
+			OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
+			profile = new GameProfile(player.getUniqueId(), player.getName());
+		}
+		
+		return getStatistic(profile.getUniqueIdentifier());
+	}
+	
 	@Override
 	public Statistic getStatistic(UUID uuid) {
 		validateStatisticDatabaseSetup();

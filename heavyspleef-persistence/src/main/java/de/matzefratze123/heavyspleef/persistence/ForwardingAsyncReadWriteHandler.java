@@ -111,6 +111,17 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 			}
 		}, callback);
 	}
+	
+	@Override
+	public void getStatistic(final String player, FutureCallback<Statistic> callback) {
+		runCallableThreadDynamic(new Callable<Statistic>() {
+
+			@Override
+			public Statistic call() throws Exception {
+				return delegate.getStatistic(player);
+			}
+		}, callback);
+	}
 
 	@Override
 	public void getStatistic(final UUID uuid, FutureCallback<Statistic> callback) {

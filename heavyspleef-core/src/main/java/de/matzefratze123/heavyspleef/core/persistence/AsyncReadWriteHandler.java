@@ -25,6 +25,8 @@ public interface AsyncReadWriteHandler {
 	
 	public void saveStatistic(Statistic statistic, FutureCallback<Void> callback);
 	
+	public void getStatistic(String player, FutureCallback<Statistic> callback);
+	
 	public void getStatistic(UUID uuid, FutureCallback<Statistic> callback);
 	
 	public void getTopStatistics(int limit, FutureCallback<TreeSet<Statistic>> callback);
