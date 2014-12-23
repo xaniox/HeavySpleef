@@ -34,7 +34,8 @@ public interface Messages {
 		public static final String PREFIX = "broadcast.";
 		
 		public static final String PLAYER_LEFT_GAME = PREFIX + "player-left-game"; // $[player]
-		public static final String GAME_STARTED = PREFIX + PREFIX + "game-started";
+		public static final String GAME_STARTED = PREFIX + "game-started";
+		public static final String GAME_STOPPED = PREFIX + "game-stopped";
 		public static final String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message";
 		public static final String PLAYER_JOINED_GAME = PREFIX + "player-joined-game"; // $[player]
 		
