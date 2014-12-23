@@ -9,13 +9,25 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.google.common.collect.Sets;
 
@@ -23,7 +35,11 @@ import de.matzefratze123.heavyspleef.core.event.EventManager;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
+import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
@@ -41,14 +57,21 @@ public class Game {
 
 	public static final String NAME_ATTRIBUTE = "name";
 	
+	@Transient
 	@XmlTransient
 	private HeavySpleef heavySpleef;
+	@Transient
 	@XmlTransient
 	private EventManager eventManager;
+	@Transient
 	@XmlTransient
 	private Set<SpleefPlayer> ingamePlayers;
+	@Transient
+	@XmlTransient
+	private Map<SpleefPlayer, Set<Block>> blocksBroken; 
 	
 	@XmlAttribute
+	@Id
 	private String name;
 	private FlagManager flagManager;
 	private GameState state;
@@ -117,7 +140,21 @@ public class Game {
 	}
 	
 	public void stop() {
+		GameEndEvent event = new GameEndEvent(this);
+		eventManager.callEvent(event);
 		
+		//Create a copy of current ingame players to prevent
+		//a ConcurrentModificationException
+		Set<SpleefPlayer> ingamePlayersCopy = Sets.newHashSet(ingamePlayers);
+		for (SpleefPlayer player : ingamePlayersCopy) {
+			leave(player, QuitCause.STOP);
+		}
+		
+		for (Floor floor : floors.values()) {
+			floor.regenerate();
+		}
+		
+		broadcast(heavySpleef.getMessage(Messages.Broadcast.GAME_STOPPED));
 	}
 	
 	public void disable() {
@@ -327,6 +364,11 @@ public class Game {
 		return state;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T> T getPropertyValue(GameProperty property) {
+		return (T) flagManager.getProperty(property);
+	}
+	
 	public void broadcast(String message) {
 		broadcast(BroadcastTarget.AROUND_GAME, message);
 	}
@@ -353,10 +395,111 @@ public class Game {
 		return ingamePlayers;
 	}
 	
+	/* Event hooks */
+	@SuppressWarnings("deprecation")
+	public void onPlayerInteract(PlayerInteractEvent event, SpleefPlayer player) {
+		Action action = event.getAction();
+		boolean isInstantBreak = getPropertyValue(GameProperty.INSTANT_BREAK);
+		boolean playBreakEffect = getPropertyValue(GameProperty.PLAY_BLOCK_BREAK);
+		
+		PlayerInteractGameEvent spleefEvent = new PlayerInteractGameEvent(this, player);
+		eventManager.callEvent(spleefEvent);
+		
+		if (spleefEvent.isCancelled()) {
+			event.setCancelled(true);
+			return;
+		}
+		
+		if (action == Action.LEFT_CLICK_BLOCK && isInstantBreak) {
+			Block block = event.getClickedBlock();
+			boolean breakBlock = false;
+			
+			for (Floor floor : floors.values()) {
+				if (floor.contains(block)) {
+					breakBlock = true;
+					break;
+				}
+			}
+			
+			if (breakBlock) {
+				Material blockMaterial = block.getType();
+				block.setType(Material.AIR);
+				
+				if (playBreakEffect) {
+					block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, blockMaterial.getId());
+				}
+			}
+		}
+		
+		//TODO: Add block break to player stats (also below)
+	}
+	
+	public void onPlayerBreakBlock(BlockBreakEvent event, SpleefPlayer player) {
+		PlayerBlockBreakEvent spleefEvent = new PlayerBlockBreakEvent(this, player, event.getBlock());
+		eventManager.callEvent(spleefEvent);
+		
+		if (spleefEvent.isCancelled()) {
+			event.setCancelled(true);
+			return;
+		}
+		
+		boolean onFloor = false;
+		for (Floor floor : floors.values()) {
+			if (floor.contains(event.getBlock())) {
+				onFloor = true;
+				break;
+			}
+		}
+		
+		boolean disableBuild = getPropertyValue(GameProperty.DISABLE_BUILD);
+		
+		if (!onFloor && disableBuild) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onPlayerPlaceBlock(BlockPlaceEvent event, SpleefPlayer player) {
+		PlayerBlockPlaceEvent spleefEvent = new PlayerBlockPlaceEvent(this, player, event.getBlock());
+		eventManager.callEvent(spleefEvent);
+		
+		if (spleefEvent.isCancelled()) {
+			event.setCancelled(true);
+			return;
+		}
+		
+		boolean disableBuild = getPropertyValue(GameProperty.DISABLE_BUILD);
+		
+		if (disableBuild) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onPlayerPickupItem(PlayerPickupItemEvent event, SpleefPlayer player) {
+		boolean disablePickup = getPropertyValue(GameProperty.DISABLE_ITEM_PICKUP);
+		if (disablePickup) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onPlayerDropItem(PlayerDropItemEvent event, SpleefPlayer player) {
+		boolean disableDrop = getPropertyValue(GameProperty.DISABLE_ITEM_DROP);
+		if (disableDrop) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onPlayerFoodLevelChange(FoodLevelChangeEvent event, SpleefPlayer player) {
+		boolean noHunger = getPropertyValue(GameProperty.DISABLE_HUNDER);
+		if (noHunger) {
+			event.setCancelled(true);
+		}
+	}
+	
 	private enum QuitCause {
 		
 		SELF,
-		KICK;
+		KICK,
+		STOP;
 		
 	}
 
