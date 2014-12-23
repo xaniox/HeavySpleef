@@ -3,14 +3,15 @@ package de.matzefratze123.heavyspleef.core.event;
 import org.bukkit.block.Block;
 
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-public class PlayerBlockBreakEvent extends GameEvent implements Cancellable {
+public class PlayerBlockBreakEvent extends PlayerGameEvent implements Cancellable {
 
 	private boolean cancel;
 	private Block block;
 	
-	public PlayerBlockBreakEvent(Game game, Block block) {
-		super(game);
+	public PlayerBlockBreakEvent(Game game, SpleefPlayer player, Block block) {
+		super(game, player);
 		
 		this.block = block;
 	}
