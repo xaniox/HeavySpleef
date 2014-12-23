@@ -30,6 +30,7 @@ public class GameManager {
 		Validate.isTrue(!games.containsKey(name));
 		
 		games.put(game.getName(), game);
+		databaseHandler.saveGame(game, null);
 	}
 	
 	public Game deleteGame(String name) {
