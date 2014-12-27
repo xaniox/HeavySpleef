@@ -10,7 +10,8 @@ public enum GameProperty {
 	SUPPRESS_ENTITY_SPAWNING(true),
 	DISABLE_ITEM_PICKUP(true),
 	DISABLE_ITEM_DROP(true),
-	DISABLE_BUILD(true);
+	DISABLE_BUILD(true),
+	USE_LIQUID_DEATHZONE(true);
 	
 	private Object defaultValue;
 	

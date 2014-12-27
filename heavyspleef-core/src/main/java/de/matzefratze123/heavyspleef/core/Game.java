@@ -2,8 +2,8 @@ package de.matzefratze123.heavyspleef.core;
 
 import static de.matzefratze123.heavyspleef.core.HeavySpleef.PREFIX;
 
-import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +30,11 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.sk89q.worldedit.regions.CuboidRegion;
 
 import de.matzefratze123.heavyspleef.core.event.EventManager;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
@@ -69,7 +73,7 @@ public class Game {
 	private Set<SpleefPlayer> ingamePlayers;
 	@Transient
 	@XmlTransient
-	private Map<SpleefPlayer, Set<Block>> blocksBroken; 
+	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	
 	@XmlAttribute
 	@Id
@@ -77,6 +81,7 @@ public class Game {
 	private FlagManager flagManager;
 	private GameState state;
 	private Map<String, Floor> floors;
+	private Set<CuboidRegion> deathzones;
 	
 	/* Empty constructor for JAXB and Avaje */
 	@SuppressWarnings("unused")
@@ -88,6 +93,8 @@ public class Game {
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.state = GameState.WAITING;
 		this.flagManager = new FlagManager(heavySpleef.getPlugin());
+		this.deathzones = Sets.newLinkedHashSet();
+		this.blocksBroken = HashBiMap.create();
 		
 		//Concurrent map for database schematic
 		this.floors = new ConcurrentHashMap<String, Floor>();
@@ -298,6 +305,10 @@ public class Game {
 		case SELF:
 			player.sendMessage(heavySpleef.getMessage(Messages.Player.PLAYER_LEAVE));
 			break;
+		case STOP:
+			break;
+		case LOSE:
+			break;
 		default:
 			break;
 		}
@@ -306,7 +317,7 @@ public class Game {
 	}
 	
 	public void requestLose(SpleefPlayer player) {
-		
+		leave(player, QuitCause.LOSE);
 	}
 	
 	public void requestWin(SpleefPlayer player) {
@@ -357,6 +368,18 @@ public class Game {
 		return floors.values();
 	}
 	
+	public void addDeathzone(CuboidRegion region) {
+		deathzones.add(region);
+	}
+	
+	public boolean removeDeathzone(CuboidRegion region) {
+		return deathzones.remove(region);
+	}
+	
+	public Set<CuboidRegion> getDeathzones() {
+		return deathzones;
+	}
+	
 	public void setGameState(GameState state) {
 		this.state = state;
 	}
@@ -368,6 +391,10 @@ public class Game {
 	@SuppressWarnings("unchecked")
 	public <T> T getPropertyValue(GameProperty property) {
 		return (T) flagManager.getProperty(property);
+	}
+	
+	public BiMap<SpleefPlayer, Set<Block>> getBlocksBroken() {
+		return Maps.unmodifiableBiMap(blocksBroken);
 	}
 	
 	public void broadcast(String message) {
@@ -500,7 +527,8 @@ public class Game {
 		
 		SELF,
 		KICK,
-		STOP;
+		STOP,
+		LOSE;
 		
 	}
 
