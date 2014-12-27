@@ -256,7 +256,7 @@ public class Game {
 		eventManager.callEvent(event);
 		
 		if (event.getTeleportationLocation() == null) {
-			//TODO: Send a message to the player?
+			player.sendMessage(heavySpleef.getMessage(Messages.Player.ERROR_NO_LOBBY_POINT_SET));
 			return;
 		}
 		

@@ -53,6 +53,7 @@ public interface Messages {
 		public static final String PLAYER_WIN = PREFIX + "player-win";
 		public static final String GAME_STOPPED = PREFIX + "game-stopped";
 		public static final String ERROR_ON_INVENTORY_LOAD = PREFIX + "error-on-inventory-load";
+		public static final String ERROR_NO_LOBBY_POINT_SET = PREFIX + "error-no-lobby-point-set";
 		
 	}
 	
