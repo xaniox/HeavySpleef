@@ -38,6 +38,8 @@ public interface Messages {
 		public static final String GAME_STOPPED = PREFIX + "game-stopped";
 		public static final String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message";
 		public static final String PLAYER_JOINED_GAME = PREFIX + "player-joined-game"; // $[player]
+		public static final String PLAYER_LOST_GAME = PREFIX + "player-lost-game"; // $[player]; $[killer]
+		public static final String PLAYER_WON_GAME = PREFIX + "player-won-game"; // $[player]
 		
 	}
 	
@@ -47,6 +49,10 @@ public interface Messages {
 		
 		public static final String PLAYER_LEAVE = PREFIX + "player-leave";
 		public static final String PLAYER_KICK = PREFIX + "player-kick"; // $[kicker]; $[message]
+		public static final String PLAYER_LOSE = PREFIX + "player-lose";
+		public static final String PLAYER_WIN = PREFIX + "player-win";
+		public static final String GAME_STOPPED = PREFIX + "game-stopped";
+		public static final String ERROR_ON_INVENTORY_LOAD = PREFIX + "error-on-inventory-load";
 		
 	}
 	
