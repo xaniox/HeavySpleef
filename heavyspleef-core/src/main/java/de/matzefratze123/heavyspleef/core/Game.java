@@ -3,7 +3,6 @@ package de.matzefratze123.heavyspleef.core;
 import static de.matzefratze123.heavyspleef.core.HeavySpleef.PREFIX;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -393,6 +392,16 @@ public class Game {
 		return (T) flagManager.getProperty(property);
 	}
 	
+	private void addBlockBroken(SpleefPlayer player, Block brokenBlock) {
+		Set<Block> set = blocksBroken.get(player);
+		if (set == null) {
+			set = Sets.newHashSet();
+			blocksBroken.put(player, set);
+		}
+		
+		set.add(brokenBlock);
+	}
+	
 	public BiMap<SpleefPlayer, Set<Block>> getBlocksBroken() {
 		return Maps.unmodifiableBiMap(blocksBroken);
 	}
@@ -456,15 +465,17 @@ public class Game {
 				if (playBreakEffect) {
 					block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, blockMaterial.getId());
 				}
+				
+				addBlockBroken(player, block);
 			}
 		}
-		
-		//TODO: Add block break to player stats (also below)
 	}
 	
 	public void onPlayerBreakBlock(BlockBreakEvent event, SpleefPlayer player) {
 		PlayerBlockBreakEvent spleefEvent = new PlayerBlockBreakEvent(this, player, event.getBlock());
 		eventManager.callEvent(spleefEvent);
+		
+		Block block = event.getBlock();
 		
 		if (spleefEvent.isCancelled()) {
 			event.setCancelled(true);
@@ -473,7 +484,7 @@ public class Game {
 		
 		boolean onFloor = false;
 		for (Floor floor : floors.values()) {
-			if (floor.contains(event.getBlock())) {
+			if (floor.contains(block)) {
 				onFloor = true;
 				break;
 			}
@@ -483,6 +494,8 @@ public class Game {
 		
 		if (!onFloor && disableBuild) {
 			event.setCancelled(true);
+		} else {
+			addBlockBroken(player, block);
 		}
 	}
 	
