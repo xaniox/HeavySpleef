@@ -2,7 +2,16 @@
 
 default-game-properties:
   instant-break: true
+  play-block-break: true
   join-on-countdown: true
+  disable-hunger: true
+  disable-pvp: true
+  disable-damage: true
+  disable-item-pickup: true
+  disable-item-drop: true
+  disable-build: true
+  use-liquid-deathzone: true
+  broadcast-radius: 30
   
 localization:
   locale: en

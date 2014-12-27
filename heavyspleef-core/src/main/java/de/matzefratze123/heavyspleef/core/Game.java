@@ -3,6 +3,7 @@ package de.matzefratze123.heavyspleef.core;
 import static de.matzefratze123.heavyspleef.core.HeavySpleef.PREFIX;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,15 +17,21 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -33,6 +40,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 
 import de.matzefratze123.heavyspleef.core.event.EventManager;
@@ -47,6 +56,8 @@ import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -73,6 +84,9 @@ public class Game {
 	@Transient
 	@XmlTransient
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
+	@Transient
+	@XmlTransient
+	private KillDetector killDetector;
 	
 	@XmlAttribute
 	@Id
@@ -94,6 +108,7 @@ public class Game {
 		this.flagManager = new FlagManager(heavySpleef.getPlugin());
 		this.deathzones = Sets.newLinkedHashSet();
 		this.blocksBroken = HashBiMap.create();
+		this.killDetector = new DefaultKillDetector();
 		
 		//Concurrent map for database schematic
 		this.floors = new ConcurrentHashMap<String, Floor>();
@@ -270,12 +285,17 @@ public class Game {
 			playerState.apply(player.getBukkitPlayer(), true);
 		} else {
 			//Ugh, something went wrong
-			//TODO: Inform the player
+			player.sendMessage(heavySpleef.getMessage(Messages.Player.ERROR_ON_INVENTORY_LOAD));
 		}
 		
 		if (ingamePlayers.size() == 0 && state == GameState.LOBBY) {
 			setGameState(GameState.WAITING);
 		}
+		
+		String broadcastMessage = heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_LEFT_GAME)
+				.setVariable("player", player.getName())
+				.toString();
+		String playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_LEAVE);
 		
 		switch (cause) {
 		case KICK:
@@ -294,33 +314,70 @@ public class Game {
 				message = (String) args[1];
 			}
 			
-			String finalMessage = heavySpleef.getVarMessage(Messages.Player.PLAYER_KICK)
+			playerMessage = heavySpleef.getVarMessage(Messages.Player.PLAYER_KICK)
 					.setVariable("message", message)
 					.setVariable("kicker", clientPlayer.getName())
 					.toString();
-			
-			player.sendMessage(finalMessage);
 			break;
 		case SELF:
-			player.sendMessage(heavySpleef.getMessage(Messages.Player.PLAYER_LEAVE));
+			playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_LEAVE);
 			break;
 		case STOP:
+			playerMessage = heavySpleef.getMessage(Messages.Player.GAME_STOPPED);
 			break;
 		case LOSE:
+			String killer = args.length > 0 ? (String)args[0] : "unknown";
+			broadcastMessage = heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_LOST_GAME)
+					.setVariable("player", player.getName())
+					.setVariable("killer", killer)
+					.toString();
+			
+			playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_LOSE);
 			break;
+		case WIN:
+			broadcastMessage = heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_WON_GAME)
+					.setVariable("player", player.getName())
+					.toString();
+			
+			playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_WIN);
 		default:
 			break;
 		}
 		
-		broadcast(heavySpleef.getMessage(Messages.Broadcast.PLAYER_LEFT_GAME));
+		broadcast(broadcastMessage);
+		player.sendMessage(playerMessage);
 	}
 	
 	public void requestLose(SpleefPlayer player) {
-		leave(player, QuitCause.LOSE);
+		if (ingamePlayers.contains(player)) {
+			return;
+		}
+		
+		PlayerLoseGameEvent event = new PlayerLoseGameEvent(this, player);
+		eventManager.callEvent(event);
+		
+		final OfflinePlayer killer = killDetector.detectKiller(this, player);
+		leave(player, QuitCause.LOSE, killer != null ? killer.getName() : null);
+		
+		if (ingamePlayers.size() == 1) {
+			SpleefPlayer playerLeft = ingamePlayers.iterator().next();
+			requestWin(playerLeft);
+		}
 	}
 	
 	public void requestWin(SpleefPlayer player) {
+		PlayerWinGameEvent event = new PlayerWinGameEvent(this, player);
+		eventManager.callEvent(event);
 		
+		for (SpleefPlayer ingamePlayer : ingamePlayers) {
+			if (ingamePlayer == player) {
+				continue;
+			}
+			
+			requestLose(ingamePlayer);
+		}
+		
+		leave(player, QuitCause.WIN);
 	}
 	
 	public void kickPlayer(SpleefPlayer player, String message) {
@@ -406,6 +463,12 @@ public class Game {
 		return Maps.unmodifiableBiMap(blocksBroken);
 	}
 	
+	public void setKillDetector(KillDetector detector) {
+		Validate.notNull(detector, "detector cannot be null");
+		
+		this.killDetector = detector;
+	}
+	
 	public void broadcast(String message) {
 		broadcast(BroadcastTarget.AROUND_GAME, message);
 	}
@@ -413,8 +476,27 @@ public class Game {
 	public void broadcast(BroadcastTarget target, String message) {
 		switch (target) {
 		case AROUND_GAME:
-			//TODO
-			break;
+			//Use any floor as a fixpoint
+			Iterator<Floor> iterator = floors.values().iterator();
+			if (iterator.hasNext()) {
+				Floor floor = iterator.next();
+				
+				Vector center = floor.getRegion().getCenter();
+				int broadcastRadius = getPropertyValue(GameProperty.BROADCAST_RADIUS);
+				
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					Vector playerVec = BukkitUtil.toVector(player.getLocation());
+					
+					double distanceSq = center.distanceSq(playerVec);
+					if (distanceSq <= Math.pow(broadcastRadius, 2)) {
+						player.sendMessage(PREFIX + message);
+					}
+				}
+				
+				break;
+			}
+			
+			//$FALL-THROUGH$
 		case GLOBAL:
 			Bukkit.broadcastMessage(PREFIX + message);
 			break;
@@ -530,8 +612,25 @@ public class Game {
 	}
 	
 	public void onPlayerFoodLevelChange(FoodLevelChangeEvent event, SpleefPlayer player) {
-		boolean noHunger = getPropertyValue(GameProperty.DISABLE_HUNDER);
+		boolean noHunger = getPropertyValue(GameProperty.DISABLE_HUNGER);
 		if (noHunger) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onEntityByEntityDamageEvent(EntityDamageByEntityEvent event, SpleefPlayer damagedPlayer) {
+		boolean disablePvp = getPropertyValue(GameProperty.DISABLE_PVP);
+		boolean disableDamage = getPropertyValue(GameProperty.DISABLE_DAMAGE);
+		
+		if (event.getDamager() instanceof Player && disablePvp || !(event.getDamager() instanceof Player) && disableDamage) { 
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onEntityDamageEvent(EntityDamageEvent event, SpleefPlayer damaged) {
+		boolean disableDamage = getPropertyValue(GameProperty.DISABLE_DAMAGE);
+		
+		if (event.getCause() != DamageCause.ENTITY_ATTACK && disableDamage) {
 			event.setCancelled(true);
 		}
 	}
@@ -541,7 +640,8 @@ public class Game {
 		SELF,
 		KICK,
 		STOP,
-		LOSE;
+		LOSE,
+		WIN;
 		
 	}
 
