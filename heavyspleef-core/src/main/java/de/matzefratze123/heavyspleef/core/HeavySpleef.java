@@ -102,6 +102,8 @@ public final class HeavySpleef {
 		moduleManager.disableModules();
 		
 		HandlerList.unregisterAll(plugin);
+		
+		databaseHandler.saveGames(gameManager.getGames(), null);
 	}
 	
 	private void prepareConfigurations() {
