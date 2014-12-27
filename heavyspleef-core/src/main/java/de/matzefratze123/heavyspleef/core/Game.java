@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,6 +24,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -38,6 +40,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.Vector;
@@ -72,6 +75,9 @@ public class Game {
 
 	public static final String NAME_ATTRIBUTE = "name";
 	
+	@Transient
+	@XmlTransient
+	private final Random random = new Random();
 	@Transient
 	@XmlTransient
 	private HeavySpleef heavySpleef;
@@ -127,7 +133,35 @@ public class Game {
 		
 		List<Location> spawnLocations = event.getSpawnLocations();
 		if (spawnLocations == null) {
-			//TODO: Define another spawn point
+			spawnLocations = Lists.newArrayList();
+			
+			// Generate a random spawnpoint
+			Floor topFloor = null;
+			for (Floor floor : floors.values()) {
+				if (topFloor == null || floor.getRegion().getMaximumY() > topFloor.getRegion().getMaximumY()) {
+					topFloor = floor;
+				}
+			}
+			
+			CuboidRegion region = topFloor.getRegion();
+			World world = Bukkit.getWorld(region.getWorld().getName());
+			Vector minPoint = region.getMinimumPoint();
+			Vector maxPoint = region.getMaximumPoint();
+			
+			int deltaX = maxPoint.getBlockX() - minPoint.getBlockX();
+			int deltaZ = maxPoint.getBlockZ() - minPoint.getBlockZ();
+			
+			for (int i = 0; i < ingamePlayers.size(); i++) {
+				int randDx = random.nextInt(deltaX);
+				int randDz = random.nextInt(deltaZ);
+				
+				int x = minPoint.getBlockX() + randDx;
+				int z = maxPoint.getBlockZ() + randDz;
+				
+				Location randomLoc = new Location(world, x, region.getMaximumY() + 1, z);
+				
+				spawnLocations.add(randomLoc);
+			}
 		}
 		
 		int locIndex = 0;
