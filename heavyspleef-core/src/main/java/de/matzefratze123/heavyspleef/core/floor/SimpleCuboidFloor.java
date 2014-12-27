@@ -42,6 +42,11 @@ public class SimpleCuboidFloor implements Floor {
 	public CuboidClipboard getClipboard() {
 		return floorClipboard;
 	}
+	
+	@Override
+	public CuboidRegion getRegion() {
+		return region;
+	}
 
 	@Override
 	public boolean contains(Block block) {
