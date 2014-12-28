@@ -11,7 +11,7 @@ import org.bukkit.block.Block;
 import com.google.common.collect.BiMap;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -29,14 +29,17 @@ public class DefaultKillDetector implements KillDetector {
 		
 		//Detect the nearest floor aligned on the y-axis
 		for (Floor floor : game.getFloors()) {
-			CuboidRegion region = floor.getRegion();
+			Region region = floor.getRegion();
 			if (!regionContains2D(playerVector, region)) {
 				//Player is not above or under the 2D region
 				continue;
 			}
 			
-			int maxY = region.getMaximumY();
-			int minY = region.getMinimumY();
+			Vector maxPoint = region.getMaximumPoint();
+			Vector minPoint = region.getMinimumPoint();
+			
+			int maxY = maxPoint.getBlockY();
+			int minY = minPoint.getBlockY();
 			
 			int minDistance = minY - location.getBlockY();
 			int maxDistance = maxY - location.getBlockY();
@@ -52,9 +55,9 @@ public class DefaultKillDetector implements KillDetector {
 		}
 		
 		SpleefPlayer killer = null;
-		CuboidRegion region = nearestFloor.getRegion();
-		final int minY = region.getMinimumY();
-		final int maxY = region.getMaximumY();
+		Region region = nearestFloor.getRegion();
+		final int minY = region.getMinimumPoint().getBlockY();
+		final int maxY = region.getMaximumPoint().getBlockY();
 		
 		BiMap<Set<Block>, SpleefPlayer> blocksBroken = game.getBlocksBroken().inverse();
 		
@@ -86,7 +89,7 @@ public class DefaultKillDetector implements KillDetector {
 		return offlinePlayerKiller;
 	}
 	
-	private boolean regionContains2D(Vector pos, CuboidRegion region) {
+	private boolean regionContains2D(Vector pos, Region region) {
 		Vector maxPoint = region.getMaximumPoint();
 		Vector minPoint = region.getMinimumPoint();
 		

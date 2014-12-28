@@ -5,14 +5,18 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EditSessionFactory;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.registry.WorldData;
 
 public class SimpleCuboidFloor implements Floor {
 
@@ -20,17 +24,19 @@ public class SimpleCuboidFloor implements Floor {
 	
 	@XmlTransient
 	private final EditSessionFactory factory;
-	private final String name;
+	private String name;
 	@XmlTransient
-	private CuboidRegion region;
-	@XmlTransient
-	private CuboidClipboard floorClipboard;
+	private Clipboard floorClipboard;
 	
-	public SimpleCuboidFloor(String name, CuboidClipboard clipboard) {
-		this.factory = WorldEdit.getInstance().getEditSessionFactory();
+	private SimpleCuboidFloor() {
+		this.factory = new EditSessionFactory();
+	}
+	
+	public SimpleCuboidFloor(String name, Clipboard clipboard) {
+		this();
+		
 		this.name = name;
 		this.floorClipboard = clipboard;
-		this.region = new CuboidRegion(floorClipboard.getOrigin(), floorClipboard.getOrigin().add(floorClipboard.getSize()));
 	}
 	
 	@Override
@@ -39,13 +45,13 @@ public class SimpleCuboidFloor implements Floor {
 	}
 	
 	@Override
-	public CuboidClipboard getClipboard() {
+	public Clipboard getClipboard() {
 		return floorClipboard;
 	}
 	
 	@Override
-	public CuboidRegion getRegion() {
-		return region;
+	public Region getRegion() {
+		return floorClipboard.getRegion();
 	}
 
 	@Override
@@ -55,19 +61,29 @@ public class SimpleCuboidFloor implements Floor {
 	
 	@Override
 	public boolean contains(Location location) {
-		Vector vector = BukkitUtil.toVector(location);
+		Vector pt = BukkitUtil.toVector(location);
 		
-		return region.contains(vector);
+		return floorClipboard.getRegion().contains(pt);
 	}
 
 	@Override
 	public void regenerate() {
-		EditSession session = factory.getEditSession(region.getWorld(), NO_LIMIT);
+		Region region = floorClipboard.getRegion();
+		World world = region.getWorld();
+		WorldData data = world.getWorldData();
+		
+		EditSession session = factory.getEditSession(world, NO_LIMIT);
+		ClipboardHolder holder = new ClipboardHolder(floorClipboard, data);
+		
+		Operation pasteOperation = holder.createPaste(session, data)
+				.to(region.getMinimumPoint())
+				.ignoreAirBlocks(false)
+				.build();
 		
 		try {
-			floorClipboard.place(session, region.getMinimumPoint(), false);
+			Operations.completeLegacy(pasteOperation);
 		} catch (MaxChangedBlocksException e) {
-			// Should not happen
+			//Should not happen as we gave the session NO_LIMIT
 			e.printStackTrace();
 		}
 	}

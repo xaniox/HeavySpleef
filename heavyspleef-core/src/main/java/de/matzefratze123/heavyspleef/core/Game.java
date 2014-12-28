@@ -46,6 +46,7 @@ import com.google.common.collect.Sets;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.event.EventManager;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
@@ -138,12 +139,12 @@ public class Game {
 			// Generate a random spawnpoint
 			Floor topFloor = null;
 			for (Floor floor : floors.values()) {
-				if (topFloor == null || floor.getRegion().getMaximumY() > topFloor.getRegion().getMaximumY()) {
+				if (topFloor == null || floor.getRegion().getMaximumPoint().getBlockY() > topFloor.getRegion().getMaximumPoint().getBlockY()) {
 					topFloor = floor;
 				}
 			}
 			
-			CuboidRegion region = topFloor.getRegion();
+			Region region = topFloor.getRegion();
 			World world = Bukkit.getWorld(region.getWorld().getName());
 			Vector minPoint = region.getMinimumPoint();
 			Vector maxPoint = region.getMaximumPoint();
@@ -158,7 +159,7 @@ public class Game {
 				int x = minPoint.getBlockX() + randDx;
 				int z = maxPoint.getBlockZ() + randDz;
 				
-				Location randomLoc = new Location(world, x, region.getMaximumY() + 1, z);
+				Location randomLoc = new Location(world, x, region.getMaximumPoint().getBlockY() + 1, z);
 				
 				spawnLocations.add(randomLoc);
 			}

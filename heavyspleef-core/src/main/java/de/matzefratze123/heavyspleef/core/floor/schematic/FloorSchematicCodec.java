@@ -27,10 +27,13 @@ import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.world.DataException;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
@@ -79,7 +82,6 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		}
 		
 		Vector origin = new Vector();
-		Vector offset = new Vector();
 		
 		Map<String, Tag> childs = rootTag.getValue();
 		
@@ -108,24 +110,6 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 			int originZ = ((IntTag)originCoordinates.get(2)).getValue();
 			
 			origin = new Vector(originX, originY, originZ);
-		}
-		
-		if (childs.containsKey("offset")) {
-			ListTag offsetTag = getChildTag(childs, "offset", ListTag.class);
-			if (!IntTag.class.isAssignableFrom(offsetTag.getType())) {
-				throw new CodecException("Found list tag \"offset\" but their type is not an instance of IntTag");
-			}
-			
-			List<Tag> offsetCoordinates = offsetTag.getValue();
-			if (offsetCoordinates.size() < 3) {
-				throw new CodecException("List tag \"offset\" must have at least 3 entries (x, y, z)");
-			}
-			
-			int offsetX = ((IntTag)offsetCoordinates.get(0)).getValue();
-			int offsetY = ((IntTag)offsetCoordinates.get(1)).getValue();
-			int offsetZ = ((IntTag)offsetCoordinates.get(2)).getValue();
-			
-			offset = new Vector(offsetX, offsetY, offsetZ);
 		}
 		
 		// Get blocks
@@ -193,10 +177,11 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		}
 		
 		Vector size = new Vector(width, height, length);
+		Vector maxPt = origin.add(size);
 		
-		CuboidClipboard clipboard = new CuboidClipboard(size);
+		Region region = new CuboidRegion(origin, maxPt);
+		BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 		clipboard.setOrigin(origin);
-		clipboard.setOffset(offset);
 		
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
@@ -206,14 +191,14 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 					BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
 					
 					if (tileEntitiesMap.containsKey(pt)) {
-						try {
-							block.setNbtData(new CompoundTag("", tileEntitiesMap.get(pt)));
-						} catch (DataException e) {
-							throw new CodecException(e);
-						}
+						block.setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
 					}
 					
-					clipboard.setBlock(pt, block);
+					try {
+						clipboard.setBlock(pt, block);
+					} catch (WorldEditException e) {
+						throw new CodecException(e);
+					}
 				}
 			}
 		}
@@ -237,11 +222,12 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		StringTag nameTag = new StringTag("name", floor.getName());
 		StringTag gameTag = new StringTag("game", game);
 		
-		CuboidClipboard clipboard = floor.getClipboard();
+		Clipboard clipboard = floor.getClipboard();
+		Region region = clipboard.getRegion();
 		
-		int width = clipboard.getWidth();
-		int height = clipboard.getHeight();
-		int length = clipboard.getLength();
+		int width = region.getWidth();
+		int height = region.getHeight();
+		int length = region.getLength();
 		
 		ShortTag widthTag = new ShortTag("width", (short)width);
 		ShortTag heightTag = new ShortTag("height", (short)height);
@@ -255,7 +241,6 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		CompoundTag boundariesTag = new CompoundTag("boundaries", boundariesMap);
 		
 		Vector origin = clipboard.getOrigin();
-		Vector offset = clipboard.getOffset();
 		
 		List<IntTag> originCoordinateList = Lists.newArrayList();
 		originCoordinateList.add(new IntTag("", origin.getBlockX()));
@@ -263,13 +248,6 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		originCoordinateList.add(new IntTag("", origin.getBlockZ()));
 		
 		ListTag originTag = new ListTag("origin", IntTag.class, originCoordinateList);
-		
-		List<IntTag> offsetCoordinateList = Lists.newArrayList();
-		offsetCoordinateList.add(new IntTag("", offset.getBlockX()));
-		offsetCoordinateList.add(new IntTag("", offset.getBlockY()));
-		offsetCoordinateList.add(new IntTag("", offset.getBlockZ()));
-		
-		ListTag offsetTag = new ListTag("offset", IntTag.class, offsetCoordinateList);
 		
 		byte[] blocks = new byte[width * height * length];
 		byte[] data = new byte[width * height * length];
@@ -326,7 +304,6 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		childs.put("game", gameTag);
 		childs.put("boundaries", boundariesTag);
 		childs.put("origin", originTag);
-		childs.put("offset", offsetTag);
 		childs.put("blocks", blocksTag);
 		childs.put("data", dataTag);
 		childs.put("tileentities", tileEntitiesTag);

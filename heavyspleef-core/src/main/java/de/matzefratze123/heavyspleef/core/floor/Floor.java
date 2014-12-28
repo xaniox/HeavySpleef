@@ -3,16 +3,16 @@ package de.matzefratze123.heavyspleef.core.floor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-import com.sk89q.worldedit.CuboidClipboard;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.regions.Region;
 
 public interface Floor {
 	
 	public String getName();
 	
-	public CuboidClipboard getClipboard();
+	public Clipboard getClipboard();
 	
-	public CuboidRegion getRegion();
+	public Region getRegion();
 	
 	public boolean contains(Block block);
 	
