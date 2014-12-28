@@ -23,6 +23,11 @@ public class LobbyTeleportationFlag extends LocationFlag {
 	public boolean hasGameProperties() {
 		return false;
 	}
+	
+	@Override
+	public boolean hasBukkitListenerMethods() {
+		return false;
+	}
 
 	@Override
 	public void getDescription(List<String> description) {
