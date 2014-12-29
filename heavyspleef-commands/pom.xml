@@ -6,11 +6,23 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>heavyspleef-commands</artifactId>
+  <repositories>
+    <repository>
+      <id>matzes-repo</id>
+      <name>Matze's repository</name>
+      <url>http://matzefratze123.de/artifactory/release</url>
+    </repository>
+  </repositories>
   <dependencies>
   	<dependency>
-  		<groupId>de.matzefratze123</groupId>
-  		<artifactId>heavyspleef-core</artifactId>
-  		<version>${project.version}</version>
+  	  <groupId>de.matzefratze123</groupId>
+  	  <artifactId>heavyspleef-core</artifactId>
+  	  <version>${project.version}</version>
   	</dependency>
+  	<dependency>
+      <groupId>mkremins</groupId>
+      <artifactId>fanciful</artifactId>
+      <version>0.2.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>
