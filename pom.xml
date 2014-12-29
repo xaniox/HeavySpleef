@@ -3,11 +3,14 @@
   <groupId>de.matzefratze123</groupId>
   <artifactId>heavyspleef</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>HeavySpleef 2.0</name>
+  <name>HeavySpleef</name>
   <description>Spleef plugin for Bukkit</description>
   <packaging>pom</packaging>
   <url>http://dev.bukkit.org/bukkit-plugins/heavyspleef/</url>
-  <inceptionYear>2014</inceptionYear>
+  <inceptionYear>2014-2015</inceptionYear>
+  <properties>
+    <project.encoding>UTF-8</project.encoding>
+  </properties>
   <modules>
   	<module>heavyspleef-commands</module>
   	<module>heavyspleef-core</module>
@@ -21,6 +24,9 @@
       <name>matzefratze123</name>
     </developer>
   </developers>
+  <organization>
+    <name>matzefratze123</name>
+  </organization>
   <licenses>
     <license>
       <name>GNU General Public License Version 3</name>
@@ -31,6 +37,11 @@
     <system>Jenkins</system>
     <url>http://matzefratze123.de/jenkins</url>
   </ciManagement>
+  <scm>
+  	<url>https://github.com/matzefratze123/HeavySpleef-2.0</url>
+  	<connection>scm:git:git://github.com/matzefratze123/HeavySpleef.git</connection>
+  	<developerConnection>scm:git:git@github.com:matzefratze123/HeavySpleef.git</developerConnection>
+  </scm>
   <build>
     <plugins>
       <plugin>
@@ -40,32 +51,44 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
+          <encoding>${project.encoding}</encoding>
         </configuration>
       </plugin>
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
         <version>1.10.b1</version>
+        <configuration>
+          <strictCheck>true</strictCheck>
+        </configuration>
         <executions>
           <execution>
             <id>license-header</id>
             <phase>clean</phase>
-            <configuration>
-              <properties>
-                <name>${project.name}</name>
-                <developer>${project.organization.name}</developer>
-                <inceptionYear>${project.inceptionYear}</inceptionYear>
-              </properties>
-              <quiet>true</quiet>
-              <encoding>UTF-8</encoding>
-              <header>HEADER.txt</header>
-              <includes>
-                <include>src/main/java/*</include>
-              </includes>
-            </configuration>
             <goals>
               <goal>format</goal>
             </goals>
+            <configuration>
+              <properties>
+                <name>${project.parent.name}</name>
+                <organization>${project.organization.name}</organization>
+                <inceptionYear>${project.inceptionYear}</inceptionYear>
+              </properties>
+              <quiet>true</quiet>
+              <encoding>${project.encoding}</encoding>
+              <strictCheck>true</strictCheck>
+              <header>HEADER.txt</header>
+              <mapping>
+                <java>SLASHSTAR_STYLE</java>
+              </mapping>
+              <keywords>
+                <keyword>${project.name}</keyword>
+                <keyword>license</keyword>
+              </keywords>
+              <includes>
+                <include>src/main/java/**</include>
+              </includes>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -88,6 +111,12 @@
         <version>2.3</version>
         <configuration>
           <finalName>HeavySpleef.jar</finalName>
+          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <artifactSet>
+            <excludes>
+              <exclude>xml-apis:xml-apis</exclude>
+            </excludes>
+          </artifactSet>
         </configuration>
         <executions>
           <execution>
@@ -95,9 +124,6 @@
             <goals>
               <goal>shade</goal>
             </goals>
-            <configuration>
-              <createDependencyReducedPom>true</createDependencyReducedPom>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -109,11 +135,6 @@
        <name>Bukkit's repository</name>
        <url>http://repo.bukkit.org/content/groups/public</url>
      </repository>
-     <repository>
-       <id>matzes-repo</id>
-       <name>Matze's repository</name>
-       <url>http://matzefratze123.de/artifactory/release</url>
-    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -126,11 +147,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
-    </dependency>
-    <dependency>
-      <groupId>mkremins</groupId>
-      <artifactId>fanciful</artifactId>
-      <version>0.2.0-SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
