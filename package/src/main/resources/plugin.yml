@@ -1,5 +1,5 @@
 name: ${project.parent.name}
-version ${project.parent.version}
+version: ${project.parent.version}
 prefix: ${project.parent.name}
 
 description: ${project.parent.description}
