@@ -40,15 +40,20 @@ public class CommandStart {
 		
 		Game game;
 		if (context.argsLength() > 0) {
-			game = manager.getGame(context.getString(0));
+			String gameName = context.getString(0);
+			game = manager.getGame(gameName);
+			CommandValidate.notNull(game, heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+					.setVariable("game", gameName)
+					.toString());
 		} else {
 			game = manager.getGame(player);
+			CommandValidate.notNull(game, heavySpleef.getMessage(Messages.Command.NOT_INGAME));
 		}
 		
-		CommandValidate.notNull(game, heavySpleef.getMessage(Messages.Command.GAME_DOESNT_EXIST));
-		
 		game.countdown();
-		player.sendMessage(heavySpleef.getMessage(Messages.Command.GAME_STARTED));
+		player.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_STARTED)
+				.setVariable("game", game.getName())
+				.toString());
 	}
 
 }

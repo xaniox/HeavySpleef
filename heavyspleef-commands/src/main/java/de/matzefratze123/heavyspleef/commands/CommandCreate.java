@@ -45,7 +45,9 @@ public class CommandCreate {
 		
 		Game game = new Game(heavySpleef, gameName);
 		manager.addGame(game);
-		sender.sendMessage(heavySpleef.getMessage(heavySpleef.getMessage(Messages.Command.GAME_CREATED)));
+		sender.sendMessage(heavySpleef.getMessage(heavySpleef.getVarMessage(Messages.Command.GAME_CREATED)
+				.setVariable("game", gameName)
+				.toString()));
 	}
 
 }

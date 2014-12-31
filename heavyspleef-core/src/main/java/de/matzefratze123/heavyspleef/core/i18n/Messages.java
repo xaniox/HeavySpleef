@@ -28,21 +28,21 @@ public interface Messages {
 		public static final String DESCRIPTION_FORMAT = "description-format"; // $[description]
 		public static final String USAGE_FORMAT = "usage-format"; // $[usage]
 		
-		public static final String GAME_CREATED = PREFIX + "game-created";
-		public static final String GAME_ALREADY_EXIST = PREFIX + "game-already-exist";
-		public static final String GAME_DOESNT_EXIST = PREFIX + "game-doesnt-exist";
-		public static final String GAME_DISCARDED = PREFIX + "game-discarded";
-		public static final String GAME_ALREADY_DISABLED = PREFIX + "game-already-disabled";
-		public static final String GAME_ALREADY_ENABLED = PREFIX + "game-already-enabled";
-		public static final String GAME_DISABLED = PREFIX + "game-disabled";
-		public static final String GAME_ENABLED = PREFIX + "game-enabled";
-		public static final String GAME_JOIN_IS_DISABLED = PREFIX + "game-join-is-disabled";
-		public static final String GAME_STARTED = "game-started";
-		public static final String GAME_STOPPED = "game-stopped";
+		public static final String GAME_CREATED = PREFIX + "game-created"; // $[game] TODO
+		public static final String GAME_ALREADY_EXIST = PREFIX + "game-already-exist"; // $[game] TODO
+		public static final String GAME_DOESNT_EXIST = PREFIX + "game-doesnt-exist"; // $[game] TODO
+		public static final String GAME_DISCARDED = PREFIX + "game-discarded"; // $[game] TODO
+		public static final String GAME_ALREADY_DISABLED = PREFIX + "game-already-disabled"; // $[game] TODO 
+		public static final String GAME_ALREADY_ENABLED = PREFIX + "game-already-enabled"; // $[game] TODO
+		public static final String GAME_DISABLED = PREFIX + "game-disabled"; // $[game] TODO
+		public static final String GAME_ENABLED = PREFIX + "game-enabled"; // $[game] TODO
+		public static final String GAME_JOIN_IS_DISABLED = PREFIX + "game-join-is-disabled"; // $[game] TODO
+		public static final String GAME_STARTED = PREFIX + "game-started"; // $[game] TODO
+		public static final String GAME_STOPPED = PREFIX + "game-stopped"; // $[game] TODO
 		public static final String PLAYER_NOT_FOUND = PREFIX + "player-not-found"; // $[player]
-		public static final String PLAYER_NOT_IN_GAME = PREFIX + "player-not-in-game"; //$[player]
-		public static final String PLAYER_KICKED = PREFIX + "player-kicked";
-		public static final String NOT_INGAME = "not-ingame";
+		public static final String PLAYER_NOT_IN_GAME = PREFIX + "player-not-ingame"; //$[player]
+		public static final String PLAYER_KICKED = PREFIX + "player-kicked"; // $[player] TODO
+		public static final String NOT_INGAME = PREFIX + "not-ingame";
 		
 	}
 	

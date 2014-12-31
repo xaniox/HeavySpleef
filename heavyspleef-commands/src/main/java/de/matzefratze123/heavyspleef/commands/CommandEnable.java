@@ -38,12 +38,18 @@ public class CommandEnable {
 		String gameName = context.getString(0);
 		
 		GameManager manager = heavySpleef.getGameManager();
-		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getMessage(Messages.Command.GAME_DOESNT_EXIST));
+		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+				.setVariable("game", gameName)
+				.toString());
 		
 		Game game = manager.getGame(gameName);
-		CommandValidate.isTrue(!game.getGameState().isGameEnabled(), heavySpleef.getMessage(Messages.Command.GAME_ALREADY_ENABLED));
+		CommandValidate.isTrue(!game.getGameState().isGameEnabled(), heavySpleef.getVarMessage(Messages.Command.GAME_ALREADY_ENABLED)
+				.setVariable("game", gameName)
+				.toString());
 		
-		sender.sendMessage(heavySpleef.getMessage(Messages.Command.GAME_ENABLED));
+		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_ENABLED)
+				.setVariable("game", gameName)
+				.toString());
 	}
 	
 }

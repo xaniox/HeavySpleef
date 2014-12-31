@@ -39,7 +39,9 @@ public class CommandInfo {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getMessage(Messages.Command.GAME_DOESNT_EXIST));
+		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+				.setVariable("game", gameName)
+				.toString());
 		Game game = manager.getGame(gameName);
 		
 		//TODO

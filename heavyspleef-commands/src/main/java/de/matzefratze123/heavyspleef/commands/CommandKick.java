@@ -38,13 +38,18 @@ public class CommandKick {
 	public void onKickCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		Player target = context.getPlayer(0);
+		String targetName = context.getString(0);
 		
-		CommandValidate.notNull(target, heavySpleef.getMessage(Messages.Command.PLAYER_NOT_FOUND));
+		CommandValidate.notNull(target, heavySpleef.getVarMessage(Messages.Command.PLAYER_NOT_FOUND)
+				.setVariable("player", targetName)
+				.toString());
 		GameManager manager = heavySpleef.getGameManager();
 		SpleefPlayer targetSpleefPlayer = heavySpleef.getSpleefPlayer(target);
 		
 		Game game = manager.getGame(targetSpleefPlayer);
-		CommandValidate.notNull(game, heavySpleef.getMessage(Messages.Command.PLAYER_NOT_IN_GAME));
+		CommandValidate.notNull(game, heavySpleef.getVarMessage(Messages.Command.PLAYER_NOT_IN_GAME)
+				.setVariable("player", target.getName())
+				.toString());
 		
 		String message = null;
 		final int argsLength = context.argsLength();
@@ -63,7 +68,9 @@ public class CommandKick {
 		}
 		
 		game.kickPlayer(targetSpleefPlayer, message);
-		sender.sendMessage(heavySpleef.getMessage(Messages.Command.PLAYER_KICKED));
+		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.PLAYER_KICKED)
+				.setVariable("player", target.getName())
+				.toString());
 	}
 	
 }

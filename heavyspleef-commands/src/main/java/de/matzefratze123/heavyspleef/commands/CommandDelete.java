@@ -38,10 +38,14 @@ public class CommandDelete {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getMessage(Messages.Command.GAME_DOESNT_EXIST));
+		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+				.setVariable("game", gameName)
+				.toString());
 		
 		manager.deleteGame(gameName);
-		sender.sendMessage(heavySpleef.getMessage(Messages.Command.GAME_DISCARDED));
+		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_DISCARDED)
+				.setVariable("game", gameName)
+				.toString());
 	}
 	
 }
