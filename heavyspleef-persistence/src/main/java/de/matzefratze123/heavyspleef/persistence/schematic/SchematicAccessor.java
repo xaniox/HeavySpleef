@@ -23,7 +23,7 @@ import java.io.OutputStream;
 
 import de.matzefratze123.heavyspleef.persistence.ObjectDatabaseAccessor;
 
-public abstract class SchematicAccessor<T> implements ObjectDatabaseAccessor<T, Void> {
+public abstract class SchematicAccessor<T> implements ObjectDatabaseAccessor<T> {
 
 	public abstract void write(OutputStream out, T object) throws IOException, CodecException;
 	

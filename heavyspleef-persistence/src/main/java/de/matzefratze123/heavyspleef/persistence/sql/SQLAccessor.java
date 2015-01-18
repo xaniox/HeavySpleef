@@ -25,7 +25,7 @@ import java.util.Map;
 import de.matzefratze123.heavyspleef.persistence.ObjectDatabaseAccessor;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLDatabaseContext.SQLImplementation;
 
-public abstract class SQLAccessor<T, K> implements ObjectDatabaseAccessor<T, K> {
+public abstract class SQLAccessor<T, K> implements ObjectDatabaseAccessor<T> {
 	
 	private SQLImplementation implementation;
 	

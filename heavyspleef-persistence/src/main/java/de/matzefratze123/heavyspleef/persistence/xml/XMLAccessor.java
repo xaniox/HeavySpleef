@@ -21,7 +21,7 @@ import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.persistence.ObjectDatabaseAccessor;
 
-public abstract class XMLAccessor<T> implements ObjectDatabaseAccessor<T, Void> {
+public abstract class XMLAccessor<T> implements ObjectDatabaseAccessor<T> {
 	
 	public abstract void write(T object, Element element);
 	

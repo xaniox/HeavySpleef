@@ -17,7 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.persistence;
 
-public interface ObjectDatabaseAccessor<T, K> {
+public interface ObjectDatabaseAccessor<T> {
 	
 	public Class<T> getObjectClass();
 	

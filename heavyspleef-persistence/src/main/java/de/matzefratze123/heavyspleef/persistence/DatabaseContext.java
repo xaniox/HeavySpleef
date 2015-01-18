@@ -21,7 +21,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
-public class DatabaseContext<T extends ObjectDatabaseAccessor<?, ?>> {
+public class DatabaseContext<T extends ObjectDatabaseAccessor<?>> {
 	
 	private Set<T> accessors;
 	
