@@ -21,10 +21,18 @@ import org.bukkit.configuration.Configuration;
 
 public abstract class ConfigurationObject {
 	
-	public ConfigurationObject(Configuration config) {
-		inflate(config);
+	private Object[] args;
+	
+	public ConfigurationObject(Configuration config, Object... args) {
+		this.args = args;
+		
+		inflate(config, args);
 	}
 	
-	public abstract void inflate(Configuration config);
+	public void inflate(Configuration config) {
+		inflate(config, args);
+	}
+	
+	public abstract void inflate(Configuration config, Object... args);
 	
 }

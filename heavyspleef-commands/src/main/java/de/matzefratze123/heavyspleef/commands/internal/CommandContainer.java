@@ -119,7 +119,7 @@ public class CommandContainer {
 					continue;
 				}
 				
-				Command command = clazz.getAnnotation(Command.class);
+				Command command = method.getAnnotation(Command.class);
 				Set<CommandContainer> childCommands = null;
 				boolean playerOnly = method.isAnnotationPresent(PlayerOnly.class);
 				
@@ -136,7 +136,7 @@ public class CommandContainer {
 				CommandContainer container = new CommandContainer(method, instance, command, playerOnly, parent);
 				
 				if (method.isAnnotationPresent(NestedCommands.class)) {
-					Class<?>[] nestedCommandClasses = clazz.getAnnotation(NestedCommands.class).value();
+					Class<?>[] nestedCommandClasses = method.getAnnotation(NestedCommands.class).value();
 					
 					childCommands = buildHierarchy(nestedCommandClasses, instantiator, container, logger);
 				}

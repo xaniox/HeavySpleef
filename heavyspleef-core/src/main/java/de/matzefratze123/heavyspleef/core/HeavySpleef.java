@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,11 +40,17 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.regions.CuboidRegion;
 
+import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
+import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage;
 import de.matzefratze123.heavyspleef.core.module.Module;
@@ -60,7 +67,6 @@ public final class HeavySpleef {
 	private final Logger logger;
 	
 	private File localeDir;
-	private File persistenceDir;
 	private File flagDir;
 	
 	private Map<ConfigType, ConfigurationObject> configurations;
@@ -69,6 +75,7 @@ public final class HeavySpleef {
 	private FlagRegistry flagRegistry;
 	private I18N i18n;
 	private AsyncReadWriteHandler databaseHandler;
+
 	private GameManager gameManager;
 	private PlayerManager playerManager;
 	
@@ -81,15 +88,20 @@ public final class HeavySpleef {
 		File dataFolder = getDataFolder();
 		
 		this.localeDir = new File(dataFolder, "locale");
-		this.persistenceDir = new File(dataFolder, "persistence");
+		this.localeDir.mkdirs();
 		this.flagDir = new File(dataFolder, "flags");
+		this.flagDir.mkdirs();
 		
 		this.configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
-		prepareConfigurations();
+		
+		Map<ConfigType, Object[]> configArgs = new EnumMap<ConfigType, Object[]>(ConfigType.class);
+		configArgs.put(ConfigType.DATABASE_CONFIG, new Object[] { getDataFolder() });
+		
+		prepareConfigurations(configArgs);
 		
 		this.moduleManager = new ModuleManager();
 		this.flagRegistry = new FlagRegistry(flagDir, plugin.getLogger());
-		
+				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		this.i18n = new I18N(defaultConfig, localeDir, logger);
 		this.playerManager = new PlayerManager(plugin);
@@ -102,7 +114,7 @@ public final class HeavySpleef {
 			@Override
 			public void onSuccess(List<Game> result) {
 				for (Game game : result) {
-					gameManager.addGame(game);
+					gameManager.addGame(game, false);
 				}
 			}
 			
@@ -120,10 +132,20 @@ public final class HeavySpleef {
 		
 		HandlerList.unregisterAll(plugin);
 		
-		databaseHandler.saveGames(gameManager.getGames(), null);
+		ListenableFuture<?> future = databaseHandler.saveGames(gameManager.getGames(), null);
+		
+		try {
+			//Wait for the task to be completed, as Bukkit  
+			//does not mind async thread and just kills them
+			future.get();
+		} catch (InterruptedException e) {
+			logger.log(Level.SEVERE, "Server-Thread interrupted while saving games to database", e);
+		} catch (ExecutionException e) {
+			logger.log(Level.SEVERE, "Could not save games to database", e);
+		}
 	}
 	
-	private void prepareConfigurations() {
+	private void prepareConfigurations(Map<ConfigType, Object[]> args) {
 		for (ConfigType type : ConfigType.values()) {
 			File destinationFile = new File(getDataFolder(), type.getDestinationFileName());
 			YamlConfiguration config;
@@ -141,13 +163,12 @@ public final class HeavySpleef {
 				continue;
 			}
 			
-			ConfigurationObject obj = type.newConfigInstance(config);
-			
+			ConfigurationObject obj = type.newConfigInstance(config, args.get(type));			
 			configurations.put(type, obj);
 		}
 	}
 	
-	private void copyResource(URL resourceUrl, File destination) throws IOException {		
+	public static void copyResource(URL resourceUrl, File destination) throws IOException {		
 		URLConnection connection = resourceUrl.openConnection();
 		
 		if (!destination.exists()) {
@@ -181,12 +202,8 @@ public final class HeavySpleef {
 		return localeDir;
 	}
 	
-	public File getPersistenceDir() {
-		return persistenceDir;
-	}
-	
 	public File getFlagDir() {
-			return flagDir;
+		return flagDir;
 	}
 	
 	public Logger getLogger() {
@@ -219,11 +236,11 @@ public final class HeavySpleef {
 	
 	public SpleefPlayer getSpleefPlayer(Object base) {
 		if (base instanceof Player) {
-			playerManager.getSpleefPlayer((Player)base);
+			return playerManager.getSpleefPlayer((Player)base);
 		} else if (base instanceof String) {
-			playerManager.getSpleefPlayer((String)base);
+			return playerManager.getSpleefPlayer((String)base);
 		} else if (base instanceof UUID) {
-			playerManager.getSpleefPlayer((UUID)base);
+			return playerManager.getSpleefPlayer((UUID)base);
 		}
 		
 		throw new IllegalArgumentException("base must be an instance of Player, String or UUID");
@@ -243,8 +260,14 @@ public final class HeavySpleef {
 	
 	public List<Class<?>> getPersistentBeans() {
 		List<Class<?>> listOfClasses = new LinkedList<Class<?>>();
-		listOfClasses.add(Game.class);
+		//listOfClasses.add(Game.class);
 		listOfClasses.add(Statistic.class);
+		listOfClasses.add(FlagManager.class);
+		listOfClasses.add(SimpleCuboidFloor.class);
+		listOfClasses.add(CuboidRegion.class);
+		listOfClasses.add(Vector.class);
+		listOfClasses.add(AbstractFlag.class);
+		listOfClasses.add(DefaultGamePropertyBundle.class);
 		
 		return listOfClasses;
 	}

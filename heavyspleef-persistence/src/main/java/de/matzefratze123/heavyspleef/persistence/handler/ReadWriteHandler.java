@@ -15,28 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.module;
+package de.matzefratze123.heavyspleef.persistence.handler;
 
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.UUID;
 
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.Statistic;
 
-public abstract class SimpleModule implements Module {
-
-	private HeavySpleef heavySpleef;
+public interface ReadWriteHandler {
 	
-	public SimpleModule(HeavySpleef heavySpleef) {
-		this.heavySpleef = heavySpleef;
-	}
+	public void saveGames(Iterable<Game> iterable);
 	
-	@Override
-	public HeavySpleef getHeavySpleef() {
-		return heavySpleef;
-	}
+	public void saveGame(Game game);
 	
-	@Override
-	public Logger getLogger() {
-		return heavySpleef.getLogger();
-	}
+	public Game getGame(String name);
+	
+	public List<Game> getGames();
+	
+	public void deleteGame(Game game);
+	
+	public void saveStatistics(Iterable<Statistic> iterable);
+	
+	public void saveStatistic(Statistic statistic);
+	
+	public Statistic getStatistic(UUID uuid);
+	
+	public Statistic getStatistic(String playerName);
 
+	public List<Statistic> getTopStatistics(int limit);
+	
 }

@@ -15,26 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.floor.schematic;
+package de.matzefratze123.heavyspleef.persistence.xml;
 
-import java.io.IOException;
+import org.dom4j.Element;
 
-public class CodecException extends IOException {
+import de.matzefratze123.heavyspleef.persistence.ObjectDatabaseAccessor;
 
-	private static final long serialVersionUID = -4024404582288898448L;
-
-	public CodecException() {}
-
-	public CodecException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public CodecException(String message) {
-		super(message);
-	}
-
-	public CodecException(Throwable cause) {
-		super(cause);
-	}
-
+public abstract class XMLAccessor<T> implements ObjectDatabaseAccessor<T, Void> {
+	
+	public abstract void write(T object, Element element);
+	
+	public abstract T fetch(Element element);
+	
 }

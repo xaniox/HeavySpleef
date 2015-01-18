@@ -23,10 +23,11 @@ public interface Messages {
 	
 		public static final String PREFIX = "command.";
 		
-		public static final String PLAYER_ONLY = "player-only";
-		public static final String NO_PERMISSION = "no-permission";
-		public static final String DESCRIPTION_FORMAT = "description-format"; // $[description]
-		public static final String USAGE_FORMAT = "usage-format"; // $[usage]
+		public static final String PLAYER_ONLY = PREFIX + "player-only";
+		public static final String NO_PERMISSION = PREFIX + "no-permission";
+		public static final String DESCRIPTION_FORMAT = PREFIX + "description-format"; // $[description]
+		public static final String USAGE_FORMAT = PREFIX + "usage-format"; // $[usage]
+		public static final String UNKNOWN_COMMAND = PREFIX + "unknown-command";
 		
 		public static final String GAME_CREATED = PREFIX + "game-created"; // $[game] TODO
 		public static final String GAME_ALREADY_EXIST = PREFIX + "game-already-exist"; // $[game] TODO
@@ -53,7 +54,7 @@ public interface Messages {
 		public static final String PLAYER_LEFT_GAME = PREFIX + "player-left-game"; // $[player]
 		public static final String GAME_STARTED = PREFIX + "game-started";
 		public static final String GAME_STOPPED = PREFIX + "game-stopped";
-		public static final String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message";
+		public static final String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message"; // $[remaining]
 		public static final String PLAYER_JOINED_GAME = PREFIX + "player-joined-game"; // $[player]
 		public static final String PLAYER_LOST_GAME = PREFIX + "player-lost-game"; // $[player]; $[killer]
 		public static final String PLAYER_WON_GAME = PREFIX + "player-won-game"; // $[player]

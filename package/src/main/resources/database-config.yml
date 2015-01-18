@@ -9,9 +9,6 @@
 database-modules:
   statistics:
     enabled: true
-  games:
-    # Valid values: xml, sql
-    persistence-type: xml
 
 # This is for advanced users only.
 # HeavySpleef automatically handles
@@ -25,8 +22,11 @@ database-modules:
 # the HeavySpleef working directory
 persistence-connection:
   xml:
-    # Define the file for xml
-    file: {basedir}/persistence/
+    # Define the directory for xml
+    dir: "{basedir}/persistence/games/xml"
+  schematic:
+    # Define the schematic directory
+    dir: "{basedir}/persistence/games/schematic"
   sql:
     # Default available drivers:
     #   - MySQL: com.mysql.jdbc.Driver
@@ -43,11 +43,27 @@ persistence-connection:
     #
     url: "jdbc:sqlite:{basedir}/persistence/database.db"
     
+    # Set this to true if you use an authentication based sql database
+    # (for instance MySQL)
+    use-authentication: false
+    
     # Specify an database user for use with MySQL
     # This value is not needed if you prefer using
     # a SQLite database
-    username: root
+    user: root
     
     # Only for MySQL
     # Defines your password for the database user as defined above
     password: password
+    
+    # For experts only. Specify the connection pool name.
+    pool-name: heavyspleef_connection_pool
+    
+    # For experts only. Specify the maximum connection pool size.
+    # Use one connection pool for SQLite. The connection pool size
+    # depends on your database thread concurrency
+    pool-size-max: 1
+    
+    # For experts only. Specify the idle closure-timeout for an unused connection
+    # in the connection pool (in seconds)
+    idle-timeout: 600

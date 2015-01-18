@@ -17,9 +17,11 @@
  */
 package de.matzefratze123.heavyspleef.flag.presets;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
@@ -47,5 +49,37 @@ public abstract class ListFlag<T> extends AbstractFlag<List<T>>{
 	public int size() {
 		return getValue().size();
 	}
+	
+	private void clear() {
+		getValue().clear();
+	}
+	
+	@Override
+	public void marshal(Element element) {
+		for (T item : getValue()) {
+			Element itemElement = element.addElement("item");
+			marshalListItem(itemElement, item);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void unmarshal(Element element) {
+		if (getValue() == null) {
+			setValue(new ArrayList<T>());
+		} else {
+			clear();
+		}
+		
+		List<Element> itemElementsList = element.elements("item");
+		for (Element itemElement : itemElementsList) {
+			T item = unmarshalListItem(itemElement);
+			add(item);
+		}
+	}
+	
+	public abstract void marshalListItem(Element element, T item);
+	
+	public abstract T unmarshalListItem(Element element);
 	
 }

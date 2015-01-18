@@ -17,8 +17,12 @@
  */
 package de.matzefratze123.heavyspleef.flag.presets;
 
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
@@ -28,6 +32,38 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 	@Override
 	public Location parseInput(Player player, String input) throws InputParseException {
 		return player.getLocation();
+	}
+	
+	@Override
+	public void marshal(Element element) {
+		Element worldElement = element.addElement("world");
+		Element xElement = element.addElement("x");
+		Element yElement = element.addElement("y");
+		Element zElement = element.addElement("z");
+		
+		Location value = getValue();
+		Validate.notNull(value, "getValue() cannot be null when marshalling flag value");
+		
+		worldElement.addText(value.getWorld().getName());
+		xElement.addText(String.valueOf(value.getX()));
+		yElement.addText(String.valueOf(value.getY()));
+		zElement.addText(String.valueOf(value.getZ()));
+	}
+	
+	@Override
+	public void unmarshal(Element element) {
+		Element worldElement = element.element("world");
+		Element xElement = element.element("x");
+		Element yElement = element.element("y");
+		Element zElement = element.element("z");
+		
+		World world = Bukkit.getWorld(worldElement.getText());
+		double x = Double.parseDouble(xElement.getText());
+		double y = Double.parseDouble(yElement.getText());
+		double z = Double.parseDouble(zElement.getText());
+		
+		Location location = new Location(world, x, y, z);
+		setValue(location);
 	}
 	
 }

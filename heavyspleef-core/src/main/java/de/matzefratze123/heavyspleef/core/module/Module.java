@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.core.module;
 
+import java.util.logging.Logger;
+
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 
 public interface Module {
@@ -26,5 +28,7 @@ public interface Module {
 	public void enable();
 	
 	public void disable();
+	
+	public Logger getLogger();
 	
 }

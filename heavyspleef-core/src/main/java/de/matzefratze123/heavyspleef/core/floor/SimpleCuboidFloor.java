@@ -17,10 +17,16 @@
  */
 package de.matzefratze123.heavyspleef.core.floor;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.Location;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EditSessionFactory;
@@ -35,14 +41,20 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.WorldData;
 
+@Entity
+@Table(name = "floors")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SimpleCuboidFloor implements Floor {
 
 	private static final int NO_LIMIT = -1;
 	
 	@XmlTransient
+	@Transient
 	private final EditSessionFactory factory;
+	@XmlElement
 	private String name;
 	@XmlTransient
+	@Transient
 	private Clipboard floorClipboard;
 	
 	private SimpleCuboidFloor() {

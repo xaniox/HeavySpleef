@@ -19,7 +19,6 @@ package de.matzefratze123.heavyspleef.commands.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -121,7 +120,7 @@ public abstract class CommandManagerService implements CommandExecutor {
 	}
 	
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {		
 		String name = cmd.getName();
 		if (!commandMap.containsKey(name)) {
 			//That command doesn't belong to us
@@ -132,19 +131,25 @@ public abstract class CommandManagerService implements CommandExecutor {
 		
 		//Try to find the deepest available sub-command
 		int index = 0;
-		boolean subFound = true;
-		while (index < args.length && subFound) {
-			Set<CommandContainer> childs = command.getChildCommands();
-			
-			for (CommandContainer child : childs) {
-				if (child.getName().equals(args[index])) {
-					command = child;
-					index++;
-					continue;
+		boolean subFound;
+		
+		if (args.length > 0) {
+			do {
+				subFound = false;
+				
+				Set<CommandContainer> childs = command.getChildCommands();
+				
+				if (childs != null) {
+					for (CommandContainer child : childs) {
+						if (child.getName().equals(args[index])) {
+							command = child;
+							index++;
+							subFound = true;
+							break;
+						}
+					}
 				}
-			}
-			
-			subFound = false;
+			} while (index < args.length && subFound);
 		}
 		
 		if (!(sender instanceof Player) && command.isPlayerOnly()) {
@@ -200,7 +205,6 @@ public abstract class CommandManagerService implements CommandExecutor {
 					
 					if (parameterType == CommandContext.class) {
 						parameterValues[i] = context;
-						break;
 					} else if (plugin.getClass() == parameterType) {
 						parameterValues[i] = plugin;
 					} else if (parameterType.isPrimitive()) {

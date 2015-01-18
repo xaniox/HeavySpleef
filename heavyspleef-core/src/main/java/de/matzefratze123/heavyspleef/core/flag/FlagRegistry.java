@@ -136,6 +136,9 @@ public class FlagRegistry {
 	
 	public AbstractFlag<?> newFlagInstance(String name) {
 		Class<? extends AbstractFlag<?>> clazz = availableFlags.get(name);
+		if (clazz == null) {
+			throw new NoSuchFlagException(name);
+		}
 		
 		try {
 			return clazz.newInstance();

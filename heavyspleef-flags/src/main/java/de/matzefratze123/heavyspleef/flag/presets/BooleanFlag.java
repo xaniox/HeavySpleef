@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.flag.presets;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.dom4j.Element;
 
 import com.google.common.collect.Lists;
 
@@ -39,6 +40,18 @@ public abstract class BooleanFlag extends AbstractFlag<Boolean> {
 		}
 		
 		return Boolean.valueOf(bool);
+	}
+	
+	@Override
+	public void marshal(Element element) {
+		element.addText(String.valueOf(getValue()));
+	}
+	
+	@Override
+	public void unmarshal(Element element) {
+		boolean value = Boolean.parseBoolean(element.getText());
+		
+		setValue(value);
 	}
 	
 }

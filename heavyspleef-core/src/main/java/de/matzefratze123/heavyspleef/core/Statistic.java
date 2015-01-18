@@ -19,31 +19,20 @@ package de.matzefratze123.heavyspleef.core;
 
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "statistics")
 public class Statistic implements Comparable<Statistic> {
 
 	public static final String UUID_ATTRIBUTE = "uuid";
 	public static final String RATING_ATTRIBUTE = "rating";
 	
-	@Column(name = "uuid")
 	private UUID uniqueIdentifier;
-	@Column(name = "wins")
 	private int wins;
-	@Column(name = "losses")
 	private int losses;
-	@Column(name = "knockouts")
 	private int knockouts;
-	@Column(name = "games_played")
 	private int gamesPlayed;
-	@Column(name = "time_played")
 	private long timePlayed;
-	@Column(name = "rating")
-	private int rating;
+	private int points;
+	
+	public Statistic() {}
 	
 	public Statistic(UUID uuid) {
 		this.uniqueIdentifier = uuid;
@@ -57,29 +46,53 @@ public class Statistic implements Comparable<Statistic> {
 		return wins;
 	}
 	
+	public void setWins(int wins) {
+		this.wins = wins;
+	}
+	
 	public int getLosses() {
 		return losses;
+	}
+	
+	public void setLosses(int losses) {
+		this.losses = losses;
 	}
 	
 	public int getKnockouts() {
 		return knockouts;
 	}
 	
+	public void setKnockouts(int knockouts) {
+		this.knockouts = knockouts;
+	}
+	
 	public int getGamesPlayed() {
 		return gamesPlayed;
+	}
+	
+	public void setGamesPlayed(int gamesPlayed) {
+		this.gamesPlayed = gamesPlayed;
 	}
 	
 	public long getTimePlayed() {
 		return timePlayed;
 	}
 	
-	public int getRating() {
-		return rating;
+	public void setTimePlayed(long timePlayed) {
+		this.timePlayed = timePlayed;
+	}
+	
+	public int getPoints() {
+		return points;
+	}
+	
+	public void setPoints(int points) {
+		this.points = points;
 	}
 	
 	@Override
 	public int compareTo(Statistic o) {
-		return Integer.valueOf(rating).compareTo(o.rating);
+		return Integer.valueOf(points).compareTo(o.points);
 	}
 	
 }

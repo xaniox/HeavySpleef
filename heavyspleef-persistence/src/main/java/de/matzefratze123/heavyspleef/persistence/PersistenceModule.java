@@ -17,13 +17,34 @@
  */
 package de.matzefratze123.heavyspleef.persistence;
 
+import java.io.File;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DatabaseConfig;
+import de.matzefratze123.heavyspleef.core.config.DatabaseConnection;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
+import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.persistence.handler.CachingReadWriteHandler;
+import de.matzefratze123.heavyspleef.persistence.handler.ForwardingAsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.persistence.handler.ReadWriteHandler;
 
 public class PersistenceModule extends SimpleModule {
 
+	private static final String XML_CONNECTION_IDENTIFIER = "xml";
+	private static final String SCHEMATIC_CONNECTION_IDENTIFIER = "schematic";
+	private static final String SQL_CONNECTION_IDENTIFIER = "sql";
+	
+	private final File defaultXmlDir;
+	private final File defaultSchematicDir;
+	
 	public PersistenceModule(HeavySpleef heavySpleef) {
 		super(heavySpleef);
+		
+		defaultXmlDir = new File(heavySpleef.getDataFolder(), "persistence/games/xml");
+		defaultSchematicDir = new File(heavySpleef.getDataFolder(), "persistence/games/schematic");
 	}
 
 	@Override
@@ -31,13 +52,38 @@ public class PersistenceModule extends SimpleModule {
 		HeavySpleef heavySpleef = getHeavySpleef();
 		ReadWriteHandler handler = null;
 		
+		DatabaseConfig config = heavySpleef.getConfiguration(ConfigType.DATABASE_CONFIG);
+		Properties properties = new Properties();
+		properties.put("statistic.enabled", config.isStatisticsModuleEnabled());
+		
+		DatabaseConnection xmlConn = config.getConnection(XML_CONNECTION_IDENTIFIER);
+		String xmlDirString = xmlConn.getString("dir");
+		File xmlDir = xmlDirString != null ? new File(xmlDirString) : defaultXmlDir;
+		if (!xmlDir.exists()) {
+			xmlDir.mkdirs();
+		}
+		properties.put("xml.dir", xmlDir);
+		
+		DatabaseConnection schematicConn = config.getConnection(SCHEMATIC_CONNECTION_IDENTIFIER);
+		String schematicDirString = schematicConn.getString("dir");
+		File schematicDir = schematicDirString != null ? new File(schematicConn.getString("dir")) : defaultSchematicDir;
+		if (!schematicDir.exists()) {
+			schematicDir.mkdirs();
+		}
+		properties.put("schematic.dir", schematicDir);
+		
+		DatabaseConnection sqlConn = config.getConnection(SQL_CONNECTION_IDENTIFIER);
+		for (Entry<String, Object> sqlProperty : sqlConn.getProperties().entrySet()) {
+			properties.put(sqlProperty.getKey(), sqlProperty.getValue());
+		}
+		
 		try {
-			handler = new CachingReadWriteHandler(heavySpleef, null);
+			handler = new CachingReadWriteHandler(heavySpleef, properties);
 		} catch (Exception e) {
 			throw new RuntimeException("Could not enable HeavySpleef persistence module", e);
 		}
 		
-		ForwardingAsyncReadWriteHandler delegateHandler = new ForwardingAsyncReadWriteHandler(handler, heavySpleef.getPlugin(), false);
+		AsyncReadWriteHandler delegateHandler = new ForwardingAsyncReadWriteHandler(handler, heavySpleef.getPlugin(), false);
 		heavySpleef.setDatabaseHandler(delegateHandler);
 	}
 

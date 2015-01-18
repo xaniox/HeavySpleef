@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.flag.presets;
 
 import org.bukkit.entity.Player;
+import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
@@ -27,6 +28,16 @@ public abstract class StringFlag extends AbstractFlag<String> {
 	@Override
 	public String parseInput(Player player, String input) throws InputParseException {
 		return input;
+	}
+	
+	@Override
+	public void marshal(Element element) {
+		element.addText(getValue());
+	}
+	
+	@Override
+	public void unmarshal(Element element) {
+		setValue(element.getText());
 	}
 	
 }

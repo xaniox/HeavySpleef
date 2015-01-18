@@ -17,6 +17,9 @@
  */
 package de.matzefratze123.heavyspleef.core.config;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,12 +29,19 @@ public class DatabaseConnection {
 	private String identifier;
 	private Map<String, Object> properties;
 	
-	public DatabaseConnection(ConfigurationSection connectionSection) {
+	public DatabaseConnection(ConfigurationSection connectionSection, File basedir) {
 		this.identifier = connectionSection.getName();
+		this.properties = new HashMap<String, Object>();
 		
 		/* Save all properties from the section */
 		for (String key : connectionSection.getKeys(false)) {
-			properties.put(key, connectionSection.get(key));
+			Object value = connectionSection.get(key);
+			if (value instanceof String) {
+				//Replace {basedir} variable
+				value = ((String)value).replace("{basedir}", basedir.getPath());
+			}
+			
+			properties.put(key, value);
 		}
 	}
 	
@@ -39,17 +49,45 @@ public class DatabaseConnection {
 		return identifier;
 	}
 
-	public Object get(Object key) {
+	public Object get(String key) {
 		return properties.get(key);
 	}
+	
+	public String getString(String key) {
+		Object value = get(key);
+		return value instanceof String || value == null ? (String) value : value.toString();
+	}
+	
+	public int getInt(String key) {
+		Object value = get(key);
+		
+		int result = 0;
+		if (value instanceof Integer) {
+			result = ((Integer)value).intValue();
+		} else {
+			String strValue = value instanceof String || value == null ? (String) value : value.toString();
+			
+			try {
+				result = Integer.parseInt(strValue);
+			} catch (NumberFormatException nfe) {
+				//Do nothing and return 0
+			}
+		}
+		
+		return result;
+	}
 
-	public Object getOrDefault(Object key, Object defaultValue) {
+	public Object getOrDefault(String key, Object defaultValue) {
 		Object value = properties.get(key);
 		if (value == null) {
 			value = defaultValue;
 		}
 		
 		return value;
+	}
+	
+	public Map<String, Object> getProperties() {
+		return Collections.unmodifiableMap(properties);
 	}
 	
 }

@@ -17,8 +17,15 @@
  */
 package de.matzefratze123.heavyspleef.core.i18n;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -26,16 +33,23 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.Localization;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage.MessageVariable;
 
 public class I18N {
 	
-	private static final Locale FALLBACK_LOCALE = new Locale("en");
-	private static final String CLASSPATH_DIR = "/i18n/";
+	private static final List<String> CLASSPATH_LOCALE_RESOURCES = Lists.newArrayList("locale_en_US.yml", "locale_de_DE.yml");
+	private static final String FALLBACK_FILE = "locale_en_US.yml";
+	static final Locale FALLBACK_LOCALE = Locale.US;
+	static final String CLASSPATH_DIR = "/i18n/";
 	
 	private final YMLControl defaultControl;
 	private final File localeDir;
@@ -51,6 +65,13 @@ public class I18N {
 		Localization localization = config.getLocalization();
 		this.locale = localization.getLocale();
 		
+		try {
+			checkResourcesAndCopy();
+		} catch (IOException e) {
+			// Just inform as the YMLControl is going to load this file from the classpath
+			logger.log(Level.WARNING, "Could not copy locale resource file, using classpath resource", e);
+		}
+		
 		loadBundle();
 	}
 	
@@ -61,6 +82,76 @@ public class I18N {
 			//Locale could not be found try to load from classpath
 			YMLControl classpathControl = new YMLControl(localeDir, CLASSPATH_DIR, true);
 			bundle = ResourceBundle.getBundle("locale", FALLBACK_LOCALE, classpathControl);
+		}
+	}
+	
+	private void checkResourcesAndCopy() throws IOException {
+		for (String localeRes : CLASSPATH_LOCALE_RESOURCES) {
+			File localeFile = new File(localeDir, localeRes);
+			
+			if (!localeFile.exists()) {
+				URL localeResourceUrl = getClass().getResource(CLASSPATH_DIR + localeRes);
+				
+				HeavySpleef.copyResource(localeResourceUrl, localeFile);
+			}
+		}
+		
+		// Check if all messages exist, and add missing messages to the file e.g validate and replace
+		for (File localeFile : localeDir.listFiles()) {
+			URL classpathResource = getClass().getResource(CLASSPATH_DIR + localeFile.getName());
+			if (classpathResource == null) {
+				classpathResource = getClass().getResource(CLASSPATH_DIR + FALLBACK_FILE);
+			}
+			
+			URLConnection connection = classpathResource.openConnection();
+			connection.setUseCaches(false);
+			
+			StringBuilder fileBuilder;
+			StringBuilder resourceBuilder;
+			
+			try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(localeFile)));
+				 BufferedReader resourceReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+				
+				fileBuilder = new StringBuilder();
+				resourceBuilder = new StringBuilder();
+				
+				String read;
+				while ((read = fileReader.readLine()) != null) {
+					fileBuilder.append(read).append('\n');
+				}
+				
+				while ((read = resourceReader.readLine()) != null) {
+					resourceBuilder.append(read).append('\n');
+				}
+			}
+			
+			YamlConfiguration fileConfig = new YamlConfiguration();
+			YamlConfiguration resourceConfig = new YamlConfiguration();
+			
+			try {
+				fileConfig.loadFromString(fileBuilder.toString());
+				resourceConfig.loadFromString(resourceBuilder.toString());
+			} catch (InvalidConfigurationException e) {
+				logger.log(Level.SEVERE, "Could not validate " + localeFile.getName() + ", ignoring file", e);
+				continue;
+			}
+			
+			boolean changesToCommit = false;
+			
+			for (String key : resourceConfig.getKeys(true)) {
+				if (resourceConfig.isConfigurationSection(key)) {
+					continue;
+				}
+				
+				if (!fileConfig.contains(key)) {
+					fileConfig.set(key, resourceConfig.get(key));
+					changesToCommit = true;
+				}
+			}
+			
+			if (changesToCommit) {
+				fileConfig.save(localeFile);
+			}
 		}
 	}
 	

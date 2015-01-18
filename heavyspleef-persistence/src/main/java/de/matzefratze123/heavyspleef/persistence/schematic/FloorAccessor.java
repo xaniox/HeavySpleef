@@ -15,12 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.floor.schematic;
+package de.matzefratze123.heavyspleef.persistence.schematic;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,41 +51,120 @@ import com.sk89q.worldedit.regions.Region;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
 
-public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.FloorEntry> {
-	
-	public static final FilenameFilter FILENAME_FILTER = new FilenameFilter() {
-		
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.endsWith(".floor");
-		}
-	};
-	
-	/* Singleton class, encapsulated */
-	private static FloorSchematicCodec instance;
+public class FloorAccessor extends SchematicAccessor<Floor> {
+
 	private static final String ROOT_TAG_NAME = "floor-schematic";
 	
-	public static FloorSchematicCodec getInstance() {
-		if (instance == null) {
-			instance = new FloorSchematicCodec();
+	@Override
+	public Class<Floor> getObjectClass() {
+		return Floor.class;
+	}
+
+	@Override
+	public void write(OutputStream out, Floor floor) throws IOException, CodecException {
+		StringTag nameTag = new StringTag("name", floor.getName());
+		
+		Clipboard clipboard = floor.getClipboard();
+		Region region = clipboard.getRegion();
+		
+		int width = region.getWidth();
+		int height = region.getHeight();
+		int length = region.getLength();
+		
+		ShortTag widthTag = new ShortTag("width", (short)width);
+		ShortTag heightTag = new ShortTag("height", (short)height);
+		ShortTag lengthTag = new ShortTag("length", (short)length);
+		
+		Map<String, Tag> boundariesMap = Maps.newHashMap();
+		boundariesMap.put("width", widthTag);
+		boundariesMap.put("height", heightTag);
+		boundariesMap.put("length", lengthTag);
+		
+		CompoundTag boundariesTag = new CompoundTag("boundaries", boundariesMap);
+		
+		Vector origin = clipboard.getOrigin();
+		
+		List<IntTag> originCoordinateList = Lists.newArrayList();
+		originCoordinateList.add(new IntTag(origin.getBlockX()));
+		originCoordinateList.add(new IntTag(origin.getBlockY()));
+		originCoordinateList.add(new IntTag(origin.getBlockZ()));
+		
+		ListTag originTag = new ListTag("origin", IntTag.class, originCoordinateList);
+		
+		byte[] blocks = new byte[width * height * length];
+		byte[] data = new byte[width * height * length];
+		byte[] addBlocks = null;
+		List<Tag> tileEntities = new ArrayList<Tag>();
+		
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				for (int z = 0; z < length; z++) {
+					int index = y * width * length + z * width + x;
+					BaseBlock block = clipboard.getBlock(new Vector(x, y, z));
+					
+					if (block.getId() > Byte.MAX_VALUE - Byte.MIN_VALUE) {
+						if (addBlocks == null) {
+							addBlocks = new byte[(blocks.length >> 1) + 1];
+						}
+						
+						if ((index & 1) == 0) {
+							data[index >> 1] = (byte) (data[index >> 1] & 0xF0 | (block.getId() >> 8) & 0x0F);
+						} else {
+							data[index >> 1] = (byte) (data[index >> 1] & 0x0F | (block.getId() >> 4) & 0xF0);
+						}
+					}
+					
+					blocks[index] = (byte)(block.getId() & 0xFF);
+					data[index] = (byte)(block.getData() & 0xFF);
+					
+					// Get the list of key/values from the block
+					CompoundTag rawTag = block.getNbtData();
+					if (rawTag != null) {
+						Map<String, Tag> values = new HashMap<String, Tag>();
+						for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
+							values.put(entry.getKey(), entry.getValue());
+						}
+						
+						values.put("id", new StringTag("id", block.getNbtId()));
+						values.put("x", new IntTag("x", x));
+						values.put("y", new IntTag("y", y));
+						values.put("z", new IntTag("z", z));
+						
+						CompoundTag tileEntityTag = new CompoundTag("", values);
+						tileEntities.add(tileEntityTag);
+					}
+				}
+			}
 		}
 		
-		return instance;
-	}
-	
-	private FloorSchematicCodec() {}
-	
-	@Override
-	public FloorEntry load(File file) throws CodecException, IOException {
-		try (InputStream inputStream = new FileInputStream(file)) {
-			return load(inputStream);			
+		ByteArrayTag blocksTag = new ByteArrayTag("blocks", blocks);
+		ByteArrayTag dataTag = new ByteArrayTag("data", data);
+		ListTag tileEntitiesTag = new ListTag("tileentities", CompoundTag.class, tileEntities);
+		
+		Map<String, Tag> childs = Maps.newHashMap();
+		childs.put("name", nameTag);
+		childs.put("boundaries", boundariesTag);
+		childs.put("origin", originTag);
+		childs.put("blocks", blocksTag);
+		childs.put("data", dataTag);
+		childs.put("tileentities", tileEntitiesTag);
+		
+		if (addBlocks != null) {
+			childs.put("addblocks", new ByteArrayTag("addblocks", addBlocks));
+		}
+		
+		CompoundTag rootTag = new CompoundTag(ROOT_TAG_NAME, childs);
+		
+		try (NBTOutputStream nbtOut = new NBTOutputStream(
+				new GZIPOutputStream(out))) {
+			nbtOut.writeTag(rootTag);
 		}
 	}
-	
+
 	@Override
-	public FloorEntry load(InputStream inputStream) throws CodecException, IOException {
+	public Floor read(InputStream in) throws IOException, CodecException {
 		NBTInputStream nbtStream = new NBTInputStream(
-				new GZIPInputStream(inputStream));
+				new GZIPInputStream(in));
 		
 		CompoundTag rootTag = (CompoundTag) nbtStream.readTag();
 		nbtStream.close();
@@ -105,7 +180,6 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		CompoundTag boundariesTag = getChildTag(childs, "boundaries", CompoundTag.class);
 		Map<String, Tag> boundariesChilds = boundariesTag.getValue();
 		
-		String game = getChildTag(childs, "game", StringTag.class).getValue();
 		String name = getChildTag(childs, "name", StringTag.class).getValue();
 		short length = getChildTag(boundariesChilds, "length", ShortTag.class).getValue();
 		short width = getChildTag(boundariesChilds, "width", ShortTag.class).getValue();
@@ -221,121 +295,7 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		}
 		
 		Floor floor = new SimpleCuboidFloor(name, clipboard);
-		return new FloorEntry(game, floor);
-	}
-	
-	@Override
-	public void save(FloorEntry obj, File file) throws CodecException, IOException {
-		try (OutputStream outputStream = new FileOutputStream(file)) {
-			save(obj, outputStream);
-		}
-	}
-
-	@Override
-	public void save(FloorEntry obj, OutputStream outputStream) throws CodecException, IOException {
-		String game = obj.getGame();
-		Floor floor = obj.getFloor();
-		
-		StringTag nameTag = new StringTag("name", floor.getName());
-		StringTag gameTag = new StringTag("game", game);
-		
-		Clipboard clipboard = floor.getClipboard();
-		Region region = clipboard.getRegion();
-		
-		int width = region.getWidth();
-		int height = region.getHeight();
-		int length = region.getLength();
-		
-		ShortTag widthTag = new ShortTag("width", (short)width);
-		ShortTag heightTag = new ShortTag("height", (short)height);
-		ShortTag lengthTag = new ShortTag("length", (short)length);
-		
-		Map<String, Tag> boundariesMap = Maps.newHashMap();
-		boundariesMap.put("width", widthTag);
-		boundariesMap.put("height", heightTag);
-		boundariesMap.put("length", lengthTag);
-		
-		CompoundTag boundariesTag = new CompoundTag("boundaries", boundariesMap);
-		
-		Vector origin = clipboard.getOrigin();
-		
-		List<IntTag> originCoordinateList = Lists.newArrayList();
-		originCoordinateList.add(new IntTag("", origin.getBlockX()));
-		originCoordinateList.add(new IntTag("", origin.getBlockY()));
-		originCoordinateList.add(new IntTag("", origin.getBlockZ()));
-		
-		ListTag originTag = new ListTag("origin", IntTag.class, originCoordinateList);
-		
-		byte[] blocks = new byte[width * height * length];
-		byte[] data = new byte[width * height * length];
-		byte[] addBlocks = null;
-		List<Tag> tileEntities = new ArrayList<Tag>();
-		
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				for (int z = 0; z < length; z++) {
-					int index = y * width * length + z * width + x;
-					BaseBlock block = clipboard.getBlock(new Vector(x, y, z));
-					
-					if (block.getId() > Byte.MAX_VALUE - Byte.MIN_VALUE) {
-						if (addBlocks == null) {
-							addBlocks = new byte[(blocks.length >> 1) + 1];
-						}
-						
-						if ((index & 1) == 0) {
-							data[index >> 1] = (byte) (data[index >> 1] & 0xF0 | (block.getId() >> 8) & 0x0F);
-						} else {
-							data[index >> 1] = (byte) (data[index >> 1] & 0x0F | (block.getId() >> 4) & 0xF0);
-						}
-					}
-					
-					blocks[index] = (byte)(block.getId() & 0xFF);
-					data[index] = (byte)(block.getData() & 0xFF);
-					
-					// Get the list of key/values from the block
-					CompoundTag rawTag = block.getNbtData();
-					if (rawTag != null) {
-						Map<String, Tag> values = new HashMap<String, Tag>();
-						for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
-							values.put(entry.getKey(), entry.getValue());
-						}
-						
-						values.put("id", new StringTag("id", block.getNbtId()));
-						values.put("x", new IntTag("x", x));
-						values.put("y", new IntTag("y", y));
-						values.put("z", new IntTag("z", z));
-						
-						CompoundTag tileEntityTag = new CompoundTag("", values);
-						tileEntities.add(tileEntityTag);
-					}
-				}
-			}
-		}
-		
-		ByteArrayTag blocksTag = new ByteArrayTag("blocks", blocks);
-		ByteArrayTag dataTag = new ByteArrayTag("data", data);
-		ListTag tileEntitiesTag = new ListTag("tileentities", CompoundTag.class, tileEntities);
-		
-		Map<String, Tag> childs = Maps.newHashMap();
-		childs.put("name", nameTag);
-		childs.put("game", gameTag);
-		childs.put("boundaries", boundariesTag);
-		childs.put("origin", originTag);
-		childs.put("blocks", blocksTag);
-		childs.put("data", dataTag);
-		childs.put("tileentities", tileEntitiesTag);
-		
-		if (addBlocks != null) {
-			childs.put("addblocks", new ByteArrayTag("addblocks", addBlocks));
-		}
-		
-		CompoundTag rootTag = new CompoundTag(ROOT_TAG_NAME, childs);
-		
-		try (NBTOutputStream nbtOut = new NBTOutputStream(
-				new GZIPOutputStream(outputStream))) {
-			nbtOut.writeTag(rootTag);
-			nbtOut.close();
-		}
+		return floor;
 	}
 	
 	private static <T extends Tag> T getChildTag(Map<String, Tag> childs, String name, Class<T> expected) throws CodecException {
@@ -349,26 +309,6 @@ public class FloorSchematicCodec implements SchematicCodec<FloorSchematicCodec.F
 		}
 		
 		return expected.cast(childTag);
-	}
-	
-	public static class FloorEntry {
-		
-		private String game;
-		private Floor floor;
-		
-		public FloorEntry(String game, Floor floor) {
-			this.game = game;
-			this.floor = floor;
-		}
-		
-		public String getGame() {
-			return game;
-		}
-		
-		public Floor getFloor() {
-			return floor;
-		}
-		
 	}
 
 }

@@ -18,10 +18,19 @@
 package de.matzefratze123.heavyspleef.core;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -37,16 +46,27 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
 
+@Entity
+@Table(name = "flags")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class FlagManager {
 	
+	@XmlTransient
+	@Transient
 	private final JavaPlugin plugin;
+	@XmlElement
 	private Map<String, AbstractFlag<?>> flags;
+	@XmlTransient // Properties are defined by flags and only cached so make this field transient
+	@Transient
 	private Set<GamePropertyBundle> propertyBundles;
+	@XmlElement // Requested properties must be saved
+	private DefaultGamePropertyBundle requestedProperties;
 	
 	public FlagManager(JavaPlugin plugin) {
 		this.plugin = plugin;
 		this.flags = Maps.newLinkedHashMap();
 		this.propertyBundles = Sets.newTreeSet();
+		this.requestedProperties = new DefaultGamePropertyBundle(Maps.newEnumMap(GameProperty.class));
 	}
 	
 	public void addFlag(AbstractFlag<?> flag) {
@@ -101,6 +121,10 @@ public class FlagManager {
 		return flags.containsKey(name);
 	}
 	
+	public Map<String, AbstractFlag<?>> getPresentFlags() {
+		return Collections.unmodifiableMap(flags);
+	}
+	
 	public Object getProperty(GameProperty property) {
 		Object value = null;
 		
@@ -111,34 +135,26 @@ public class FlagManager {
 			}
 		}
 		
+		if (value == null) {
+			// Requested properties have the lowest priority
+			value = requestedProperties.get(property);
+		}
+		
 		return value;
 	}
 	
 	public void requestProperty(GameProperty property, Object value) {
-		GamePropertyBundle defaultBundle = getDefaultBundle();
-		
-		defaultBundle.put(property, value);
+		requestedProperties.put(property, value);
 	}
 	
-	private DefaultGamePropertyBundle getDefaultBundle() {
-		DefaultGamePropertyBundle defaultBundle = null;
-		for (GamePropertyBundle bundle : propertyBundles) {
-			if (bundle instanceof DefaultGamePropertyBundle) {
-				defaultBundle = (DefaultGamePropertyBundle) bundle;
-				break;
-			}
-		}
-		
-		if (defaultBundle == null) {
-			Map<GameProperty, Object> requestedProperties = new EnumMap<GameProperty, Object>(GameProperty.class);
-			defaultBundle = new DefaultGamePropertyBundle(requestedProperties);
-		}
-		
-		return defaultBundle;
+	public GamePropertyBundle getDefaultPropertyBundle() {
+		return requestedProperties;
 	}
 	
-	private static class GamePropertyBundle extends ForwardingMap<GameProperty, Object> implements Comparable<GamePropertyBundle> {
+	public static class GamePropertyBundle extends ForwardingMap<GameProperty, Object> implements Comparable<GamePropertyBundle> {
 		
+		@XmlTransient
+		@Transient
 		private AbstractFlag<?> relatingFlag;
 		private Map<GameProperty, Object> delegate;
 		private GamePropertyPriority.Priority priority;
@@ -148,6 +164,7 @@ public class FlagManager {
 			this.relatingFlag = flag;
 			
 			try {
+				// Doing it the ugly way...
 				Method method = flag.getClass().getMethod("defineGameProperties", Map.class);
 				if (!method.isAnnotationPresent(GamePropertyPriority.class)) {
 					priority = Priority.NORMAL;
@@ -186,7 +203,10 @@ public class FlagManager {
 		
 	}
 	
-	private static class DefaultGamePropertyBundle extends GamePropertyBundle {
+	@Entity
+	@Table(name = "property_bundles")
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class DefaultGamePropertyBundle extends GamePropertyBundle {
 
 		public DefaultGamePropertyBundle(Map<GameProperty, Object> propertyMap) {
 			super(Priority.REQUESTED, propertyMap);

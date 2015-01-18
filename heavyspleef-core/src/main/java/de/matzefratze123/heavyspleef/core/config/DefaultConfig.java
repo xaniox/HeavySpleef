@@ -38,12 +38,11 @@ public class DefaultConfig extends ConfigurationObject {
 	
 	public DefaultConfig(Configuration config) {
 		super(config);
-		
-		this.defaultGameProperties = new EnumMap<GameProperty, Object>(GameProperty.class);
 	}
 
 	@Override
-	public void inflate(Configuration config) {
+	public void inflate(Configuration config, Object... args) {
+		defaultGameProperties = new EnumMap<GameProperty, Object>(GameProperty.class);
 		ConfigurationSection propsSection = config.getConfigurationSection("default-game-properties");
 		Set<String> keys = propsSection.getKeys(false);
 		
@@ -78,7 +77,7 @@ public class DefaultConfig extends ConfigurationObject {
 		return localization;
 	}
 	
-	private GameProperty mapPropertyString(String configKey) {
+	private static GameProperty mapPropertyString(String configKey) {
 		for (GameProperty property : GameProperty.values()) {
 			String propertyName = property.name();
 			
@@ -102,7 +101,7 @@ public class DefaultConfig extends ConfigurationObject {
 				}
 				
 				if (SKIP_CHARS.contains(configChar)) {
-					configChar++;
+					configIndex++;
 					skip = true;
 				}
 				
@@ -111,6 +110,8 @@ public class DefaultConfig extends ConfigurationObject {
 				}
 				
 				isMatching = nameChar == configChar;
+				configIndex++;
+				nameIndex++;
 			} while (isMatching);
 			
 			if (isMatching) {
@@ -120,7 +121,5 @@ public class DefaultConfig extends ConfigurationObject {
 		
 		return null;
 	}
-	
-	
 	
 }

@@ -17,8 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
-import java.util.Properties;
-
 import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.ChatColor;
@@ -66,6 +64,9 @@ public class CommandManager {
 					message = plugin.getVarMessage(Messages.Command.USAGE_FORMAT)
 						.setVariable("usage", messageArgs[0])
 						.toString();
+					break;
+				case "message.unknown_command":
+					message = plugin.getMessage(Messages.Command.UNKNOWN_COMMAND);
 					break;
 				default:
 					break;
@@ -116,10 +117,12 @@ public class CommandManager {
 				.color(ChatColor.GOLD)
 			.then("/spleef help")
 				.command("/spleef help")
+				.tooltip("Click here to access help")
 			.then(" for help or click ")
 			.then("here")
 				.color(ChatColor.GRAY)
 				.command("/spleef help")
+				.tooltip("Click here to access help")
 			.send(sender);
 	}
 	

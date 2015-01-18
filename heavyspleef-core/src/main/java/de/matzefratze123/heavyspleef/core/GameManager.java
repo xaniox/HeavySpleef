@@ -20,9 +20,6 @@ package de.matzefratze123.heavyspleef.core;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Maps;
@@ -30,10 +27,8 @@ import com.google.common.collect.Maps;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@XmlRootElement(name = "games")
 public class GameManager {
 
-	@XmlTransient
 	private AsyncReadWriteHandler databaseHandler;
 	private Map<String, Game> games;
 	
@@ -43,11 +38,18 @@ public class GameManager {
 	}
 	
 	public void addGame(Game game) {
+		addGame(game, true);
+	}
+	
+	public void addGame(Game game, boolean save) {
 		String name = game.getName();
 		Validate.isTrue(!games.containsKey(name));
 		
 		games.put(game.getName(), game);
-		databaseHandler.saveGame(game, null);
+		
+		if (save) {
+			databaseHandler.saveGame(game, null);
+		}
 	}
 	
 	public Game deleteGame(String name) {

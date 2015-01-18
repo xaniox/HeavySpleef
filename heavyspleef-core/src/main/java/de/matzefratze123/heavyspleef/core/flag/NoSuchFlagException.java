@@ -15,28 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.module;
+package de.matzefratze123.heavyspleef.core.flag;
 
-import java.util.logging.Logger;
+public class NoSuchFlagException extends RuntimeException {
 
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
-
-public abstract class SimpleModule implements Module {
-
-	private HeavySpleef heavySpleef;
+	private static final long serialVersionUID = 8268833383817922493L;
 	
-	public SimpleModule(HeavySpleef heavySpleef) {
-		this.heavySpleef = heavySpleef;
+	public NoSuchFlagException() {}
+	
+	public NoSuchFlagException(String msg) {
+		super(msg);
 	}
 	
-	@Override
-	public HeavySpleef getHeavySpleef() {
-		return heavySpleef;
-	}
-	
-	@Override
-	public Logger getLogger() {
-		return heavySpleef.getLogger();
-	}
-
 }

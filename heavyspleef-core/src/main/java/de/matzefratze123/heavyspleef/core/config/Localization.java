@@ -33,7 +33,13 @@ public class Localization {
 		String country = parts.length > 1 ? parts[1] : null;
 		String variant = parts.length > 2 ? parts[2] : null;
 		
-		locale = new Locale(language, country, variant);
+		if (country == null && variant == null) {
+			locale = new Locale(language);
+		} else if (country != null && variant == null) {
+			locale = new Locale(language, country);
+		} else {
+			locale = new Locale(language, country, variant);
+		}
 	}
 	
 	public Locale getLocale() {

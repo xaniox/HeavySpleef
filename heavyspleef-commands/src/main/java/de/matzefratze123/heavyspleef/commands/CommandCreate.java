@@ -17,7 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.commands.internal.Command;
 import de.matzefratze123.heavyspleef.commands.internal.CommandContext;
@@ -36,18 +36,18 @@ public class CommandCreate {
 			permission = "heavyspleef.admin.create")
 	@PlayerOnly
 	public void onCreateCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		CommandSender sender = context.getSender();
+		Player sender = context.getSender();
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
 		CommandValidate.isTrue(!manager.hasGame(gameName), heavySpleef.getMessage(Messages.Command.GAME_ALREADY_EXIST));
 		
-		Game game = new Game(heavySpleef, gameName);
+		Game game = new Game(heavySpleef, gameName, sender.getWorld());
 		manager.addGame(game);
-		sender.sendMessage(heavySpleef.getMessage(heavySpleef.getVarMessage(Messages.Command.GAME_CREATED)
+		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_CREATED)
 				.setVariable("game", gameName)
-				.toString()));
+				.toString());
 	}
 
 }

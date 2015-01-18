@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.flag.presets;
 
 import org.bukkit.entity.Player;
+import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
@@ -35,6 +36,17 @@ public abstract class IntegerFlag extends AbstractFlag<Integer> {
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public void marshal(Element element) {
+		element.addText(String.valueOf(getValue()));
+	}
+	
+	@Override
+	public void unmarshal(Element element) {
+		int value = Integer.parseInt(element.getText());
+		setValue(value);
 	}
 	
 }

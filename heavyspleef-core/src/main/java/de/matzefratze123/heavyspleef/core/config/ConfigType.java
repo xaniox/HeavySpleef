@@ -45,28 +45,44 @@ public enum ConfigType {
 		return classpathResourceName;
 	}
 	
-	public ConfigurationObject newConfigInstance(Configuration configuration) {
+	public ConfigurationObject newConfigInstance(Configuration configuration, Object... args) {
 		boolean fallback = false;
-		Constructor<? extends ConfigurationObject> constructor;
+		boolean hasArgs = false;
+		Constructor<?>[] constructors = configClass.getConstructors();
+		Constructor<?> constructor = null;
 		
-		try {
-			constructor = configClass.getConstructor(Configuration.class);
-		} catch (NoSuchMethodException nsme) {
-			try {
-				constructor = configClass.getConstructor();
-				fallback = true;
-			} catch (NoSuchMethodException nsme2) {
-				//Give up
-				throw new IllegalStateException("Class " + configClass.getCanonicalName() + " does must define an empty or an "
-						+ Configuration.class.getCanonicalName() + " constructor");
+		for (Constructor<?> constr : constructors) {
+			Class<?>[] parameterClasses = constr.getParameterTypes();
+			
+			if (parameterClasses.length < 1 || !Configuration.class.isAssignableFrom(parameterClasses[0])) {
+				continue;
+			}
+			
+			if (parameterClasses.length > 1 && Object[].class.isAssignableFrom(parameterClasses[1])) {
+				hasArgs = true;
+				constructor = constr;
+				break;
+			} else if (parameterClasses.length == 1) {
+				constructor = constr;
+				break;
 			}
 		}
 		
-		Object[] args = fallback ? new Object[0] : new Object[] { configuration };
+		if (constructor == null) {
+			try {
+				constructor = configClass.getConstructor();
+				fallback = true;
+			} catch (NoSuchMethodException nsme) {
+				throw new IllegalStateException("Class " + configClass.getCanonicalName() + " does must define an empty or an "
+						+ Configuration.class.getCanonicalName() + " constructor with an optional Object varargs parameter");
+			}
+		}
+		
+		Object[] methodArgs = fallback ? new Object[0] : hasArgs ? new Object[] { configuration, args } : new Object[] { configuration };
 		ConfigurationObject obj;
 		
 		try {
-			obj = constructor.newInstance(args);
+			obj = (ConfigurationObject) constructor.newInstance(methodArgs);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}

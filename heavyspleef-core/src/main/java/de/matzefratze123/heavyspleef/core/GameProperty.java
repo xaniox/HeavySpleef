@@ -40,5 +40,15 @@ public enum GameProperty {
 	public Object getDefaultValue() {
 		return defaultValue;
 	}
+	
+	public static GameProperty forName(String name) {
+		for (GameProperty property : values()) {
+			if (property.name().equalsIgnoreCase(name)) {
+				return property;
+			}
+		}
+		
+		return null;
+	}
 
 }

@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core.i18n;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,7 @@ public class YMLControl extends ResourceBundle.Control {
 	private File localeDir;
 	private String classpathDir;
 	private boolean classpath;
+	private boolean loadParent;
 	
 	public YMLControl(File localeDir, String classpathDir) {
 		this.localeDir = localeDir;
@@ -50,6 +52,12 @@ public class YMLControl extends ResourceBundle.Control {
 		this(localeDir, classpathDir);
 		
 		this.classpath = classpath;
+	}
+	
+	public YMLControl(File localeDir, String classpathDir, boolean classpath, boolean loadParent) {
+		this(localeDir, classpathDir, classpath);
+		
+		this.loadParent = loadParent;
 	}
 	
 	@Override
@@ -76,11 +84,16 @@ public class YMLControl extends ResourceBundle.Control {
 			
 			URL url = null;
 			
-			File resourceFile = new File(localeDir, resourceName);
-			if (resourceFile.exists() && resourceFile.isFile() && !classpath) {
-				url = resourceFile.toURI().toURL();
+			if (classpath) {
+				url = getClass().getResource(classpathDir + resourceName);
 			} else {
-				url = loader.getResource(classpathDir + baseName);
+				File resourceFile = new File(localeDir, resourceName);
+				
+				if (resourceFile.exists() && resourceFile.isFile()) {
+					url = resourceFile.toURI().toURL();
+				} else {
+					url = getClass().getResource(classpathDir + resourceName);
+				}
 			}
 			
 			URLConnection connection = url.openConnection();
@@ -94,13 +107,25 @@ public class YMLControl extends ResourceBundle.Control {
 				Reader reader = new InputStreamReader(stream);
 				YamlConfiguration config = new YamlConfiguration();
 				
+				StringBuilder builder;
+				
+				try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+					builder = new StringBuilder();
+					
+					String read;
+					while ((read = bufferedReader.readLine()) != null) {
+						builder.append(read);
+						builder.append('\n');
+					}
+				}
+				
 				try {
-					config.load(reader);
+					config.loadFromString(builder.toString());
 				} catch (InvalidConfigurationException e) {
 					throw new InstantiationException(e.getMessage());
 				}
 				
-				bundle = new YMLResourceBundle(config);
+				bundle = new YMLResourceBundle(config, loadParent);
 			}
 		} else {
 			bundle = super.newBundle(baseName, locale, format, loader, reload);

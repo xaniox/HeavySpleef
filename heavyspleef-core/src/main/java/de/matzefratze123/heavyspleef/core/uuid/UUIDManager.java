@@ -34,26 +34,28 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
+import de.matzefratze123.guavacachecompat.CacheCompat;
+import de.matzefratze123.guavacachecompat.CacheFactory;
+import de.matzefratze123.guavacachecompat.CacheLoaderCompat;
 
 public class UUIDManager {
 	
 	private static final String BASE_URL = "https://api.mojang.com/profiles/minecraft";
 	
 	private final JSONParser parser = new JSONParser();
+	private final CacheFactory factory = new CacheFactory();
 	private final boolean onlineMode;
-	private Cache<String, GameProfile> profileCache;
+	
+	private CacheCompat<String, GameProfile> profileCache;
 	
 	public UUIDManager() {
 		// Use fast Entity#getUniqueId() when onlineMode = true
 		// so we don't have to query the mojang servers
 		this.onlineMode = Bukkit.getOnlineMode();
 		
-		this.profileCache = CacheBuilder.newBuilder()
+		this.profileCache = factory.newCacheBuilder()
 				.expireAfterAccess(30, TimeUnit.MINUTES)
-				.build(new CacheLoader<String, GameProfile>() {
+				.build(new CacheLoaderCompat<String, GameProfile>() {
 
 					@SuppressWarnings("deprecation")
 					@Override

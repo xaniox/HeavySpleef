@@ -10,6 +10,7 @@
   <inceptionYear>2014-2015</inceptionYear>
   <properties>
     <project.encoding>UTF-8</project.encoding>
+    <worldedit.version>6.0.0-SNAPSHOT</worldedit.version>
   </properties>
   <modules>
   	<module>heavyspleef-commands</module>
@@ -135,6 +136,11 @@
        <name>Bukkit's repository</name>
        <url>http://repo.bukkit.org/content/groups/public</url>
      </repository>
+     <repository>
+      <id>matze-repo</id>
+      <name>matze's repository</name>
+      <url>http://matzefratze123.de/artifactory/release/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -144,10 +150,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>guava-cache-compat</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+	  <groupId>dom4j</groupId>
+	  <artifactId>dom4j</artifactId>
+	  <version>1.6.1</version>
+	</dependency>
   </dependencies>
 </project>

@@ -15,21 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.floor.schematic;
+package de.matzefratze123.heavyspleef.persistence.schematic;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
-public interface SchematicCodec<T> {
-	
-	public T load(InputStream inputStream) throws CodecException, IOException;
-	
-	public T load(File file) throws CodecException, IOException;
-	
-	public void save(T obj, OutputStream outputStream) throws CodecException, IOException;
-	
-	public void save(T obj, File file) throws CodecException, IOException;
-	
+public class CodecException extends IOException {
+
+	private static final long serialVersionUID = -4024404582288898448L;
+
+	public CodecException() {}
+
+	public CodecException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public CodecException(String message) {
+		super(message);
+	}
+
+	public CodecException(Throwable cause) {
+		super(cause);
+	}
+
 }

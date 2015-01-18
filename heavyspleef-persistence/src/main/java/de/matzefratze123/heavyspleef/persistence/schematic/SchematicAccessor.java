@@ -15,28 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.module;
+package de.matzefratze123.heavyspleef.persistence.schematic;
 
-import java.util.logging.Logger;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.persistence.ObjectDatabaseAccessor;
 
-public abstract class SimpleModule implements Module {
+public abstract class SchematicAccessor<T> implements ObjectDatabaseAccessor<T, Void> {
 
-	private HeavySpleef heavySpleef;
+	public abstract void write(OutputStream out, T object) throws IOException, CodecException;
 	
-	public SimpleModule(HeavySpleef heavySpleef) {
-		this.heavySpleef = heavySpleef;
-	}
-	
-	@Override
-	public HeavySpleef getHeavySpleef() {
-		return heavySpleef;
-	}
-	
-	@Override
-	public Logger getLogger() {
-		return heavySpleef.getLogger();
-	}
+	public abstract T read(InputStream in) throws IOException, CodecException;
 
 }

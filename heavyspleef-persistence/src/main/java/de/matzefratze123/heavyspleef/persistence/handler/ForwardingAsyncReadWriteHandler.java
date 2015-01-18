@@ -15,14 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.persistence;
+package de.matzefratze123.heavyspleef.persistence.handler;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -35,26 +37,47 @@ import com.google.common.util.concurrent.MoreExecutors;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.persistence.MoreFutures;
 
 public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
-
+	
 	private ReadWriteHandler delegate;
 	private ListeningExecutorService executorService;
 	private Plugin plugin;
 	private boolean forceAsync;
 	
-	public ForwardingAsyncReadWriteHandler(ReadWriteHandler delegate, Plugin plugin, boolean forceAsync) {
+	public ForwardingAsyncReadWriteHandler(ReadWriteHandler delegate, final Plugin plugin, boolean forceAsync) {
 		this.delegate = delegate;
 		this.forceAsync = forceAsync;
 		this.plugin = plugin;
 		
-		ExecutorService plainService = Executors.newCachedThreadPool();
+		final UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler() {
+			
+			@Override
+			public void uncaughtException(Thread thread, Throwable e) {
+				plugin.getLogger().log(Level.SEVERE, "Uncaught exception in database thread:", e);
+			}
+		};
+		
+		final ThreadFactory threadFactory = new ThreadFactory() {
+			
+			@Override
+			public Thread newThread(Runnable runnable) {
+				Thread thread = new Thread(runnable);
+				thread.setUncaughtExceptionHandler(exceptionHandler);
+				thread.setName("Database-Thread");
+				
+				return thread;
+			}
+		}; 
+		
+		ExecutorService plainService = Executors.newFixedThreadPool(1, threadFactory);
 		this.executorService = MoreExecutors.listeningDecorator(plainService);
 	}
 	
 	@Override
-	public void saveGames(final Iterable<Game> iterable, FutureCallback<Void> callback) {
-		runCallableThreadDynamic(new VoidCallable() {
+	public ListenableFuture<?> saveGames(final Iterable<Game> iterable, FutureCallback<Void> callback) {
+		return runCallableThreadDynamic(new VoidCallable() {
 			
 			@Override
 			public void voidCall() throws Exception {
@@ -64,8 +87,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void saveGame(final Game game, FutureCallback<Void> callback) {
-		runCallableThreadDynamic(new VoidCallable() {
+	public ListenableFuture<?> saveGame(final Game game, FutureCallback<Void> callback) {
+		return runCallableThreadDynamic(new VoidCallable() {
 			
 			@Override
 			public void voidCall() throws Exception {
@@ -75,8 +98,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void getGame(final String name, FutureCallback<Game> callback) {
-		runCallableThreadDynamic(new Callable<Game>() {
+	public ListenableFuture<Game> getGame(final String name, FutureCallback<Game> callback) {
+		return runCallableThreadDynamic(new Callable<Game>() {
 
 			@Override
 			public Game call() throws Exception {
@@ -86,8 +109,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void getGames(FutureCallback<List<Game>> callback) {
-		runCallableThreadDynamic(new Callable<List<Game>>() {
+	public ListenableFuture<List<Game>> getGames(FutureCallback<List<Game>> callback) {
+		return runCallableThreadDynamic(new Callable<List<Game>>() {
 
 			@Override
 			public List<Game> call() throws Exception {
@@ -97,8 +120,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void deleteGame(final Game game, FutureCallback<Void> callback) {
-		runCallableThreadDynamic(new VoidCallable() {
+	public ListenableFuture<?> deleteGame(final Game game, FutureCallback<Void> callback) {
+		return runCallableThreadDynamic(new VoidCallable() {
 			
 			@Override
 			public void voidCall() throws Exception {
@@ -108,8 +131,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void saveStatistics(final Iterable<Statistic> statistics, FutureCallback<Void> callback) {
-		runCallableThreadDynamic(new VoidCallable() {
+	public ListenableFuture<?> saveStatistics(final Iterable<Statistic> statistics, FutureCallback<Void> callback) {
+		return runCallableThreadDynamic(new VoidCallable() {
 			
 			@Override
 			public void voidCall() throws Exception {
@@ -119,8 +142,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void saveStatistic(final Statistic statistic, FutureCallback<Void> callback) {
-		runCallableThreadDynamic(new VoidCallable() {
+	public ListenableFuture<?> saveStatistic(final Statistic statistic, FutureCallback<Void> callback) {
+		return runCallableThreadDynamic(new VoidCallable() {
 			
 			@Override
 			public void voidCall() throws Exception {
@@ -130,8 +153,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 	
 	@Override
-	public void getStatistic(final String player, FutureCallback<Statistic> callback) {
-		runCallableThreadDynamic(new Callable<Statistic>() {
+	public ListenableFuture<Statistic> getStatistic(final String player, FutureCallback<Statistic> callback) {
+		return runCallableThreadDynamic(new Callable<Statistic>() {
 
 			@Override
 			public Statistic call() throws Exception {
@@ -141,8 +164,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void getStatistic(final UUID uuid, FutureCallback<Statistic> callback) {
-		runCallableThreadDynamic(new Callable<Statistic>() {
+	public ListenableFuture<Statistic> getStatistic(final UUID uuid, FutureCallback<Statistic> callback) {
+		return runCallableThreadDynamic(new Callable<Statistic>() {
 
 			@Override
 			public Statistic call() throws Exception {
@@ -152,23 +175,36 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public void getTopStatistics(final int limit, FutureCallback<TreeSet<Statistic>> callback) {
-		runCallableThreadDynamic(new Callable<TreeSet<Statistic>>() {
+	public ListenableFuture<List<Statistic>> getTopStatistics(final int limit, FutureCallback<List<Statistic>> callback) {
+		return runCallableThreadDynamic(new Callable<List<Statistic>>() {
 
 			@Override
-			public TreeSet<Statistic> call() throws Exception {
+			public List<Statistic> call() throws Exception {
 				return delegate.getTopStatistics(limit);
 			}
 		}, callback);
 	}
 	
-	public <R> void runCallableThreadDynamic(Callable<R> callable, FutureCallback<R> callback) {
+	public <R> ListenableFuture<R> runCallableThreadDynamic(Callable<R> callable, FutureCallback<R> callback) {
+		ListenableFuture<R> future = null;
+		
+		if (callback == null) {
+			callback = new FutureCallback<R>() {
+
+				@Override
+				public void onSuccess(R result) {}
+
+				@Override
+				public void onFailure(Throwable t) {
+					plugin.getLogger().log(Level.SEVERE, "Unexpected exception in database thread:", t);
+				}
+			};
+		}
+		
 		if (isServerThread() || forceAsync) {
-			ListenableFuture<R> future = executorService.submit(callable);
+			future = executorService.submit(callable);
 			
-			if (callback != null) {
-				MoreFutures.addBukkitSyncCallback(plugin, future, callback);
-			}
+			MoreFutures.addBukkitSyncCallback(plugin, future, callback);
 		} else {
 			Throwable throwableThrown = null;
 			R result = null;
@@ -187,6 +223,8 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 				}
 			}
 		}
+		
+		return future;
 	}
 	
 	private static boolean isServerThread() {

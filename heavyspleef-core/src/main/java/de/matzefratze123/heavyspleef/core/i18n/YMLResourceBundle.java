@@ -18,10 +18,10 @@
 package de.matzefratze123.heavyspleef.core.i18n;
 
 import java.util.Enumeration;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -29,8 +29,13 @@ public class YMLResourceBundle extends ResourceBundle {
 	
 	private YamlConfiguration config;
 	
-	public YMLResourceBundle(YamlConfiguration config) {
+	public YMLResourceBundle(YamlConfiguration config, boolean loadParent) {
 		this.config = config;
+		
+		if (loadParent) {
+			YMLControl control = new YMLControl(null, I18N.CLASSPATH_DIR, false);
+			setParent(getBundle("locale", I18N.FALLBACK_LOCALE, control));
+		}
 	}
 	
 	@Override
@@ -63,7 +68,18 @@ public class YMLResourceBundle extends ResourceBundle {
 		private Iterator<String> keyIterator;
 		
 		public YamlKeyEnumeration() {
-			keyIterator = config.getKeys(false).iterator();
+			Set<String> allKeys = config.getKeys(true);
+			Iterator<String> iterator = allKeys.iterator();
+			
+			while (iterator.hasNext()) {
+				String key = iterator.next();
+				
+				if (config.isConfigurationSection(key)) {
+					iterator.remove();
+				}
+			}
+			
+			keyIterator = allKeys.iterator();
 		}
 		
 		@Override

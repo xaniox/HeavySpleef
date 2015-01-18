@@ -27,14 +27,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -49,8 +41,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -86,47 +78,26 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@Entity
-@Table(name = "games")
-@XmlRootElement(name = "game")
 public class Game {
-
-	public static final String NAME_ATTRIBUTE = "name";
 	
-	@Transient
-	@XmlTransient
 	private final Random random = new Random();
-	@Transient
-	@XmlTransient
 	private HeavySpleef heavySpleef;
-	@Transient
-	@XmlTransient
 	private EventManager eventManager;
-	@Transient
-	@XmlTransient
 	private Set<SpleefPlayer> ingamePlayers;
-	@Transient
-	@XmlTransient
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
-	@Transient
-	@XmlTransient
 	private KillDetector killDetector;
 	
-	@XmlAttribute
-	@Id
 	private String name;
+	private World world;
 	private FlagManager flagManager;
 	private GameState state;
 	private Map<String, Floor> floors;
 	private Set<CuboidRegion> deathzones;
 	
-	/* Empty constructor for JAXB and Avaje */
-	@SuppressWarnings("unused")
-	private Game() {}
-	
-	public Game(HeavySpleef heavySpleef, String name) {
+	public Game(HeavySpleef heavySpleef, String name, World world) {
 		this.heavySpleef = heavySpleef;
 		this.name = name;
+		this.world = world;
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.state = GameState.WAITING;
 		this.flagManager = new FlagManager(heavySpleef.getPlugin());
@@ -134,10 +105,15 @@ public class Game {
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
 		
-		//Concurrent map for database schematic
+		//Concurrent map for database schematics
 		this.floors = new ConcurrentHashMap<String, Floor>();
 		
 		eventManager = new EventManager();
+	}
+	
+	public void setHeavySpleef(HeavySpleef heavySpleef) {
+		Validate.notNull(heavySpleef, "HeavySpleef instance cannot be null");
+		this.heavySpleef = heavySpleef;
 	}
 	
 	public void countdown() {
@@ -444,6 +420,10 @@ public class Game {
 		return name;
 	}
 	
+	public World getWorld() {
+		return world;
+	}
+	
 	public void registerGameListener(SpleefListener listener) {
 		eventManager.registerListener(listener);
 	}
@@ -458,6 +438,10 @@ public class Game {
 	
 	public boolean isFlagPresent(String flagName) {
 		return flagManager.isFlagPresent(flagName);
+	}
+	
+	public FlagManager getFlagManager() {
+		return flagManager;
 	}
 	
 	public void addFloor(Floor floor) {
@@ -499,6 +483,10 @@ public class Game {
 	@SuppressWarnings("unchecked")
 	public <T> T getPropertyValue(GameProperty property) {
 		return (T) flagManager.getProperty(property);
+	}
+	
+	public void requestProperty(GameProperty property, Object value) {
+		flagManager.requestProperty(property, value);
 	}
 	
 	private void addBlockBroken(SpleefPlayer player, Block brokenBlock) {
