@@ -29,6 +29,7 @@ public enum GameProperty {
 	DISABLE_ITEM_DROP(true),
 	DISABLE_BUILD(true),
 	USE_LIQUID_DEATHZONE(true),
+	DISABLE_FLOOR_BREAK(false),
 	BROADCAST_RADIUS(30);
 	
 	private Object defaultValue;

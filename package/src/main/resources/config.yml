@@ -11,6 +11,7 @@ default-game-properties:
   disable-item-drop: true
   disable-build: true
   use-liquid-deathzone: true
+  disable-floor-break: false
   broadcast-radius: 30
   
 localization:
