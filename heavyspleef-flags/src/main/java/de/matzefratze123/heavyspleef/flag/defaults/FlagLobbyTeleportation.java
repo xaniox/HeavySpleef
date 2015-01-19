@@ -31,7 +31,7 @@ import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 
 @Flag(name = "lobby")
 @Required
-public class LobbyTeleportationFlag extends LocationFlag {
+public class FlagLobbyTeleportation extends LocationFlag {
 
 	@Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}

@@ -37,18 +37,18 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
 @Flag(name = "shovels")
-public abstract class ShovelsFlag extends BooleanFlag {
+public class FlagShovels extends BooleanFlag {
 	
 	private static final String SHOVEL_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef Shovel";
-	private static final ItemStack shovelStack;
 	
-	static {
-		shovelStack = new ItemStack(Material.DIAMOND_SPADE);
+	private static ItemStack createShovel() {
+		ItemStack shovelStack = new ItemStack(Material.DIAMOND_SPADE);
 		
 		ItemMeta meta = shovelStack.getItemMeta();
 		meta.setDisplayName(SHOVEL_DISPLAYNAME);
 		
 		shovelStack.setItemMeta(meta);
+		return shovelStack;
 	}
 	
 	@GamePropertyPriority
@@ -60,6 +60,11 @@ public abstract class ShovelsFlag extends BooleanFlag {
 	@Override
 	public boolean hasGameProperties() {
 		return true;
+	}
+	
+	@Override
+	public boolean hasBukkitListenerMethods() {
+		return false;
 	}
 	
 	@Override
@@ -75,7 +80,9 @@ public abstract class ShovelsFlag extends BooleanFlag {
 		for (SpleefPlayer player : game.getPlayers()) {
 			Player bukkitPlayer = player.getBukkitPlayer();
 			Inventory inv = bukkitPlayer.getInventory();
-			inv.addItem(shovelStack);
+			ItemStack stack = createShovel();
+			
+			inv.addItem(stack);
 			
 			bukkitPlayer.updateInventory();
 		}

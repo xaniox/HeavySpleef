@@ -20,7 +20,7 @@ package de.matzefratze123.heavyspleef.flag;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
-import de.matzefratze123.heavyspleef.flag.defaults.ShovelsFlag;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagShovels;
 
 public class FlagModule extends SimpleModule {
 	
@@ -32,7 +32,7 @@ public class FlagModule extends SimpleModule {
 	public void enable() {
 		FlagRegistry registry = getHeavySpleef().getFlagRegistry();
 		
-		registry.registerFlag(ShovelsFlag.class);
+		registry.registerFlag(FlagShovels.class);
 	}
 
 	@Override
