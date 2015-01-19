@@ -100,7 +100,7 @@ public final class HeavySpleef {
 		prepareConfigurations(configArgs);
 		
 		this.moduleManager = new ModuleManager();
-		this.flagRegistry = new FlagRegistry(flagDir, plugin.getLogger());
+		this.flagRegistry = new FlagRegistry(this, flagDir);
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		this.i18n = new I18N(defaultConfig, localeDir, logger);

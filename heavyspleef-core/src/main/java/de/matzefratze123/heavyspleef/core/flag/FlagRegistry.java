@@ -31,6 +31,8 @@ import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Maps;
 
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+
 public class FlagRegistry {
 	
 	private static final FilenameFilter CLASS_FILE_FILTER = new FilenameFilter() {
@@ -41,15 +43,17 @@ public class FlagRegistry {
 		}
 	};
 	
+	private final HeavySpleef heavySpleef;
 	private File customFlagFolder;
 	private Logger logger;
 	private ClassLoader classLoader;
 	
 	private Map<String, Class<? extends AbstractFlag<?>>> availableFlags;
 	
-	public FlagRegistry(File customFlagFolder, Logger logger) {
+	public FlagRegistry(HeavySpleef heavySpleef, File customFlagFolder) {
+		this.heavySpleef = heavySpleef;
 		this.customFlagFolder = customFlagFolder;
-		this.logger = logger;
+		this.logger = heavySpleef.getLogger();
 		this.availableFlags = Maps.newHashMap();
 		
 		URL url;
@@ -135,13 +139,15 @@ public class FlagRegistry {
 	}
 	
 	public AbstractFlag<?> newFlagInstance(String name) {
-		Class<? extends AbstractFlag<?>> clazz = availableFlags.get(name);
+		Class<? extends AbstractFlag<?>> clazz = getFlagClass(name);
 		if (clazz == null) {
 			throw new NoSuchFlagException(name);
 		}
 		
 		try {
-			return clazz.newInstance();
+			AbstractFlag<?> flag =  clazz.newInstance();
+			flag.setHeavySpleef(heavySpleef);
+			return flag;
 		} catch (InstantiationException | IllegalAccessException e) {
 			//This should not happen as we made the constructor
 			//accessible while the class was registered

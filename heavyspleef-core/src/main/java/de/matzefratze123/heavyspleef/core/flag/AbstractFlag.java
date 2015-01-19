@@ -25,11 +25,13 @@ import org.bukkit.event.Listener;
 import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.GameProperty;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 
 public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	private T value;
+	private HeavySpleef heavySpleef;
 	
 	public abstract void defineGameProperties(Map<GameProperty, Object> properties);
 	
@@ -51,6 +53,14 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	public void setValue(T value) {
 		this.value = value;
+	}
+	
+	protected void setHeavySpleef(HeavySpleef heavySpleef) {
+		this.heavySpleef = heavySpleef;
+	}
+	
+	protected HeavySpleef getHeavySpleef() {
+		return heavySpleef;
 	}
 
 }
