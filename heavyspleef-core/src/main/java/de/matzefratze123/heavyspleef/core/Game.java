@@ -460,6 +460,28 @@ public class Game {
 		return floors.values();
 	}
 	
+	public boolean canSpleef(Block block) {
+		if (block.getType() == Material.AIR) {
+			//Player can not "spleef" an empty block
+			return false;
+		}
+		
+		if (state != GameState.INGAME) {
+			//Players can't spleef while the game is not ingame
+			return false;
+		}
+		
+		boolean onFloor = false;
+		for (Floor floor : getFloors()) {
+			if (floor.contains(block)) {
+				onFloor = true;
+				break;
+			}
+		}
+		
+		return onFloor;
+	}
+	
 	public void addDeathzone(CuboidRegion region) {
 		deathzones.add(region);
 	}
@@ -489,9 +511,10 @@ public class Game {
 		flagManager.requestProperty(property, value);
 	}
 	
-	private void addBlockBroken(SpleefPlayer player, Block brokenBlock) {
+	public void addBlockBroken(SpleefPlayer player, Block brokenBlock) {
 		Set<Block> set = blocksBroken.get(player);
 		if (set == null) {
+			// Lazily initialize the set
 			set = Sets.newHashSet();
 			blocksBroken.put(player, set);
 		}
