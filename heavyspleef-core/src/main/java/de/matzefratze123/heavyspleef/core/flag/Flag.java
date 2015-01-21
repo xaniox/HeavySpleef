@@ -28,4 +28,6 @@ public @interface Flag {
 
 	String name();
 	
+	Class<? extends AbstractFlag<?>> parent() default NullFlag.class;
+	
 }

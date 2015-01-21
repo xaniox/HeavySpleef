@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.dom4j.Element;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
@@ -61,6 +62,18 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	protected HeavySpleef getHeavySpleef() {
 		return heavySpleef;
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected <F extends AbstractFlag<?>> F getChildFlag(Class<F> childFlagClass, Game game) {
+		Class<? extends AbstractFlag<?>> thisClass = (Class<? extends AbstractFlag<?>>) getClass();
+		
+		FlagRegistry registry = heavySpleef.getFlagRegistry();
+		if (!registry.isChildFlag(thisClass, childFlagClass)) {
+			return null;
+		}
+		
+		return game.getFlag(childFlagClass);
 	}
 
 }

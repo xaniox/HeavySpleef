@@ -23,13 +23,14 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 
@@ -48,13 +49,13 @@ public class FlagRegistry {
 	private Logger logger;
 	private ClassLoader classLoader;
 	
-	private Map<String, Class<? extends AbstractFlag<?>>> availableFlags;
+	private BiMap<Flag, Class<? extends AbstractFlag<?>>> registeredFlagsMap;
 	
 	public FlagRegistry(HeavySpleef heavySpleef, File customFlagFolder) {
 		this.heavySpleef = heavySpleef;
 		this.customFlagFolder = customFlagFolder;
 		this.logger = heavySpleef.getLogger();
-		this.availableFlags = Maps.newHashMap();
+		this.registeredFlagsMap = HashBiMap.create();
 		
 		URL url;
 		
@@ -112,14 +113,16 @@ public class FlagRegistry {
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz) {
 		Validate.notNull(clazz, "clazz cannot be null");
+		Validate.isTrue(registeredFlagsMap.containsValue(clazz), "Cannot register flag twice");
 		
 		/* Check if the class provides the required Flag annotation */
-		Validate.isTrue(clazz.isAnnotationPresent(Flag.class), "clazz must be annotated with the @Flag annotation");
+		Validate.isTrue(clazz.isAnnotationPresent(Flag.class), "Flag-Class must be annotated with the @Flag annotation");
 		
 		Flag flagAnnotation = clazz.getAnnotation(Flag.class);
-		String flagName = flagAnnotation.name();
+		String name = flagAnnotation.name();
 		
-		Validate.isTrue(!flagName.isEmpty(), "name() in annotation Flag for class " + clazz.getCanonicalName() + "cannot be empty");
+		Validate.isTrue(!name.isEmpty(), "name() in annotation of flag for class " + clazz.getCanonicalName() + " cannot be empty");
+		Validate.isTrue(!registeredFlagsMap.containsKey(name), "Flag " + clazz.getName() + " has a name collide with " + registeredFlagsMap.get(name).getClass());
 		
 		/* Check if the class can be instantiated */
 		try {
@@ -128,14 +131,20 @@ public class FlagRegistry {
 			//Make the constructor accessible for future uses
 			constructor.setAccessible(true);
 		} catch (NoSuchMethodException | SecurityException e) {
-			throw new IllegalArgumentException("clazz must provide an empty constructor");
+			throw new IllegalArgumentException("Flag-Class must provide an empty constructor");
 		}
 		
-		availableFlags.put(flagName, clazz);
+		registeredFlagsMap.put(flagAnnotation, clazz);
 	}
 	
 	public Class<? extends AbstractFlag<?>> getFlagClass(String name) {
-		return availableFlags.get(name);
+		for (Entry<Flag, Class<? extends AbstractFlag<?>>> entry : registeredFlagsMap.entrySet()) {
+			if (entry.getKey().name().equalsIgnoreCase(name)) {
+				return entry.getValue();
+			}
+		}
+		
+		return null;
 	}
 	
 	public AbstractFlag<?> newFlagInstance(String name) {
@@ -155,6 +164,17 @@ public class FlagRegistry {
 			//But to be sure throw a RuntimeException
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public boolean isChildFlag(Class<? extends AbstractFlag<?>> parent, Class<? extends AbstractFlag<?>> childCandidate) {
+		Validate.notNull(parent, "parent cannot be null");
+		Validate.notNull(childCandidate, "child candidate cannot be null");
+		
+		BiMap<Class<? extends AbstractFlag<?>>, Flag> inversed = registeredFlagsMap.inverse();
+		Flag annotation = inversed.get(childCandidate);
+		
+		Validate.isTrue(annotation != null, "childCandidate has not been registered");
+		return annotation.parent() != null && annotation.parent() == childCandidate;
 	}
 	
 }
