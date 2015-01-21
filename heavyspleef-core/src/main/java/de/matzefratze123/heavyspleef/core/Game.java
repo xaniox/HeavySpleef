@@ -264,7 +264,7 @@ public class Game {
 			//Go through
 			break;
 		case DENY:
-			String denyMessage = event.getDenyMessage();
+			String denyMessage = event.getMessage();
 			if (denyMessage != null) {
 				player.sendMessage(PREFIX + denyMessage);
 			}
@@ -292,6 +292,10 @@ public class Game {
 		broadcast(heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_JOINED_GAME)
 				.setVariable("player", player.getName())
 				.toString());
+		
+		if (event.getMessage() != null) {
+			player.sendMessage(PREFIX + event.getMessage());
+		}
 		
 		if (event.isStartGame()) {
 			countdown();

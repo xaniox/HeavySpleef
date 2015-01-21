@@ -44,7 +44,7 @@ public class PlayerJoinGameEvent extends PlayerGameEvent {
 		return joinResult;
 	}
 	
-	public String getmMessage() {
+	public String getMessage() {
 		return message;
 	}
 	
