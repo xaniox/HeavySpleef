@@ -174,7 +174,7 @@ public class FlagRegistry {
 		Flag annotation = inversed.get(childCandidate);
 		
 		Validate.isTrue(annotation != null, "childCandidate has not been registered");
-		return annotation.parent() != null && annotation.parent() == childCandidate;
+		return annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == childCandidate;
 	}
 	
 }
