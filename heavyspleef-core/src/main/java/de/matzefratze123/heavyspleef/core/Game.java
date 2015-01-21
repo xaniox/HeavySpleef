@@ -242,11 +242,15 @@ public class Game {
 	}
 	
 	public void join(SpleefPlayer player) {
+		join(player, (String[]) null);
+	}
+	
+	public void join(SpleefPlayer player, String... args) {
 		if (ingamePlayers.contains(player)) {
 			return;
 		}
 		
-		PlayerJoinGameEvent event = new PlayerJoinGameEvent(this, player);		
+		PlayerJoinGameEvent event = new PlayerJoinGameEvent(this, player, args == null ? new String[0] : args);		
 		eventManager.callEvent(event);
 		
 		if (event.getTeleportationLocation() == null) {
@@ -260,6 +264,11 @@ public class Game {
 			//Go through
 			break;
 		case DENY:
+			String denyMessage = event.getDenyMessage();
+			if (denyMessage != null) {
+				player.sendMessage(PREFIX + denyMessage);
+			}
+			
 			return;
 		case NOT_SPECIFIED:
 			//Do a state check
@@ -438,6 +447,10 @@ public class Game {
 	
 	public boolean isFlagPresent(String flagName) {
 		return flagManager.isFlagPresent(flagName);
+	}
+	
+	public <T extends AbstractFlag<?>> T getFlag(Class<T> flag) {
+		return flagManager.getFlag(flag);
 	}
 	
 	public FlagManager getFlagManager() {

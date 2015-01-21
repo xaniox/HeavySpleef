@@ -32,7 +32,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandJoin {
 	
-	@Command(name = "join", minArgs = 1, usage = "/spleef join <game>",
+	@Command(name = "join", minArgs = 1, usage = "/spleef join <game> [args]",
 			description = "Joins a game with the given name",
 			permission = "heavyspleef.join")
 	@PlayerOnly
@@ -51,8 +51,13 @@ public class CommandJoin {
 				.setVariable("game", gameName)
 				.toString());
 		
+		String[] args = new String[context.argsLength() - 1];
+		for (int i = 1, length = context.argsLength(); i < length; i++) {
+			args[i - 1] = context.getString(i);
+		}
+		
 		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
-		game.join(spleefPlayer);
+		game.join(spleefPlayer, args);
 	}
 	
 }

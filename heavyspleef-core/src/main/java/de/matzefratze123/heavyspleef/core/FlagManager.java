@@ -29,7 +29,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.Validate;
@@ -51,15 +50,9 @@ import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FlagManager {
 	
-	@XmlTransient
-	@Transient
 	private final JavaPlugin plugin;
-	@XmlElement
 	private Map<String, AbstractFlag<?>> flags;
-	@XmlTransient // Properties are defined by flags and only cached so make this field transient
-	@Transient
 	private Set<GamePropertyBundle> propertyBundles;
-	@XmlElement // Requested properties must be saved
 	private DefaultGamePropertyBundle requestedProperties;
 	
 	public FlagManager(JavaPlugin plugin) {
@@ -123,6 +116,21 @@ public class FlagManager {
 	
 	public Map<String, AbstractFlag<?>> getPresentFlags() {
 		return Collections.unmodifiableMap(flags);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractFlag<?>> T getFlag(Class<T> clazz) {
+		for (AbstractFlag<?> flag : flags.values()) {
+			if (flag.getClass() == clazz) {
+				return (T) flag;
+			}
+		}
+		
+		return null;
+	}
+	
+	public AbstractFlag<?> getFlag(String name) {
+		return flags.get(name);
 	}
 	
 	public Object getProperty(GameProperty property) {

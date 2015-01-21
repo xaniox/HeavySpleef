@@ -24,18 +24,32 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class PlayerJoinGameEvent extends PlayerGameEvent {
 
+	private String[] joinArgs;
+	private String message;
 	private Location teleportationLocation;
 	private JoinResult joinResult;
 	private boolean startGame; 
 	
-	public PlayerJoinGameEvent(Game game, SpleefPlayer player) {
+	public PlayerJoinGameEvent(Game game, SpleefPlayer player, String[] joinArgs) {
 		super(game, player);
 		
 		this.joinResult = JoinResult.NOT_SPECIFIED;
 	}
 	
+	public String[] joinArgs() {
+		return joinArgs;
+	}
+	
 	public JoinResult getJoinResult() {
 		return joinResult;
+	}
+	
+	public String getmMessage() {
+		return message;
+	}
+	
+	public void setMessage(String message) {
+		this.message = message;
 	}
 	
 	public void setJoinResult(JoinResult joinResult) {
