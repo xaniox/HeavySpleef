@@ -406,19 +406,19 @@ public class Game {
 		}
 	}
 	
-	public void requestWin(SpleefPlayer player) {
-		PlayerWinGameEvent event = new PlayerWinGameEvent(this, player);
+	public void requestWin(SpleefPlayer... players) {
+		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players);
 		eventManager.callEvent(event);
 		
 		for (SpleefPlayer ingamePlayer : ingamePlayers) {
-			if (ingamePlayer == player) {
-				continue;
+			for (SpleefPlayer player : players) {
+				if (ingamePlayer == player) {
+					leave(player, QuitCause.WIN);
+				} else {
+					requestLose(player);
+				}
 			}
-			
-			requestLose(ingamePlayer);
 		}
-		
-		leave(player, QuitCause.WIN);
 	}
 	
 	public void kickPlayer(SpleefPlayer player, String message) {
