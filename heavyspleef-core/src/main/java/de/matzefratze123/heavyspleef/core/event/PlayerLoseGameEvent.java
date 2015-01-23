@@ -17,13 +17,23 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
+import org.bukkit.OfflinePlayer;
+
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class PlayerLoseGameEvent extends PlayerGameEvent {
 
-	public PlayerLoseGameEvent(Game game, SpleefPlayer player) {
+	private OfflinePlayer killer;
+	
+	public PlayerLoseGameEvent(Game game, SpleefPlayer player, OfflinePlayer killer) {
 		super(game, player);
+		
+		this.killer = killer;
+	}
+	
+	public OfflinePlayer getKiller() {
+		return killer;
 	}
 
 }

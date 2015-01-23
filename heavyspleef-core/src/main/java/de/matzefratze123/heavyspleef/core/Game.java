@@ -394,10 +394,10 @@ public class Game {
 			return;
 		}
 		
-		PlayerLoseGameEvent event = new PlayerLoseGameEvent(this, player);
+		final OfflinePlayer killer = killDetector.detectKiller(this, player);
+		PlayerLoseGameEvent event = new PlayerLoseGameEvent(this, player, killer);
 		eventManager.callEvent(event);
 		
-		final OfflinePlayer killer = killDetector.detectKiller(this, player);
 		leave(player, QuitCause.LOSE, killer != null ? killer.getName() : null);
 		
 		if (ingamePlayers.size() == 1) {
