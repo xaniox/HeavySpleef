@@ -31,7 +31,42 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 
 	@Override
 	public Location parseInput(Player player, String input) throws InputParseException {
-		return player.getLocation();
+		Location playerLocation = player.getLocation();
+		
+		double[] coords = new double[3];
+		coords[0] = playerLocation.getX();
+		coords[1] = playerLocation.getY();
+		coords[2] = playerLocation.getZ();
+		
+		String[] args = input.split(" ");
+		
+		if (args.length >= 3) {
+			for (int i = 0; i < coords.length; i++) {
+				// Use ~ for a relative coordinate
+				boolean relative = args[i].startsWith("~");
+				if (relative) {
+					args[i] = args[i].substring(1);
+				}
+
+				double result = 0;
+				
+				if (!args[i].isEmpty()) {
+					try {
+						result = Double.parseDouble(args[i]);
+					} catch (NumberFormatException nfe) {
+						throw new InputParseException(args[i], "Cannot parse number"); //TODO: Add locale message?
+					}
+				}
+				
+				if (relative) {
+					coords[i] = coords[i] + result;
+				} else {
+					coords[i] = result;
+				}
+			}
+		}
+		
+		return new Location(playerLocation.getWorld(), coords[0], coords[1], coords[2]);
 	}
 	
 	@Override
