@@ -70,7 +70,6 @@ import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -311,7 +310,7 @@ public class Game {
 			return;
 		}
 		
-		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player);
+		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player, cause);
 		eventManager.callEvent(event);
 		
 		if (event.isCancelled()) {
@@ -407,9 +406,6 @@ public class Game {
 	}
 	
 	public void requestWin(SpleefPlayer... players) {
-		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players);
-		eventManager.callEvent(event);
-		
 		for (SpleefPlayer ingamePlayer : ingamePlayers) {
 			for (SpleefPlayer player : players) {
 				if (ingamePlayer == player) {
@@ -713,16 +709,6 @@ public class Game {
 		if (event.getCause() != DamageCause.ENTITY_ATTACK && disableDamage) {
 			event.setCancelled(true);
 		}
-	}
-	
-	private enum QuitCause {
-		
-		SELF,
-		KICK,
-		STOP,
-		LOSE,
-		WIN;
-		
 	}
 
 }
