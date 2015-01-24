@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
 import java.util.Map;
 import java.util.Set;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -78,6 +78,20 @@ public class CommandContainer {
 	
 	public String getPermission() {
 		return command.permission();
+	}
+	
+	public CommandContainer child(String identifier) {
+		for (CommandContainer child : childCommands) {
+			if (child.getName().equalsIgnoreCase(identifier)) {
+				return child;
+			}
+		}
+		
+		return null;
+	}
+	
+	void addChild(CommandContainer child) {
+		childCommands.add(child);
 	}
 	
 	public Set<CommandContainer> getChildCommands() {

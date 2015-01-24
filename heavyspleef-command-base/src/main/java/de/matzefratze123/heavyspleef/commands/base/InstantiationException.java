@@ -15,15 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface PlayerOnly {
+public class InstantiationException extends Exception {
+	
+	private static final long serialVersionUID = -5876448363964989990L;
+	
+	private Class<?> clazz;
+	
+	public InstantiationException(Class<?> clazz, String message, Throwable cause) {
+		super(message, cause);
+		
+		this.clazz = clazz;
+	}
+	
+	public Class<?> getClassToBeInstantiated() {
+		return clazz;
+	}
 
 }

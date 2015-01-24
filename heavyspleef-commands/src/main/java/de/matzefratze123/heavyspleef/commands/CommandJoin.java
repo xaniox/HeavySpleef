@@ -19,11 +19,11 @@ package de.matzefratze123.heavyspleef.commands;
 
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.commands.internal.Command;
-import de.matzefratze123.heavyspleef.commands.internal.CommandContext;
-import de.matzefratze123.heavyspleef.commands.internal.CommandException;
-import de.matzefratze123.heavyspleef.commands.internal.CommandValidate;
-import de.matzefratze123.heavyspleef.commands.internal.PlayerOnly;
+import de.matzefratze123.heavyspleef.commands.base.Command;
+import de.matzefratze123.heavyspleef.commands.base.CommandContext;
+import de.matzefratze123.heavyspleef.commands.base.CommandException;
+import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
+import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;

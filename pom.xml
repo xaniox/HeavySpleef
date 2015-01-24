@@ -18,6 +18,7 @@
   	<module>heavyspleef-persistence</module>
   	<module>heavyspleef-flags</module>
   	<module>package</module>
+  	<module>heavyspleef-command-base</module>
   </modules>
   <developers>
     <developer>

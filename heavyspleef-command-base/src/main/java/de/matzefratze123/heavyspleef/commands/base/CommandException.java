@@ -15,22 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
-public class InstantiationException extends Exception {
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+public class CommandException extends Exception {
+
+	private static final long serialVersionUID = 497300006825032085L;
 	
-	private static final long serialVersionUID = -5876448363964989990L;
-	
-	private Class<?> clazz;
-	
-	public InstantiationException(Class<?> clazz, String message, Throwable cause) {
-		super(message, cause);
-		
-		this.clazz = clazz;
+	public CommandException(String message) {
+		super(message);
 	}
 	
-	public Class<?> getClassToBeInstantiated() {
-		return clazz;
+	public CommandException(Throwable cause) {
+		super(cause);
+	}
+	
+	public CommandException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+	public void sendToPlayer(CommandSender sender) {
+		String message = getMessage();
+		
+		if (message != null) {
+			sender.sendMessage(ChatColor.RED + message);
+		}
 	}
 
 }

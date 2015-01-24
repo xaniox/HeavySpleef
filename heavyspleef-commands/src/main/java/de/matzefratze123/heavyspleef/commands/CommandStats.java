@@ -19,9 +19,9 @@ package de.matzefratze123.heavyspleef.commands;
 
 import org.bukkit.command.CommandSender;
 
-import de.matzefratze123.heavyspleef.commands.internal.Command;
-import de.matzefratze123.heavyspleef.commands.internal.CommandContext;
-import de.matzefratze123.heavyspleef.commands.internal.CommandException;
+import de.matzefratze123.heavyspleef.commands.base.Command;
+import de.matzefratze123.heavyspleef.commands.base.CommandContext;
+import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 

@@ -15,22 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
-public class TransformException extends CommandException {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	private static final long serialVersionUID = 3155894206597350060L;
-	
-	public TransformException(String message) {
-		super(message);
-	}
-	
-	public TransformException(Throwable cause) {
-		super(cause);
-	}
-	
-	public TransformException(String message, Throwable cause) {
-		super(message, cause);
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface NestedCommands {
 
+	public Class<?>[] value();
+	
 }

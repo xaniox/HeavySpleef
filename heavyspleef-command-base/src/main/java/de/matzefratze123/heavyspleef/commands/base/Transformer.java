@@ -15,33 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
-public class CommandException extends Exception {
-
-	private static final long serialVersionUID = 497300006825032085L;
+public interface Transformer<T> {
 	
-	public CommandException(String message) {
-		super(message);
-	}
+	public T transform(String arg) throws TransformException;
 	
-	public CommandException(Throwable cause) {
-		super(cause);
-	}
-	
-	public CommandException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	public void sendToPlayer(CommandSender sender) {
-		String message = getMessage();
-		
-		if (message != null) {
-			sender.sendMessage(ChatColor.RED + message);
-		}
-	}
-
 }

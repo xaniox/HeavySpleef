@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -79,6 +79,10 @@ public abstract class CommandManagerService implements CommandExecutor {
 	}
 	
 	public void registerCommands(Class<?> clazz) {
+		registerCommands(clazz, null);
+	}
+	
+	public void registerCommands(Class<?> clazz, CommandContainer base) {
 		Validate.notNull(clazz);
 		
 		Set<CommandContainer> commands = CommandContainer.create(clazz, instantiator, logger);
@@ -87,20 +91,49 @@ public abstract class CommandManagerService implements CommandExecutor {
 		while (iterator.hasNext()) {
 			CommandContainer command = iterator.next();
 			
-			if (commands.contains(command.getName())) {
-				logger.warning("duplicate command " + command.getName() + "!");
-				continue;
-			}
-			
-			commandMap.put(command.getName(), command);
-			
-			PluginCommand bukkitCommand = plugin.getCommand(command.getName());
-			if (bukkitCommand != null) {
-				bukkitCommand.setExecutor(this);
+			if (base == null) {
+				if (commandMap.containsKey(command.getName())) {
+					logger.warning("duplicate command " + command.getName() + "!");
+					continue;
+				}
+				
+				commandMap.put(command.getName(), command);
+				
+				PluginCommand bukkitCommand = plugin.getCommand(command.getName());
+				if (bukkitCommand != null) {
+					bukkitCommand.setExecutor(this);
+				} else {
+					logger.warning("command " + command.getName() + " registered but could not find a matching command for plugin " + plugin.getName() + ". Did you forget to add the command to your plugin.yml?");
+				}
 			} else {
-				logger.warning("command " + command.getName() + " registered but could not find a matching command for plugin " + plugin.getName() + ". Did you forget to add the command to your plugin.yml?");
+				// Just add it as a child
+				base.addChild(command);
 			}
 		}
+	}
+	
+	public CommandContainer containerOf(String path) {
+		Validate.notNull(path, "path cannot be null");
+		Validate.isTrue(!path.isEmpty(), "path cannot be empty");
+		
+		String[] pathComponents = path.split("/");
+		
+		CommandContainer current = commandMap.get(pathComponents[0]);
+		if (current == null) {
+			return null;
+		}
+		
+		for (int i = 1; i < pathComponents.length; i++) {
+			CommandContainer child = current.child(pathComponents[i]);
+			
+			if (child != null) {
+				current = child;
+			} else {
+				break;
+			}
+		}
+		
+		return current;
 	}
 	
 	public <T> void registerTransformer(Class<T> returnType, Transformer<T> transformer) {

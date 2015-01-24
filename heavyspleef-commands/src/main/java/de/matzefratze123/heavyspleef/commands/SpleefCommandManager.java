@@ -24,18 +24,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import de.matzefratze123.heavyspleef.commands.internal.Command;
-import de.matzefratze123.heavyspleef.commands.internal.CommandContext;
-import de.matzefratze123.heavyspleef.commands.internal.CommandManagerService;
-import de.matzefratze123.heavyspleef.commands.internal.NestedCommands;
+import de.matzefratze123.heavyspleef.commands.base.Command;
+import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
+import de.matzefratze123.heavyspleef.commands.base.CommandContext;
+import de.matzefratze123.heavyspleef.commands.base.CommandManager;
+import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
+import de.matzefratze123.heavyspleef.commands.base.NestedCommands;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
-public class CommandManager {
+public class SpleefCommandManager implements CommandManager {
 	
 	private CommandManagerService service;
 	
-	public CommandManager(final HeavySpleef plugin) {
+	public SpleefCommandManager(final HeavySpleef plugin) {
 		service = new CommandManagerService(plugin.getPlugin(), plugin.getLogger(), plugin) {
 			
 			@Override
@@ -83,10 +85,16 @@ public class CommandManager {
 	
 	/**
 	 * Initializes this command manager and adds all command classes 
-	 * to its {@link de.matzefratze123.heavyspleef.commands.internal.CommandManagerService}
+	 * to its {@link de.matzefratze123.heavyspleef.commands.base.CommandManagerService}
 	 */
 	public void init() {
 		service.registerCommands(getClass());
+	}
+	
+	@Override
+	public void registerSpleefCommands(Class<?> clazz) {
+		CommandContainer spleefCommand = service.containerOf("spleef");
+		service.registerCommands(clazz, spleefCommand);
 	}
 	
 	@Command(name = "spleef", usage = "/spleef [sub-command]",

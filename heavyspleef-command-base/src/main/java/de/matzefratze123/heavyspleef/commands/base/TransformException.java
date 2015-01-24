@@ -15,10 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
-public interface Transformer<T> {
+
+public class TransformException extends CommandException {
+
+	private static final long serialVersionUID = 3155894206597350060L;
 	
-	public T transform(String arg) throws TransformException;
+	public TransformException(String message) {
+		super(message);
+	}
 	
+	public TransformException(Throwable cause) {
+		super(cause);
+	}
+	
+	public TransformException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

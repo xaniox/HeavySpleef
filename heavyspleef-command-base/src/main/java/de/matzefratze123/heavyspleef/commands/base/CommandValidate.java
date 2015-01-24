@@ -15,17 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.internal;
+package de.matzefratze123.heavyspleef.commands.base;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface NestedCommands {
-
-	public Class<?>[] value();
+public class CommandValidate {
+	
+	public static void notNull(Object o) throws CommandException {
+		notNull(o, null);
+	}
+	
+	public static void notNull(Object o, String message) throws CommandException {
+		if (o == null) {
+			throw new CommandException(message);
+		}
+	}
+	
+	public static void isTrue(boolean condition) throws CommandException {
+		isTrue(condition, null);
+	}
+	
+	public static void isTrue(boolean condition, String message) throws CommandException {
+		if (!condition) {
+			throw new CommandException(message);
+		}
+	}
 	
 }
