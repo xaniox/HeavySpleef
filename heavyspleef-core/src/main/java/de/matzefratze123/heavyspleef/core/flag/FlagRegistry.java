@@ -32,6 +32,7 @@ import org.apache.commons.lang.Validate;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 
 public class FlagRegistry {
@@ -135,6 +136,13 @@ public class FlagRegistry {
 		}
 		
 		registeredFlagsMap.put(flagAnnotation, clazz);
+		
+		//Dirty: Create a new instance for command checking
+		AbstractFlag<?> instance = newFlagInstance(name);
+		if (instance.hasCommands()) {
+			CommandManager manager = heavySpleef.getCommandManager();
+			manager.registerSpleefCommands(clazz);
+		}
 	}
 	
 	public Class<? extends AbstractFlag<?>> getFlagClass(String name) {

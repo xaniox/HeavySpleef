@@ -44,6 +44,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
 
+import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
@@ -74,6 +75,7 @@ public final class HeavySpleef {
 	private ModuleManager moduleManager;
 	private FlagRegistry flagRegistry;
 	private I18N i18n;
+	private CommandManager commandManager;
 	private AsyncReadWriteHandler databaseHandler;
 
 	private GameManager gameManager;
@@ -100,7 +102,6 @@ public final class HeavySpleef {
 		prepareConfigurations(configArgs);
 		
 		this.moduleManager = new ModuleManager();
-		this.flagRegistry = new FlagRegistry(this, flagDir);
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		this.i18n = new I18N(defaultConfig, localeDir, logger);
@@ -108,6 +109,8 @@ public final class HeavySpleef {
 	}
 	
 	public void enable() {
+		flagRegistry = new FlagRegistry(this, flagDir);
+		
 		//Load all games
 		databaseHandler.getGames(new FutureCallback<List<Game>>() {
 			
@@ -248,6 +251,14 @@ public final class HeavySpleef {
 	
 	public void registerModule(Module module) {
 		moduleManager.registerModule(module);
+	}
+	
+	public void setCommandManager(CommandManager manager) {
+		this.commandManager = manager;
+	}
+	
+	public CommandManager getCommandManager() {
+		return commandManager;
 	}
 	
 	public void setDatabaseHandler(AsyncReadWriteHandler handler) {

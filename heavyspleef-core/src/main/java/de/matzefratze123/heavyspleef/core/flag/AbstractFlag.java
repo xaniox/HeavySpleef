@@ -34,12 +34,6 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	private T value;
 	private HeavySpleef heavySpleef;
 	
-	public abstract void defineGameProperties(Map<GameProperty, Object> properties);
-	
-	public abstract boolean hasGameProperties();
-	
-	public abstract boolean hasBukkitListenerMethods();
-	
 	public abstract void getDescription(List<String> description);
 	
 	public abstract T parseInput(Player player, String input) throws InputParseException;
@@ -54,6 +48,20 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	public void setValue(T value) {
 		this.value = value;
+	}
+	
+	public void defineGameProperties(Map<GameProperty, Object> properties) {}
+	
+	public boolean hasGameProperties() {
+		return false;
+	}
+	
+	public boolean hasBukkitListenerMethods() {
+		return false;
+	}
+	
+	public boolean hasCommands() {
+		return false;
 	}
 	
 	protected void setHeavySpleef(HeavySpleef heavySpleef) {
