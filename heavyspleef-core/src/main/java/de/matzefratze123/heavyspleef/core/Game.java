@@ -317,15 +317,21 @@ public class Game {
 			return;
 		}
 		
+		Location tpLoc = event.getTeleportationLocation();
+		
 		ingamePlayers.remove(player);
 		
 		//Receive the state back
 		PlayerStateHolder playerState = player.getPlayerState(this);
 		if (playerState != null) {
-			playerState.apply(player.getBukkitPlayer(), true);
+			playerState.apply(player.getBukkitPlayer(), tpLoc == null);
 		} else {
 			//Ugh, something went wrong
 			player.sendMessage(heavySpleef.getMessage(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+		}
+		
+		if (tpLoc != null) {
+			player.getBukkitPlayer().teleport(tpLoc);
 		}
 		
 		if (ingamePlayers.size() == 0 && state == GameState.LOBBY) {
