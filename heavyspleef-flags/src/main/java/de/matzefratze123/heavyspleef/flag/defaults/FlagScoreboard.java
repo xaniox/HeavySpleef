@@ -35,9 +35,11 @@ import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
+@Flag(name = "scoreboard")
 public class FlagScoreboard extends BooleanFlag {
 
 	private static final String SCOREBOARD_NAME = "heavyspleef";

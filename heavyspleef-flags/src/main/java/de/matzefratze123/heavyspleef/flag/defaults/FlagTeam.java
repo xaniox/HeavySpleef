@@ -40,9 +40,11 @@ import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.EnumListFlag;
 
+@Flag(name = "team")
 public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
