@@ -31,7 +31,8 @@ import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 
 public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
-	private T value;
+	private T item;
+	private AbstractFlag<?> parent;
 	private HeavySpleef heavySpleef;
 	
 	public abstract void getDescription(List<String> description);
@@ -43,11 +44,11 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	public abstract void unmarshal(Element element);
 	
 	public T getValue() {
-		return value;
+		return item;
 	}
 	
 	public void setValue(T value) {
-		this.value = value;
+		this.item = value;
 	}
 	
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
@@ -70,6 +71,14 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	protected HeavySpleef getHeavySpleef() {
 		return heavySpleef;
+	}
+	
+	protected AbstractFlag<?> getParent() {
+		return parent;
+	}
+	
+	protected void setParent(AbstractFlag<?> parent) {
+		this.parent = parent;
 	}
 	
 	@SuppressWarnings("unchecked")
