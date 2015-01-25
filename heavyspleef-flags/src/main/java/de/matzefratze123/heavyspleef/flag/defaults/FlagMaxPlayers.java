@@ -1,0 +1,28 @@
+package de.matzefratze123.heavyspleef.flag.defaults;
+
+import java.util.List;
+
+import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
+
+@Flag(name = "max-players")
+public class FlagMaxPlayers extends IntegerFlag {
+	
+	@Override
+	public void getDescription(List<String> description) {
+		description.add("Defines the maximum count of players for a Spleef game");
+	}
+	
+	@GameListener
+	public void onPlayerJoinGame(PlayerJoinGameEvent event) {
+		int playersCount = event.getGame().getPlayers().size();
+		if (playersCount >= getValue()) {
+			event.setJoinResult(JoinResult.DENY);
+			event.setMessage("Maximum player count reached"); //TODO: add message
+		}
+	}
+	
+}
