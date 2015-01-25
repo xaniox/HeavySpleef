@@ -168,6 +168,7 @@
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>VaultAPI</artifactId>
       <version>1.5</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
