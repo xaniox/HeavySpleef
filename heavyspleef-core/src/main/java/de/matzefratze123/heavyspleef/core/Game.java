@@ -63,6 +63,7 @@ import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.GameWinEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
@@ -412,6 +413,9 @@ public class Game {
 	}
 	
 	public void requestWin(SpleefPlayer... players) {
+		GameWinEvent event = new GameWinEvent(this, players);
+		eventManager.callEvent(event);
+		
 		for (SpleefPlayer ingamePlayer : ingamePlayers) {
 			for (SpleefPlayer player : players) {
 				if (ingamePlayer == player) {
