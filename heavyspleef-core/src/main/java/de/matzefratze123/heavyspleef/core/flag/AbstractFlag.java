@@ -65,6 +65,10 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 		return false;
 	}
 	
+	public boolean canBeSet() {
+		return true;
+	}
+	
 	protected void setHeavySpleef(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
 	}
