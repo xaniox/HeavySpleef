@@ -142,6 +142,10 @@
       <name>matze's repository</name>
       <url>http://matzefratze123.de/artifactory/release/</url>
     </repository>
+    <repository>
+      <id>vault-repo</id>
+      <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -160,5 +164,10 @@
 	  <artifactId>dom4j</artifactId>
 	  <version>1.6.1</version>
 	</dependency>
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.5</version>
+    </dependency>
   </dependencies>
 </project>
