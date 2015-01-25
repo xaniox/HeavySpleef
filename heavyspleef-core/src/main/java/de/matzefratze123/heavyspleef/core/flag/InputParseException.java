@@ -26,8 +26,8 @@ public class InputParseException extends Exception {
 		super(throwable);
 	}
 	
-	public InputParseException(String malformedInput) {
-		this.malformedInput = malformedInput;
+	public InputParseException(String message) {
+		super(message);
 	}
 
 	public InputParseException(String malformedInput, String message, Throwable cause) {
