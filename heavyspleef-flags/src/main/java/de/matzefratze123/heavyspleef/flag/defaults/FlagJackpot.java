@@ -41,8 +41,10 @@ public class FlagJackpot extends BooleanFlag {
 		double jackpot = flagEntryFee.getValue() * playerCount;
 		
 		double amountPerWinner = jackpot / winners.length;
-		
-		
+		for (SpleefPlayer winner : winners) {
+			economy.depositPlayer(winner.getBukkitPlayer(), amountPerWinner);
+			winner.sendMessage(null); //TODO: Add message
+		}
 	}
 
 }

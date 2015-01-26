@@ -2,9 +2,12 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
-import org.bukkit.plugin.ServicesManager;
-
 import net.milkbowl.vault.economy.Economy;
+import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.hook.HookManager;
+import de.matzefratze123.heavyspleef.core.hook.Plugins;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.DoubleFlag;
 
 public class FlagEntryFee extends DoubleFlag {
@@ -13,26 +16,33 @@ public class FlagEntryFee extends DoubleFlag {
 	
 	@Override
 	public void getDescription(List<String> description) {
-		
+		description.add("Defines a fee that every player has to pay in order to play a Spleef game");
 	}
 	
 	@Override
 	public boolean canBeSet() {
-		ServicesManager manager = getHeavySpleef().getPlugin().getServer().getServicesManager();
-		if (!manager.isProvidedFor(Economy.class)) {
-			return false;
-		}
-		
-		return super.canBeSet();
+		HookManager manager = getHeavySpleef().getHookManager();
+		return manager.getHook(Plugins.VAULT).isProvided();
 	}
 
 	public Economy getEconomy() {
 		//Lazy initialization
 		if (economy == null) {
-			//TODO
+			HookManager manager = getHeavySpleef().getHookManager();
+			economy = manager.getHook(Plugins.VAULT).getService(Economy.class);
 		}
 		
-		return null;
+		return economy;
+	}
+	
+	@GameListener
+	public void onGameStart(GameStartEvent event) {
+		double fee = getValue();
+		
+		for (SpleefPlayer player : event.getGame().getPlayers()) {
+			getEconomy().withdrawPlayer(player.getBukkitPlayer(), fee);
+			player.sendMessage(null); //TODO: add messaage
+		}
 	}
 
 }
