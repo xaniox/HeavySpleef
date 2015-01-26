@@ -1,14 +1,8 @@
 package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
-import java.util.Set;
 
 import net.milkbowl.vault.economy.Economy;
-
-import org.bukkit.plugin.ServicesManager;
-
-import com.google.common.collect.ImmutableSet;
-
 import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.GameWinEvent;
