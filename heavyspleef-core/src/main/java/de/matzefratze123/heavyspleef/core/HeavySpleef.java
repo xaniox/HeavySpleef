@@ -52,6 +52,8 @@ import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
+import de.matzefratze123.heavyspleef.core.hook.HookManager;
+import de.matzefratze123.heavyspleef.core.hook.Plugins;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage;
 import de.matzefratze123.heavyspleef.core.module.Module;
@@ -78,6 +80,7 @@ public final class HeavySpleef {
 	private CommandManager commandManager;
 	private AsyncReadWriteHandler databaseHandler;
 
+	private HookManager hookManager;
 	private GameManager gameManager;
 	private PlayerManager playerManager;
 	
@@ -106,6 +109,9 @@ public final class HeavySpleef {
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		this.i18n = new I18N(defaultConfig, localeDir, logger);
 		this.playerManager = new PlayerManager(plugin);
+		this.hookManager = new HookManager();
+		
+		hookManager.registerHook(Plugins.VAULT);
 	}
 	
 	public void enable() {
@@ -267,6 +273,10 @@ public final class HeavySpleef {
 	
 	public AsyncReadWriteHandler getDatabaseHandler() {
 		return databaseHandler;
+	}
+	
+	public HookManager getHookManager() {
+		return hookManager;
 	}
 	
 	public List<Class<?>> getPersistentBeans() {
