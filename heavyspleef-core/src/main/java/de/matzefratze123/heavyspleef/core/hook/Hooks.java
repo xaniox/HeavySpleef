@@ -1,6 +1,6 @@
 package de.matzefratze123.heavyspleef.core.hook;
 
-public class Plugins {
+public class Hooks {
 	
 	public static final String VAULT = "Vault";
 
