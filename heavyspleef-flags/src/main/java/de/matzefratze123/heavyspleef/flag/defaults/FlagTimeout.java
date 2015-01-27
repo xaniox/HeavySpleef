@@ -55,8 +55,6 @@ public class FlagTimeout extends IntegerFlag {
 		
 		@Override
 		public void run() {
-			//game.broadcast(null); //TODO: Add message
-			//game.stop();
 			if (secondsLeft % 30 == 0 || secondsLeft <= 10) {
 				String message = getTimeString();
 				game.broadcast(message);
