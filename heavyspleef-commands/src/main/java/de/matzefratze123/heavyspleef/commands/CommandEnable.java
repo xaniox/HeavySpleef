@@ -26,6 +26,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandEnable {
@@ -38,16 +39,16 @@ public class CommandEnable {
 		String gameName = context.getString(0);
 		
 		GameManager manager = heavySpleef.getGameManager();
-		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		
 		Game game = manager.getGame(gameName);
-		CommandValidate.isTrue(!game.getGameState().isGameEnabled(), heavySpleef.getVarMessage(Messages.Command.GAME_ALREADY_ENABLED)
+		CommandValidate.isTrue(!game.getGameState().isGameEnabled(), I18N.getInstance().getVarString(Messages.Command.GAME_ALREADY_ENABLED)
 				.setVariable("game", gameName)
 				.toString());
 		
-		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_ENABLED)
+		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_ENABLED)
 				.setVariable("game", gameName)
 				.toString());
 	}

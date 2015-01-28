@@ -17,16 +17,20 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import org.bukkit.plugin.Plugin;
+
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CountdownRunnable extends SimpleBasicTask {
 
-	private HeavySpleef heavySpleef;
+	private final I18N i18n = I18N.getInstance();
+	
 	private Game game;
 	private int remaining;
 	
-	public CountdownRunnable(HeavySpleef heavySpleef, int remaining, Game game) {
-		super(heavySpleef.getPlugin(), TaskType.SYNC_REPEATING_TASK, 0L, 20L);
+	public CountdownRunnable(Plugin plugin, int remaining, Game game) {
+		super(plugin, TaskType.SYNC_REPEATING_TASK, 0L, 20L);
 		
 		this.remaining = remaining;
 		this.game = game;
@@ -42,7 +46,7 @@ public class CountdownRunnable extends SimpleBasicTask {
 			game.start();
 			cancel();
 		} else if (remaining % 10 != 0 || remaining <= 5) {
-			game.broadcast(BroadcastTarget.INGAME, heavySpleef.getVarMessage(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
+			game.broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
 					.setVariable("remaining", String.valueOf(remaining))
 					.toString());
 		}

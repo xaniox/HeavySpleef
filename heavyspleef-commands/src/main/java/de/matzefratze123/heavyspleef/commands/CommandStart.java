@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
@@ -42,16 +43,16 @@ public class CommandStart {
 		if (context.argsLength() > 0) {
 			String gameName = context.getString(0);
 			game = manager.getGame(gameName);
-			CommandValidate.notNull(game, heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+			CommandValidate.notNull(game, I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
 					.setVariable("game", gameName)
 					.toString());
 		} else {
 			game = manager.getGame(player);
-			CommandValidate.notNull(game, heavySpleef.getMessage(Messages.Command.NOT_INGAME));
+			CommandValidate.notNull(game, I18N.getInstance().getString(Messages.Command.NOT_INGAME));
 		}
 		
 		game.countdown();
-		player.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_STARTED)
+		player.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_STARTED)
 				.setVariable("game", game.getName())
 				.toString());
 	}

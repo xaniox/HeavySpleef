@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
@@ -40,14 +41,14 @@ public class CommandKick {
 		Player target = context.getPlayer(0);
 		String targetName = context.getString(0);
 		
-		CommandValidate.notNull(target, heavySpleef.getVarMessage(Messages.Command.PLAYER_NOT_FOUND)
+		CommandValidate.notNull(target, I18N.getInstance().getVarString(Messages.Command.PLAYER_NOT_FOUND)
 				.setVariable("player", targetName)
 				.toString());
 		GameManager manager = heavySpleef.getGameManager();
 		SpleefPlayer targetSpleefPlayer = heavySpleef.getSpleefPlayer(target);
 		
 		Game game = manager.getGame(targetSpleefPlayer);
-		CommandValidate.notNull(game, heavySpleef.getVarMessage(Messages.Command.PLAYER_NOT_IN_GAME)
+		CommandValidate.notNull(game, I18N.getInstance().getVarString(Messages.Command.PLAYER_NOT_IN_GAME)
 				.setVariable("player", target.getName())
 				.toString());
 		
@@ -68,7 +69,7 @@ public class CommandKick {
 		}
 		
 		game.kickPlayer(targetSpleefPlayer, message);
-		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.PLAYER_KICKED)
+		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.PLAYER_KICKED)
 				.setVariable("player", target.getName())
 				.toString());
 	}

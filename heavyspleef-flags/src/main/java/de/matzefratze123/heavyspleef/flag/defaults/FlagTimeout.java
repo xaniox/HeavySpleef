@@ -11,6 +11,7 @@ import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameListener.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 public class FlagTimeout extends IntegerFlag {
@@ -73,7 +74,7 @@ public class FlagTimeout extends IntegerFlag {
 			int minutes = secondsLeft / 60;
 			int seconds = secondsLeft % 60;
 			
-			String message = getHeavySpleef().getVarMessage(null) //TODO: add message
+			String message = I18N.getInstance().getVarString(null) //TODO: add message
 				.setVariable("minutes", String.valueOf(minutes))
 				.setVariable("seconds", String.valueOf(seconds))
 				.toString();

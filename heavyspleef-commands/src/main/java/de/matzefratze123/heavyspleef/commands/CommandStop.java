@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
@@ -43,20 +44,20 @@ public class CommandStop {
 		if (context.argsLength() > 0) {
 			String gameName = context.getString(0);
 			game = manager.getGame(gameName);
-			CommandValidate.notNull(game, heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+			CommandValidate.notNull(game, I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
 					.setVariable("game", gameName)
 					.toString());
 		} else {
-			CommandValidate.isTrue(sender instanceof Player, heavySpleef.getMessage(Messages.Command.PLAYER_ONLY));
+			CommandValidate.isTrue(sender instanceof Player, I18N.getInstance().getString(Messages.Command.PLAYER_ONLY));
 			SpleefPlayer player = heavySpleef.getSpleefPlayer(sender);
 			
 			game = manager.getGame(player);
-			CommandValidate.notNull(game, heavySpleef.getMessage(Messages.Command.NOT_INGAME));
+			CommandValidate.notNull(game, I18N.getInstance().getString(Messages.Command.NOT_INGAME));
 		}
 		
 		game.stop();
 		
-		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_STOPPED)
+		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_STOPPED)
 				.setVariable("game", game.getName())
 				.toString());
 	}

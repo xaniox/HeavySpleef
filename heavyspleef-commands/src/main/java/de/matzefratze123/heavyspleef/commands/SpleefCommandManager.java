@@ -31,6 +31,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.commands.base.NestedCommands;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class SpleefCommandManager implements CommandManager {
@@ -52,23 +53,23 @@ public class SpleefCommandManager implements CommandManager {
 				
 				switch (key) {
 				case "message.player_only":
-					message = plugin.getMessage(Messages.Command.PLAYER_ONLY);
+					message = I18N.getInstance().getString(Messages.Command.PLAYER_ONLY);
 					break;
 				case "message.no_permission":
-					message = plugin.getMessage(Messages.Command.NO_PERMISSION);
+					message = I18N.getInstance().getString(Messages.Command.NO_PERMISSION);
 					break;
 				case "message.description_format":
-					message = plugin.getVarMessage(Messages.Command.DESCRIPTION_FORMAT)
+					message = I18N.getInstance().getVarString(Messages.Command.DESCRIPTION_FORMAT)
 						.setVariable("description", messageArgs[0])
 						.toString();
 					break;
 				case "message.usage_format":
-					message = plugin.getVarMessage(Messages.Command.USAGE_FORMAT)
+					message = I18N.getInstance().getVarString(Messages.Command.USAGE_FORMAT)
 						.setVariable("usage", messageArgs[0])
 						.toString();
 					break;
 				case "message.unknown_command":
-					message = plugin.getMessage(Messages.Command.UNKNOWN_COMMAND);
+					message = I18N.getInstance().getString(Messages.Command.UNKNOWN_COMMAND);
 					break;
 				default:
 					break;

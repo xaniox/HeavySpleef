@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandDisable {
@@ -40,17 +41,17 @@ public class CommandDisable {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), heavySpleef.getVarMessage(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		Game game = manager.getGame(gameName);
 		
-		CommandValidate.isTrue(game.getGameState() != GameState.DISABLED, heavySpleef.getVarMessage(Messages.Command.GAME_ALREADY_DISABLED)
+		CommandValidate.isTrue(game.getGameState() != GameState.DISABLED, I18N.getInstance().getVarString(Messages.Command.GAME_ALREADY_DISABLED)
 				.setVariable("game", gameName)
 				.toString());
 		game.disable();
 		
-		sender.sendMessage(heavySpleef.getVarMessage(Messages.Command.GAME_DISABLED)
+		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_DISABLED)
 				.setVariable("game", gameName)
 				.toString());
 	}

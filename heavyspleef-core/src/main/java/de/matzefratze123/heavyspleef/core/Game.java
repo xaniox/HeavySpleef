@@ -74,6 +74,7 @@ import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -81,6 +82,8 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class Game {
 	
 	private final Random random = new Random();
+	private final I18N i18n = I18N.getInstance();
+	
 	private HeavySpleef heavySpleef;
 	private EventManager eventManager;
 	private Set<SpleefPlayer> ingamePlayers;
@@ -173,7 +176,7 @@ public class Game {
 		state = GameState.STARTING;
 		
 		if (countdownEnabled && countdownLength > 0) {
-			BasicTask task = new CountdownRunnable(heavySpleef, countdownLength, this);
+			BasicTask task = new CountdownRunnable(heavySpleef.getPlugin(), countdownLength, this);
 			task.start();
 		} else {
 			//Countdown is not enabled so just start the game
@@ -186,7 +189,7 @@ public class Game {
 		eventManager.callEvent(event);
 		
 		state = GameState.INGAME;
-		broadcast(heavySpleef.getMessage(Messages.Broadcast.GAME_STARTED));
+		broadcast(i18n.getString(Messages.Broadcast.GAME_STARTED));
 	}
 	
 	public void stop() {
@@ -204,7 +207,7 @@ public class Game {
 			floor.regenerate();
 		}
 		
-		broadcast(heavySpleef.getMessage(Messages.Broadcast.GAME_STOPPED));
+		broadcast(i18n.getString(Messages.Broadcast.GAME_STOPPED));
 	}
 	
 	public void disable() {
@@ -254,7 +257,7 @@ public class Game {
 		eventManager.callEvent(event);
 		
 		if (event.getTeleportationLocation() == null) {
-			player.sendMessage(heavySpleef.getMessage(Messages.Player.ERROR_NO_LOBBY_POINT_SET));
+			player.sendMessage(i18n.getString(Messages.Player.ERROR_NO_LOBBY_POINT_SET));
 			return;
 		}
 		
@@ -289,7 +292,7 @@ public class Game {
 		Location location = event.getTeleportationLocation();
 		player.teleport(location);
 		
-		broadcast(heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_JOINED_GAME)
+		broadcast(i18n.getVarString(Messages.Broadcast.PLAYER_JOINED_GAME)
 				.setVariable("player", player.getName())
 				.toString());
 		
@@ -328,7 +331,7 @@ public class Game {
 			playerState.apply(player.getBukkitPlayer(), tpLoc == null);
 		} else {
 			//Ugh, something went wrong
-			player.sendMessage(heavySpleef.getMessage(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+			player.sendMessage(i18n.getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
 		}
 		
 		if (tpLoc != null) {
@@ -339,10 +342,10 @@ public class Game {
 			setGameState(GameState.WAITING);
 		}
 		
-		String broadcastMessage = heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_LEFT_GAME)
+		String broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LEFT_GAME)
 				.setVariable("player", player.getName())
 				.toString();
-		String playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_LEAVE);
+		String playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
 		
 		switch (cause) {
 		case KICK:
@@ -361,32 +364,32 @@ public class Game {
 				message = (String) args[1];
 			}
 			
-			playerMessage = heavySpleef.getVarMessage(Messages.Player.PLAYER_KICK)
+			playerMessage = i18n.getVarString(Messages.Player.PLAYER_KICK)
 					.setVariable("message", message)
 					.setVariable("kicker", clientPlayer.getName())
 					.toString();
 			break;
 		case SELF:
-			playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_LEAVE);
+			playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
 			break;
 		case STOP:
-			playerMessage = heavySpleef.getMessage(Messages.Player.GAME_STOPPED);
+			playerMessage = i18n.getString(Messages.Player.GAME_STOPPED);
 			break;
 		case LOSE:
 			String killer = args.length > 0 ? (String)args[0] : "unknown";
-			broadcastMessage = heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_LOST_GAME)
+			broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
 					.setVariable("player", player.getName())
 					.setVariable("killer", killer)
 					.toString();
 			
-			playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_LOSE);
+			playerMessage = i18n.getString(Messages.Player.PLAYER_LOSE);
 			break;
 		case WIN:
-			broadcastMessage = heavySpleef.getVarMessage(Messages.Broadcast.PLAYER_WON_GAME)
+			broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_WON_GAME)
 					.setVariable("player", player.getName())
 					.toString();
 			
-			playerMessage = heavySpleef.getMessage(Messages.Player.PLAYER_WIN);
+			playerMessage = i18n.getString(Messages.Player.PLAYER_WIN);
 		default:
 			break;
 		}
