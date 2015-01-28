@@ -107,7 +107,8 @@ public final class HeavySpleef {
 		this.moduleManager = new ModuleManager();
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
-		this.i18n = new I18N(defaultConfig, localeDir, logger);
+		I18N.initialize(defaultConfig.getLocalization().getLocale(), getDataFolder(), logger);
+		
 		this.playerManager = new PlayerManager(plugin);
 		this.hookManager = new HookManager();
 		
@@ -229,18 +230,6 @@ public final class HeavySpleef {
 	
 	public GameManager getGameManager() {
 		return gameManager;
-	}
-	
-	public String getMessage(String key) {
-		return i18n.getString(key);
-	}
-	
-	public ParsedMessage getVarMessage(String key) {
-		return i18n.getVarString(key);
-	}
-	
-	public String[] getMessageArray(String key) {
-		return i18n.getStringArray(key);
 	}
 	
 	public SpleefPlayer getSpleefPlayer(Object base) {

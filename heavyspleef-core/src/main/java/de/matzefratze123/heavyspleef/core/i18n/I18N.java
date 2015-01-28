@@ -40,8 +40,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
-import de.matzefratze123.heavyspleef.core.config.Localization;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage.MessageVariable;
 
 public class I18N {
@@ -51,19 +49,40 @@ public class I18N {
 	static final Locale FALLBACK_LOCALE = Locale.US;
 	static final String CLASSPATH_DIR = "/i18n/";
 	
+	private static I18N instance;
+	
 	private final YMLControl defaultControl;
 	private final File localeDir;
 	private final Logger logger;
 	private Locale locale;
 	private ResourceBundle bundle;
 	
-	public I18N(DefaultConfig config, File localeDir, Logger logger) {
+	public static void initialize(Locale locale, File localeDir, Logger logger) {
+		instance = new I18N(locale, localeDir, logger); 
+	}
+	
+	public static void setDefaultLocale(Locale locale) {
+		validateInstance();
+		instance.setLocale(locale);
+	}
+	
+	public static I18N getInstance() {
+		validateInstance();
+		return instance;
+	}
+	
+	private static void validateInstance() {
+		if (instance == null) {
+			throw new IllegalStateException("I18N has not been initialized yet");
+		}
+	}
+	
+	private I18N(Locale locale, File localeDir, Logger logger) {
 		this.defaultControl = new YMLControl(localeDir, CLASSPATH_DIR);
 		this.localeDir = localeDir;
 		this.logger = logger;
 		
-		Localization localization = config.getLocalization();
-		this.locale = localization.getLocale();
+		this.locale = locale;
 		
 		try {
 			checkResourcesAndCopy();
@@ -83,6 +102,12 @@ public class I18N {
 			YMLControl classpathControl = new YMLControl(localeDir, CLASSPATH_DIR, true);
 			bundle = ResourceBundle.getBundle("locale", FALLBACK_LOCALE, classpathControl);
 		}
+	}
+	
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+		
+		loadBundle();
 	}
 	
 	private void checkResourcesAndCopy() throws IOException {
