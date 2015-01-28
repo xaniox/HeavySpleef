@@ -19,8 +19,31 @@ package de.matzefratze123.heavyspleef.flag.presets;
 
 import org.dom4j.Element;
 
+import de.matzefratze123.heavyspleef.core.flag.InputParseException;
+import de.matzefratze123.heavyspleef.flag.presets.DelimiterBasedListParser.Delimiters;
+
 public abstract class EnumListFlag<T extends Enum<T>> extends ListFlag<T> {
 
+	private final ListInputParser<T> parser = new DelimiterBasedListParser<>(Delimiters.SPACE_DELIMITER, new ArgumentParser<T>() {
+
+		@Override
+		public T parseArgument(String argument) throws InputParseException {
+			try {
+				return valueOf(argument);
+			} catch (Exception e) {
+				throw new InputParseException(argument, e);
+			}
+		}
+		
+		private T valueOf(String argument) {
+			//Upper-case transform the argument
+			argument = argument.toUpperCase();
+			
+			return Enum.valueOf(getEnumType(), argument);
+		}
+		
+	});
+	
 	public abstract Class<T> getEnumType();
 	
 	@Override
@@ -31,6 +54,11 @@ public abstract class EnumListFlag<T extends Enum<T>> extends ListFlag<T> {
 	@Override
 	public T unmarshalListItem(Element element) {
 		return Enum.valueOf(getEnumType(), element.getText());
+	}
+	
+	@Override
+	public ListInputParser<T> createParser() {
+		return parser;
 	}
 
 }

@@ -1,12 +1,22 @@
 package de.matzefratze123.heavyspleef.flag.presets;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.dom4j.Element;
 
-public abstract class LocationListFlag extends ListFlag<Location> {
+import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 
+public abstract class LocationListFlag extends ListFlag<Location> {
+	
+	@Override
+	public List<Location> parseInput(Player player, String input) throws InputParseException {
+		throw new InputParseException("Multiple locations cannot be parsed");
+	}
+	
 	@Override
 	public void marshalListItem(Element element, Location item) {
 		Element worldElement = element.addElement("world");
@@ -34,6 +44,12 @@ public abstract class LocationListFlag extends ListFlag<Location> {
 		
 		Location location = new Location(world, x, y, z);
 		return location;
+	}
+
+	@Override
+	public ListInputParser<Location> createParser() {
+		//Location lists cannot be parsed by a string
+		return null;
 	}
 
 }

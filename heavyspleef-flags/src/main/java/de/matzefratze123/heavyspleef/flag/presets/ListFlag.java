@@ -28,10 +28,16 @@ import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 
 public abstract class ListFlag<T> extends AbstractFlag<List<T>>{
 
+	private ListInputParser<T> listParser;
+	
 	@Override
 	public List<T> parseInput(Player player, String input) throws InputParseException {
-		// TODO Auto-generated method stub
-		return null;
+		//Lazy initialization
+		if (listParser == null) {
+			listParser = createParser();
+		}
+		
+		return listParser.parse(input);
 	}
 	
 	public void add(T e) {
@@ -85,5 +91,7 @@ public abstract class ListFlag<T> extends AbstractFlag<List<T>>{
 	public abstract void marshalListItem(Element element, T item);
 	
 	public abstract T unmarshalListItem(Element element);
+	
+	public abstract ListInputParser<T> createParser();
 	
 }
