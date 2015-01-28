@@ -31,6 +31,7 @@ import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -153,6 +154,10 @@ public class FlagRegistry {
 		}
 		
 		return null;
+	}
+	
+	public BiMap<Flag, Class<? extends AbstractFlag<?>>> getAvailableFlags() {
+		return Maps.unmodifiableBiMap(registeredFlagsMap);
 	}
 	
 	public AbstractFlag<?> newFlagInstance(String name) {
