@@ -68,10 +68,6 @@ public class SpleefPlayer {
 		getBukkitPlayer().teleport(location);
 	}
 	
-	public void sendLocalizedMessage(Object arg) {
-		//TODO
-	}
-	
 	public void savePlayerState(Object key) {
 		Validate.isTrue(isOnline(), "Player must be online");
 		
