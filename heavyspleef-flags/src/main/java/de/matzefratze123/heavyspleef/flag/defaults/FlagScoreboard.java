@@ -62,16 +62,6 @@ public class FlagScoreboard extends BooleanFlag {
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
 
 	@Override
-	public boolean hasGameProperties() {
-		return false;
-	}
-
-	@Override
-	public boolean hasBukkitListenerMethods() {
-		return false;
-	}
-
-	@Override
 	public void getDescription(List<String> description) {
 		description.add("Enables a sidebar scoreboard to show the status of the game");
 	}

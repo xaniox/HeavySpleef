@@ -169,7 +169,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 		for (Element flagElement : flagElementsList) {
 			String flagName = flagElement.attributeValue("name");
 			
-			AbstractFlag<?> flag = flagRegistry.newFlagInstance(flagName);
+			AbstractFlag<?> flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class);
 			flag.unmarshal(flagElement);
 			
 			game.addFlag(flag);

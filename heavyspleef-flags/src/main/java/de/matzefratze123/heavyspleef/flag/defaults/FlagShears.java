@@ -35,7 +35,7 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
-@Flag(name = "shears")
+@Flag(name = "shears", hasGameProperties = true)
 public class FlagShears extends BooleanFlag {
 
 	private static final String SHEARS_DISPLAY_NAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef Shears";
@@ -53,16 +53,6 @@ public class FlagShears extends BooleanFlag {
 	@Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {
 		properties.put(GameProperty.INSTANT_BREAK, false);
-	}
-
-	@Override
-	public boolean hasGameProperties() {
-		return true;
-	}
-
-	@Override
-	public boolean hasBukkitListenerMethods() {
-		return false;
 	}
 
 	@Override

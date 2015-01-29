@@ -31,16 +31,6 @@ public class FlagMaxTeamSize extends IntegerFlag {
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
 
 	@Override
-	public boolean hasGameProperties() {
-		return false;
-	}
-
-	@Override
-	public boolean hasBukkitListenerMethods() {
-		return false;
-	}
-
-	@Override
 	public void getDescription(List<String> description) {
 		description.add("Sets the count of maximum players which are allowed to join a team");
 	}

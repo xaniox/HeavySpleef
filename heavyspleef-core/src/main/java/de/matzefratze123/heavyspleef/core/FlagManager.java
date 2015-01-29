@@ -41,6 +41,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
+import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
@@ -76,16 +77,18 @@ public class FlagManager {
 		
 		flags.put(name, flag);
 		
-		if (flag.hasBukkitListenerMethods()) {
+		if (clazz.isAnnotationPresent(BukkitListener.class)) {
 			Bukkit.getPluginManager().registerEvents(flag, plugin);
 		}
 		
-		Map<GameProperty, Object> flagGamePropertiesMap = new EnumMap<GameProperty, Object>(GameProperty.class);
-		flag.defineGameProperties(flagGamePropertiesMap);
-		
-		if (!flagGamePropertiesMap.isEmpty()) {
-			GamePropertyBundle properties = new GamePropertyBundle(flag, flagGamePropertiesMap);
-			propertyBundles.add(properties);
+		if (flagAnnotation.hasGameProperties()) {
+			Map<GameProperty, Object> flagGamePropertiesMap = new EnumMap<GameProperty, Object>(GameProperty.class);
+			flag.defineGameProperties(flagGamePropertiesMap);
+			
+			if (!flagGamePropertiesMap.isEmpty()) {
+				GamePropertyBundle properties = new GamePropertyBundle(flag, flagGamePropertiesMap);
+				propertyBundles.add(properties);
+			}
 		}
 	}
 	
@@ -95,7 +98,7 @@ public class FlagManager {
 		}
 		
 		AbstractFlag<?> flag = flags.remove(name);
-		if (flag.hasBukkitListenerMethods()) {
+		if (flag.getClass().isAnnotationPresent(BukkitListener.class)) {
 			HandlerList.unregisterAll(flag);
 		}
 		

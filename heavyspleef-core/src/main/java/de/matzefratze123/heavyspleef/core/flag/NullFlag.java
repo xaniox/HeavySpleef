@@ -31,16 +31,6 @@ public class NullFlag extends AbstractFlag<Void> {
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
 
 	@Override
-	public boolean hasGameProperties() {
-		return false;
-	}
-
-	@Override
-	public boolean hasBukkitListenerMethods() {
-		return false;
-	}
-
-	@Override
 	public void getDescription(List<String> description) {}
 
 	@Override

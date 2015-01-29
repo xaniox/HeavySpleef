@@ -36,7 +36,7 @@ import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
-@Flag(name = "shovels")
+@Flag(name = "shovels", hasGameProperties = true)
 public class FlagShovels extends BooleanFlag {
 	
 	private static final String SHOVEL_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef Shovel";
@@ -55,16 +55,6 @@ public class FlagShovels extends BooleanFlag {
 	@Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {
 		properties.put(GameProperty.INSTANT_BREAK, false);
-	}
-	
-	@Override
-	public boolean hasGameProperties() {
-		return true;
-	}
-	
-	@Override
-	public boolean hasBukkitListenerMethods() {
-		return false;
 	}
 	
 	@Override

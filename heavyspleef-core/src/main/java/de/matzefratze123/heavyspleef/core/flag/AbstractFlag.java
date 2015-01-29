@@ -55,18 +55,6 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
 	
-	public boolean hasGameProperties() {
-		return false;
-	}
-	
-	public boolean hasBukkitListenerMethods() {
-		return false;
-	}
-	
-	public boolean hasCommands() {
-		return false;
-	}
-	
 	public boolean canBeSet() {
 		return true;
 	}

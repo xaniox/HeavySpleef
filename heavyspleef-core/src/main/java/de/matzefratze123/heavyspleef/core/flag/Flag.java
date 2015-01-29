@@ -30,4 +30,8 @@ public @interface Flag {
 	
 	Class<? extends AbstractFlag<?>> parent() default NullFlag.class;
 	
+	boolean hasCommands() default false;
+	
+	boolean hasGameProperties() default false;
+	
 }

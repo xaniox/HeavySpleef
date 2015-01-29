@@ -136,14 +136,12 @@ public class FlagRegistry {
 			throw new IllegalArgumentException("Flag-Class must provide an empty constructor");
 		}
 		
-		registeredFlagsMap.put(flagAnnotation, clazz);
-		
-		//Dirty: Create a new instance for command checking
-		AbstractFlag<?> instance = newFlagInstance(name);
-		if (instance.hasCommands()) {
+		if (flagAnnotation.hasCommands()) {
 			CommandManager manager = heavySpleef.getCommandManager();
 			manager.registerSpleefCommands(clazz);
 		}
+		
+		registeredFlagsMap.put(flagAnnotation, clazz);
 	}
 	
 	public Class<? extends AbstractFlag<?>> getFlagClass(String name) {
@@ -160,16 +158,21 @@ public class FlagRegistry {
 		return Maps.unmodifiableBiMap(registeredFlagsMap);
 	}
 	
-	public AbstractFlag<?> newFlagInstance(String name) {
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractFlag<?>> T newFlagInstance(String name, Class<T> expected) {
 		Class<? extends AbstractFlag<?>> clazz = getFlagClass(name);
 		if (clazz == null) {
 			throw new NoSuchFlagException(name);
 		}
 		
+		if (expected == null || !expected.isAssignableFrom(clazz)) {
+			throw new NoSuchFlagException("Expected class " + expected.getName() + " is not compatible with " + clazz.getName());
+		}
+		
 		try {
-			AbstractFlag<?> flag =  clazz.newInstance();
+			AbstractFlag<?> flag = clazz.newInstance();
 			flag.setHeavySpleef(heavySpleef);
-			return flag;
+			return (T) flag;
 		} catch (InstantiationException | IllegalAccessException e) {
 			//This should not happen as we made the constructor
 			//accessible while the class was registered

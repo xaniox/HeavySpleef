@@ -17,16 +17,6 @@ public class FlagWinPoint extends LocationFlag {
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
 
 	@Override
-	public boolean hasGameProperties() {
-		return false;
-	}
-
-	@Override
-	public boolean hasBukkitListenerMethods() {
-		return false;
-	}
-
-	@Override
 	public void getDescription(List<String> description) {
 		description.add("Defines the teleportation point for the winners of the Spleef game");
 	}

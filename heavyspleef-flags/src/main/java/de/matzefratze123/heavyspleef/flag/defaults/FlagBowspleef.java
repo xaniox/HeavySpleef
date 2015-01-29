@@ -45,11 +45,13 @@ import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
-@Flag(name = "bowspleef")
+@Flag(name = "bowspleef", hasGameProperties = true)
+@BukkitListener
 public class FlagBowspleef extends BooleanFlag {
 
 	private static final String BOW_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef-Bow";
@@ -69,16 +71,6 @@ public class FlagBowspleef extends BooleanFlag {
 	@Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {
 		properties.put(GameProperty.DISABLE_FLOOR_BREAK, true);
-	}
-
-	@Override
-	public boolean hasGameProperties() {
-		return true;
-	}
-
-	@Override
-	public boolean hasBukkitListenerMethods() {
-		return true;
 	}
 
 	@Override
