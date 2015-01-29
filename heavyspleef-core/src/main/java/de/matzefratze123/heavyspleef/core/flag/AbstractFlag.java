@@ -28,12 +28,14 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 
 public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	private T item;
 	private AbstractFlag<?> parent;
 	private HeavySpleef heavySpleef;
+	private I18N i18n;
 	
 	public abstract void getDescription(List<String> description);
 	
@@ -75,6 +77,14 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	
 	protected HeavySpleef getHeavySpleef() {
 		return heavySpleef;
+	}
+	
+	public I18N getI18N() {
+		if (i18n == null) {
+			i18n = I18N.getInstance();
+		}
+		
+		return i18n;
 	}
 	
 	protected AbstractFlag<?> getParent() {

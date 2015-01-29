@@ -19,8 +19,8 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -30,7 +30,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.MaterialData;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.Game;
@@ -41,13 +40,13 @@ import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.EnumListFlag;
 
 @Flag(name = "team")
 public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	
-	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
 	private static final MaterialData LEATHER_HELMET_DATA = new MaterialData(Material.LEATHER_HELMET);
 	private static final MaterialData LEATHER_CHESTPLATE_DATA = new MaterialData(Material.LEATHER_CHESTPLATE);
 	private static final MaterialData LEATHER_LEGGINGS_DATA = new MaterialData(Material.LEATHER_LEGGINGS);
@@ -92,16 +91,22 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		//      also want to use joinArgs
 		if (joinArgs.length < 1) {
 			event.setJoinResult(JoinResult.DENY);
-			event.setMessage(null); //TODO: Add localized message
+			event.setMessage(getI18N().getVarString(Messages.Player.SPECIFY_TEAM_COLOR_REQUEST)
+					.setVariable("available-colors", getLocalizedStringArray(ChatColor.GRAY))
+					.toString());
 			return;
 		}
 		
 		String team = joinArgs[0];
-		TeamColor color = TeamColor.byColorName(team);
+		String[] localizedColorNames = getI18N().getStringArray(Messages.Arrays.TEAM_COLOR_ARRAY);
+		TeamColor color = TeamColor.byColorName(localizedColorNames, team);
 		
 		if (color == null) {
 			event.setJoinResult(JoinResult.DENY);
-			event.setMessage(null); //TODO: Also add localized message
+			event.setMessage(getI18N().getVarString(Messages.Player.TEAM_COLOR_NOT_AVAILABLE)
+					.setVariable("color", getLocalizedColorName(color))
+					.setVariable("available-colors", getLocalizedStringArray(ChatColor.GRAY))
+					.toString());
 			return;
 		}
 		
@@ -112,13 +117,14 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			
 			if (size >= maxSize) {
 				event.setJoinResult(JoinResult.DENY);
-				event.setMessage(null); //TODO: Add localized deny message
+				event.setMessage(getI18N().getString(Messages.Player.TEAM_MAX_PLAYER_COUNT_REACHED));
 				return;
 			}
 		}
 		
-		//TODO Also add an allow message?
-		event.setMessage(null);
+		event.setMessage(getI18N().getVarString(Messages.Player.PLAYER_JOINED_TEAM)
+				.setVariable("color", getLocalizedColorName(color))
+				.toString());
 		players.put(player, color);
 	}
 	
@@ -165,8 +171,9 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		int size = size(color);
 		
 		if (size <= 0) {
-			//TODO Team is out message
-			event.getGame().broadcast(null);
+			event.getGame().broadcast(getI18N().getVarString(Messages.Broadcast.TEAM_IS_OUT)
+					.setVariable("color", getLocalizedColorName(color))
+					.toString());
 		}
 		
 		TeamColor lastColor = null;
@@ -188,6 +195,31 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			
 			event.getGame().requestWin(left);
 		}
+	}
+	
+	private String getLocalizedColorName(TeamColor color) {
+		String[] localizedArray = getI18N().getStringArray(Messages.Arrays.TEAM_COLOR_ARRAY);
+		return color.getLocalizedName(localizedArray);
+	}
+	
+	private String getLocalizedStringArray(ChatColor delimiterColor) {
+		StringBuilder builder = new StringBuilder();
+		String[] localizedArray = getI18N().getStringArray(Messages.Arrays.TEAM_COLOR_ARRAY);
+		
+		for (int i = 0; i < localizedArray.length; i++) {
+			String colorName = localizedArray[i];
+			TeamColor color = TeamColor.byColorName(localizedArray, colorName);
+			
+			builder.append(color.getChatColor())
+				.append(colorName);
+			
+			if (i + 1 < localizedArray.length) {
+				builder.append(delimiterColor)
+					.append(", ");
+			}
+		}
+		
+		return builder.toString();
 	}
 	
 	public int size(TeamColor color) {
@@ -237,49 +269,24 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			return rgbColor;
 		}
 		
-		public static TeamColor byColorName(String color) {
-			for (TeamColor col : values()) {
-				String colName = col.name();
-				
-				int nameIndex = 0;
-				int strIndex = 0;
-				
-				boolean isMatching = true;
-				
-				do {
-					if (nameIndex >= colName.length() || strIndex >= color.length()) {
-						break;
-					}
-					
-					char nameChar = Character.toLowerCase(colName.charAt(nameIndex));
-					char strChar = Character.toLowerCase(color.charAt(strIndex));
-					boolean skip = false;
-					
-					if (SKIP_CHARS.contains(nameChar)) {
-						nameIndex++;
-						skip = true;
-					}
-					
-					if (SKIP_CHARS.contains(strChar)) {
-						strIndex++;
-						skip = true;
-					}
-					
-					if (skip) {
-						continue;
-					}
-					
-					isMatching = nameChar == strChar;
-					strIndex++;
-					nameIndex++;
-				} while (isMatching);
-				
-				if (isMatching) {
-					return col;
+		public String getLocalizedName(String[] nameArray) {
+			//Important: Keep the order of the array like the enum order
+			return nameArray[ordinal()];
+		}
+		
+		
+		public static TeamColor byColorName(String[] nameArray, String name) {
+			int index = -1;
+			for (int i = 0; i < nameArray.length; i++) {
+				if (!nameArray[i].equalsIgnoreCase(name)) {
+					continue;
 				}
+				
+				index = i;
+				break;
 			}
 			
-			return null;
+			return values()[index];
 		}
 		
 	}

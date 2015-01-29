@@ -7,6 +7,7 @@ import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.GameWinEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
@@ -37,7 +38,9 @@ public class FlagJackpot extends BooleanFlag {
 		double amountPerWinner = jackpot / winners.length;
 		for (SpleefPlayer winner : winners) {
 			economy.depositPlayer(winner.getBukkitPlayer(), amountPerWinner);
-			winner.sendMessage(null); //TODO: Add message
+			winner.sendMessage(getI18N().getVarString(Messages.Player.PLAYER_RECEIVE_JACKPOT)
+					.setVariable("amount", economy.format(amountPerWinner))
+					.toString());
 		}
 	}
 

@@ -26,6 +26,7 @@ import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public abstract class LocationFlag extends AbstractFlag<Location> {
 
@@ -54,7 +55,7 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 					try {
 						result = Double.parseDouble(args[i]);
 					} catch (NumberFormatException nfe) {
-						throw new InputParseException(args[i], "Cannot parse number"); //TODO: Add locale message?
+						throw new InputParseException(args[i], getI18N().getString(Messages.Player.NOT_A_NUMBER));
 					}
 				}
 				

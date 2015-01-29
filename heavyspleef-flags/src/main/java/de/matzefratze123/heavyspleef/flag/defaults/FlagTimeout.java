@@ -12,6 +12,7 @@ import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameListener.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 public class FlagTimeout extends IntegerFlag {
@@ -56,15 +57,13 @@ public class FlagTimeout extends IntegerFlag {
 		
 		@Override
 		public void run() {
-			if (secondsLeft % 30 == 0 || secondsLeft <= 10) {
-				String message = getTimeString();
-				game.broadcast(message);
-			}
-			
 			if (secondsLeft <= 0) {
-				game.broadcast(null); //TODO: add message
+				game.broadcast(getI18N().getString(Messages.Broadcast.GAME_TIMED_OUT));
 				game.stop();
 				task.cancel();
+			} else if (secondsLeft % 30 == 0 || secondsLeft <= 10) {
+				String message = getTimeString();
+				game.broadcast(message);
 			}
 			
 			secondsLeft--;
@@ -74,7 +73,7 @@ public class FlagTimeout extends IntegerFlag {
 			int minutes = secondsLeft / 60;
 			int seconds = secondsLeft % 60;
 			
-			String message = I18N.getInstance().getVarString(null) //TODO: add message
+			String message = I18N.getInstance().getVarString(Messages.Broadcast.GAME_TIMEOUT_COUNTDOWN)
 				.setVariable("minutes", String.valueOf(minutes))
 				.setVariable("seconds", String.valueOf(seconds))
 				.toString();

@@ -7,6 +7,7 @@ import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.Hooks;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.DoubleFlag;
 
@@ -41,7 +42,9 @@ public class FlagEntryFee extends DoubleFlag {
 		
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
 			getEconomy().withdrawPlayer(player.getBukkitPlayer(), fee);
-			player.sendMessage(null); //TODO: add messaage
+			player.sendMessage(getI18N().getVarString(Messages.Player.PAID_ENTRY_FEE)
+					.setVariable("amount", getEconomy().format(fee))
+					.toString());
 		}
 	}
 

@@ -34,23 +34,24 @@ public class FlagSpectate extends LocationFlag {
 		Player player = context.getSender();
 		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
 		String gameName = context.getString(0);
+		I18N i18n = I18N.getInstance();
 		
 		GameManager manager = heavySpleef.getGameManager();
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		
 		Game game = manager.getGame(gameName);
 		FlagSpectate spectateFlag = game.getFlag(FlagSpectate.class);
 		
-		CommandValidate.isTrue(spectateFlag != null, null); //TODO: Add message
+		CommandValidate.isTrue(spectateFlag != null, i18n.getString(Messages.Player.NO_SPECTATE_FLAG));
 		
 		if (spectateFlag.isSpectating(spleefPlayer)) {			
 			spectateFlag.spectate(spleefPlayer, game);
-			spleefPlayer.sendMessage(null); //TODO: Add message
+			spleefPlayer.sendMessage(i18n.getString(Messages.Player.PLAYER_SPECTATE));
 		} else {
 			spectateFlag.leave(spleefPlayer);
-			spleefPlayer.sendMessage(null); //TODO: Add message
+			spleefPlayer.sendMessage(i18n.getString(Messages.Player.PLAYER_LEAVE_SPECTATE));
 		}
 	}
 	
@@ -67,17 +68,19 @@ public class FlagSpectate extends LocationFlag {
 		player.savePlayerState(this);
 		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
 		
+		spectators.add(player);
+		
 		player.teleport(getValue());
 		FlagAllowSpectateFly allowFlyFlag = getChildFlag(FlagAllowSpectateFly.class, game);
 		if (allowFlyFlag != null) {
 			allowFlyFlag.onSpectateEnter(player);
-		}		
+		}
 	}
 	
 	public void leave(SpleefPlayer player) {
 		PlayerStateHolder state = player.getPlayerState(this);
 		state.apply(player.getBukkitPlayer(), false);
-		player.sendMessage(null); //TODO: Add message
+		spectators.remove(player);
 	}
 	
 	public boolean isSpectating(SpleefPlayer player) {

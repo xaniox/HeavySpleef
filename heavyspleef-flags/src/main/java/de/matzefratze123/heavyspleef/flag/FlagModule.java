@@ -37,7 +37,6 @@ public class FlagModule extends SimpleModule {
 
 	@Override
 	public void disable() {
-		// TODO Auto-generated method stub
 		
 	}
 
