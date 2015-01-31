@@ -454,12 +454,12 @@ public class Game {
 		flagManager.addFlag(flag);
 	}
 	
-	public void removeFlag(String name) {
-		flagManager.removeFlag(name);
+	public void removeFlag(String path) {
+		flagManager.removeFlag(path);
 	}
 	
-	public boolean isFlagPresent(String flagName) {
-		return flagManager.isFlagPresent(flagName);
+	public boolean isFlagPresent(String path) {
+		return flagManager.isFlagPresent(path);
 	}
 	
 	public <T extends AbstractFlag<?>> T getFlag(Class<T> flag) {

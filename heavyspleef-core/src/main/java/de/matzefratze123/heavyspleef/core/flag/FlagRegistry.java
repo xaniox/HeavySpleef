@@ -45,6 +45,7 @@ public class FlagRegistry {
 			return name.toLowerCase().endsWith(".class");
 		}
 	};
+	private static final String FLAG_PATH_SEPERATOR = ":";
 	
 	private final HeavySpleef heavySpleef;
 	private File customFlagFolder;
@@ -144,14 +145,55 @@ public class FlagRegistry {
 		registeredFlagsMap.put(flagAnnotation, clazz);
 	}
 	
-	public Class<? extends AbstractFlag<?>> getFlagClass(String name) {
+	public Flag getFlagData(Class<? extends AbstractFlag<?>> clazz) {
+		return registeredFlagsMap.inverse().get(clazz);
+	}
+	
+	/* Reverse path lookup */
+	public Class<? extends AbstractFlag<?>> getFlagClass(String flagPath) {
+		String[] pathComponents = flagPath.split(FLAG_PATH_SEPERATOR);
+		int index = pathComponents.length - 1;
+		Class<? extends AbstractFlag<?>> clazz = null;
+		
 		for (Entry<Flag, Class<? extends AbstractFlag<?>>> entry : registeredFlagsMap.entrySet()) {
-			if (entry.getKey().name().equalsIgnoreCase(name)) {
-				return entry.getValue();
+			if (!entry.getKey().name().equalsIgnoreCase(pathComponents[index])) {
+				continue;
+			}
+			
+			Flag flagData = entry.getKey();
+			if (checkPath(pathComponents, flagData, index)) {
+				clazz = entry.getValue();
+				break;
 			}
 		}
 		
-		return null;
+		return clazz;
+	}
+	
+	private boolean checkPath(String[] path, Flag flagData, int index) {
+		if (index == 0) {
+			return true;
+		}
+		
+		boolean pathValid = false;
+		
+		for (Entry<Flag, Class<? extends AbstractFlag<?>>> entry : registeredFlagsMap.entrySet()) {
+			if (!entry.getKey().name().equalsIgnoreCase(flagData.name())) {
+				continue;
+			}
+			
+			Class<? extends AbstractFlag<?>> parentClass = flagData.parent();
+			Flag parentFlagData = parentClass.getAnnotation(Flag.class);
+			
+			if (!parentFlagData.name().equalsIgnoreCase(path[index - 1])) {
+				continue;
+			}
+			
+			pathValid = checkPath(path, parentFlagData, index - 1);
+			break;
+		}
+		
+		return pathValid;
 	}
 	
 	public BiMap<Flag, Class<? extends AbstractFlag<?>>> getAvailableFlags() {

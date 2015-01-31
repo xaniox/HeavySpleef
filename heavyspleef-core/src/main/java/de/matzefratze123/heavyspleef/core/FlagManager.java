@@ -24,13 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -46,9 +39,6 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
 
-@Entity
-@Table(name = "flags")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class FlagManager {
 	
 	private final JavaPlugin plugin;
@@ -69,13 +59,28 @@ public class FlagManager {
 		Validate.isTrue(clazz.isAnnotationPresent(Flag.class), "Flag class " + clazz.getCanonicalName() + " must annotate " + Flag.class.getCanonicalName());
 		Flag flagAnnotation = clazz.getAnnotation(Flag.class);
 		
-		String name = flagAnnotation.name();
+		//Generate the full path
+		StringBuilder pathBuilder = new StringBuilder();
 		
-		if (flags.containsKey(name)) {
+		Flag lastParentFlagData = flagAnnotation;
+		while (lastParentFlagData != null) {
+			pathBuilder.insert(0, lastParentFlagData.name());
+			
+			Class<? extends AbstractFlag<?>> parentClass = lastParentFlagData.parent();
+			lastParentFlagData = parentClass.getAnnotation(Flag.class);
+			
+			if (lastParentFlagData != null) {
+				pathBuilder.insert(0, ":");
+			}
+		}
+		
+		String path = pathBuilder.toString();
+		
+		if (flags.containsKey(path)) {
 			return;
 		}
 		
-		flags.put(name, flag);
+		flags.put(path, flag);
 		
 		if (clazz.isAnnotationPresent(BukkitListener.class)) {
 			Bukkit.getPluginManager().registerEvents(flag, plugin);
@@ -92,12 +97,12 @@ public class FlagManager {
 		}
 	}
 	
-	public void removeFlag(String name) {
-		if (!flags.containsKey(name)) {
+	public void removeFlag(String path) {
+		if (!flags.containsKey(path)) {
 			return;
 		}
 		
-		AbstractFlag<?> flag = flags.remove(name);
+		AbstractFlag<?> flag = flags.remove(path);
 		if (flag.getClass().isAnnotationPresent(BukkitListener.class)) {
 			HandlerList.unregisterAll(flag);
 		}
@@ -164,8 +169,6 @@ public class FlagManager {
 	
 	public static class GamePropertyBundle extends ForwardingMap<GameProperty, Object> implements Comparable<GamePropertyBundle> {
 		
-		@XmlTransient
-		@Transient
 		private AbstractFlag<?> relatingFlag;
 		private Map<GameProperty, Object> delegate;
 		private GamePropertyPriority.Priority priority;
@@ -214,9 +217,6 @@ public class FlagManager {
 		
 	}
 	
-	@Entity
-	@Table(name = "property_bundles")
-	@XmlAccessorType(XmlAccessType.FIELD)
 	public static class DefaultGamePropertyBundle extends GamePropertyBundle {
 
 		public DefaultGamePropertyBundle(Map<GameProperty, Object> propertyMap) {
