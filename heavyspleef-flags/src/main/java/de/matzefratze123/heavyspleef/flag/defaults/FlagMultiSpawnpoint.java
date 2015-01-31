@@ -15,7 +15,7 @@ import de.matzefratze123.heavyspleef.core.flag.NullFlag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationListFlag;
 
-@Flag(name = "multi-spawn")
+@Flag(name = "multi-spawn", ignoreParseException = true)
 public class FlagMultiSpawnpoint extends LocationListFlag {
 
 	public FlagMultiSpawnpoint() {

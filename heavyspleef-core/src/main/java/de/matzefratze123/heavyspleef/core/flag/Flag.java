@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import de.matzefratze123.heavyspleef.core.hook.HookReference;
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Flag {
@@ -33,5 +35,9 @@ public @interface Flag {
 	boolean hasCommands() default false;
 	
 	boolean hasGameProperties() default false;
+	
+	boolean ignoreParseException() default false;
+	
+	HookReference[] depend() default {};
 	
 }
