@@ -20,7 +20,31 @@ package de.matzefratze123.heavyspleef.flag;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagAllowSpectateFly;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagAutoRegen;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagAutostart;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagBowspleef;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagCountdown;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagEntryFee;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagJackpot;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagLeavepoint;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagLobby;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagLobbyTeleportation;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagLosePoint;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagMaxPlayers;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagMaxTeamSize;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagMinPlayers;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagMultiSpawnpoint;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagReward;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagShears;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagShovels;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagSpawnpoint;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagSplegg;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
 
 public class FlagModule extends SimpleModule {
 	
@@ -32,7 +56,31 @@ public class FlagModule extends SimpleModule {
 	public void enable() {
 		FlagRegistry registry = getHeavySpleef().getFlagRegistry();
 		
+		registry.registerFlag(FlagAllowSpectateFly.class);
+		registry.registerFlag(FlagAutoRegen.class);
+		registry.registerFlag(FlagAutostart.class);
+		registry.registerFlag(FlagBowspleef.class);
+		registry.registerFlag(FlagCountdown.class);
+		registry.registerFlag(FlagEntryFee.class);
+		registry.registerFlag(FlagJackpot.class);
+		registry.registerFlag(FlagLeavepoint.class);
+		registry.registerFlag(FlagLobby.class);
+		registry.registerFlag(FlagLobbyTeleportation.class);
+		registry.registerFlag(FlagLosePoint.class);
+		registry.registerFlag(FlagMaxPlayers.class);
+		registry.registerFlag(FlagMaxTeamSize.class);
+		registry.registerFlag(FlagMinPlayers.class);
+		registry.registerFlag(FlagMultiSpawnpoint.class);
+		registry.registerFlag(FlagReward.class);
+		registry.registerFlag(FlagScoreboard.class);
+		registry.registerFlag(FlagShears.class);
 		registry.registerFlag(FlagShovels.class);
+		registry.registerFlag(FlagSpawnpoint.class);
+		registry.registerFlag(FlagSpectate.class);
+		registry.registerFlag(FlagSplegg.class);
+		registry.registerFlag(FlagTeam.class);
+		registry.registerFlag(FlagTimeout.class);
+		registry.registerFlag(FlagWinPoint.class);
 	}
 
 	@Override
