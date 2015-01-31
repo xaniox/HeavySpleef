@@ -45,6 +45,13 @@ public interface Messages {
 		public static final String PLAYER_KICKED = PREFIX + "player-kicked"; // $[player]
 		public static final String NOT_INGAME = PREFIX + "not-ingame";
 		
+		public static final String INVALID_FLAG_INPUT = "invalid-flag-input";
+		public static final String FLAG_SET = "flag-set"; // $[flag]
+		public static final String PARENT_FLAG_NOT_SET = "parent-flag-not-set"; // $[parent-flag]
+		public static final String FLAG_REQUIRES_HOOK = "flag-requires-hook"; // $[hook]
+		public static final String FLAG_NOT_PRESENT = "flag-not-present"; // $[flag]
+		public static final String FLAG_REMOVED = "flag-removed"; // $[flag]
+		
 	}
 	
 	public interface Broadcast {
@@ -70,7 +77,7 @@ public interface Messages {
 	
 		public static final String PREFIX = "player.";
 		
-		public static final String NOT_A_NUMBER = "not-a-number";
+		public static final String NOT_A_NUMBER = PREFIX + "not-a-number";
 		
 		public static final String PLAYER_LEAVE = PREFIX + "player-leave";
 		public static final String PLAYER_KICK = PREFIX + "player-kick"; // $[kicker]; $[message]
@@ -79,22 +86,23 @@ public interface Messages {
 		public static final String GAME_STOPPED = PREFIX + "game-stopped";
 		public static final String ERROR_ON_INVENTORY_LOAD = PREFIX + "error-on-inventory-load";
 		public static final String ERROR_NO_LOBBY_POINT_SET = PREFIX + "error-no-lobby-point-set";
+		public static final String AVAILABLE_FLAGS = PREFIX + "available-flags"; // $[flags]
 		
 		public static final String SPECIFY_TEAM_COLOR_REQUEST = PREFIX + "specify-team-color-request"; // $[available_colors]
 		public static final String TEAM_COLOR_NOT_AVAILABLE = PREFIX + "team-color-not-available"; // $[color]; $[available_colors]
 		public static final String TEAM_MAX_PLAYER_COUNT_REACHED = PREFIX + "team-max-player-count-reached";
 		public static final String PLAYER_JOINED_TEAM = PREFIX + "player-joined-team"; // $[color]
 		
-		public static final String PAID_ENTRY_FEE = "paid-entry-fee"; // $[amount]
+		public static final String PAID_ENTRY_FEE = PREFIX + "paid-entry-fee"; // $[amount]
 		
-		public static final String NO_SPECTATE_FLAG = "no-spectate-flag";
+		public static final String NO_SPECTATE_FLAG = PREFIX + "no-spectate-flag";
 		public static final String PLAYER_SPECTATE = PREFIX + "player-spectate";
 		public static final String PLAYER_LEAVE_SPECTATE = PREFIX + "player-leave-spectate";
 		
-		public static final String PLAYER_PAY_FEE = "player-pay-fee"; // $[amount]
-		public static final String PLAYER_RECEIVE_JACKPOT = "player-receive-jackpot"; // $[amount]
+		public static final String PLAYER_PAY_FEE = PREFIX + "player-pay-fee"; // $[amount]
+		public static final String PLAYER_RECEIVE_JACKPOT = PREFIX + "player-receive-jackpot"; // $[amount]
 		
-		public static final String MAX_PLAYER_COUNT_REACHED = "max-player-count-reached"; // $[max]
+		public static final String MAX_PLAYER_COUNT_REACHED = PREFIX + "max-player-count-reached"; // $[max]
 		
 		
 	}
