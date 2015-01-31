@@ -53,9 +53,8 @@ import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
-import de.matzefratze123.heavyspleef.core.hook.Hooks;
+import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
-import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage;
 import de.matzefratze123.heavyspleef.core.module.Module;
 import de.matzefratze123.heavyspleef.core.module.ModuleManager;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
@@ -76,7 +75,6 @@ public final class HeavySpleef {
 	
 	private ModuleManager moduleManager;
 	private FlagRegistry flagRegistry;
-	private I18N i18n;
 	private CommandManager commandManager;
 	private AsyncReadWriteHandler databaseHandler;
 
@@ -112,7 +110,7 @@ public final class HeavySpleef {
 		this.playerManager = new PlayerManager(plugin);
 		this.hookManager = new HookManager();
 		
-		hookManager.registerHook(Hooks.VAULT);
+		hookManager.registerHook(HookReference.VAULT);
 	}
 	
 	public void enable() {

@@ -1,34 +1,23 @@
 package de.matzefratze123.heavyspleef.core.hook;
 
-import java.util.Set;
+import java.util.Map;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 
 public class HookManager {
 	
-	private Set<Hook> hooks;
+	private Map<HookReference, Hook> hooks;
 	
 	public HookManager() {
-		this.hooks = Sets.newHashSet();
+		this.hooks = Maps.newHashMap();
 	}
 	
-	public void registerHook(String plugin) {
-		Hook hook = new DefaultHook(plugin);
-		registerHook(hook);
+	public void registerHook(HookReference ref) {
+		hooks.put(ref, ref.newHookInstance());
 	}
 	
-	public void registerHook(Hook hook) {
-		hooks.add(hook);
-	}
-	
-	public Hook getHook(String plugin) {
-		for (Hook hook : hooks) {
-			if (hook.getName().equals(plugin)) {
-				return hook;
-			}
-		}
-		
-		return null;
+	public Hook getHook(HookReference ref) {
+		return hooks.get(ref);
 	}
 	
 }
