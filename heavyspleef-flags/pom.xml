@@ -12,5 +12,10 @@
       <artifactId>heavyspleef-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+    	<groupId>de.matzefratze123</groupId>
+    	<artifactId>inventory-gui-lib</artifactId>
+    	<version>1.0</version>
+    </dependency>
   </dependencies>
 </project>
