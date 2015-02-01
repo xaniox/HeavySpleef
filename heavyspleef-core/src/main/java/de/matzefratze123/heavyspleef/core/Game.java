@@ -21,8 +21,10 @@ import static de.matzefratze123.heavyspleef.core.HeavySpleef.PREFIX;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,7 +70,9 @@ import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
+import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
@@ -89,6 +93,7 @@ public class Game {
 	private Set<SpleefPlayer> ingamePlayers;
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
+	private Queue<SpleefPlayer> queuedPlayers;
 	
 	private String name;
 	private World world;
@@ -107,6 +112,7 @@ public class Game {
 		this.deathzones = Sets.newLinkedHashSet();
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
+		this.queuedPlayers = new LinkedList<SpleefPlayer>();
 		
 		//Concurrent map for database schematics
 		this.floors = new ConcurrentHashMap<String, Floor>();
@@ -203,11 +209,30 @@ public class Game {
 			leave(player, QuitCause.STOP);
 		}
 		
+		resetGame();
+		broadcast(i18n.getString(Messages.Broadcast.GAME_STOPPED));
+	}
+	
+	private void resetGame() {
 		for (Floor floor : floors.values()) {
 			floor.regenerate();
 		}
 		
-		broadcast(i18n.getString(Messages.Broadcast.GAME_STOPPED));
+		//Flush the queue
+		FlushResult lastResult;
+		do {
+			SpleefPlayer player = queuedPlayers.peek();
+			
+			PlayerQueueFlushEvent event = new PlayerQueueFlushEvent(this, player);
+			eventManager.callEvent(event);
+			
+			lastResult = event.getResult();
+			if (lastResult == FlushResult.ALLOW) {
+				queuedPlayers.poll();
+				
+				//TODO
+			}
+		} while (lastResult != FlushResult.DENY);
 	}
 	
 	public void disable() {
@@ -303,6 +328,14 @@ public class Game {
 		if (event.isStartGame()) {
 			countdown();
 		}
+	}
+	
+	public void queue(SpleefPlayer player) {
+		queuedPlayers.add(player);
+	}
+	
+	public void unqueue(SpleefPlayer player) {
+		queuedPlayers.remove(player);
 	}
 	
 	public void leave(SpleefPlayer player) {
