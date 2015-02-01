@@ -3,7 +3,7 @@ package de.matzefratze123.heavyspleef.core.event;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-public class GameWinEvent extends GameEvent {
+public class GameWinEvent extends GameEndEvent {
 
 	private SpleefPlayer[] winners;
 	
