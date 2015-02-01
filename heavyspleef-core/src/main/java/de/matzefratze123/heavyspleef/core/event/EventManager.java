@@ -48,7 +48,7 @@ public class EventManager {
 	
 	public void callEvent(GameEvent event) {
 		for (EventListenerMethod method : registeredEventListeners) {
-			if (method.getGameEventType() != event.getClass()) {
+			if (!method.getGameEventType().isInstance(event)) {
 				continue;
 			}
 			
