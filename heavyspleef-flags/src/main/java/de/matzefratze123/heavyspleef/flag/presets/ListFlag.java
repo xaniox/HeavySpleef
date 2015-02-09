@@ -48,6 +48,10 @@ public abstract class ListFlag<T> extends AbstractFlag<List<T>>{
 		getValue().remove(e);
 	}
 	
+	public T get(int index) {
+		return getValue().get(index);
+	}
+	
 	public T remove(int index) {
 		return getValue().remove(index);
 	}
