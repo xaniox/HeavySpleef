@@ -18,7 +18,7 @@ public class FlagMinPlayers extends IntegerFlag {
 	
 	@GameListener(priority = Priority.HIGH)
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
-		int playersNow = event.getGame().getPlayers().size() + 1;
+		int playersNow = event.getGame().getPlayers().size();
 		if (playersNow < getValue()) {
 			event.setStartGame(false);
 		}

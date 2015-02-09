@@ -22,7 +22,7 @@ import java.util.List;
 import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.event.GameListener;
-import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Required;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
@@ -37,7 +37,7 @@ public class FlagLobbyTeleportation extends LocationFlag {
 	}
 	
 	@GameListener
-	public void onPlayerJoinGame(PlayerJoinGameEvent event) {
+	public void onPlayerJoinGame(PlayerPreJoinGameEvent event) {
 		Location value = getValue();
 		
 		event.setTeleportationLocation(value);

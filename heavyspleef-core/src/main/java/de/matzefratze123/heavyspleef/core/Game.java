@@ -70,11 +70,12 @@ import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
-import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
+import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -278,7 +279,8 @@ public class Game {
 			return;
 		}
 		
-		PlayerJoinGameEvent event = new PlayerJoinGameEvent(this, player, args == null ? new String[0] : args);		
+		//This event is called before the player joins the game!
+		PlayerPreJoinGameEvent event = new PlayerPreJoinGameEvent(this, player, args == null ? new String[0] : args);		
 		eventManager.callEvent(event);
 		
 		if (event.getTeleportationLocation() == null) {
@@ -317,6 +319,10 @@ public class Game {
 		Location location = event.getTeleportationLocation();
 		player.teleport(location);
 		
+		//This event is called when the player actually joins the game
+		PlayerJoinGameEvent joinGameEvent = new PlayerJoinGameEvent(this, player);
+		eventManager.callEvent(joinGameEvent);
+		
 		broadcast(i18n.getVarString(Messages.Broadcast.PLAYER_JOINED_GAME)
 				.setVariable("player", player.getName())
 				.toString());
@@ -325,7 +331,7 @@ public class Game {
 			player.sendMessage(PREFIX + event.getMessage());
 		}
 		
-		if (event.isStartGame()) {
+		if (joinGameEvent.getStartGame()) {
 			countdown();
 		}
 	}

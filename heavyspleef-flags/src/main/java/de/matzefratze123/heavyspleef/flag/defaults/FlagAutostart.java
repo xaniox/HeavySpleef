@@ -17,7 +17,7 @@ public class FlagAutostart extends IntegerFlag {
 	
 	@GameListener
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
-		int playersNow = event.getGame().getPlayers().size() + 1;
+		int playersNow = event.getGame().getPlayers().size();
 		if (playersNow >= getValue()) {
 			event.setStartGame(true);
 		}
