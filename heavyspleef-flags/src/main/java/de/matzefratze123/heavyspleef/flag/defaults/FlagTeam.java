@@ -188,9 +188,14 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		SpleefPlayer spleefPlayer = getHeavySpleef().getSpleefPlayer(player);
 		
 		Action action = event.getAction();
 		if (action != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+		
+		if (players.containsKey(spleefPlayer)) {
 			return;
 		}
 		
