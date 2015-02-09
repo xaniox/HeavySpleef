@@ -25,37 +25,76 @@ import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.MaterialData;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
+import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
+import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.EnumListFlag;
+import de.matzefratze123.inventoryguilib.GuiInventory;
+import de.matzefratze123.inventoryguilib.GuiInventorySlot;
 
 @Flag(name = "team")
+@BukkitListener
 public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
+	
+	private static final int INVENTORY_SIZE = 9;
+	private static final char INFINITY_CHAR = '∞';
+	private static final int[][] INVENTORY_LAYOUTS = {
+		{2},
+		{1},
+		{1, 3},
+		{0, 2},
+		{0, 2, 3},
+		{0, 1, 3},
+		{0, 1, 2, 3},
+		{0, 1, 2, 3},
+	};
+	private static final int OFFSET = 2;
 	
 	private static final MaterialData LEATHER_HELMET_DATA = new MaterialData(Material.LEATHER_HELMET);
 	private static final MaterialData LEATHER_CHESTPLATE_DATA = new MaterialData(Material.LEATHER_CHESTPLATE);
 	private static final MaterialData LEATHER_LEGGINGS_DATA = new MaterialData(Material.LEATHER_LEGGINGS);
 	private static final MaterialData LEATHER_BOOTS_DATA = new MaterialData(Material.LEATHER_BOOTS);
+	private static final MaterialData TEAM_SELECT_ITEMDATA = new MaterialData(Material.CLAY_BRICK);
+	
+	private static final String TEAM_SELECT_ITEM_KEY = "team_select";
 	
 	private Map<SpleefPlayer, TeamColor> players;
+	private boolean updateInventory;
+	private GuiInventory teamChooser;
 	
 	public FlagTeam() {
 		players = Maps.newHashMap();
+		updateInventory = true;
+	}
+	
+	@Override
+	public void setValue(List<TeamColor> value) {
+		super.setValue(value);
+		
+		updateInventory = true;
 	}
 	
 	@Override
@@ -71,51 +110,121 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		description.add("Enables team games in spleef.");
 	}
 	
+	private void updateInventory(Game game) {
+		List<Integer> slots = getInventoryLayout();
+		GuiInventory inventory = new GuiInventory(getHeavySpleef().getPlugin(), 1, "Team selection") { //TODO Add message
+			
+			@Override
+			public void onClick(GuiClickEvent event) {
+				Player player = event.getPlayer();
+				SpleefPlayer spleefPlayer = getHeavySpleef().getSpleefPlayer(player);
+				GuiInventorySlot slot = event.getSlot();
+				
+				event.setCancelled(true);
+				
+				TeamColor color = (TeamColor) slot.getValue();
+				if (color == null) {
+					return;
+				}
+				
+				players.put(spleefPlayer, color);
+			}
+		};
+		
+		FlagMaxTeamSize maxTeamSizeFlag = getChildFlag(FlagMaxTeamSize.class, game);
+		
+		for (int i = 0; i < size(); i++) {
+			int slot = slots.get(i);
+			TeamColor color = get(i);
+			
+			GuiInventorySlot invSlot = inventory.getSlot(slot, 0);
+			
+			ItemStack teamStack = color.getMaterialWoolData().toItemStack(1);
+			ItemMeta meta = teamStack.getItemMeta();
+			
+			meta.setDisplayName(color.getChatColor() + getLocalizedColorName(color));
+			meta.setLore(Lists.newArrayList(ChatColor.YELLOW + "" + size(color) + ChatColor.AQUA + "/" + (maxTeamSizeFlag != null ? maxTeamSizeFlag.getValue() : INFINITY_CHAR)));
+			
+			teamStack.setItemMeta(meta);
+			invSlot.setItem(teamStack);
+			invSlot.setValue(color);
+		}
+		
+		teamChooser = inventory;
+	}
+	
+	private List<Integer> getInventoryLayout() {
+		int size = size();
+		List<Integer> slots = Lists.newArrayList();
+		
+		if (size % 2 != 0) {
+			slots.add(4);
+		}
+		
+		for (int slot : INVENTORY_LAYOUTS[size - OFFSET]) {
+			int reflectedSlot = INVENTORY_SIZE - 1 - slot;
+			
+			slots.add(slot);
+			slots.add(reflectedSlot);
+		}
+		
+		return slots;
+	}
+	
 	@GameListener
-	public void onGameJoin(PlayerJoinGameEvent event) {
-		Game game = event.getGame();
-		SpleefPlayer player = event.getPlayer();
-		String[] joinArgs = event.joinArgs();
-		
-		//TODO: Use an unique index for team games as other flags may
-		//      also want to use joinArgs
-		if (joinArgs.length < 1) {
-			event.setJoinResult(JoinResult.DENY);
-			event.setMessage(getI18N().getVarString(Messages.Player.SPECIFY_TEAM_COLOR_REQUEST)
-					.setVariable("available-colors", getLocalizedStringArray(ChatColor.GRAY))
-					.toString());
-			return;
-		}
-		
-		String team = joinArgs[0];
-		String[] localizedColorNames = getI18N().getStringArray(Messages.Arrays.TEAM_COLOR_ARRAY);
-		TeamColor color = TeamColor.byColorName(localizedColorNames, team);
-		
-		if (color == null) {
-			event.setJoinResult(JoinResult.DENY);
-			event.setMessage(getI18N().getVarString(Messages.Player.TEAM_COLOR_NOT_AVAILABLE)
-					.setVariable("color", getLocalizedColorName(color))
-					.setVariable("available-colors", getLocalizedStringArray(ChatColor.GRAY))
-					.toString());
-			return;
-		}
-		
-		FlagMaxTeamSize maxSizeFlag = getChildFlag(FlagMaxTeamSize.class, game);
+	public void onPreGameJoin(PlayerPreJoinGameEvent event) {
+		FlagMaxTeamSize maxSizeFlag = getChildFlag(FlagMaxTeamSize.class, event.getGame());
 		if (maxSizeFlag != null) {
 			int maxSize = maxSizeFlag.getValue();
-			int size = size(color);
 			
-			if (size >= maxSize) {
+			if (players.size() >= maxSize * size()) {
 				event.setJoinResult(JoinResult.DENY);
 				event.setMessage(getI18N().getString(Messages.Player.TEAM_MAX_PLAYER_COUNT_REACHED));
 				return;
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
 		
-		event.setMessage(getI18N().getVarString(Messages.Player.PLAYER_JOINED_TEAM)
-				.setVariable("color", getLocalizedColorName(color))
-				.toString());
-		players.put(player, color);
+		Action action = event.getAction();
+		if (action != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+		
+		ItemStack clicked = event.getItem();
+		MetadatableItemStack metadatable = new MetadatableItemStack(clicked);
+		
+		if (!metadatable.hasMetadata(TEAM_SELECT_ITEM_KEY)) {
+			return;
+		}
+		
+		teamChooser.open(player);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@GameListener
+	public void onGameJoin(PlayerJoinGameEvent event) {
+		Game game = event.getGame();
+		SpleefPlayer player = event.getPlayer();
+		
+		if (updateInventory) {
+			updateInventory(game);
+		}
+		
+		MetadatableItemStack teamSelectorOpener = new MetadatableItemStack(TEAM_SELECT_ITEMDATA.toItemStack(1));
+		ItemMeta meta = teamSelectorOpener.getItemMeta();
+		meta.setDisplayName("Team selector"); //TODO Add localized message
+		meta.setLore(Lists.newArrayList("Right-Click to choose your team")); //TODO Add localized message
+		teamSelectorOpener.setItemMeta(meta);
+		teamSelectorOpener.setMetadata(TEAM_SELECT_ITEM_KEY, null);
+		
+		player.getBukkitPlayer().getInventory().addItem(teamSelectorOpener);
+		player.getBukkitPlayer().updateInventory();
+		
+		players.put(player, null);
 	}
 	
 	@GameListener
@@ -192,26 +301,6 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		return color.getLocalizedName(localizedArray);
 	}
 	
-	private String getLocalizedStringArray(ChatColor delimiterColor) {
-		StringBuilder builder = new StringBuilder();
-		String[] localizedArray = getI18N().getStringArray(Messages.Arrays.TEAM_COLOR_ARRAY);
-		
-		for (int i = 0; i < localizedArray.length; i++) {
-			String colorName = localizedArray[i];
-			TeamColor color = TeamColor.byColorName(localizedArray, colorName);
-			
-			builder.append(color.getChatColor())
-				.append(colorName);
-			
-			if (i + 1 < localizedArray.length) {
-				builder.append(delimiterColor)
-					.append(", ");
-			}
-		}
-		
-		return builder.toString();
-	}
-	
 	public int size(TeamColor color) {
 		int count = 0;
 		for (Entry<SpleefPlayer, TeamColor> entry : players.entrySet()) {
@@ -227,24 +316,24 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		
 		WHITE(ChatColor.WHITE, 0x0, Color.WHITE),
 		GOLD(ChatColor.GOLD, 0x1, Color.fromRGB(0xFFD700)),
-		MAGENTA(ChatColor.DARK_PURPLE, 0x2, Color.fromRGB(0xE600FF)),
-		LIGHT_BLUE(ChatColor.AQUA, 0x3, Color.fromRGB(0x00E6FF)),
 		YELLOW(ChatColor.YELLOW, 0x4, Color.YELLOW),
-		LIGHT_GREEN(ChatColor.GREEN, 0x5, Color.LIME),
+		GREEN(ChatColor.GREEN, 0x5, Color.LIME),
 		PINK(ChatColor.LIGHT_PURPLE, 0x6, Color.fromRGB(0xFF66CC)),
 		GRAY(ChatColor.GRAY, 0x7, Color.GRAY),
 		BLUE(ChatColor.BLUE, 0xB, Color.BLUE),
-		GREEN(ChatColor.DARK_GREEN, 0xD, Color.GREEN),
 		RED(ChatColor.RED, 0xE, Color.RED);
 		
 		private ChatColor chatColor;
 		private byte legacyWoolData;
 		private Color rgbColor;
+		private MaterialData woolData;
 		
+		@SuppressWarnings("deprecation")
 		private TeamColor(ChatColor chatColor, int legacyWoolData, Color rgbColor) {
 			this.chatColor = chatColor;
 			this.legacyWoolData = (byte) legacyWoolData;
 			this.rgbColor = rgbColor;
+			this.woolData = new MaterialData(Material.WOOL, (byte)legacyWoolData);
 		}
 		
 		public ChatColor getChatColor() {
@@ -264,6 +353,9 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			return nameArray[ordinal()];
 		}
 		
+		public MaterialData getMaterialWoolData() {
+			return woolData;
+		}
 		
 		public static TeamColor byColorName(String[] nameArray, String name) {
 			int index = -1;
