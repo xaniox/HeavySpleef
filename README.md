@@ -4,7 +4,9 @@ What is HeavySpleef?
 
 Spleef is a gamemode in Minecraft where your goal is to knock out players by destroying the floor under them so that they fall down.
 If a player touches a losezone or water/lava he is out of the game. Last man standing wins...
+
 HeavySpleef provides an easy to use plugin to setup and maintain Spleef games automagically.
+
 For more infos how to setup an game visit the documentation on Bukkit-Dev.
 
 Made for Bukkit & Spigot (Minecraft 1.8)
