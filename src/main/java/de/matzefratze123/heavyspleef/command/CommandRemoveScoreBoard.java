@@ -1,25 +1,26 @@
 /*
- *   HeavySpleef - Advanced spleef plugin for bukkit
- *   
- *   Copyright (C) 2013-2014 matzefratze123
+ * HeavySpleef - Advanced spleef plugin for bukkit
  *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ * Copyright (C) 2013-2014 matzefratze123
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.matzefratze123.heavyspleef.command;
 
 import static de.matzefratze123.heavyspleef.util.I18N._;
+
+import java.util.HashSet;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -42,7 +43,7 @@ public class CommandRemoveScoreBoard implements CommandListener {
 	@CommandPermissions(value = { Permissions.REMOVE_SCOREBOARD })
 	@CommandHelp(usage = "/spleef removescoreboard", description = "Removes the scoreboard where you currently looking")
 	public void execute(Player player) {
-		Block targetBlock = player.getTargetBlock(null, 100);
+		Block targetBlock = player.getTargetBlock((HashSet<Byte>)null, 100);
 
 		int id = -1;
 

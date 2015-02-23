@@ -1,21 +1,20 @@
 /*
- *   HeavySpleef - Advanced spleef plugin for bukkit
- *   
- *   Copyright (C) 2013-2014 matzefratze123
+ * HeavySpleef - Advanced spleef plugin for bukkit
  *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ * Copyright (C) 2013-2014 matzefratze123
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.matzefratze123.heavyspleef.core;
 
@@ -27,7 +26,6 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CylinderRegion;
 
 import de.matzefratze123.heavyspleef.HeavySpleef;
@@ -73,7 +71,7 @@ public class GameCylinder extends Game {
 		int x = (int) (region.getWorldEditRegion().getCenter().getX() + r * Math.cos(angle));
 		int z = (int) (region.getWorldEditRegion().getCenter().getZ() + r * Math.sin(angle));
 
-		return new Location(BukkitUtil.toWorld(region.getWorldEditRegion().getWorld()), x, y, z);
+		return new Location(Bukkit.getWorld(region.getWorldEditRegion().getWorld().getName()), x, y, z);
 	}
 
 	@Override
@@ -92,7 +90,7 @@ public class GameCylinder extends Game {
 			int radiusSqared = radius * radius;
 
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (player.getWorld() != BukkitUtil.toWorld(region.getWorldEditRegion().getWorld()))
+				if (player.getWorld() != Bukkit.getWorld(region.getWorldEditRegion().getWorld().getName()))
 					continue;
 				double distanceSquared = Util.toBukkitLocation(region.getWorldEditRegion().getWorld(), region.getWorldEditRegion().getCenter()).distanceSquared(player.getLocation());
 

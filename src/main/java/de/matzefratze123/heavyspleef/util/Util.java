@@ -1,27 +1,27 @@
-/**
- *   HeavySpleef - Advanced spleef plugin for bukkit
- *   
- *   Copyright (C) 2013 matzefratze123
+/*
+ * HeavySpleef - Advanced spleef plugin for bukkit
  *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ * Copyright (C) 2013-2014 matzefratze123
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.matzefratze123.heavyspleef.util;
 
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -30,10 +30,11 @@ import org.bukkit.material.MaterialData;
 
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.world.World;
 
 import de.matzefratze123.heavyspleef.objects.SimpleBlockData;
 
+@SuppressWarnings("deprecation")
 public class Util {
 
 	private static final String	MATERIAL_ENUM_SEPERATOR		= "_";
@@ -224,7 +225,7 @@ public class Util {
 	 */
 	public static Vector toWorldEditVector(Location location) {
 		int x, y, z;
-
+		
 		x = location.getBlockX();
 		y = location.getBlockY();
 		z = location.getBlockZ();
@@ -241,14 +242,14 @@ public class Util {
 	 *            The vector isself
 	 * @see #toWorldEditVector(Location)
 	 */
-	public static Location toBukkitLocation(LocalWorld world, Vector vector) {
+	public static Location toBukkitLocation(World world, Vector vector) {
 		int x, y, z;
 
 		x = vector.getBlockX();
 		y = vector.getBlockY();
 		z = vector.getBlockZ();
 
-		return new Location(BukkitUtil.toWorld(world), x, y, z);
+		return new Location(Bukkit.getWorld(world.getName()), x, y, z);
 	}
 
 	public static Block getAttached(Block block) {
