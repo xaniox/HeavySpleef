@@ -17,6 +17,53 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import com.google.common.collect.Lists;
+
+import de.matzefratze123.heavyspleef.commands.base.Command;
+import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
+import de.matzefratze123.heavyspleef.commands.base.CommandContext;
+import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+
 public class CommandHelp {
+	
+	private static final String BASE_COMMAND = "spleef";
+	private static final CommandContainerComparator COMPARATOR = new CommandContainerComparator();
+	
+	@Command(name = "help", description = "Prints help",
+			permission = "heavyspleef.help", usage = "/spleef help")
+	public void onHelpCommand(CommandContext context, HeavySpleef heavySpleef) {
+		CommandSender sender = context.getSender();
+		SpleefCommandManager manager = (SpleefCommandManager) heavySpleef.getCommandManager();
+		CommandManagerService service = manager.getService();
+		
+		CommandContainer container = service.getCommand(BASE_COMMAND);
+		List<CommandContainer> childs = Lists.newArrayList(container.getChildCommands());
+		Collections.sort(childs, COMPARATOR);
+		
+		sender.sendMessage(ChatColor.GOLD + "--------- " + ChatColor.DARK_GRAY + ChatColor.BOLD + "[" + ChatColor.GREEN + "HeavySpleef Help"
+				+ ChatColor.DARK_GRAY + ChatColor.BOLD + "]" + ChatColor.GOLD + " ---------");
+		
+		for (CommandContainer child : childs) {
+			sender.sendMessage(ChatColor.RED + "- " + ChatColor.GOLD + child.getUsage());
+			sender.sendMessage(ChatColor.GRAY + "  " + child.getDescription());
+		}
+	}
+	
+	public static class CommandContainerComparator implements Comparator<CommandContainer> {
+
+		@Override
+		public int compare(CommandContainer o1, CommandContainer o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+		
+	}
 
 }

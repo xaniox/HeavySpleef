@@ -136,6 +136,10 @@ public abstract class CommandManagerService implements CommandExecutor {
 		return current;
 	}
 	
+	public CommandContainer getCommand(String baseCommand) {
+		return commandMap.get(baseCommand);
+	}
+	
 	public <T> void registerTransformer(Class<T> returnType, Transformer<T> transformer) {
 		Validate.notNull(returnType);
 		Validate.notNull(transformer);

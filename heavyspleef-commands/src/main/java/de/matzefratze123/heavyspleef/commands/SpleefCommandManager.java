@@ -98,6 +98,10 @@ public class SpleefCommandManager implements CommandManager {
 		service.registerCommands(clazz, spleefCommand);
 	}
 	
+	public CommandManagerService getService() {
+		return service;
+	}
+	
 	@Command(name = "spleef", usage = "/spleef [sub-command]",
 			description = "Spleef command for HeavySpleef")
 	@NestedCommands(value = {
