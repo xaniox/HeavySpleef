@@ -17,41 +17,47 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.Collection;
+
+import mkremins.fanciful.FancyMessage;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
-import de.matzefratze123.heavyspleef.commands.base.CommandException;
-import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.i18n.Messages.Player;
 
-public class CommandInfo {
+public class CommandList {
+
+	private final I18N i18n = I18N.getInstance();
 	
-	@Command(name = "info", minArgs = 1, usage = "/spleef info <game>",
-			description = "Prints out a games current state",
-			permission = "heavyspleef.admin.info")
-	public void onInfoCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
+	@Command(name = "list", permission = "heavyspleef.list", usage = "/spleef list",
+			description = "Lists all spleef games")
+	public void onListCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
+		GameManager gameManager = heavySpleef.getGameManager();
+		Collection<Game> games = gameManager.getGames();
 		
-		String gameName = context.getString(0);
-		GameManager manager = heavySpleef.getGameManager();
-		
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
-				.setVariable("game", gameName)
-				.toString());
-		Game game = manager.getGame(gameName);
-		
-		//Flags
-		//LoseZones
-		//Name
-		//World
-		//GameState
-		//Floors
-		
+		for (Game game : games) {
+			FancyMessage message = new FancyMessage();
+			
+			if (sender instanceof Player) {
+				message.then(ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + "Join" + ChatColor.DARK_GRAY + "]")
+					.command("/spleef join " + game.getName())
+					.tooltip(i18n.getVarString(Messages.Command.CLICK_TO_JOIN)
+							.setVariable("game", game.getName())
+							.toString());
+			}
+			
+			message.then(" " + ChatColor.GRAY + game.getName());
+			message.send(sender);
+		}
 	}
 	
 }
