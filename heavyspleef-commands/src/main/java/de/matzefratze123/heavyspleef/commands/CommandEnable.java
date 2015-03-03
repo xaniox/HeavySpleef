@@ -31,6 +31,8 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandEnable {
 
+	private final I18N i18n = I18N.getInstance();
+	
 	@Command(name = "enable", minArgs = 1, usage = "/spleef enable <game>",
 			description = "Enables the game with the given name",
 			permission = "heavyspleef.admin.enable")
@@ -39,16 +41,16 @@ public class CommandEnable {
 		String gameName = context.getString(0);
 		
 		GameManager manager = heavySpleef.getGameManager();
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		
 		Game game = manager.getGame(gameName);
-		CommandValidate.isTrue(!game.getGameState().isGameEnabled(), I18N.getInstance().getVarString(Messages.Command.GAME_ALREADY_ENABLED)
+		CommandValidate.isTrue(!game.getGameState().isGameEnabled(), i18n.getVarString(Messages.Command.GAME_ALREADY_ENABLED)
 				.setVariable("game", gameName)
 				.toString());
 		
-		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_ENABLED)
+		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_ENABLED)
 				.setVariable("game", gameName)
 				.toString());
 	}

@@ -1,3 +1,20 @@
+/*
+ * This file is part of HeavySpleef.
+ * Copyright (c) 2014-2015 matzefratze123
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.matzefratze123.heavyspleef.commands;
 
 import java.util.Iterator;
@@ -6,7 +23,6 @@ import java.util.Set;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.Command;
@@ -17,6 +33,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
@@ -119,11 +136,11 @@ public class CommandFlag {
 	}
 	
 	private void printAvailableFlags(FlagRegistry registry, CommandSender sender) {
-		BiMap<Flag, Class<? extends AbstractFlag<?>>> flags = registry.getAvailableFlags();
+		DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> flags = registry.getAvailableFlags();
 		Set<String> flagNames = Sets.newTreeSet();
 		
-		for (Flag flag : flags.keySet()) {
-			flagNames.add(flag.name());
+		for (String flagPath : flags.primaryKeySet()) {
+			flagNames.add(flagPath);
 		}
 		
 		StringBuilder builder = new StringBuilder();
