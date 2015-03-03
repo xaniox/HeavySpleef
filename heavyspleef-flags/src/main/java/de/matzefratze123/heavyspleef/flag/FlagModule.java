@@ -29,7 +29,6 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagEntryFee;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagJackpot;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagLeavepoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagLobby;
-import de.matzefratze123.heavyspleef.flag.defaults.FlagLobbyTeleportation;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagLosePoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagMaxPlayers;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagMaxTeamSize;
@@ -65,7 +64,6 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagJackpot.class);
 		registry.registerFlag(FlagLeavepoint.class);
 		registry.registerFlag(FlagLobby.class);
-		registry.registerFlag(FlagLobbyTeleportation.class);
 		registry.registerFlag(FlagLosePoint.class);
 		registry.registerFlag(FlagMaxPlayers.class);
 		registry.registerFlag(FlagMaxTeamSize.class);
