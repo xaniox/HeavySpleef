@@ -23,18 +23,19 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
+import de.matzefratze123.heavyspleef.core.collection.DualKeyHashBiMap;
+import de.matzefratze123.heavyspleef.core.collection.DualKeyMap.DualKeyPair;
+import de.matzefratze123.heavyspleef.core.collection.DualMaps;
 
 public class FlagRegistry {
 	
@@ -45,6 +46,7 @@ public class FlagRegistry {
 			return name.toLowerCase().endsWith(".class");
 		}
 	};
+	
 	private static final String FLAG_PATH_SEPERATOR = ":";
 	
 	private final HeavySpleef heavySpleef;
@@ -52,13 +54,13 @@ public class FlagRegistry {
 	private Logger logger;
 	private ClassLoader classLoader;
 	
-	private BiMap<Flag, Class<? extends AbstractFlag<?>>> registeredFlagsMap;
+	private DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> registeredFlagsMap;
 	
 	public FlagRegistry(HeavySpleef heavySpleef, File customFlagFolder) {
 		this.heavySpleef = heavySpleef;
 		this.customFlagFolder = customFlagFolder;
 		this.logger = heavySpleef.getLogger();
-		this.registeredFlagsMap = HashBiMap.create();
+		this.registeredFlagsMap = new DualKeyHashBiMap<String, Flag, Class<? extends AbstractFlag<?>>>(String.class, Flag.class);
 		
 		URL url;
 		
@@ -116,7 +118,7 @@ public class FlagRegistry {
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz) {
 		Validate.notNull(clazz, "clazz cannot be null");
-		Validate.isTrue(registeredFlagsMap.containsValue(clazz), "Cannot register flag twice");
+		Validate.isTrue(!registeredFlagsMap.containsValue(clazz), "Cannot register flag twice");
 		
 		/* Check if the class provides the required Flag annotation */
 		Validate.isTrue(clazz.isAnnotationPresent(Flag.class), "Flag-Class must be annotated with the @Flag annotation");
@@ -124,8 +126,31 @@ public class FlagRegistry {
 		Flag flagAnnotation = clazz.getAnnotation(Flag.class);
 		String name = flagAnnotation.name();
 		
-		Validate.isTrue(!name.isEmpty(), "name() in annotation of flag for class " + clazz.getCanonicalName() + " cannot be empty");
-		Validate.isTrue(!registeredFlagsMap.containsKey(name), "Flag " + clazz.getName() + " has a name collide with " + registeredFlagsMap.get(name).getClass());
+		Validate.isTrue(!name.isEmpty(), "name() of annotation of flag for class " + clazz.getCanonicalName() + " cannot be empty");
+		
+		/* Generate a path */
+		StringBuilder pathBuilder = new StringBuilder();
+		Flag parentFlagData = flagAnnotation;
+		
+		do {
+			pathBuilder.insert(0, parentFlagData.name());
+			
+			Class<? extends AbstractFlag<?>> parentFlagClass = parentFlagData.parent();
+			parentFlagData = parentFlagClass.getAnnotation(Flag.class);
+			
+			if (parentFlagData != null && parentFlagClass != NullFlag.class) {
+				pathBuilder.insert(0, FLAG_PATH_SEPERATOR);
+			}
+		} while (parentFlagData != null);
+		
+		String path = pathBuilder.toString();
+		
+		/* Check for name collides */
+		for (String flagPath : registeredFlagsMap.primaryKeySet()) {
+			if (flagPath.equalsIgnoreCase(path)) {
+				throw new IllegalArgumentException("Flag " + clazz.getName() + " collides with " + registeredFlagsMap.get(flagPath).getName());
+			}
+		}
 		
 		/* Check if the class can be instantiated */
 		try {
@@ -142,62 +167,30 @@ public class FlagRegistry {
 			manager.registerSpleefCommands(clazz);
 		}
 		
-		registeredFlagsMap.put(flagAnnotation, clazz);
+		registeredFlagsMap.put(path, flagAnnotation, clazz);
 	}
 	
 	public Flag getFlagData(Class<? extends AbstractFlag<?>> clazz) {
-		return registeredFlagsMap.inverse().get(clazz);
+		DualKeyPair<String, Flag> keyPair = registeredFlagsMap.inverse().get(clazz);
+		
+		if (keyPair == null) {
+			return null;
+		}
+		
+		return keyPair.getSecondaryKey();
+	}
+	
+	public boolean isFlagPresent(String flagPath) {
+		return getFlagClass(flagPath) != null;
 	}
 	
 	/* Reverse path lookup */
 	public Class<? extends AbstractFlag<?>> getFlagClass(String flagPath) {
-		String[] pathComponents = flagPath.split(FLAG_PATH_SEPERATOR);
-		int index = pathComponents.length - 1;
-		Class<? extends AbstractFlag<?>> clazz = null;
-		
-		for (Entry<Flag, Class<? extends AbstractFlag<?>>> entry : registeredFlagsMap.entrySet()) {
-			if (!entry.getKey().name().equalsIgnoreCase(pathComponents[index])) {
-				continue;
-			}
-			
-			Flag flagData = entry.getKey();
-			if (checkPath(pathComponents, flagData, index)) {
-				clazz = entry.getValue();
-				break;
-			}
-		}
-		
-		return clazz;
+		return registeredFlagsMap.get(flagPath);
 	}
 	
-	private boolean checkPath(String[] path, Flag flagData, int index) {
-		if (index == 0) {
-			return true;
-		}
-		
-		boolean pathValid = false;
-		
-		for (Entry<Flag, Class<? extends AbstractFlag<?>>> entry : registeredFlagsMap.entrySet()) {
-			if (!entry.getKey().name().equalsIgnoreCase(flagData.name())) {
-				continue;
-			}
-			
-			Class<? extends AbstractFlag<?>> parentClass = flagData.parent();
-			Flag parentFlagData = parentClass.getAnnotation(Flag.class);
-			
-			if (!parentFlagData.name().equalsIgnoreCase(path[index - 1])) {
-				continue;
-			}
-			
-			pathValid = checkPath(path, parentFlagData, index - 1);
-			break;
-		}
-		
-		return pathValid;
-	}
-	
-	public BiMap<Flag, Class<? extends AbstractFlag<?>>> getAvailableFlags() {
-		return Maps.unmodifiableBiMap(registeredFlagsMap);
+	public DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> getAvailableFlags() {
+		return DualMaps.immutableDualBiMap(registeredFlagsMap);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -228,8 +221,10 @@ public class FlagRegistry {
 		Validate.notNull(parent, "parent cannot be null");
 		Validate.notNull(childCandidate, "child candidate cannot be null");
 		
-		BiMap<Class<? extends AbstractFlag<?>>, Flag> inversed = registeredFlagsMap.inverse();
-		Flag annotation = inversed.get(childCandidate);
+		BiMap<Class<? extends AbstractFlag<?>>, DualKeyPair<String, Flag>> inverse = registeredFlagsMap.inverse();
+		Validate.isTrue(inverse.containsKey(childCandidate), "childCandidate flag " + childCandidate.getName() + " has not been registered");
+		
+		Flag annotation = inverse.get(childCandidate).getSecondaryKey();
 		
 		Validate.isTrue(annotation != null, "childCandidate has not been registered");
 		return annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == childCandidate;
