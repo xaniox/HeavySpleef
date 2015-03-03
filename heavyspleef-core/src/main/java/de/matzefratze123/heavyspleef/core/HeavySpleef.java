@@ -24,13 +24,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.EnumMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -41,17 +43,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.regions.CuboidRegion;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
-import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
-import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
-import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -65,7 +62,9 @@ public final class HeavySpleef {
 	
 	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "] ";
 	
+	@Getter
 	private final JavaPlugin plugin;
+	@Getter
 	private final Logger logger;
 	
 	private File localeDir;
@@ -74,13 +73,24 @@ public final class HeavySpleef {
 	private Map<ConfigType, ConfigurationObject> configurations;
 	
 	private ModuleManager moduleManager;
+	@Getter
 	private FlagRegistry flagRegistry;
+	@Getter
+	@Setter
 	private CommandManager commandManager;
+	@Getter
+	@Setter
 	private AsyncReadWriteHandler databaseHandler;
 
+	@Getter
 	private HookManager hookManager;
+	@Getter
 	private GameManager gameManager;
+	@Getter
 	private PlayerManager playerManager;
+	
+	@Getter
+	private PlayerPostActionHandler postActionHandler;
 	
 	public HeavySpleef(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -95,6 +105,8 @@ public final class HeavySpleef {
 		this.flagDir = new File(dataFolder, "flags");
 		this.flagDir.mkdirs();
 		
+		flagRegistry = new FlagRegistry(this, flagDir);
+		
 		this.configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
 		
 		Map<ConfigType, Object[]> configArgs = new EnumMap<ConfigType, Object[]>(ConfigType.class);
@@ -105,17 +117,17 @@ public final class HeavySpleef {
 		this.moduleManager = new ModuleManager();
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
-		I18N.initialize(defaultConfig.getLocalization().getLocale(), getDataFolder(), logger);
+		I18N.initialize(defaultConfig.getLocalization().getLocale(), localeDir, logger);
 		
 		this.playerManager = new PlayerManager(plugin);
 		this.hookManager = new HookManager();
 		
 		hookManager.registerHook(HookReference.VAULT);
+		
+		this.postActionHandler = new PlayerPostActionHandler(this);
 	}
 	
 	public void enable() {
-		flagRegistry = new FlagRegistry(this, flagDir);
-		
 		//Load all games
 		databaseHandler.getGames(new FutureCallback<List<Game>>() {
 			
@@ -206,30 +218,6 @@ public final class HeavySpleef {
 		return plugin.getDataFolder();
 	}
 	
-	public File getLocaleDir() {
-		return localeDir;
-	}
-	
-	public File getFlagDir() {
-		return flagDir;
-	}
-	
-	public Logger getLogger() {
-		return logger;
-	}
-	
-	public JavaPlugin getPlugin() {
-		return plugin;
-	}
-	
-	public FlagRegistry getFlagRegistry() {
-		return flagRegistry;
-	}
-	
-	public GameManager getGameManager() {
-		return gameManager;
-	}
-	
 	public SpleefPlayer getSpleefPlayer(Object base) {
 		if (base instanceof Player) {
 			return playerManager.getSpleefPlayer((Player)base);
@@ -244,40 +232,6 @@ public final class HeavySpleef {
 	
 	public void registerModule(Module module) {
 		moduleManager.registerModule(module);
-	}
-	
-	public void setCommandManager(CommandManager manager) {
-		this.commandManager = manager;
-	}
-	
-	public CommandManager getCommandManager() {
-		return commandManager;
-	}
-	
-	public void setDatabaseHandler(AsyncReadWriteHandler handler) {
-		this.databaseHandler = handler;
-	}
-	
-	public AsyncReadWriteHandler getDatabaseHandler() {
-		return databaseHandler;
-	}
-	
-	public HookManager getHookManager() {
-		return hookManager;
-	}
-	
-	public List<Class<?>> getPersistentBeans() {
-		List<Class<?>> listOfClasses = new LinkedList<Class<?>>();
-		//listOfClasses.add(Game.class);
-		listOfClasses.add(Statistic.class);
-		listOfClasses.add(FlagManager.class);
-		listOfClasses.add(SimpleCuboidFloor.class);
-		listOfClasses.add(CuboidRegion.class);
-		listOfClasses.add(Vector.class);
-		listOfClasses.add(AbstractFlag.class);
-		listOfClasses.add(DefaultGamePropertyBundle.class);
-		
-		return listOfClasses;
 	}
 
 }

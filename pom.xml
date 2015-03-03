@@ -117,8 +117,32 @@
           <artifactSet>
             <excludes>
               <exclude>xml-apis:xml-apis</exclude>
+              <exclude>com.google.code.gson:gson</exclude>
             </excludes>
           </artifactSet>
+          <relocations>
+            <relocation>
+              <pattern>mkremins.fanciful</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.fanciful</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.dom4j</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.dom4j</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.slf4j</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.slf4j</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>snaq</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.snaq</shadedPattern>
+            </relocation>
+          </relocations>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+              <resource>NOTICE.txt</resource>
+            </transformer>
+          </transformers>
         </configuration>
         <executions>
           <execution>
@@ -168,6 +192,12 @@
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>VaultAPI</artifactId>
       <version>1.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.2</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
