@@ -52,6 +52,8 @@ public interface Messages {
 		public static final String FLAG_NOT_PRESENT = "flag-not-present"; // $[flag]
 		public static final String FLAG_REMOVED = "flag-removed"; // $[flag]
 		
+		public static final String CLICK_TO_JOIN = "click-to-join"; // $[game]
+		
 	}
 	
 	public interface Broadcast {
