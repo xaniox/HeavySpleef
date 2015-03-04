@@ -126,7 +126,7 @@ public class Game {
 		this.heavySpleef = heavySpleef;
 	}
 	
-	public void countdown() {
+	public boolean countdown() {
 		GameCountdownEvent event = new GameCountdownEvent(this);
 		eventManager.callEvent(event);
 		
@@ -135,7 +135,7 @@ public class Game {
 			broadcast(i18n.getVarString(Messages.Player.NEED_MIN_PLAYERS)
 					.setVariable("amount", String.valueOf(2))
 					.toString());
-			return;
+			return false;
 		}
 		
 		// Regenerate all floors
@@ -197,6 +197,8 @@ public class Game {
 			//Countdown is not enabled so just start the game
 			start();
 		}
+		
+		return true;
 	}
 	
 	public void start() {

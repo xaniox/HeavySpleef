@@ -51,10 +51,13 @@ public class CommandStart {
 			CommandValidate.notNull(game, I18N.getInstance().getString(Messages.Command.NOT_INGAME));
 		}
 		
-		game.countdown();
-		player.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_STARTED)
-				.setVariable("game", game.getName())
-				.toString());
+		boolean success = game.countdown();
+		
+		if (success) {
+			player.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_STARTED)
+					.setVariable("game", game.getName())
+					.toString());
+		}
 	}
 
 }
