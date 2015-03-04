@@ -30,6 +30,7 @@ public class EventListenerMethod {
 	
 	@SuppressWarnings("unchecked")
 	public EventListenerMethod(Object instance, Method method) {
+		this.instance = instance;
 		this.method = method;
 		
 		if (!method.isAccessible()) {
@@ -45,7 +46,7 @@ public class EventListenerMethod {
 		this.eventClass = (Class<? extends GameEvent>) eventClass;
 	}
 	
-	public Class<? extends GameEvent> getGameEventType() {
+	public Class<? extends GameEvent> getDeclaringClass() {
 		return eventClass;
 	}
 	
