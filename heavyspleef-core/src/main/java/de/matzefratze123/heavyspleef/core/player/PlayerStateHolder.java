@@ -34,7 +34,7 @@ import com.google.common.collect.Lists;
 public class PlayerStateHolder {
 	
 	/* Saving the inventory and the armor contents */
-	private static final int SIMPLE_INVENTORY_SIZE = 3 * 9;
+	private static final int SIMPLE_INVENTORY_SIZE = 4 * 9;
 	private static final int ARMOR_INVENTORY_SIZE = 4;
 	private static final int INVENTORY_SIZE = SIMPLE_INVENTORY_SIZE + ARMOR_INVENTORY_SIZE; 
 	
@@ -66,7 +66,7 @@ public class PlayerStateHolder {
 		
 		ItemStack[] inventoryArray = new ItemStack[INVENTORY_SIZE];
 		System.arraycopy(contents, 0, inventoryArray, 0, contents.length);
-		System.arraycopy(armor, 0, inventoryArray, inventoryArray.length - 5, armor.length);
+		System.arraycopy(armor, 0, inventoryArray, inventoryArray.length - ARMOR_INVENTORY_SIZE - 1, armor.length);
 		
 		/* Initialize the state with the current player state */
 		stateHolder.setInventory(inventoryArray);
@@ -81,6 +81,7 @@ public class PlayerStateHolder {
 		stateHolder.setSaturation(player.getSaturation());
 		stateHolder.setFallDistance(player.getFallDistance());
 		stateHolder.setFireTicks(player.getFireTicks());
+		stateHolder.setLocation(player.getLocation());
 		
 		List<WeakReference<Player>> cantSee = Lists.newArrayList();
 		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
