@@ -45,14 +45,14 @@ public interface Messages {
 		public static final String PLAYER_KICKED = PREFIX + "player-kicked"; // $[player]
 		public static final String NOT_INGAME = PREFIX + "not-ingame";
 		
-		public static final String INVALID_FLAG_INPUT = "invalid-flag-input";
-		public static final String FLAG_SET = "flag-set"; // $[flag]
-		public static final String PARENT_FLAG_NOT_SET = "parent-flag-not-set"; // $[parent-flag]
-		public static final String FLAG_REQUIRES_HOOK = "flag-requires-hook"; // $[hook]
-		public static final String FLAG_NOT_PRESENT = "flag-not-present"; // $[flag]
-		public static final String FLAG_REMOVED = "flag-removed"; // $[flag]
+		public static final String INVALID_FLAG_INPUT = PREFIX + "invalid-flag-input";
+		public static final String FLAG_SET = PREFIX + "flag-set"; // $[flag]
+		public static final String PARENT_FLAG_NOT_SET = PREFIX + "parent-flag-not-set"; // $[parent-flag]
+		public static final String FLAG_REQUIRES_HOOK = PREFIX + "flag-requires-hook"; // $[hook]
+		public static final String FLAG_NOT_PRESENT = PREFIX + "flag-not-present"; // $[flag]
+		public static final String FLAG_REMOVED = PREFIX + "flag-removed"; // $[flag]
 		
-		public static final String CLICK_TO_JOIN = "click-to-join"; // $[game]
+		public static final String CLICK_TO_JOIN = PREFIX + "click-to-join"; // $[game]
 		
 	}
 	
@@ -90,10 +90,7 @@ public interface Messages {
 		public static final String ERROR_NO_LOBBY_POINT_SET = PREFIX + "error-no-lobby-point-set";
 		public static final String AVAILABLE_FLAGS = PREFIX + "available-flags"; // $[flags]
 		
-		public static final String SPECIFY_TEAM_COLOR_REQUEST = PREFIX + "specify-team-color-request"; // $[available_colors]
-		public static final String TEAM_COLOR_NOT_AVAILABLE = PREFIX + "team-color-not-available"; // $[color]; $[available_colors]
 		public static final String TEAM_MAX_PLAYER_COUNT_REACHED = PREFIX + "team-max-player-count-reached";
-		public static final String PLAYER_JOINED_TEAM = PREFIX + "player-joined-team"; // $[color]
 		
 		public static final String PAID_ENTRY_FEE = PREFIX + "paid-entry-fee"; // $[amount]
 		
@@ -105,7 +102,10 @@ public interface Messages {
 		public static final String PLAYER_RECEIVE_JACKPOT = PREFIX + "player-receive-jackpot"; // $[amount]
 		
 		public static final String MAX_PLAYER_COUNT_REACHED = PREFIX + "max-player-count-reached"; // $[max]
-		
+
+		public static final String TEAM_SELECTOR_TITLE = PREFIX + "team-selector-title";
+		public static final String CLICK_TO_JOIN_TEAM = PREFIX + "click-to-join-team";
+		public static final String NEED_MIN_PLAYERS = PREFIX + "need-min-players"; // $[amount]
 		
 	}
 	

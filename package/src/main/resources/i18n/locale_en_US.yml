@@ -20,6 +20,15 @@ command:
   player-not-ingame: "The player '$[player]' is not in any game"
   player-kicked: "You kicked player $[player] from the game"
   not-ingame: "You must be ingame to use this command"
+  
+  invalid-flag-input: "Invalid flag-value input: "
+  flag-set: "Flag $[flag] set!"
+  parent-flag-not-set: "This flag requires its parent flag in order to work: $[parent-flag]"
+  flag-requires-hook: "This flag needs the following dependencies: $[hook]"
+  flag-not-present: "Flag $[flag] is not set on this game."
+  flag-removed: "Flag $[flag] was removed."
+  
+  click-to-join: "Click here to join the game"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -28,6 +37,11 @@ broadcast:
   player-joined-game: "$[player] joined the game"
   player-lost-game: "$[player] was knocked out by $[killer] and is out of the game"
   player-won-game: "$[player] won the game"
+  
+  game-timed-out: "Game has timed out!"
+  game-timedout-countdown: "Game times out in $[minutes]:$[seconds] minutes"
+  
+  team-is-out: "Team $[color] lost and left the game"
 player:
   player-leave: "You left the game."
   player-kick: "You were kicked by $[kicker]: $[message]"
@@ -36,3 +50,27 @@ player:
   game-stopped: "The game has been stopped and you left the game"
   error-on-inventory-load: "Your inventory could not be loaded back. Please contact an administrator."
   error-no-lobby-point-set: "There is no lobby point set for this game"
+  available-flags: "Available flags: $[flags]"
+  
+  paid-entry-fee: "You paid an entry fee of $[amount]"
+  
+  no-spectate-flag: "The spectate flag has not yet been set"
+  player-spectate: "You are now spectating the game $[game]"
+  player-leave-spectate: "You do not longer spectate the game"
+  
+  player-pay-fee: "You paid a fee of $[amount]"
+  player-receive-jackpot: "You received the jackpot amount of $[amount]"
+  max-player-count-reached: "The maximum count of players are reached"
+  team-selector-title: "Team Selection"
+  click-to-join-team: "Join Team"
+  need-min-players: "Need at least $[amount] players to start the game!"
+arrays:
+  team-color-array:
+  - "White"
+  - "Gold"
+  - "Yellow"
+  - "Green"
+  - "Pink"
+  - "Gray"
+  - "Blue"
+  - "Red"

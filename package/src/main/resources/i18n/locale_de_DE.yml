@@ -20,6 +20,15 @@ command:
   player-not-ingame: "Der Spieler '$[player]' ist in keinem Spleef-Spiel" 
   player-kicked: "Du hast Spieler $[player] vom Spiel gekickt"
   not-ingame: "Dieser Befehl kann nur während des Spiels genutzt werden"
+  
+  invalid-flag-input: "Ungültiger Flag-Wert Eingabe: "
+  flag-set: "Flag $[flag] gesetzt!"
+  parent-flag-not-set: "Diese Flag benötigt eine andere Flag: $[parent-flag]"
+  flag-requires-hook: "Diese Flag benötigt folgende Abhängigkeit: $[hook]"
+  flag-not-present: "Flag $[flag] ist nicht gesetzt."
+  flag-removed: "Flag $[flag] wurde entfernt."
+  
+  click-to-join: "Hier klicken um dem Spiel beizutreten"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -28,6 +37,11 @@ broadcast:
   player-joined-game: "$[player] ist dem Spiel beigetreten"
   player-lost-game: "$[player] wurde von $[killer] ausgeknockt und ist aus dem Spiel"
   player-won-game: "$[player] hat das Spiel gewonnen"
+  
+  game-timed-out: "Spielzeit ist abgelaufen!"
+  game-timedout-countdown: "Spiel endet in $[minutes]:$[seconds] Minuten"
+  
+  team-is-out: "Das Team $[color] hat verloren und ist ausgeschieden"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"
@@ -36,3 +50,27 @@ player:
   game-stopped: "Das Spiel wurde gestoppt und du hast es verlassen"
   error-on-inventory-load: "Dein Inventar konnte nicht geladen werden. Bitte kontaktiere einen Administrator."
   error-no-lobby-point-set: "Für dieses Spiel wurde noch kein Lobby-Punkt gesetzt"
+  available-flags: "Verfügbare Flags: $[flags]"
+  
+  paid-entry-fee: "Du hast $[amount] Eintrittsgebühr gezahlt"
+  
+  no-spectate-flag: "Die Spectate-Flag wurde für dieses Spiel noch nicht gesetzt!"
+  player-spectate: "Du beobachtest nun das Spiel $[game]"
+  player-leave-spectate: "Du beobachtest das Spiel nicht länger"
+  
+  player-pay-fee: "Du hast $[amount] Eintrittsgebühr gezahlt"
+  player-receive-jackpot: "Dir wurde der Jackpot in Höhe von $[amount] gutgeschrieben"
+  max-player-count-reached: "Die maximale Anzahl an Spieler wurde erreicht"
+  team-selector-title: "Teamauswahl"
+  click-to-join-team: "Team beitreten"
+  need-min-players: "Es werden mindestens $[amount] Spieler zum Starten benötigt"
+arrays:
+  team-color-array:
+  - "Weiß"
+  - "Gold"
+  - "Gelb"
+  - "Grün"
+  - "Pink"
+  - "Grau"
+  - "Blau"
+  - "Rot"
