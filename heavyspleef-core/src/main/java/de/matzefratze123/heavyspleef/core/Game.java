@@ -229,21 +229,30 @@ public class Game {
 			floor.regenerate();
 		}
 		
+		Queue<SpleefPlayer> failedToQueue = Lists.newLinkedList();
+		
 		//Flush the queue
-		FlushResult lastResult;
-		do {
-			SpleefPlayer player = queuedPlayers.peek();
+		while (!queuedPlayers.isEmpty()) {
+			SpleefPlayer player = queuedPlayers.poll();
 			
 			PlayerQueueFlushEvent event = new PlayerQueueFlushEvent(this, player);
 			eventManager.callEvent(event);
 			
-			lastResult = event.getResult();
-			if (lastResult == FlushResult.ALLOW) {
-				queuedPlayers.poll();
+			FlushResult result = event.getResult();
+			if (result == FlushResult.ALLOW) {				
+				PlayerPreJoinGameEvent joinEvent = new PlayerPreJoinGameEvent(this, player, new String[0]); //TODO Store join args in queue?
+				eventManager.callEvent(joinEvent);
 				
-				//TODO
+				if (joinEvent.getJoinResult() != JoinResult.DENY) {
+					join(player, joinEvent, (String[])null);
+					continue;
+				}
 			}
-		} while (lastResult != FlushResult.DENY);
+			
+			failedToQueue.offer(player);
+		}
+		
+		queuedPlayers.addAll(failedToQueue);
 	}
 	
 	public void disable() {
@@ -285,13 +294,20 @@ public class Game {
 	}
 	
 	public void join(SpleefPlayer player, String... args) {
+		join(player, null, args);
+	}
+	
+	private void join(SpleefPlayer player, PlayerPreJoinGameEvent event, String... args) {
 		if (ingamePlayers.contains(player)) {
 			return;
 		}
 		
-		//This event is called before the player joins the game!
-		PlayerPreJoinGameEvent event = new PlayerPreJoinGameEvent(this, player, args == null ? new String[0] : args);		
-		eventManager.callEvent(event);
+		if (event == null) {
+			//Only call this event if the caller didn't give us an event
+			//This event is called before the player joins the game!
+			event = new PlayerPreJoinGameEvent(this, player, args == null ? new String[0] : args);		
+			eventManager.callEvent(event);
+		}
 		
 		if (event.getTeleportationLocation() == null) {
 			player.sendMessage(i18n.getString(Messages.Player.ERROR_NO_LOBBY_POINT_SET));

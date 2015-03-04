@@ -22,7 +22,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class PlayerQueueFlushEvent extends PlayerGameEvent {
 	
-	private FlushResult result;
+	private FlushResult result = FlushResult.ALLOW;
 	
 	public PlayerQueueFlushEvent(Game game, SpleefPlayer player) {
 		super(game, player);
