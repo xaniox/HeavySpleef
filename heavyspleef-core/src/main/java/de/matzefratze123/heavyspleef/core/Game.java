@@ -130,6 +130,14 @@ public class Game {
 		GameCountdownEvent event = new GameCountdownEvent(this);
 		eventManager.callEvent(event);
 		
+		// The player cannot play alone
+		if (ingamePlayers.size() <= 1) {
+			broadcast(i18n.getVarString(Messages.Player.NEED_MIN_PLAYERS)
+					.setVariable("amount", String.valueOf(2))
+					.toString());
+			return;
+		}
+		
 		// Regenerate all floors
 		for (Floor floor : floors.values()) {
 			floor.regenerate();
@@ -491,10 +499,14 @@ public class Game {
 	
 	public void addFlag(AbstractFlag<?> flag) {
 		flagManager.addFlag(flag);
+		
+		eventManager.registerListener(flag);
 	}
 	
 	public void removeFlag(String path) {
-		flagManager.removeFlag(path);
+		AbstractFlag<?> flag = flagManager.removeFlag(path);
+		
+		eventManager.unregister(flag);
 	}
 	
 	public boolean isFlagPresent(String path) {
