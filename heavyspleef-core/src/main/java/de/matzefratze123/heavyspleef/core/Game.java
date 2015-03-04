@@ -37,6 +37,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -414,13 +415,13 @@ public class Game {
 		
 		switch (cause) {
 		case KICK:
-			SpleefPlayer clientPlayer = null;
+			CommandSender clientPlayer = null;
 			String message = null;
 			
 			int messageIndex = 0;
-			if (args.length > 0 && args[0] instanceof SpleefPlayer) {
+			if (args.length > 0 && args[0] instanceof CommandSender) {
 				// Caller gave us a client player
-				clientPlayer = (SpleefPlayer) args[0];
+				clientPlayer = (CommandSender) args[0];
 				messageIndex = 1;
 			}
 			
@@ -430,8 +431,8 @@ public class Game {
 			}
 			
 			playerMessage = i18n.getVarString(Messages.Player.PLAYER_KICK)
-					.setVariable("message", message)
-					.setVariable("kicker", clientPlayer.getName())
+					.setVariable("message", message != null ? message : "No reason provided")
+					.setVariable("kicker", clientPlayer != null ? clientPlayer.getName() : "Unknown")
 					.toString();
 			break;
 		case SELF:
@@ -495,12 +496,12 @@ public class Game {
 		}
 	}
 	
-	public void kickPlayer(SpleefPlayer player, String message) {
+	public void kickPlayer(SpleefPlayer player, String message, CommandSender sender) {
 		if (!ingamePlayers.contains(player)) {
-			throw new IllegalArgumentException("player must be in game to kick");
+			throw new IllegalArgumentException("Player must be in game to kick");
 		}
 		
-		leave(player, QuitCause.KICK);
+		leave(player, QuitCause.KICK, sender, message);
 	}
 	
 	public String getName() {

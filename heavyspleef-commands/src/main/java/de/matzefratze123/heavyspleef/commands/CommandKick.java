@@ -68,7 +68,7 @@ public class CommandKick {
 			}
 		}
 		
-		game.kickPlayer(targetSpleefPlayer, message);
+		game.kickPlayer(targetSpleefPlayer, message, sender);
 		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.PLAYER_KICKED)
 				.setVariable("player", target.getName())
 				.toString());
