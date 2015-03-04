@@ -221,8 +221,8 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		
 		MetadatableItemStack teamSelectorOpener = new MetadatableItemStack(TEAM_SELECT_ITEMDATA.toItemStack(1));
 		ItemMeta meta = teamSelectorOpener.getItemMeta();
-		meta.setDisplayName("Team selector"); //TODO Add localized message
-		meta.setLore(Lists.newArrayList("Right-Click to choose your team")); //TODO Add localized message
+		meta.setDisplayName(getI18N().getString(Messages.Player.TEAM_SELECTOR_TITLE));
+		meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.CLICK_TO_JOIN_TEAM)));
 		teamSelectorOpener.setItemMeta(meta);
 		teamSelectorOpener.setMetadata(TEAM_SELECT_ITEM_KEY, null);
 		
