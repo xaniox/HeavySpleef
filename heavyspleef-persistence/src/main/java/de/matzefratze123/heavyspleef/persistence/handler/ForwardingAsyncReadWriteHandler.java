@@ -30,6 +30,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -65,7 +66,7 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 			public Thread newThread(Runnable runnable) {
 				Thread thread = new Thread(runnable);
 				thread.setUncaughtExceptionHandler(exceptionHandler);
-				thread.setName("Database-Thread");
+				thread.setName("Persistence-Thread");
 				
 				return thread;
 			}
@@ -204,7 +205,15 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 		if (isServerThread() || forceAsync) {
 			future = executorService.submit(callable);
 			
-			MoreFutures.addBukkitSyncCallback(plugin, future, callback);
+			if (plugin.isEnabled()) {
+				//MoreFutures invokes the Bukkit Scheduler and since tasks cannot be
+				//registered while the plugin is disabled we can only add a synchronous
+				//callback when the plugin is enabled
+				MoreFutures.addBukkitSyncCallback(plugin, future, callback);
+			} else {
+				//Just add a default callback as the plugin is disabled
+				Futures.addCallback(future, callback);
+			}
 		} else {
 			Throwable throwableThrown = null;
 			R result = null;
