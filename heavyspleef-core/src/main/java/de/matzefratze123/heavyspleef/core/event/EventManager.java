@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.core.event;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -46,9 +47,21 @@ public class EventManager {
 		}
 	}
 	
+	public void unregister(SpleefListener listener) {
+		Iterator<EventListenerMethod> methodIterator = registeredEventListeners.iterator();
+		while (methodIterator.hasNext()) {
+			EventListenerMethod method = methodIterator.next();
+			if (!method.getDeclaringClass().isInstance(listener)) {
+				continue;
+			}
+			
+			methodIterator.remove();
+		}
+	}
+	
 	public void callEvent(GameEvent event) {
 		for (EventListenerMethod method : registeredEventListeners) {
-			if (!method.getGameEventType().isInstance(event)) {
+			if (!method.getDeclaringClass().isInstance(event)) {
 				continue;
 			}
 			
