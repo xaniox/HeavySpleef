@@ -25,6 +25,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.Maps;
+
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 
 public class SpleefPlayer {
@@ -38,6 +40,8 @@ public class SpleefPlayer {
 	
 	public SpleefPlayer(Player bukkitPlayer) {
 		this.bukkitPlayerRef = new WeakReference<Player>(bukkitPlayer);
+		this.online = bukkitPlayer.isOnline();
+		this.playerStates = Maps.newHashMap();
 	}
 	
 	public Player getBukkitPlayer() {
