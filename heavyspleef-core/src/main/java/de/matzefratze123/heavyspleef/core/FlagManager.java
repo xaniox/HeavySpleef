@@ -97,9 +97,9 @@ public class FlagManager {
 		}
 	}
 	
-	public void removeFlag(String path) {
+	public AbstractFlag<?> removeFlag(String path) {
 		if (!flags.containsKey(path)) {
-			return;
+			return null;
 		}
 		
 		AbstractFlag<?> flag = flags.remove(path);
@@ -116,6 +116,8 @@ public class FlagManager {
 			
 			iterator.remove();
 		}
+		
+		return flag;
 	}
 	
 	public boolean isFlagPresent(String name) {
