@@ -45,7 +45,7 @@ public class CommandList {
 		Collection<Game> games = gameManager.getGames();
 		
 		for (Game game : games) {
-			FancyMessage message = new FancyMessage();
+			FancyMessage message = new FancyMessage("");
 			
 			if (sender instanceof Player) {
 				message.then(ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + "Join" + ChatColor.DARK_GRAY + "]")
