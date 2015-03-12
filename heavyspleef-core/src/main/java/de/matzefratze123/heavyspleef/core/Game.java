@@ -139,6 +139,12 @@ public class Game {
 			return false;
 		}
 		
+		// Spleef cannot be started when there is no floor
+		if (floors.size() == 0) {
+			broadcast(i18n.getString(Messages.Broadcast.NEED_FLOORS));
+			return false;
+		}
+		
 		// Regenerate all floors
 		for (Floor floor : floors.values()) {
 			floor.regenerate();
