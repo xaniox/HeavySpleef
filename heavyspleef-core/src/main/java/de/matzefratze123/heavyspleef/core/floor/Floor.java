@@ -35,6 +35,6 @@ public interface Floor {
 	
 	public boolean contains(Location location);
 	
-	public void regenerate();
+	public void generate();
 	
 }

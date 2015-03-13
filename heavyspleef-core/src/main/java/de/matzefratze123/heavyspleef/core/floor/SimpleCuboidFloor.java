@@ -17,16 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.core.floor;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-import org.bukkit.block.Block;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EditSessionFactory;
@@ -41,20 +33,12 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.WorldData;
 
-@Entity
-@Table(name = "floors")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class SimpleCuboidFloor implements Floor {
 
 	private static final int NO_LIMIT = -1;
 	
-	@XmlTransient
-	@Transient
 	private final EditSessionFactory factory;
-	@XmlElement
 	private String name;
-	@XmlTransient
-	@Transient
 	private Clipboard floorClipboard;
 	
 	private SimpleCuboidFloor() {
@@ -96,7 +80,7 @@ public class SimpleCuboidFloor implements Floor {
 	}
 
 	@Override
-	public void regenerate() {
+	public void generate() {
 		Region region = floorClipboard.getRegion();
 		World world = region.getWorld();
 		WorldData data = world.getWorldData();
@@ -106,13 +90,13 @@ public class SimpleCuboidFloor implements Floor {
 		
 		Operation pasteOperation = holder.createPaste(session, data)
 				.to(region.getMinimumPoint())
-				.ignoreAirBlocks(false)
+				.ignoreAirBlocks(true)
 				.build();
 		
 		try {
 			Operations.completeLegacy(pasteOperation);
 		} catch (MaxChangedBlocksException e) {
-			//Should not happen as we gave the session NO_LIMIT
+			//Should not happen as we gave the session a NO_LIMIT
 			e.printStackTrace();
 		}
 	}
