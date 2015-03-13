@@ -33,7 +33,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.WorldData;
 
-public class SimpleCuboidFloor implements Floor {
+public class SimpleClipboardFloor implements Floor {
 
 	private static final int NO_LIMIT = -1;
 	
@@ -41,11 +41,11 @@ public class SimpleCuboidFloor implements Floor {
 	private String name;
 	private Clipboard floorClipboard;
 	
-	private SimpleCuboidFloor() {
+	private SimpleClipboardFloor() {
 		this.factory = new EditSessionFactory();
 	}
 	
-	public SimpleCuboidFloor(String name, Clipboard clipboard) {
+	public SimpleClipboardFloor(String name, Clipboard clipboard) {
 		this();
 		
 		this.name = name;
