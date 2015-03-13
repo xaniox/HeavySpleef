@@ -46,20 +46,31 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.floor.Floor;
-import de.matzefratze123.heavyspleef.core.floor.SimpleCuboidFloor;
+import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
 
 public class FloorAccessor extends SchematicAccessor<Floor> {
 
 	private static final String ROOT_TAG_NAME = "floor-schematic";
+	private static final Map<Class<? extends Region>, RegionMetadataCodec<?>> METADATA_CODECS;
+	
+	static {
+		METADATA_CODECS = Maps.newConcurrentMap();
+		METADATA_CODECS.put(CuboidRegion.class, new CuboidRegionMetadataCodec());
+		METADATA_CODECS.put(CylinderRegion.class, new CylinderRegionMetadataCodec());
+		METADATA_CODECS.put(Polygonal2DRegion.class, new Polygonal2DRegionMetadataCodec());
+	}
 	
 	@Override
 	public Class<Floor> getObjectClass() {
 		return Floor.class;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void write(OutputStream out, Floor floor) throws IOException, CodecException {
 		StringTag nameTag = new StringTag("name", floor.getName());
@@ -71,6 +82,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		int height = region.getHeight();
 		int length = region.getLength();
 		
+		// Store the boundaries of the region
 		ShortTag widthTag = new ShortTag("width", (short)width);
 		ShortTag heightTag = new ShortTag("height", (short)height);
 		ShortTag lengthTag = new ShortTag("length", (short)length);
@@ -84,12 +96,21 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		
 		Vector origin = clipboard.getOrigin();
 		
+		// Store the origin of the clipboard (this will always be the minimum point of the region)
 		List<IntTag> originCoordinateList = Lists.newArrayList();
 		originCoordinateList.add(new IntTag(origin.getBlockX()));
 		originCoordinateList.add(new IntTag(origin.getBlockY()));
 		originCoordinateList.add(new IntTag(origin.getBlockZ()));
 		
 		ListTag originTag = new ListTag("origin", IntTag.class, originCoordinateList);
+		
+		// Also save region specific data (class name, attributes)
+		StringTag regionTypeTag = new StringTag(region.getClass().getName());
+		Map<String, Tag> metadataMap = Maps.newHashMap();
+		RegionMetadataCodec<Region> metadataCodec = (RegionMetadataCodec<Region>) METADATA_CODECS.get(region.getClass());
+		metadataCodec.apply(metadataMap, region);
+		
+		CompoundTag metadataTag = new CompoundTag("metadata", metadataMap);
 		
 		byte[] blocks = new byte[width * height * length];
 		byte[] data = new byte[width * height * length];
@@ -130,7 +151,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 						values.put("y", new IntTag("y", y));
 						values.put("z", new IntTag("z", z));
 						
-						CompoundTag tileEntityTag = new CompoundTag("", values);
+						CompoundTag tileEntityTag = new CompoundTag(values);
 						tileEntities.add(tileEntityTag);
 					}
 				}
@@ -145,6 +166,8 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		childs.put("name", nameTag);
 		childs.put("boundaries", boundariesTag);
 		childs.put("origin", originTag);
+		childs.put("regiontype", regionTypeTag);
+		childs.put("metadata", metadataTag);
 		childs.put("blocks", blocksTag);
 		childs.put("data", dataTag);
 		childs.put("tileentities", tileEntitiesTag);
@@ -161,6 +184,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Floor read(InputStream in) throws IOException, CodecException {
 		NBTInputStream nbtStream = new NBTInputStream(
@@ -267,10 +291,19 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 			tileEntitiesMap.put(vec, values);
 		}
 		
-		Vector size = new Vector(width, height, length);
-		Vector maxPt = origin.add(size);
+		String regionTypeName = getChildTag(childs, "regiontype", StringTag.class).getValue();
+		Class<? extends Region> regionClass;
 		
-		Region region = new CuboidRegion(origin, maxPt);
+		try {
+			regionClass = (Class<? extends Region>) Class.forName(regionTypeName);
+		} catch (ClassNotFoundException e1) {
+			throw new CodecException("The region type " + regionTypeName + " is not available (is the class loaded?)");
+		}
+		
+		Map<String, Tag> metadataMap = getChildTag(childs, "metadata", CompoundTag.class).getValue();
+		RegionMetadataCodec<Region> metadataCodec = (RegionMetadataCodec<Region>) METADATA_CODECS.get(regionClass);
+		Region region = metadataCodec.asRegion(metadataMap);
+		
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 		clipboard.setOrigin(origin);
 		
@@ -294,7 +327,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 			}
 		}
 		
-		Floor floor = new SimpleCuboidFloor(name, clipboard);
+		Floor floor = new SimpleClipboardFloor(name, clipboard);
 		return floor;
 	}
 	
