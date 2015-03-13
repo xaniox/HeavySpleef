@@ -86,6 +86,7 @@ import de.matzefratze123.heavyspleef.objects.Region;
 import de.matzefratze123.heavyspleef.objects.RegionCuboid;
 import de.matzefratze123.heavyspleef.objects.RegionCylinder;
 import de.matzefratze123.heavyspleef.objects.SpleefPlayer;
+import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.util.I18N;
 import de.matzefratze123.heavyspleef.util.Logger;
 import de.matzefratze123.heavyspleef.util.SpleefLogger;
@@ -221,7 +222,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			player.getStatistic().addGame();
 		}
 
-		HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+		if (SQLStatisticDatabase.isDatabaseEnabled()) {
+			HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+		}
 		broadcast(_("gameHasStarted"), BroadcastType.INGAME);
 		broadcast(_("gameOnArenaHasStarted", getName()), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
 		broadcast(_("startedGameWith", String.valueOf(inPlayers.size())), ConfigUtil.getBroadcast(MessageType.GAME_START_INFO));
@@ -400,7 +403,11 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			broadcast(_("hasWon", winner.getName(), this.getName()), ConfigUtil.getBroadcast(MessageType.WIN));
 			winner.sendMessage(_("win"));
 			winner.getStatistic().addWin();
-			HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+			
+			if (SQLStatisticDatabase.isDatabaseEnabled()) {
+				HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+			}
+			
 			safeTeleport(winner, getFlag(FlagType.WIN));
 			giveRewards(winner, true, 0);
 			SpleefLogger.log(LogType.WIN, this, winner);
@@ -470,7 +477,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 			scoreboard.removeScoreboard();
 		}
 		
-		HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+		if (SQLStatisticDatabase.isDatabaseEnabled()) {
+			HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+		}
 		state = GameState.JOINABLE;
 		HeavySpleef.getInstance().getJoinGUI().refresh();
 
@@ -700,7 +709,9 @@ public abstract class Game implements IGame, DatabaseSerializeable {
 					broadcast(_("loseCause_lose_unknown", player.getName()), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));
 				}
 
-				HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+				if (SQLStatisticDatabase.isDatabaseEnabled()) {
+					HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+				}
 			} else {
 				SpleefLogger.log(LogType.LEAVE, this, player);
 				broadcast(_("loseCause_leave", player.getName(), name), ConfigUtil.getBroadcast(MessageType.PLAYER_LOSE));

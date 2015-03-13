@@ -29,6 +29,7 @@ import de.matzefratze123.api.hs.command.CommandPermissions;
 import de.matzefratze123.heavyspleef.HeavySpleef;
 import de.matzefratze123.heavyspleef.command.handler.UserType;
 import de.matzefratze123.heavyspleef.command.handler.UserType.Type;
+import de.matzefratze123.heavyspleef.stats.SQLStatisticDatabase;
 import de.matzefratze123.heavyspleef.util.Permissions;
 
 @UserType(Type.ADMIN)
@@ -38,8 +39,14 @@ public class CommandSave implements CommandListener {
 	@CommandPermissions(value = { Permissions.SAVE })
 	@CommandHelp(usage = "/spleef save", description = "Saves all games to the database")
 	public void execute(CommandSender sender) {
-		HeavySpleef.getInstance().getGameDatabase().save();
-		HeavySpleef.getInstance().getStatisticDatabase().saveAccountsAsync();
+		HeavySpleef heavySpleef = HeavySpleef.getInstance();
+		
+		heavySpleef.getGameDatabase().save();
+		
+		if (SQLStatisticDatabase.isDatabaseEnabled()) {
+			heavySpleef.getStatisticDatabase().saveAccountsAsync();
+		}
+		
 		sender.sendMessage(_("gamesSaved"));
 	}
 
