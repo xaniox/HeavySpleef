@@ -17,29 +17,22 @@
  */
 package de.matzefratze123.heavyspleef.core.hook;
 
-public enum HookReference {
-	
-	VAULT("Vault", VaultHook.class),
-	WORLDEDIT("WorldEdit", WorldEditHook.class);
-	
-	private String pluginName;
-	private Class<? extends Hook> hookClass;
-	
-	private HookReference(String pluginName, Class<? extends Hook> hookClass) {
-		this.pluginName = pluginName;
-		this.hookClass = hookClass;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+
+public class WorldEditHook extends DefaultHook {
+
+	public WorldEditHook() {
+		super(HookReference.WORLDEDIT.getPluginName());
 	}
-	
-	public String getPluginName() {
-		return pluginName;
-	}
-	
-	public Hook newHookInstance() {
-		try {
-			return hookClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
+
+	public WorldEdit getWorldEdit() {
+		if (!isProvided()) {
+			throw new IllegalStateException("The WorldEdit hook is not provided");
 		}
+		
+		WorldEditPlugin plugin = (WorldEditPlugin) getPlugin();
+		return plugin.getWorldEdit();
 	}
 
 }

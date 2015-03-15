@@ -123,6 +123,7 @@ public final class HeavySpleef {
 		this.hookManager = new HookManager();
 		
 		hookManager.registerHook(HookReference.VAULT);
+		hookManager.registerHook(HookReference.WORLDEDIT);
 		
 		this.postActionHandler = new PlayerPostActionHandler(this);
 	}
