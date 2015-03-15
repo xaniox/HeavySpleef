@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.core.floor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.Region;
 
@@ -35,6 +36,6 @@ public interface Floor {
 	
 	public boolean contains(Location location);
 	
-	public void generate();
+	public void generate(EditSession session);
 	
 }

@@ -21,7 +21,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EditSessionFactory;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
@@ -34,20 +33,11 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.WorldData;
 
 public class SimpleClipboardFloor implements Floor {
-
-	private static final int NO_LIMIT = -1;
 	
-	private final EditSessionFactory factory;
 	private String name;
 	private Clipboard floorClipboard;
 	
-	private SimpleClipboardFloor() {
-		this.factory = new EditSessionFactory();
-	}
-	
 	public SimpleClipboardFloor(String name, Clipboard clipboard) {
-		this();
-		
 		this.name = name;
 		this.floorClipboard = clipboard;
 	}
@@ -80,12 +70,11 @@ public class SimpleClipboardFloor implements Floor {
 	}
 
 	@Override
-	public void generate() {
+	public void generate(EditSession session) {
 		Region region = floorClipboard.getRegion();
 		World world = region.getWorld();
 		WorldData data = world.getWorldData();
 		
-		EditSession session = factory.getEditSession(world, NO_LIMIT);
 		ClipboardHolder holder = new ClipboardHolder(floorClipboard, data);
 		
 		Operation pasteOperation = holder.createPaste(session, data)
@@ -96,8 +85,7 @@ public class SimpleClipboardFloor implements Floor {
 		try {
 			Operations.completeLegacy(pasteOperation);
 		} catch (MaxChangedBlocksException e) {
-			//Should not happen as we gave the session a NO_LIMIT
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 	
