@@ -45,9 +45,11 @@ public class FlagManager {
 	private Map<String, AbstractFlag<?>> flags;
 	private Set<GamePropertyBundle> propertyBundles;
 	private DefaultGamePropertyBundle requestedProperties;
+	private GamePropertyBundle defaults;
 	
-	public FlagManager(JavaPlugin plugin) {
+	public FlagManager(JavaPlugin plugin, GamePropertyBundle defaults) {
 		this.plugin = plugin;
+		this.defaults = defaults;
 		this.flags = Maps.newLinkedHashMap();
 		this.propertyBundles = Sets.newTreeSet();
 		this.requestedProperties = new DefaultGamePropertyBundle(Maps.newEnumMap(GameProperty.class));
@@ -156,6 +158,15 @@ public class FlagManager {
 		if (value == null) {
 			// Requested properties have the lowest priority
 			value = requestedProperties.get(property);
+		}
+		
+		if (value == null) {
+			// There is no requested property, just use the config default
+			value = defaults.get(property);
+		}
+		
+		if (value == null) {
+			value = property.getDefaultValue();
 		}
 		
 		return value;

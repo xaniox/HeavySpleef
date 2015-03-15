@@ -55,11 +55,19 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.EditSessionFactory;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
+import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
+import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.event.EventManager;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
@@ -80,6 +88,8 @@ import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResul
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.hook.HookReference;
+import de.matzefratze123.heavyspleef.core.hook.WorldEditHook;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
@@ -87,9 +97,12 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class Game {
 	
+	private static final int NO_BLOCK_LIMIT = -1;
+	
 	private final Random random = new Random();
 	private final I18N i18n = I18N.getInstance();
 	
+	private final EditSessionFactory editSessionFactory;
 	private HeavySpleef heavySpleef;
 	private EventManager eventManager;
 	private Set<SpleefPlayer> ingamePlayers;
@@ -99,6 +112,7 @@ public class Game {
 	
 	private String name;
 	private World world;
+	private com.sk89q.worldedit.world.World worldEditWorld;
 	private FlagManager flagManager;
 	private GameState state;
 	private Map<String, Floor> floors;
@@ -108,9 +122,14 @@ public class Game {
 		this.heavySpleef = heavySpleef;
 		this.name = name;
 		this.world = world;
+		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.state = GameState.WAITING;
-		this.flagManager = new FlagManager(heavySpleef.getPlugin());
+		
+		DefaultConfig configuration = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+		GamePropertyBundle defaults = new DefaultGamePropertyBundle(configuration.getProperties());
+		
+		this.flagManager = new FlagManager(heavySpleef.getPlugin(), defaults);
 		this.deathzones = Sets.newLinkedHashSet();
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
@@ -118,6 +137,11 @@ public class Game {
 		
 		//Concurrent map for database schematics
 		this.floors = new ConcurrentHashMap<String, Floor>();
+		
+		WorldEditHook hook = (WorldEditHook) heavySpleef.getHookManager().getHook(HookReference.WORLDEDIT);
+		WorldEdit worldEdit = hook.getWorldEdit();
+		
+		this.editSessionFactory = worldEdit.getEditSessionFactory();
 		
 		eventManager = new EventManager();
 	}
@@ -145,9 +169,11 @@ public class Game {
 			return false;
 		}
 		
+		EditSession editSession = editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
+		
 		// Regenerate all floors
 		for (Floor floor : floors.values()) {
-			floor.regenerate();
+			floor.generate(editSession);
 		}
 		
 		List<Location> spawnLocations = event.getSpawnLocations();
@@ -232,8 +258,9 @@ public class Game {
 	}
 	
 	private void resetGame() {
+		EditSession editSession = editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
 		for (Floor floor : floors.values()) {
-			floor.regenerate();
+			floor.generate(editSession);
 		}
 		
 		Queue<SpleefPlayer> failedToQueue = Lists.newLinkedList();
@@ -522,6 +549,10 @@ public class Game {
 		eventManager.registerListener(listener);
 	}
 	
+	public EditSession newEditSession() {
+		return editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
+	}
+	
 	public void addFlag(AbstractFlag<?> flag) {
 		flagManager.addFlag(flag);
 		
@@ -552,6 +583,10 @@ public class Game {
 	
 	public Floor removeFloor(String name) {
 		return floors.remove(name);
+	}
+	
+	public boolean isFloorPresent(String name) {
+		return floors.containsKey(name);
 	}
 	
 	public Floor getFloor(String name) {
