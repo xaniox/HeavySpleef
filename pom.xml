@@ -10,7 +10,7 @@
   <inceptionYear>2014-2015</inceptionYear>
   <properties>
     <project.encoding>UTF-8</project.encoding>
-    <worldedit.version>6.0.0-SNAPSHOT</worldedit.version>
+    <worldedit.version>6.0.2-SNAPSHOT</worldedit.version>
   </properties>
   <modules>
   	<module>heavyspleef-commands</module>
@@ -105,6 +105,7 @@
               <version>${project.version}</version>
             </manifestEntries>
           </archive>
+          <outputDirectory>target</outputDirectory>
         </configuration>
       </plugin>
       <plugin>
@@ -162,13 +163,19 @@
        <url>http://repo.bukkit.org/content/groups/public</url>
      </repository>
      <repository>
-      <id>matze-repo</id>
-      <name>matze's repository</name>
-      <url>http://matzefratze123.de/artifactory/release/</url>
+       <id>matze-repo</id>
+       <name>matze's repository</name>
+       <url>http://matzefratze123.de/artifactory/release/</url>
     </repository>
     <repository>
-      <id>vault-repo</id>
-      <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+       <id>vault-repo</id>
+       <name>vault's repository</name>
+       <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+    </repository>
+    <repository>
+       <id>sk89q-repo</id>
+       <name>sk89q's repository</name>
+       <url>http://maven.sk89q.com/repo</url>
     </repository>
   </repositories>
   <dependencies>
@@ -187,6 +194,18 @@
 	  <groupId>dom4j</groupId>
 	  <artifactId>dom4j</artifactId>
 	  <version>1.6.1</version>
+	</dependency>
+	<dependency>
+	  <groupId>com.sk89q.worldedit</groupId>
+	  <artifactId>worldedit-core</artifactId>
+	  <version>${worldedit.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+	<dependency>
+	  <groupId>com.sk89q.worldedit</groupId>
+	  <artifactId>worldedit-bukkit</artifactId>
+	  <version>${worldedit.version}</version>
+	  <scope>provided</scope>
 	</dependency>
     <dependency>
       <groupId>net.milkbowl.vault</groupId>

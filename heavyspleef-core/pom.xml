@@ -19,11 +19,5 @@
     	<artifactId>heavyspleef-command-base</artifactId>
     	<version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.sk89q</groupId>
-      <artifactId>worldedit</artifactId>
-      <version>${worldedit.version}</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 </project>
