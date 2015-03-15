@@ -23,6 +23,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.sk89q.worldedit.EditSession;
+
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
@@ -66,15 +68,17 @@ public class FlagAutoRegen extends IntegerFlag {
 	private class FloorRegenRunnable implements Runnable {
 
 		private Game game;
+		private EditSession editSession;
 		
 		public FloorRegenRunnable(Game game) {
 			this.game = game;
+			this.editSession = game.newEditSession();
 		}
 		
 		@Override
 		public void run() {
 			for (Floor floor : game.getFloors()) {
-				floor.regenerate();
+				floor.generate(editSession);
 			}
 		}
 		
