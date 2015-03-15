@@ -34,6 +34,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.google.common.collect.Lists;
+
 public class YMLControl extends ResourceBundle.Control {
 	
 	private static final String YML_FORMAT = "yml";
@@ -70,6 +72,24 @@ public class YMLControl extends ResourceBundle.Control {
 	}
 	
 	@Override
+	public List<Locale> getCandidateLocales(String baseName, Locale locale) {
+		List<Locale> candidates = Lists.newArrayList();
+		
+		candidates.add(locale);
+		
+		if (!locale.getLanguage().isEmpty() && !locale.getCountry().isEmpty() && !locale.getVariant().isEmpty()) {
+			candidates.add(new Locale(locale.getLanguage(), locale.getCountry()));
+			candidates.add(new Locale(locale.getLanguage()));
+		} else if (!locale.getLanguage().isEmpty() && !locale.getCountry().isEmpty()) {
+			candidates.add(new Locale(locale.getLanguage()));
+		}
+		
+		candidates.add(Locale.US);
+		candidates.add(Locale.ROOT);
+		return candidates;
+	}
+	
+	@Override
 	public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload) throws IllegalAccessException,
 			InstantiationException, IOException {
 		Validate.notNull(baseName);
@@ -78,6 +98,7 @@ public class YMLControl extends ResourceBundle.Control {
 		Validate.notNull(loader);
 		
 		ResourceBundle bundle = null;
+		
 		if (YML_FORMAT.equals(format)) {
 			String bundleName = toBundleName(baseName, locale);
 			String resourceName = toResourceName(bundleName, format);

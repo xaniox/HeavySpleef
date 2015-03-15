@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core.i18n;
 
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -32,10 +33,12 @@ public class YMLResourceBundle extends ResourceBundle {
 	public YMLResourceBundle(YamlConfiguration config, boolean loadParent) {
 		this.config = config;
 		
-		if (loadParent) {
+		System.out.println(Arrays.toString(config.getKeys(true).toArray()));
+		
+		/*if (loadParent) {
 			YMLControl control = new YMLControl(null, I18N.CLASSPATH_DIR, false);
 			setParent(getBundle("locale", I18N.FALLBACK_LOCALE, control));
-		}
+		}*/
 	}
 	
 	@Override
