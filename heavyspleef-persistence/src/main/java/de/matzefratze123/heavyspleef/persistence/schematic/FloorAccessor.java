@@ -25,8 +25,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import org.bukkit.Bukkit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -36,6 +39,7 @@ import com.sk89q.jnbt.IntTag;
 import com.sk89q.jnbt.ListTag;
 import com.sk89q.jnbt.NBTInputStream;
 import com.sk89q.jnbt.NBTOutputStream;
+import com.sk89q.jnbt.NamedTag;
 import com.sk89q.jnbt.ShortTag;
 import com.sk89q.jnbt.StringTag;
 import com.sk89q.jnbt.Tag;
@@ -43,12 +47,14 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.World;
 
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
@@ -65,6 +71,9 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		METADATA_CODECS.put(Polygonal2DRegion.class, new Polygonal2DRegionMetadataCodec());
 	}
 	
+	//Lock for bukkit related calls
+	private final ReentrantLock bukkitLock = new ReentrantLock();
+	
 	@Override
 	public Class<Floor> getObjectClass() {
 		return Floor.class;
@@ -73,26 +82,29 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void write(OutputStream out, Floor floor) throws IOException, CodecException {
-		StringTag nameTag = new StringTag("name", floor.getName());
+		StringTag nameTag = new StringTag(floor.getName());
 		
 		Clipboard clipboard = floor.getClipboard();
 		Region region = clipboard.getRegion();
+		
+		World world = region.getWorld();
+		StringTag worldTag = new StringTag(world.getName());
 		
 		int width = region.getWidth();
 		int height = region.getHeight();
 		int length = region.getLength();
 		
 		// Store the boundaries of the region
-		ShortTag widthTag = new ShortTag("width", (short)width);
-		ShortTag heightTag = new ShortTag("height", (short)height);
-		ShortTag lengthTag = new ShortTag("length", (short)length);
+		ShortTag widthTag = new ShortTag((short)width);
+		ShortTag heightTag = new ShortTag((short)height);
+		ShortTag lengthTag = new ShortTag((short)length);
 		
 		Map<String, Tag> boundariesMap = Maps.newHashMap();
 		boundariesMap.put("width", widthTag);
 		boundariesMap.put("height", heightTag);
 		boundariesMap.put("length", lengthTag);
 		
-		CompoundTag boundariesTag = new CompoundTag("boundaries", boundariesMap);
+		CompoundTag boundariesTag = new CompoundTag(boundariesMap);
 		
 		Vector origin = clipboard.getOrigin();
 		
@@ -102,7 +114,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		originCoordinateList.add(new IntTag(origin.getBlockY()));
 		originCoordinateList.add(new IntTag(origin.getBlockZ()));
 		
-		ListTag originTag = new ListTag("origin", IntTag.class, originCoordinateList);
+		ListTag originTag = new ListTag(IntTag.class, originCoordinateList);
 		
 		// Also save region specific data (class name, attributes)
 		StringTag regionTypeTag = new StringTag(region.getClass().getName());
@@ -110,7 +122,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		RegionMetadataCodec<Region> metadataCodec = (RegionMetadataCodec<Region>) METADATA_CODECS.get(region.getClass());
 		metadataCodec.apply(metadataMap, region);
 		
-		CompoundTag metadataTag = new CompoundTag("metadata", metadataMap);
+		CompoundTag metadataTag = new CompoundTag(metadataMap);
 		
 		byte[] blocks = new byte[width * height * length];
 		byte[] data = new byte[width * height * length];
@@ -146,10 +158,10 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 							values.put(entry.getKey(), entry.getValue());
 						}
 						
-						values.put("id", new StringTag("id", block.getNbtId()));
-						values.put("x", new IntTag("x", x));
-						values.put("y", new IntTag("y", y));
-						values.put("z", new IntTag("z", z));
+						values.put("id", new StringTag(block.getNbtId()));
+						values.put("x", new IntTag(x));
+						values.put("y", new IntTag(y));
+						values.put("z", new IntTag(z));
 						
 						CompoundTag tileEntityTag = new CompoundTag(values);
 						tileEntities.add(tileEntityTag);
@@ -158,12 +170,13 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 			}
 		}
 		
-		ByteArrayTag blocksTag = new ByteArrayTag("blocks", blocks);
-		ByteArrayTag dataTag = new ByteArrayTag("data", data);
-		ListTag tileEntitiesTag = new ListTag("tileentities", CompoundTag.class, tileEntities);
+		ByteArrayTag blocksTag = new ByteArrayTag(blocks);
+		ByteArrayTag dataTag = new ByteArrayTag(data);
+		ListTag tileEntitiesTag = new ListTag(CompoundTag.class, tileEntities);
 		
 		Map<String, Tag> childs = Maps.newHashMap();
 		childs.put("name", nameTag);
+		childs.put("world", worldTag);
 		childs.put("boundaries", boundariesTag);
 		childs.put("origin", originTag);
 		childs.put("regiontype", regionTypeTag);
@@ -173,14 +186,14 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		childs.put("tileentities", tileEntitiesTag);
 		
 		if (addBlocks != null) {
-			childs.put("addblocks", new ByteArrayTag("addblocks", addBlocks));
+			childs.put("addblocks", new ByteArrayTag(addBlocks));
 		}
 		
-		CompoundTag rootTag = new CompoundTag(ROOT_TAG_NAME, childs);
+		CompoundTag rootTag = new CompoundTag(childs);
 		
 		try (NBTOutputStream nbtOut = new NBTOutputStream(
 				new GZIPOutputStream(out))) {
-			nbtOut.writeTag(rootTag);
+			nbtOut.writeNamedTag(ROOT_TAG_NAME, rootTag);
 		}
 	}
 
@@ -190,12 +203,14 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		NBTInputStream nbtStream = new NBTInputStream(
 				new GZIPInputStream(in));
 		
-		CompoundTag rootTag = (CompoundTag) nbtStream.readTag();
+		NamedTag namedRootTag = nbtStream.readNamedTag();
 		nbtStream.close();
 		
-		if (rootTag.getName().equals(ROOT_TAG_NAME)) {
-			throw new CodecException("Tag \"" + ROOT_TAG_NAME + "\" does not exist or is not first");
+		if (!namedRootTag.getName().equals(ROOT_TAG_NAME)) {
+			throw new CodecException("Could not find root tag name with name \"" + ROOT_TAG_NAME + "\"");
 		}
+		
+		CompoundTag rootTag = (CompoundTag) namedRootTag.getTag();
 		
 		Vector origin = new Vector();
 		
@@ -205,6 +220,13 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		Map<String, Tag> boundariesChilds = boundariesTag.getValue();
 		
 		String name = getChildTag(childs, "name", StringTag.class).getValue();
+		String worldName = getChildTag(childs, "world", StringTag.class).getValue();
+		
+		bukkitLock.lock();
+		org.bukkit.World bukkitWorld = Bukkit.getWorld(worldName);
+		bukkitLock.unlock();
+		
+		World world = BukkitUtil.getLocalWorld(bukkitWorld);
 		short length = getChildTag(boundariesChilds, "length", ShortTag.class).getValue();
 		short width = getChildTag(boundariesChilds, "width", ShortTag.class).getValue();
 		short height = getChildTag(boundariesChilds, "height", ShortTag.class).getValue();
@@ -303,6 +325,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		Map<String, Tag> metadataMap = getChildTag(childs, "metadata", CompoundTag.class).getValue();
 		RegionMetadataCodec<Region> metadataCodec = (RegionMetadataCodec<Region>) METADATA_CODECS.get(regionClass);
 		Region region = metadataCodec.asRegion(metadataMap);
+		region.setWorld(world);
 		
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 		clipboard.setOrigin(origin);
