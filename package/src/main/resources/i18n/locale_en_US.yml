@@ -1,5 +1,5 @@
 command:
-  player-only: "Only players can execute this command"
+  player-only: "Only players may execute this command"
   no-permission: "You do not have sufficient permission to execute this command"
   description-format: "Description: $[description]"
   usage-format: "Usage: $[usage]"
@@ -29,6 +29,14 @@ command:
   flag-removed: "Flag $[flag] was removed."
   
   click-to-join: "Click here to join the game"
+  
+  need-floors: "The game must consist of at least one floor to start the game"
+  define-full-worldedit-region: "Please complete your selection first"
+  worldedit-selection-not-supported: "This selection is not supported by HeavySpleef. Supported selection types: cuboid, cylindrical, polygonal"
+  floor-added: "The floor with the name $[floorname] was added"
+  floor-not-present: "A floor with the name $[floorname] does not exist"
+  floor-removed: "The floor with the name $[floorname] was removed"
+  floor-visualized: "The floor is now displayed"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

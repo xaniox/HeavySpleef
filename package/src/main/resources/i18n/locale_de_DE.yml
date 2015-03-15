@@ -29,6 +29,14 @@ command:
   flag-removed: "Flag $[flag] wurde entfernt."
   
   click-to-join: "Hier klicken um dem Spiel beizutreten"
+  
+  need-floors: "Es wird mindestens eine Ebene benötigt um das Spiel zu starten"
+  define-full-worldedit-region: "Bitte wähle eine vollständige Region mit WorldEdit aus"
+  worldedit-selection-not-supported: "Diese Auswahl wird von HeavySpleef nicht unterstützt. Unterstützte Auswahlen: Quaderförmig, Zylindrisch, Polygonal"
+  floor-added: "Die Ebene mit dem Namen $[floorname] wurde hinzugefügt"
+  floor-not-present: "Eine Ebene mit dem Namen $[floorname] existiert nicht"
+  floor-removed: "Die Ebene mit dem Namen $[floorname] wurde entfernt"
+  floor-visualized: "Die Ebene wird nun angezeigt"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

@@ -53,6 +53,13 @@ public interface Messages {
 		public static final String FLAG_REMOVED = PREFIX + "flag-removed"; // $[flag]
 		
 		public static final String CLICK_TO_JOIN = PREFIX + "click-to-join"; // $[game]
+		public static final String DEFINE_FULL_WORLDEDIT_REGION = PREFIX + "define-full-worldedit-region";
+
+		public static final String WORLDEDIT_SELECTION_NOT_SUPPORTED = PREFIX +"worldedit-selection-not-supported";
+		public static final String FLOOR_ADDED = PREFIX +"floor-added";
+		public static final String FLOOR_NOT_PRESENT = PREFIX + "floor-not-present";
+		public static final String FLOOR_REMOVED = PREFIX + "floor-removed";
+		public static final String FLOOR_VISUALIZED = PREFIX + "floor-visualized";
 		
 	}
 	
@@ -72,6 +79,8 @@ public interface Messages {
 		public static final String GAME_TIMEOUT_COUNTDOWN = PREFIX + "game-timeout-countdown"; // $[minutes]; $[seconds]
 		
 		public static final String TEAM_IS_OUT = PREFIX + "team-is-out"; // $[color]
+
+		public static final String NEED_FLOORS = "need-floors";
 		
 	}
 	
