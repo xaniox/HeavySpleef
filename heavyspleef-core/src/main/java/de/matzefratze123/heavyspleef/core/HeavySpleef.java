@@ -88,6 +88,8 @@ public final class HeavySpleef {
 	private GameManager gameManager;
 	@Getter
 	private PlayerManager playerManager;
+	@Getter
+	private BukkitListener listener;
 	
 	@Getter
 	private PlayerPostActionHandler postActionHandler;
@@ -129,6 +131,8 @@ public final class HeavySpleef {
 	}
 	
 	public void enable() {
+		gameManager = new GameManager(databaseHandler);
+		
 		//Load all games
 		databaseHandler.getGames(new FutureCallback<List<Game>>() {
 			
@@ -145,7 +149,9 @@ public final class HeavySpleef {
 			}
 		});
 		
-		gameManager = new GameManager(databaseHandler);
+		listener = new BukkitListener(playerManager, gameManager, plugin);
+		BasicTask loseCheckTask = new LoseCheckerTask(plugin, gameManager);
+		loseCheckTask.start();
 	}
 	
 	public void disable() {
