@@ -129,11 +129,13 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		byte[] addBlocks = null;
 		List<Tag> tileEntities = new ArrayList<Tag>();
 		
+		Vector minPoint = region.getMinimumPoint();
+		
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				for (int z = 0; z < length; z++) {
 					int index = y * width * length + z * width + x;
-					BaseBlock block = clipboard.getBlock(new Vector(x, y, z));
+					BaseBlock block = clipboard.getBlock(minPoint.add(new Vector(x, y, z)));
 					
 					if (block.getId() > Byte.MAX_VALUE - Byte.MIN_VALUE) {
 						if (addBlocks == null) {
@@ -141,9 +143,9 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 						}
 						
 						if ((index & 1) == 0) {
-							data[index >> 1] = (byte) (data[index >> 1] & 0xF0 | (block.getId() >> 8) & 0x0F);
+							addBlocks[index >> 1] = (byte) (addBlocks[index >> 1] & 0xF0 | (block.getId() >> 8) & 0x0F);
 						} else {
-							data[index >> 1] = (byte) (data[index >> 1] & 0x0F | (block.getId() >> 4) & 0xF0);
+							addBlocks[index >> 1] = (byte) (addBlocks[index >> 1] & 0x0F | (block.getId() >> 4) & 0xF0);
 						}
 					}
 					
@@ -330,6 +332,8 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 		clipboard.setOrigin(origin);
 		
+		Vector min = region.getMinimumPoint();
+		
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				for (int z = 0; z < length; ++z) {
@@ -342,7 +346,7 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 					}
 					
 					try {
-						clipboard.setBlock(pt, block);
+						clipboard.setBlock(min.add(pt), block);
 					} catch (WorldEditException e) {
 						throw new CodecException(e);
 					}
