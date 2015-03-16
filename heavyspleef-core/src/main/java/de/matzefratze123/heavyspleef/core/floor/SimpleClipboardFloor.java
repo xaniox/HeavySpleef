@@ -21,8 +21,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -83,8 +83,8 @@ public class SimpleClipboardFloor implements Floor {
 				.build();
 		
 		try {
-			Operations.completeLegacy(pasteOperation);
-		} catch (MaxChangedBlocksException e) {
+			Operations.complete(pasteOperation);
+		} catch (WorldEditException e) {
 			throw new RuntimeException(e);
 		}
 	}
