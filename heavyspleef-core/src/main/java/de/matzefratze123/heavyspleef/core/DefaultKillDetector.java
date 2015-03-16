@@ -28,6 +28,7 @@ import org.bukkit.block.Block;
 import com.google.common.collect.BiMap;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.regions.FlatRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -47,16 +48,18 @@ public class DefaultKillDetector implements KillDetector {
 		//Detect the nearest floor aligned on the y-axis
 		for (Floor floor : game.getFloors()) {
 			Region region = floor.getRegion();
-			if (!regionContains2D(playerVector, region)) {
+			
+			int minY = region instanceof FlatRegion ? ((FlatRegion)region).getMinimumY() : region.getMinimumPoint().getBlockY();
+			Vector fakeYVector = new Vector(playerVector.getX(), minY, playerVector.getZ());
+			
+			if (!region.contains(fakeYVector)) {
 				//Player is not above or under the 2D region
+				//so we can't know who killed him
 				continue;
 			}
 			
-			Vector maxPoint = region.getMaximumPoint();
-			Vector minPoint = region.getMinimumPoint();
-			
+			Vector maxPoint = region.getMaximumPoint();			
 			int maxY = maxPoint.getBlockY();
-			int minY = minPoint.getBlockY();
 			
 			int minDistance = minY - location.getBlockY();
 			int maxDistance = maxY - location.getBlockY();
@@ -69,6 +72,10 @@ public class DefaultKillDetector implements KillDetector {
 				nearestFloor = floor;
 				currentDistance = minDistanceSmaller ? minDistance : maxDistance;
 			}
+		}
+		
+		if (nearestFloor == null) {
+			return null;
 		}
 		
 		SpleefPlayer killer = null;
@@ -104,14 +111,6 @@ public class DefaultKillDetector implements KillDetector {
 		}
 		
 		return offlinePlayerKiller;
-	}
-	
-	private boolean regionContains2D(Vector pos, Region region) {
-		Vector maxPoint = region.getMaximumPoint();
-		Vector minPoint = region.getMinimumPoint();
-		
-		return pos.getBlockX() < maxPoint.getBlockX() && pos.getBlockX() > minPoint.getBlockX()
-		    && pos.getBlockZ() < maxPoint.getBlockZ() && pos.getBlockZ() > minPoint.getBlockZ();
 	}
 
 }
