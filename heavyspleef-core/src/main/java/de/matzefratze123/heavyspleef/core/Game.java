@@ -98,6 +98,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class Game {
 	
 	private static final int NO_BLOCK_LIMIT = -1;
+	private static final int DEFAULT_COUNTDOWN = 10;
 	
 	private final Random random = new Random();
 	private final I18N i18n = I18N.getInstance();
@@ -219,7 +220,11 @@ public class Game {
 		}
 		
 		boolean countdownEnabled = event.isCountdownEnabled();
-		int countdownLength = event.getCountdownLength();		
+		int countdownLength = event.getCountdownLength();
+		
+		if (countdownLength <= 0) {
+			countdownLength = DEFAULT_COUNTDOWN;
+		}
 		
 		state = GameState.STARTING;
 		
@@ -239,7 +244,10 @@ public class Game {
 		eventManager.callEvent(event);
 		
 		state = GameState.INGAME;
-		broadcast(i18n.getString(Messages.Broadcast.GAME_STARTED));
+		broadcast(i18n.getVarString(Messages.Broadcast.GAME_STARTED)
+				.setVariable("game", name)
+				.setVariable("count", String.valueOf(ingamePlayers.size()))
+				.toString());
 	}
 	
 	public void stop() {
@@ -475,11 +483,18 @@ public class Game {
 			playerMessage = i18n.getString(Messages.Player.GAME_STOPPED);
 			break;
 		case LOSE:
-			String killer = args.length > 0 ? (String)args[0] : "unknown";
-			broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
-					.setVariable("player", player.getName())
-					.setVariable("killer", killer)
-					.toString();
+			String killer = args.length > 0 && args[0] != null ? (String)args[0] : null;
+			
+			if (killer != null) {
+				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
+						.setVariable("player", player.getName())
+						.setVariable("killer", killer)
+						.toString();
+			} else {
+				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME_UNKNOWN_KILLER)
+						.setVariable("player", player.getName())
+						.toString();
+			}
 			
 			playerMessage = i18n.getString(Messages.Player.PLAYER_LOSE);
 			break;
@@ -498,7 +513,7 @@ public class Game {
 	}
 	
 	public void requestLose(SpleefPlayer player) {
-		if (ingamePlayers.contains(player)) {
+		if (!ingamePlayers.contains(player)) {
 			return;
 		}
 		
