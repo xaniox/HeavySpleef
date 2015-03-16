@@ -195,12 +195,12 @@ public class Game {
 			Vector minPoint = region.getMinimumPoint();
 			Vector maxPoint = region.getMaximumPoint();
 			
-			int deltaX = maxPoint.getBlockX() - minPoint.getBlockX();
-			int deltaZ = maxPoint.getBlockZ() - minPoint.getBlockZ();
+			int dx = maxPoint.getBlockX() - minPoint.getBlockX();
+			int dz = maxPoint.getBlockZ() - minPoint.getBlockZ();
 			
 			for (int i = 0; i < ingamePlayers.size(); i++) {
-				int randDx = random.nextInt(deltaX);
-				int randDz = random.nextInt(deltaZ);
+				int randDx = random.nextInt(dx);
+				int randDz = random.nextInt(dz);
 				
 				int x = minPoint.getBlockX() + randDx;
 				int z = maxPoint.getBlockZ() + randDz;
