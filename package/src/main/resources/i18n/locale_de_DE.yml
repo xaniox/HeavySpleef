@@ -44,6 +44,7 @@ broadcast:
   game-countdown-message: "Spiel startet in $[remaining] Sekunden..."
   player-joined-game: "$[player] ist dem Spiel beigetreten"
   player-lost-game: "$[player] wurde von $[killer] ausgeknockt und ist aus dem Spiel"
+  player-lost-game-unknown-killer: "$[player] ist aus der Arena gefallen und hat das Spiel verloren"
   player-won-game: "$[player] hat das Spiel gewonnen"
   
   game-timed-out: "Spielzeit ist abgelaufen!"
