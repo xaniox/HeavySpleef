@@ -73,7 +73,7 @@ public interface Messages {
 		public static final String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message"; // $[remaining]
 		public static final String PLAYER_JOINED_GAME = PREFIX + "player-joined-game"; // $[player]
 		public static final String PLAYER_LOST_GAME = PREFIX + "player-lost-game"; // $[player]; $[killer]
-		public static final String PLAYER_LOST_GAME_UNKNOWN_KILLER = "player-lost-game-unknown-player"; // $[player]
+		public static final String PLAYER_LOST_GAME_UNKNOWN_KILLER = PREFIX + "player-lost-game-unknown-player"; // $[player]
 		public static final String PLAYER_WON_GAME = PREFIX + "player-won-game"; // $[player]
 		
 		public static final String GAME_TIMED_OUT = PREFIX + "game-timeout";
