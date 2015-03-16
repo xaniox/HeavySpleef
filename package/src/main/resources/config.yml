@@ -15,4 +15,4 @@ default-game-properties:
   broadcast-radius: 30
   
 localization:
-  locale: en
+  locale: en_US
