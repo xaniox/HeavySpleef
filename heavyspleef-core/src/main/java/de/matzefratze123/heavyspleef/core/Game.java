@@ -513,6 +513,10 @@ public class Game {
 	}
 	
 	public void requestLose(SpleefPlayer player) {
+		requestLose(player, true);
+	}
+	
+	private void requestLose(SpleefPlayer player, boolean checkWin) {
 		if (!ingamePlayers.contains(player)) {
 			return;
 		}
@@ -523,7 +527,7 @@ public class Game {
 		
 		leave(player, QuitCause.LOSE, killer != null ? killer.getName() : null);
 		
-		if (ingamePlayers.size() == 1) {
+		if (ingamePlayers.size() == 1 && checkWin) {
 			SpleefPlayer playerLeft = ingamePlayers.iterator().next();
 			requestWin(playerLeft);
 		}
@@ -538,7 +542,7 @@ public class Game {
 				if (ingamePlayer == player) {
 					leave(player, QuitCause.WIN);
 				} else {
-					requestLose(player);
+					requestLose(player, false);
 				}
 			}
 		}
