@@ -54,12 +54,13 @@ public class LoseCheckerTask extends SimpleBasicTask {
 			
 			for (SpleefPlayer player : game.getPlayers()) {
 				Location playerLoc = player.getBukkitPlayer().getLocation();
-				Vector playerPos = BukkitUtil.toVector(playerLoc);				
 				
 				boolean isDeathCandidate = false;
 				if (isLiquidDeathzone && FLOWING_MATERIALS.contains(playerLoc.getBlock().getType())) {
 					isDeathCandidate = true;
 				} else {
+					Vector playerPos = BukkitUtil.toVector(playerLoc);
+					
 					for (CuboidRegion deathzone : game.getDeathzones()) {
 						if (deathzone.contains(playerPos)) {
 							//Player is in deathzone, so take him out
