@@ -110,6 +110,7 @@ public class Game {
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
 	private Queue<SpleefPlayer> queuedPlayers;
+	private BasicTask countdownTask;
 	
 	private String name;
 	private World world;
@@ -229,8 +230,24 @@ public class Game {
 		state = GameState.STARTING;
 		
 		if (countdownEnabled && countdownLength > 0) {
-			BasicTask task = new CountdownRunnable(heavySpleef.getPlugin(), countdownLength, this);
-			task.start();
+			countdownTask = new CountdownTask(heavySpleef.getPlugin(), countdownLength, new CountdownTask.CountdownCallback() {
+				
+				@Override
+				public void onCountdownFinish(CountdownTask task) {
+					start();
+					
+					countdownTask = null;
+				}
+				
+				@Override
+				public void onCountdownCount(CountdownTask task) {
+					broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
+						.setVariable("remaining", String.valueOf(task.getRemaining()))
+						.toString());
+				}
+			});
+			
+			countdownTask.start();
 		} else {
 			//Countdown is not enabled so just start the game
 			start();
@@ -295,6 +312,12 @@ public class Game {
 		}
 		
 		queuedPlayers.addAll(failedToQueue);
+		
+		//Stop the countdown if necessary
+		if (countdownTask != null) {
+			countdownTask.cancel();
+			countdownTask = null;
+		}
 	}
 	
 	public void disable() {
@@ -568,7 +591,7 @@ public class Game {
 		eventManager.registerListener(listener);
 	}
 	
-	public EditSession newEditSession() {
+	protected EditSession newEditSession() {
 		return editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
 	}
 	
