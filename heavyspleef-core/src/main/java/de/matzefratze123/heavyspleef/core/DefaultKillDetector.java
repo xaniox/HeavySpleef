@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -50,7 +51,7 @@ public class DefaultKillDetector implements KillDetector {
 			Region region = floor.getRegion();
 			
 			int minY = region instanceof FlatRegion ? ((FlatRegion)region).getMinimumY() : region.getMinimumPoint().getBlockY();
-			Vector fakeYVector = new Vector(playerVector.getX(), minY, playerVector.getZ());
+			Vector fakeYVector = new Vector(playerVector.getBlockX(), minY, playerVector.getBlockZ());
 			
 			if (!region.contains(fakeYVector)) {
 				//Player is not above or under the 2D region
@@ -90,16 +91,28 @@ public class DefaultKillDetector implements KillDetector {
 		final int x = location.getBlockX();
 		final int z = location.getBlockZ();
 		
-		loop: for (int y = minY; y <= maxY; y++) {
+		for (int y = minY; y <= maxY; y++) {
 			Location floorBlockLoc = new Location(world, x, y, z);
 			
-			for (Set<Block> set : blocksBroken.keySet()) {
+			for (Entry<Set<Block>, SpleefPlayer> entry : blocksBroken.entrySet()) {
+				Set<Block> set = entry.getKey();
+				boolean foundKiller = false;
+				
 				for (Block block : set) {
 					if (block.getLocation().equals(floorBlockLoc)) {
-						killer = blocksBroken.get(set);
-						break loop;
+						foundKiller = true;
+						break;
 					}
 				}
+				
+				if (foundKiller) {
+					killer = entry.getValue();
+					break;
+				}
+			}
+			
+			if (killer != null) {
+				break;
 			}
 		}
 		
