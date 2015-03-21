@@ -75,6 +75,7 @@ import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.GameWinEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
@@ -135,7 +136,7 @@ public class Game {
 		this.world = world;
 		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
-		this.state = GameState.WAITING;
+		setGameState(GameState.WAITING);
 		
 		DefaultConfig configuration = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
 		GamePropertyBundle defaults = new DefaultGamePropertyBundle(configuration.getProperties());
@@ -220,7 +221,7 @@ public class Game {
 			countdownLength = DEFAULT_COUNTDOWN;
 		}
 		
-		state = GameState.STARTING;
+		setGameState(GameState.STARTING);
 		
 		if (countdownEnabled && countdownLength > 0) {
 			countdownTask = new CountdownTask(heavySpleef.getPlugin(), countdownLength, new CountdownTask.CountdownCallback() {
@@ -261,7 +262,7 @@ public class Game {
 		GameStartEvent event = new GameStartEvent(this);
 		eventManager.callEvent(event);
 		
-		state = GameState.INGAME;
+		setGameState(GameState.INGAME);
 		broadcast(i18n.getVarString(Messages.Broadcast.GAME_STARTED)
 				.setVariable("game", name)
 				.setVariable("count", String.valueOf(ingamePlayers.size()))
@@ -314,7 +315,7 @@ public class Game {
 		
 		queuedPlayers.addAll(failedToQueue);
 		blocksBroken.clear();
-		state = GameState.WAITING;
+		setGameState(GameState.WAITING);
 		
 		//Stop the countdown if necessary
 		if (countdownTask != null) {
@@ -340,7 +341,7 @@ public class Game {
 			}
 		}
 		
-		state = GameState.DISABLED;
+		setGameState(GameState.DISABLED);
 		
 		GameDisableEvent event = new GameDisableEvent(this);
 		eventManager.callEvent(event);
@@ -351,7 +352,7 @@ public class Game {
 			return;
 		}
 		
-		state = GameState.WAITING;
+		setGameState(GameState.WAITING);
 		
 		GameEnableEvent event = new GameEnableEvent(this);
 		eventManager.callEvent(event);
@@ -679,7 +680,11 @@ public class Game {
 	}
 	
 	public void setGameState(GameState state) {
+		GameState old = this.state;
 		this.state = state;
+		
+		GameStateChangeEvent event = new GameStateChangeEvent(this, old);
+		eventManager.callEvent(event);
 	}
 	
 	public GameState getGameState() {
