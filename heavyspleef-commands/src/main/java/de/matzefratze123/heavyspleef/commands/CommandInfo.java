@@ -32,7 +32,7 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 public class CommandInfo {
 	
 	@Command(name = "info", minArgs = 1, usage = "/spleef info <game>",
-			description = "Prints out a games current state",
+			descref = Messages.Help.Description.INFO,
 			permission = "heavyspleef.admin.info")
 	public void onInfoCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
@@ -44,6 +44,9 @@ public class CommandInfo {
 				.setVariable("game", gameName)
 				.toString());
 		Game game = manager.getGame(gameName);
+		
+		StringBuilder builder = new StringBuilder();
+		
 		
 		//Flags
 		//LoseZones

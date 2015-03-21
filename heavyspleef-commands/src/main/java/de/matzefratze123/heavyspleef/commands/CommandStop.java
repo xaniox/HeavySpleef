@@ -34,7 +34,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class CommandStop {
 	
 	@Command(name = "stop", usage = "/spleef stop [game]",
-			description = "Stops the current game or the given game",
+			descref = Messages.Help.Description.STOP,
 			permission = "heavyspleef.admin.stop")
 	public void onStopCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();

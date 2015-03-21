@@ -70,7 +70,7 @@ public class FloorCommands {
 	private FloorVisualizationManager visualizationManager;
 	
 	@Command(name = "addfloor", permission = "heavyspleef.addfloor", minArgs = 1,
-			description = "Adds a floor to the game with an optional name",
+			descref = Messages.Help.Description.ADDFLOOR,
 			usage = "/spleef addfloor <Game> [Name]")
 	@PlayerOnly
 	public void onCommandAddFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
@@ -146,7 +146,7 @@ public class FloorCommands {
 	}
 	
 	@Command(name = "removefloor", permission = "heavyspleef.removefloor", minArgs = 2,
-			description = "Removes the floor with the given name from the game",
+			descref = Messages.Help.Description.REMOVEFLOOR,
 			usage = "/spleef removefloor <Game> <Floorname>")
 	public void onCommandRemoveFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
@@ -174,7 +174,7 @@ public class FloorCommands {
 	}
 	
 	@Command(name = "showfloor", permission = "heavyspleef.showfloor", minArgs = 2,
-			description = "Identifies the floor with the given name",
+			descref = Messages.Help.Description.SHOWFLOOR,
 			usage = "/spleef showfloor <Game> <Floorname>")
 	public void onCommandShowFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player player = context.getSender();

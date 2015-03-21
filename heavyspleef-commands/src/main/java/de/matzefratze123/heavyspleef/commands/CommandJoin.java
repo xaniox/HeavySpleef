@@ -33,8 +33,10 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandJoin {
 	
+	private final I18N i18n = I18N.getInstance();
+	
 	@Command(name = "join", minArgs = 1, usage = "/spleef join <game> [args]",
-			description = "Joins a game with the given name",
+			descref = Messages.Help.Description.JOIN,
 			permission = "heavyspleef.join")
 	@PlayerOnly
 	public void onJoinCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
@@ -43,12 +45,16 @@ public class CommandJoin {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		Game game = manager.getGame(gameName);
 		
-		CommandValidate.isTrue(game.getGameState().isGameEnabled(), I18N.getInstance().getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
+		CommandValidate.isTrue(game.getGameState().isGameEnabled(), i18n.getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
+				.setVariable("game", gameName)
+				.toString());
+		
+		CommandValidate.isTrue(!game.getGameState().isGameActive(), i18n.getVarString(Messages.Command.GAME_IS_INGAME)
 				.setVariable("game", gameName)
 				.toString());
 		

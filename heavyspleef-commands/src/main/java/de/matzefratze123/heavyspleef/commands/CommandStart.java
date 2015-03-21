@@ -32,7 +32,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class CommandStart {
 	
 	@Command(name = "start", usage = "/spleef start [game]",
-			description = "Starts the current game or a given game",
+			descref = Messages.Help.Description.START,
 			permission = "heavyspleef.admin.start")
 	@PlayerOnly
 	public void onStartCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

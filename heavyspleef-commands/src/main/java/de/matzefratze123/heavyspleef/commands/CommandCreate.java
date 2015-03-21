@@ -33,7 +33,7 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 public class CommandCreate {
 
 	@Command(name = "create", minArgs = 1, usage = "/spleef create <game>", 
-			description = "Creates a new spleef game with the given name and selection",
+			descref = Messages.Help.Description.CREATE,
 			permission = "heavyspleef.admin.create")
 	@PlayerOnly
 	public void onCreateCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

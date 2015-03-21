@@ -31,7 +31,7 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 public class CommandDelete {
 	
 	@Command(name = "delete", minArgs = 1, usage = "/spleef delete <name>",
-			description = "Deletes the game with the given name",
+			descref = Messages.Help.Description.DELETE,
 			permission = "heavyspleef.admin.delete")
 	public void onCommandDelete(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();

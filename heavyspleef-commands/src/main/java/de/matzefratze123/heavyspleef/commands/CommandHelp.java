@@ -31,14 +31,19 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandHelp {
 	
 	private static final String BASE_COMMAND = "spleef";
 	private static final CommandContainerComparator COMPARATOR = new CommandContainerComparator();
+
+	private final I18N i18n = I18N.getInstance();
 	
-	@Command(name = "help", description = "Prints help",
-			permission = "heavyspleef.help", usage = "/spleef help")
+	@Command(name = "help", permission = "heavyspleef.help",
+			descref = Messages.Help.Description.HELP,
+			usage = "/spleef help")
 	public void onHelpCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
 		SpleefCommandManager manager = (SpleefCommandManager) heavySpleef.getCommandManager();
@@ -53,7 +58,13 @@ public class CommandHelp {
 		
 		for (CommandContainer child : childs) {
 			sender.sendMessage(ChatColor.RED + "- " + ChatColor.GOLD + child.getUsage());
-			sender.sendMessage(ChatColor.GRAY + "  " + child.getDescription());
+			
+			String desc = child.getDescription();
+			if (desc.isEmpty() && !child.getDescriptionRef().isEmpty()) {
+				desc = i18n.getString(child.getDescriptionRef());
+			}
+			
+			sender.sendMessage(ChatColor.GRAY + "  " + desc);
 		}
 	}
 	

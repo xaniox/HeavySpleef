@@ -33,7 +33,7 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 public class CommandDisable {
 
 	@Command(name = "disable", minArgs = 1, usage = "/spleef disable <game>",
-			description = "Disables a game with the given name",
+			descref = Messages.Help.Description.DISABLE,
 			permission = "heavyspleef.admin.disable")
 	public void onDisableCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();

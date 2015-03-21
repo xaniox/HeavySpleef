@@ -32,7 +32,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class CommandLeave {
 
 	@Command(name = "leave", usage = "/spleef leave",
-			description = "Leaves a game",
+			descref = Messages.Help.Description.LEAVE,
 			permission = "heavyspleef.leave")
 	@PlayerOnly
 	public void onLeaveCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

@@ -34,7 +34,7 @@ public class CommandEnable {
 	private final I18N i18n = I18N.getInstance();
 	
 	@Command(name = "enable", minArgs = 1, usage = "/spleef enable <game>",
-			description = "Enables the game with the given name",
+			descref = Messages.Help.Description.ENABLE,
 			permission = "heavyspleef.admin.enable")
 	public void onEnableCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
@@ -50,9 +50,10 @@ public class CommandEnable {
 				.setVariable("game", gameName)
 				.toString());
 		
+		game.enable();
 		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_ENABLED)
 				.setVariable("game", gameName)
-				.toString());
+				.toString());		
 	}
 	
 }

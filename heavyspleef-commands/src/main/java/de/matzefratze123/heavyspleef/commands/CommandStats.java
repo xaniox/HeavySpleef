@@ -23,12 +23,13 @@ import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 
 public class CommandStats {
 	
 	@Command(name = "stats", usage = "/spleef stats [player|top]",
-			description = "Shows spleef statistics",
+			descref = Messages.Help.Description.STATS,
 			permission = "heavyspleef.stats")
 	public void onStatsCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();

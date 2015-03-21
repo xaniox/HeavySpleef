@@ -34,7 +34,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class CommandKick {
 	
 	@Command(name = "kick", minArgs = 1, usage = "/spleef kick <player>",
-			description = "Kicks a player from a Spleef game",
+			descref = Messages.Help.Description.KICK,
 			permission = "heavyspleef.admin.kick")
 	public void onKickCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
@@ -66,6 +66,8 @@ public class CommandKick {
 					builder.append(' ');
 				}
 			}
+			
+			message = builder.toString();
 		}
 		
 		game.kickPlayer(targetSpleefPlayer, message, sender);

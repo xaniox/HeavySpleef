@@ -49,8 +49,9 @@ public class CommandFlag {
 	
 	private final I18N i18n = I18N.getInstance();
 	
-	@Command(name = "flag", usage = "/spleef flag <game> <flag> [flag-value|remove]", permission = "heavyspleef.flag",
-			description = "Set flags on a game or remove them")
+	@Command(name = "flag", usage = "/spleef flag <game> <flag> [flag-value|remove]", 
+			descref = Messages.Help.Description.FLAG,
+			permission = "heavyspleef.flag")
 	@PlayerOnly
 	public <T> void onFlagCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player player = context.getSender();

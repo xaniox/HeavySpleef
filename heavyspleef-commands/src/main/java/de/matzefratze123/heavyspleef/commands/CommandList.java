@@ -38,7 +38,7 @@ public class CommandList {
 	private final I18N i18n = I18N.getInstance();
 	
 	@Command(name = "list", permission = "heavyspleef.list", usage = "/spleef list",
-			description = "Lists all spleef games")
+			descref = Messages.Help.Description.LIST)
 	public void onListCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
 		GameManager gameManager = heavySpleef.getGameManager();
