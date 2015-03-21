@@ -125,7 +125,7 @@ public class YMLControl extends ResourceBundle.Control {
 			InputStream stream = connection.getInputStream();
 			
 			if (stream != null) {
-				Reader reader = new InputStreamReader(stream);
+				Reader reader = new InputStreamReader(stream, I18N.UTF8_CHARSET);
 				YamlConfiguration config = new YamlConfiguration();
 				
 				StringBuilder builder;

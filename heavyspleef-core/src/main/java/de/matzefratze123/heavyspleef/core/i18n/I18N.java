@@ -20,32 +20,41 @@ package de.matzefratze123.heavyspleef.core.i18n;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.YamlConfigurationOptions;
+import org.bukkit.configuration.file.YamlConstructor;
+import org.bukkit.configuration.file.YamlRepresenter;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage.MessageVariable;
 
 public class I18N {
 	
+	public static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
 	private static final List<String> CLASSPATH_LOCALE_RESOURCES = Lists.newArrayList("locale_en_US.yml", "locale_de_DE.yml");
 	private static final String FALLBACK_FILE = "locale_en_US.yml";
+	
 	static final Locale FALLBACK_LOCALE = Locale.US;
 	static final String CLASSPATH_DIR = "/i18n/";
 	
@@ -134,8 +143,8 @@ public class I18N {
 			StringBuilder fileBuilder;
 			StringBuilder resourceBuilder;
 			
-			try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(localeFile)));
-				 BufferedReader resourceReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+			try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(localeFile), UTF8_CHARSET));
+				 BufferedReader resourceReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), UTF8_CHARSET))) {
 				
 				fileBuilder = new StringBuilder();
 				resourceBuilder = new StringBuilder();
@@ -175,7 +184,24 @@ public class I18N {
 			}
 			
 			if (changesToCommit) {
-				fileConfig.save(localeFile);
+				//Manually write the configuration as Bukkit's
+				//configuration API does not provide custom encoding...
+				final YamlConfigurationOptions options = fileConfig.options();
+				final YamlRepresenter representer = new YamlRepresenter();
+				
+				final DumperOptions dumperOptions = new DumperOptions();
+				dumperOptions.setIndent(options.indent());
+				dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+				dumperOptions.setAllowUnicode(true);
+				
+				representer.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+				
+				final Yaml yaml = new Yaml(new YamlConstructor(), representer, dumperOptions);
+				
+				try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(localeFile), UTF8_CHARSET)) {
+					yaml.dump(fileConfig.getValues(false), writer);
+					writer.flush();
+				}
 			}
 		}
 	}
@@ -194,7 +220,7 @@ public class I18N {
 			logger.log(Level.SEVERE, "Illegal message \"" + message + "\"", e);
 			
 			//Return something to prevent expections
-			Set<MessageVariable> emptySet = Sets.newHashSet();
+			List<MessageVariable> emptySet = Lists.newArrayList();
 			return new ParsedMessage(message, emptySet);
 		}
 	}
