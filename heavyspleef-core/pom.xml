@@ -19,5 +19,10 @@
     	<artifactId>heavyspleef-command-base</artifactId>
     	<version>${project.version}</version>
     </dependency>
+    <dependency>
+    	<groupId>org.poly2tri</groupId>
+    	<artifactId>poly2tri</artifactId>
+    	<version>0.1.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>
