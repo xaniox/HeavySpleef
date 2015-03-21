@@ -18,9 +18,9 @@
 package de.matzefratze123.heavyspleef.core.i18n;
 
 import java.text.ParseException;
-import java.util.Set;
+import java.util.List;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 public class ParsedMessage {
 	
@@ -28,9 +28,9 @@ public class ParsedMessage {
 	private static final char[] BRACKETS = {'[', ']'};
 	
 	private String message;
-	private Set<MessageVariable> variables;
+	private List<MessageVariable> variables;
 	
-	protected ParsedMessage(String message, Set<MessageVariable> variables) {
+	protected ParsedMessage(String message, List<MessageVariable> variables) {
 		this.message = message;
 		this.variables = variables;
 	}
@@ -39,7 +39,7 @@ public class ParsedMessage {
 		// We would use the state pattern for larger parsing tasks
 		// but for now a simple switch-case is sufficient
 		final int length = message.length();
-		final Set<MessageVariable> variables = Sets.newHashSet();
+		final List<MessageVariable> variables = Lists.newArrayList();
 		
 		ParseState state = ParseState.SEARCH_VARIABLE_OPERATOR;
 		
@@ -73,6 +73,7 @@ public class ParsedMessage {
 					
 					variableName = "";
 					variableStartIndex = noIndex;
+					state = ParseState.SEARCH_VARIABLE_OPERATOR;
 				}
 				break;
 			default:
@@ -100,15 +101,19 @@ public class ParsedMessage {
 	public String toString() {
 		String message = this.message;
 		
+		int offset = 0;
+		
 		for (MessageVariable var : variables) {
 			if (var.getValue() == null) {
 				continue;
 			}
 			
-			String firstPart = message.substring(0, var.getStartIndex());
-			String secondPart = message.substring(var.getEndIndex() + 1);
+			String firstPart = message.substring(0, var.getStartIndex() + offset);
+			String secondPart = message.substring(var.getEndIndex() + 1 + offset);
+			String value = var.getValue();
 			
-			message = firstPart + var.getValue() + secondPart;
+			message = firstPart + value + secondPart;
+			offset += var.getStartIndex() - var.getEndIndex() + value.length() - 1;
 		}
 		
 		return message;
