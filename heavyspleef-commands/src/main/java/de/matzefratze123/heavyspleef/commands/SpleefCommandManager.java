@@ -37,6 +37,7 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 public class SpleefCommandManager implements CommandManager {
 	
 	private CommandManagerService service;
+	private final I18N i18n = I18N.getInstance();
 	
 	public SpleefCommandManager(final HeavySpleef plugin) {
 		service = new CommandManagerService(plugin.getPlugin(), plugin.getLogger(), plugin) {
@@ -53,26 +54,27 @@ public class SpleefCommandManager implements CommandManager {
 				
 				switch (key) {
 				case "message.player_only":
-					message = I18N.getInstance().getString(Messages.Command.PLAYER_ONLY);
+					message = i18n.getString(Messages.Command.PLAYER_ONLY);
 					break;
 				case "message.no_permission":
-					message = I18N.getInstance().getString(Messages.Command.NO_PERMISSION);
+					message = i18n.getString(Messages.Command.NO_PERMISSION);
 					break;
 				case "message.description_format":
-					message = I18N.getInstance().getVarString(Messages.Command.DESCRIPTION_FORMAT)
+					message = i18n.getVarString(Messages.Command.DESCRIPTION_FORMAT)
 						.setVariable("description", messageArgs[0])
 						.toString();
 					break;
 				case "message.usage_format":
-					message = I18N.getInstance().getVarString(Messages.Command.USAGE_FORMAT)
+					message = i18n.getVarString(Messages.Command.USAGE_FORMAT)
 						.setVariable("usage", messageArgs[0])
 						.toString();
 					break;
 				case "message.unknown_command":
-					message = I18N.getInstance().getString(Messages.Command.UNKNOWN_COMMAND);
+					message = i18n.getString(Messages.Command.UNKNOWN_COMMAND);
 					break;
 				default:
-					break;
+					//Get the message by i18n
+					message = i18n.getString(key);
 				}
 				
 				return message;
