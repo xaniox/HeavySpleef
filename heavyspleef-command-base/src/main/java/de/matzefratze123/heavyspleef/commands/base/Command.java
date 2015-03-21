@@ -32,6 +32,8 @@ public @interface Command {
 	
 	String description() default "";
 	
+	String descref() default "";
+	
 	int minArgs() default -1;
 	
 	String permission() default "";

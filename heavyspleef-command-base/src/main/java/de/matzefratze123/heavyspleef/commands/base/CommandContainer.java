@@ -72,6 +72,10 @@ public class CommandContainer {
 		return command.description();
 	}
 	
+	public String getDescriptionRef() {
+		return command.descref();
+	}
+	
 	public int getMinArgs() {
 		return command.minArgs();
 	}

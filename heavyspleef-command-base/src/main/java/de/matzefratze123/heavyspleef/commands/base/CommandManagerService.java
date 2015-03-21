@@ -204,6 +204,12 @@ public abstract class CommandManagerService implements CommandExecutor {
 		System.arraycopy(args, index, cutArgs, 0, args.length - index);
 		
 		if (cutArgs.length > 0 && isHelpArg(cutArgs[0])) {
+			String description = command.getDescription();
+			
+			if (description.isEmpty() && !command.getDescriptionRef().isEmpty()) {
+				description = getMessage(command.getDescriptionRef());
+			}
+			
 			sender.sendMessage(getMessage0("message.description_format", command.getDescription()));
 			return true;
 		}
