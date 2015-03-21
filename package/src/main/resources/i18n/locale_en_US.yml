@@ -16,6 +16,7 @@ command:
   game-join-is-disabled: "This game is currently disabled!"
   game-started: "Game has been started"
   game-stopped: "Game has been stopped"
+  game-is-ingame: "There is already a game running in this arena"
   player-not-found: "The player '$[player]' could not be found"
   player-not-ingame: "The player '$[player]' is not in any game"
   player-kicked: "You kicked player $[player] from the game"
@@ -54,6 +55,7 @@ broadcast:
 player:
   player-leave: "You left the game."
   player-kick: "You were kicked by $[kicker]: $[message]"
+  player-kick-no-reason: "No reason provided"
   player-lose: "You are out of the game."
   player-win: "You won the game. Congratulation!"
   game-stopped: "The game has been stopped and you left the game"
@@ -73,6 +75,25 @@ player:
   team-selector-title: "Team Selection"
   click-to-join-team: "Join Team"
   need-min-players: "Need at least $[amount] players to start the game!"
+help:
+  description:
+    create: "Creates a new spleef game with a name"
+    delete: "Deletes the game with a name"
+    disable: "Disables the use of a game"
+    enable: "Enables the use of a game"
+    flag: "Sets a flag or removes it"
+    help: "Prints this help message"
+    info: "Prints out attributes of a game"
+    join: "Joins a game"
+    kick: "Kicks a player"
+    leave: "Leaves a game"
+    list: "Lists all spleef games on the server"
+    start: "Starts the current game or one with a name"
+    stats: "Shows Spleef statistics"
+    stop: "Stops the current game or one with a name"
+    addfloor: "Adds a floor to the game with an optional name"
+    removefloor: "Removes the floor with a name from the game"
+    showfloor: "Visually identifies a floor in the world with a name"
 arrays:
   team-color-array:
   - "White"

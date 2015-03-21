@@ -40,6 +40,7 @@ public interface Messages {
 		public static final String GAME_JOIN_IS_DISABLED = PREFIX + "game-join-is-disabled"; // $[game]
 		public static final String GAME_STARTED = PREFIX + "game-started"; // $[game]
 		public static final String GAME_STOPPED = PREFIX + "game-stopped"; // $[game]
+		public static final String GAME_IS_INGAME = PREFIX + "game-is-ingame"; // $[game]
 		public static final String PLAYER_NOT_FOUND = PREFIX + "player-not-found"; // $[player]
 		public static final String PLAYER_NOT_IN_GAME = PREFIX + "player-not-ingame"; //$[player]
 		public static final String PLAYER_KICKED = PREFIX + "player-kicked"; // $[player]
@@ -60,6 +61,7 @@ public interface Messages {
 		public static final String FLOOR_NOT_PRESENT = PREFIX + "floor-not-present";
 		public static final String FLOOR_REMOVED = PREFIX + "floor-removed";
 		public static final String FLOOR_VISUALIZED = PREFIX + "floor-visualized";
+
 		
 	}
 	
@@ -94,6 +96,7 @@ public interface Messages {
 		
 		public static final String PLAYER_LEAVE = PREFIX + "player-leave";
 		public static final String PLAYER_KICK = PREFIX + "player-kick"; // $[kicker]; $[message]
+		public static final String PLAYER_KICK_NO_REASON = PREFIX + "player-kick-no-reason";
 		public static final String PLAYER_LOSE = PREFIX + "player-lose";
 		public static final String PLAYER_WIN = PREFIX + "player-win";
 		public static final String GAME_STOPPED = PREFIX + "game-stopped";
@@ -117,6 +120,36 @@ public interface Messages {
 		public static final String TEAM_SELECTOR_TITLE = PREFIX + "team-selector-title";
 		public static final String CLICK_TO_JOIN_TEAM = PREFIX + "click-to-join-team";
 		public static final String NEED_MIN_PLAYERS = PREFIX + "need-min-players"; // $[amount]
+		
+	}
+	
+	public interface Help {
+		
+		public static final String PREFIX = "help.";
+		
+		public interface Description {
+			
+			public static final String PREFIX = Help.PREFIX + "description.";
+			
+			public static final String CREATE = PREFIX + "create";
+			public static final String DELETE = PREFIX + "delete";
+			public static final String DISABLE = PREFIX + "disable";
+			public static final String ENABLE = PREFIX + "enable";
+			public static final String FLAG = PREFIX + "flag";
+			public static final String HELP = PREFIX + "help";
+			public static final String INFO = PREFIX + "info";
+			public static final String JOIN = PREFIX + "join";
+			public static final String KICK = PREFIX + "kick";
+			public static final String LEAVE = PREFIX + "leave";
+			public static final String LIST = PREFIX + "list";
+			public static final String START = PREFIX + "start";
+			public static final String STATS = PREFIX + "stats";
+			public static final String STOP = PREFIX + "stop";
+			public static final String ADDFLOOR = PREFIX + "addfloor";
+			public static final String REMOVEFLOOR = PREFIX + "removefloor";
+			public static final String SHOWFLOOR = PREFIX + "showfloor";
+			
+		}
 		
 	}
 	

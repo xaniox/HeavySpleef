@@ -16,6 +16,7 @@ command:
   game-join-is-disabled: "Dieses Spiel ist derzeitig deaktiviert"
   game-started: "Starte Spiel..."
   game-stopped: "Stoppe Spiel..."
+  game-is-ingame: "In dieser Arena läuft bereits ein Spiel"
   player-not-found: "Der Spieler '$[player]' konnte nicht gefunden werden"
   player-not-ingame: "Der Spieler '$[player]' ist in keinem Spleef-Spiel" 
   player-kicked: "Du hast Spieler $[player] vom Spiel gekickt"
@@ -43,7 +44,7 @@ broadcast:
   game-stopped: "Spiel $[game] wurde gestoppt"
   game-countdown-message: "Spiel startet in $[remaining] Sekunden..."
   player-joined-game: "$[player] ist dem Spiel beigetreten"
-  player-lost-game: "$[player] wurde von $[killer] ausgeknockt und ist aus dem Spiel"
+  player-lost-game: "$[player] wurde von $[killer] ausgeknockt und ist ausgeschieden"
   player-lost-game-unknown-killer: "$[player] ist aus der Arena gefallen und hat das Spiel verloren"
   player-won-game: "$[player] hat das Spiel gewonnen"
   
@@ -54,10 +55,11 @@ broadcast:
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"
+  player-kick-no-reason: "Kein Grund angegeben"
   player-lose: "Du bist leider aus dem Spiel"
   player-win: "Du hast das Spiel gewonnen! Herzlichen Glückwunsch."
   game-stopped: "Das Spiel wurde gestoppt und du hast es verlassen"
-  error-on-inventory-load: "Dein Inventar konnte nicht geladen werden. Bitte kontaktiere einen Administrator."
+  error-on-inventory-load: "Dein Inventar konnte durch einen Fehler nicht geladen werden. Bitte kontaktiere einen Administrator."
   error-no-lobby-point-set: "Für dieses Spiel wurde noch kein Lobby-Punkt gesetzt"
   available-flags: "Verfügbare Flags: $[flags]"
   
@@ -73,6 +75,25 @@ player:
   team-selector-title: "Teamauswahl"
   click-to-join-team: "Team beitreten"
   need-min-players: "Es werden mindestens $[amount] Spieler zum Starten benötigt"
+help:
+  description:
+    create: "Erstellt ein neues Spiel mit Namen"
+    delete: "Löscht ein Spiel mit Namen"
+    disable: "Deaktiviert die Benutzung eines Spieles"
+    enable: "Aktiviert die Benutzung eines Spieles"
+    flag: "Setzt/Löscht Flags eines Spiels"
+    help: "Zeigt diese Hilfe-Nachricht an"
+    info: "Gibt Informationen zu einem Spiel aus"
+    join: "Tritt einem Spiel bei"
+    kick: "Wirft einen Spieler aus dem Spiel"
+    leave: "Verlässt ein Spiel"
+    list: "Listet alle Spiele auf dem Server auf"
+    start: "Start das jetzige Spiel oder eines mit Namen"
+    stats: "Zeigt Spleef-Statistiken an"
+    stop: "Stoppt das jetzige Spiel oder eines mit Namen"
+    addfloor: "Fügt eine Ebene mit optionalen Namen dazu"
+    removefloor: "Entfernt eine Ebene mit Namen"
+    showfloor: "Identifiziert eine Ebene visuell in der Welt mit Namen"
 arrays:
   team-color-array:
   - "Weiß"
