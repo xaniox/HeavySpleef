@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,6 +61,8 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
@@ -99,8 +100,16 @@ public class Game {
 	
 	private static final int NO_BLOCK_LIMIT = -1;
 	private static final int DEFAULT_COUNTDOWN = 10;
+	private static final Map<Class<? extends Region>, SpawnpointGenerator<?>> SPAWNPOINT_GENERATORS;
 	
-	private final Random random = new Random();
+	static {
+		SPAWNPOINT_GENERATORS = Maps.newHashMap();
+		
+		SPAWNPOINT_GENERATORS.put(CuboidRegion.class, new CuboidSpawnpointGenerator());
+		SPAWNPOINT_GENERATORS.put(CylinderRegion.class, new CylinderSpawnpointGenerator());
+		SPAWNPOINT_GENERATORS.put(Polygonal2DRegion.class, new Polygonal2DSpawnpointGenerator());
+	}
+	
 	private final I18N i18n = I18N.getInstance();
 	
 	private final EditSessionFactory editSessionFactory;
@@ -191,24 +200,8 @@ public class Game {
 			}
 			
 			Region region = topFloor.getRegion();
-			World world = Bukkit.getWorld(region.getWorld().getName());
-			Vector minPoint = region.getMinimumPoint();
-			Vector maxPoint = region.getMaximumPoint();
 			
-			int dx = maxPoint.getBlockX() - minPoint.getBlockX();
-			int dz = maxPoint.getBlockZ() - minPoint.getBlockZ();
-			
-			for (int i = 0; i < ingamePlayers.size(); i++) {
-				int randDx = random.nextInt(dx);
-				int randDz = random.nextInt(dz);
-				
-				int x = minPoint.getBlockX() + randDx;
-				int z = maxPoint.getBlockZ() + randDz;
-				
-				Location randomLoc = new Location(world, x, region.getMaximumPoint().getBlockY() + 1, z);
-				
-				spawnLocations.add(randomLoc);
-			}
+			generateSpawnpoints(region, spawnLocations, ingamePlayers.size());
 		}
 		
 		int locIndex = 0;
@@ -254,6 +247,14 @@ public class Game {
 		}
 		
 		return true;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends Region> void generateSpawnpoints(T region, List<Location> spawnpoints, int n) {
+		World world = Bukkit.getWorld(region.getWorld().getName());
+		
+		SpawnpointGenerator<T> generator = (SpawnpointGenerator<T>) SPAWNPOINT_GENERATORS.get(region.getClass());
+		generator.generateSpawnpoints(region, world, spawnpoints, n);
 	}
 	
 	public void start() {
@@ -312,6 +313,8 @@ public class Game {
 		}
 		
 		queuedPlayers.addAll(failedToQueue);
+		blocksBroken.clear();
+		state = GameState.WAITING;
 		
 		//Stop the countdown if necessary
 		if (countdownTask != null) {
@@ -569,6 +572,8 @@ public class Game {
 				}
 			}
 		}
+		
+		resetGame();
 	}
 	
 	public void kickPlayer(SpleefPlayer player, String message, CommandSender sender) {
@@ -591,7 +596,7 @@ public class Game {
 		eventManager.registerListener(listener);
 	}
 	
-	protected EditSession newEditSession() {
+	public EditSession newEditSession() {
 		return editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
 	}
 	
@@ -759,6 +764,10 @@ public class Game {
 	/* Event hooks */
 	@SuppressWarnings("deprecation")
 	public void onPlayerInteract(PlayerInteractEvent event, SpleefPlayer player) {
+		if (state != GameState.INGAME) {
+			return;
+		}
+		
 		Action action = event.getAction();
 		boolean isInstantBreak = getPropertyValue(GameProperty.INSTANT_BREAK);
 		boolean playBreakEffect = getPropertyValue(GameProperty.PLAY_BLOCK_BREAK);
@@ -796,6 +805,10 @@ public class Game {
 	}
 	
 	public void onPlayerBreakBlock(BlockBreakEvent event, SpleefPlayer player) {
+		if (state != GameState.INGAME) {
+			return;
+		}
+		
 		PlayerBlockBreakEvent spleefEvent = new PlayerBlockBreakEvent(this, player, event.getBlock());
 		eventManager.callEvent(spleefEvent);
 		
