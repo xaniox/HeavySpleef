@@ -1,0 +1,7 @@
+# The following variables are available:
+# - $[game] -> The name of the game this join sign is referring to
+layout:
+  1: "&8&l[&6Spleef&8&l]"
+  2: "&8&l[&aJoin&8&l]"
+  3: "&3$[game]"
+  4: ""
