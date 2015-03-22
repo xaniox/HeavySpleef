@@ -16,3 +16,7 @@ default-game-properties:
   
 localization:
   locale: en_US
+  
+signs:
+  join-sign-layout: layout/layout_join-sign.yml
+  info-wall-sign-layout: layout/layout_info-wall-info.yml
