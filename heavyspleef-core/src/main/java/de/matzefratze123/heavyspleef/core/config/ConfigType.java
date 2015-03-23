@@ -22,10 +22,14 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.configuration.Configuration;
 
+import de.matzefratze123.heavyspleef.core.config.ThrowingConfigurationObject.UnsafeException;
+
 public enum ConfigType {
 	
 	DEFAULT_CONFIG("config.yml", "/config.yml", DefaultConfig.class),
-	DATABASE_CONFIG("database-config.yml", "/database-config.yml", DatabaseConfig.class);
+	DATABASE_CONFIG("database-config.yml", "/database-config.yml", DatabaseConfig.class),
+	JOIN_SIGN_LAYOUT_CONFIG("layout/layout_join-sign.yml", "/layout/layout_join-sign.yml", SignLayoutConfiguration.class),
+	INFO_WALL_SIGN_LAYOUT_CONFIG("layout/layout_info-wall-sign.yml", "/layout/layout_info-wall-sign.yml", SignLayoutConfiguration.class);
 
 	private String destinationFileName;
 	private String classpathResourceName;
@@ -73,7 +77,7 @@ public enum ConfigType {
 				constructor = configClass.getConstructor();
 				fallback = true;
 			} catch (NoSuchMethodException nsme) {
-				throw new IllegalStateException("Class " + configClass.getCanonicalName() + " does must define an empty or an "
+				throw new IllegalStateException("Class " + configClass.getCanonicalName() + " must define an empty or an "
 						+ Configuration.class.getCanonicalName() + " constructor with an optional Object varargs parameter");
 			}
 		}
@@ -83,7 +87,15 @@ public enum ConfigType {
 		
 		try {
 			obj = (ConfigurationObject) constructor.newInstance(methodArgs);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (InvocationTargetException ite) {
+			Throwable cause = ite.getCause();
+			
+			if (cause != null && cause instanceof UnsafeException) {
+				throw (UnsafeException) cause;
+			} else {
+				throw new RuntimeException(cause);
+			}
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			throw new RuntimeException(e);
 		}
 		
