@@ -109,8 +109,12 @@ public class ExtensionInfoWall implements GameExtension {
 	 */
 	private void recalculate() throws WallValidationException {
 		//The two defining points must lie on the x-axis or y-axis
-		if (start.getBlockX() != end.getBlockX() && start.getBlockZ() != end.getBlockZ() || start.getBlockY() != end.getBlockY()) {
+		if (start.getBlockX() != end.getBlockX() && start.getBlockZ() != end.getBlockZ()) {
 			throw new WallValidationException(Cause.NOT_IN_LINE);
+		}
+		
+		if (start.getBlockY() != end.getBlockY()) {
+			throw new WallValidationException(Cause.NOT_SAME_Y_AXIS);
 		}
 		
 		if (start.getBlockX() == end.getBlockX()) {
@@ -185,7 +189,7 @@ public class ExtensionInfoWall implements GameExtension {
 		
 		public enum Cause {
 			
-			NOT_IN_LINE;
+			NOT_IN_LINE, NOT_SAME_Y_AXIS;
 			
 		}
 		
