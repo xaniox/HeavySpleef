@@ -136,6 +136,7 @@ public class Game {
 		this.world = world;
 		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
+		this.eventManager = new EventManager();
 		setGameState(GameState.WAITING);
 		
 		DefaultConfig configuration = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
@@ -154,8 +155,6 @@ public class Game {
 		WorldEdit worldEdit = hook.getWorldEdit();
 		
 		this.editSessionFactory = worldEdit.getEditSessionFactory();
-		
-		eventManager = new EventManager();
 	}
 	
 	public void setHeavySpleef(HeavySpleef heavySpleef) {
