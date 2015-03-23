@@ -1,9 +1,27 @@
+/*
+ * This file is part of HeavySpleef.
+ * Copyright (c) 2014-2015 matzefratze123
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.matzefratze123.heavyspleef.core.script.parser;
 
 import java.text.ParseException;
 
 import de.matzefratze123.heavyspleef.core.script.Condition;
 import de.matzefratze123.heavyspleef.core.script.IfStatement;
+import de.matzefratze123.heavyspleef.core.script.ParsePositionException;
 
 public class StatementParser implements Parser<IfStatement> {
 	
@@ -47,7 +65,7 @@ public class StatementParser implements Parser<IfStatement> {
 				tmpStr += c;
 				
 				if (c != IF.charAt(tmpPos)) {
-					throw new ParseException("Syntax exception near: \"" + tmpStr + "\"", position);
+					throw new ParsePositionException("Syntax exception near: \"" + tmpStr + "\"", position);
 				}
 				
 				if (tmpPos == IF.length() - 1) {
@@ -62,14 +80,14 @@ public class StatementParser implements Parser<IfStatement> {
 				break;
 			case READ_CONDITION_START:
 				if (c != '(') {
-					throw new ParseException("Condition (after if) must start with '('", position);
+					throw new ParsePositionException("Condition (after if) must start with '('", position);
 				}
 				
 				state = State.READ_CONDITION;
 				break;
 			case READ_CONDITION:
 				if (position == length - 1) {
-					throw new ParseException("Condition (after if) must be closed with ')'", position);
+					throw new ParsePositionException("Condition (after if) must be closed with ')'", position);
 				}
 				
 				if (c != ')') {
@@ -87,7 +105,7 @@ public class StatementParser implements Parser<IfStatement> {
 				tmpStr += c;
 				
 				if (c != THEN.charAt(tmpPos)) {
-					throw new ParseException("Syntax exception near: \"" + tmpStr + "\"", position);
+					throw new ParsePositionException("Syntax exception near: \"" + tmpStr + "\"", position);
 				}
 				
 				if (tmpPos == THEN.length() - 1) {
@@ -102,14 +120,14 @@ public class StatementParser implements Parser<IfStatement> {
 				break;
 			case READ_IF_VALUE_START:
 				if (c != '\"') {
-					throw new ParseException("if-value must start with a quote", position);
+					throw new ParsePositionException("if-value must start with a quote", position);
 				}
 				
 				state = State.READ_IF_VALUE;
 				break;
 			case READ_IF_VALUE:
 				if (position == length - 1 && c != '\"') {
-					throw new ParseException("if-value must be closed with '\"'", position);
+					throw new ParsePositionException("if-value must be closed with '\"'", position);
 				}
 				
 				if (c != '\"') {
@@ -125,7 +143,7 @@ public class StatementParser implements Parser<IfStatement> {
 				tmpStr += c;
 				
 				if (c != ELSE.charAt(tmpPos)) {
-					throw new ParseException("Syntax exception near: \"" + tmpStr + "\"", position);
+					throw new ParsePositionException("Syntax exception near: \"" + tmpStr + "\"", position);
 				}
 				
 				if (tmpPos == ELSE.length() - 1) {
@@ -140,14 +158,14 @@ public class StatementParser implements Parser<IfStatement> {
 				break;
 			case READ_ELSE_VALUE_START:
 				if (c != '\"') {
-					throw new ParseException("else-value must start with a quote", position);
+					throw new ParsePositionException("else-value must start with a quote", position);
 				}
 				
 				state = State.READ_ELSE_VALUE;
 				break;
 			case READ_ELSE_VALUE:
 				if (position == length - 1 && c != '\"') {
-					throw new ParseException("else-value must be closed with '\"'", position);
+					throw new ParsePositionException("else-value must be closed with '\"'", position);
 				}
 				
 				if (c != '\"') {

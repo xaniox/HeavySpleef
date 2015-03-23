@@ -1,3 +1,20 @@
+/*
+ * This file is part of HeavySpleef.
+ * Copyright (c) 2014-2015 matzefratze123
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.matzefratze123.heavyspleef.core.layout;
 
 import java.text.ParseException;
@@ -9,6 +26,7 @@ import de.matzefratze123.heavyspleef.core.layout.SignLine.IfStatementFragment;
 import de.matzefratze123.heavyspleef.core.layout.SignLine.LineFragment;
 import de.matzefratze123.heavyspleef.core.layout.SignLine.StringFragment;
 import de.matzefratze123.heavyspleef.core.script.IfStatement;
+import de.matzefratze123.heavyspleef.core.script.ParsePositionException;
 import de.matzefratze123.heavyspleef.core.script.parser.StatementParser;
 
 public class SignLineParser {
@@ -28,7 +46,7 @@ public class SignLineParser {
 	
 	public void parse() throws ParseException {
 		fragments = Lists.newArrayList();
-		final int length = fragments.size();
+		final int length = line.length();
 		
 		String tmpString = "";
 		
@@ -41,6 +59,10 @@ public class SignLineParser {
 				if (c != IF_STATEMENT_OPENING_CHAR && !isLast) {
 					tmpString += c;
 				} else {
+					if (isLast) {
+						tmpString += c;
+					}
+					
 					StringFragment fragment = new StringFragment(tmpString);
 					fragments.add(fragment);
 					
@@ -50,8 +72,8 @@ public class SignLineParser {
 				break;
 			case READ_IF_STATEMENT:
 				if (c != IF_STATEMENT_CLOSING_CHAR) {
-					if (!isLast) {
-						throw new ParseException("If-Statement \"" + tmpString + "\" must be closed with '" + IF_STATEMENT_CLOSING_CHAR + "'", position);
+					if (isLast) {
+						throw new ParsePositionException("If-Statement \"" + tmpString + "\" must be closed with '" + IF_STATEMENT_CLOSING_CHAR + "'", position);
 					}
 					
 					tmpString += c;

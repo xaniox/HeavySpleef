@@ -1,7 +1,25 @@
+/*
+ * This file is part of HeavySpleef.
+ * Copyright (c) 2014-2015 matzefratze123
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.matzefratze123.heavyspleef.core.script.parser;
 
 import java.text.ParseException;
 
+import de.matzefratze123.heavyspleef.core.script.ParsePositionException;
 import de.matzefratze123.heavyspleef.core.script.VariableHolder;
 
 public class VariableHolderParser implements Parser<VariableHolder> {
@@ -30,19 +48,19 @@ public class VariableHolderParser implements Parser<VariableHolder> {
 				if (c == '$') {
 					state = State.EXPECT_BRACKETS;
 				} else {
-					throw new ParseException("Variable must start with the '$' sign", position);
+					throw new ParsePositionException("Variable must start with the '$' sign", position);
 				}
 				break;
 			case EXPECT_BRACKETS:
 				if (c == '[') {
 					state = State.READ_VARIABLE;
 				} else {
-					throw new ParseException("'$' sign must be followed by an opening bracket '['", position);
+					throw new ParsePositionException("'$' sign must be followed by an opening bracket '['", position);
 				}
 				break;
 			case READ_VARIABLE:
 				if (position == length - 1 && c != ']') {
-					throw new ParseException("Variable must be closed by an closing bracket ']'", position);
+					throw new ParsePositionException("Variable must be closed by an closing bracket ']'", position);
 				}
 				
 				if (c != ']') {
@@ -53,7 +71,7 @@ public class VariableHolderParser implements Parser<VariableHolder> {
 				}
 				break;
 			default:
-				throw new ParseException("state was null when parsing", position);
+				throw new ParsePositionException("state was null when parsing", position);
 			}
 		}
 		

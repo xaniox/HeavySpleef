@@ -1,18 +1,32 @@
+/*
+ * This file is part of HeavySpleef.
+ * Copyright (c) 2014-2015 matzefratze123
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.matzefratze123.heavyspleef.core.script.parser;
 
 import java.text.ParseException;
 
 import de.matzefratze123.heavyspleef.core.script.ComparingCondition;
 import de.matzefratze123.heavyspleef.core.script.Condition;
+import de.matzefratze123.heavyspleef.core.script.ParsePositionException;
 import de.matzefratze123.heavyspleef.core.script.SimpleCondition;
 import de.matzefratze123.heavyspleef.core.script.VariableHolder;
 import de.matzefratze123.heavyspleef.core.script.ComparingCondition.Operator;
 
 public class ConditionParser implements Parser<Condition> {
-	
-	// $[var] < 0
-	// 4>=6
-	// $[var]==$[otherVar]
 	
 	private String condition;
 	private State state;
@@ -51,7 +65,7 @@ public class ConditionParser implements Parser<Condition> {
 					}
 					
 					if (tmpStr.isEmpty()) {
-						throw new ParseException("Condition must have an operand before defining an operator", position);
+						throw new ParsePositionException("Condition must have an operand before defining an operator", position);
 					}
 					
 					if (tmpStr.startsWith("$")) {
@@ -77,7 +91,7 @@ public class ConditionParser implements Parser<Condition> {
 			case READ_OPERATOR:
 				if (isScriptOperator(c, tmpPos)) {
 					if (position == length - 1) {
-						throw new ParseException("Operator must be followed by a second operand", position);
+						throw new ParsePositionException("Operator must be followed by a second operand", position);
 					}
 					
 					++tmpPos;
@@ -96,7 +110,7 @@ public class ConditionParser implements Parser<Condition> {
 					tmpStr += c;
 					
 					if (tmpStr.isEmpty()) {
-						throw new ParseException("Operator must be followed by a second operand", position);
+						throw new ParsePositionException("Operator must be followed by a second operand", position);
 					}
 					
 					if (tmpStr.startsWith("$")) {
@@ -143,7 +157,7 @@ public class ConditionParser implements Parser<Condition> {
 		} else if (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false")) {
 			result = Boolean.valueOf(str);
 		} else {
-			throw new ParseException(str, offset);
+			throw new ParsePositionException(str, offset);
 		}
 		
 		return result;
