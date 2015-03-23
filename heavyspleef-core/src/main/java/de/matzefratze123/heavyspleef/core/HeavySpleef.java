@@ -48,6 +48,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.ThrowingConfigurationObject.UnsafeException;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
@@ -66,9 +67,6 @@ public final class HeavySpleef {
 	private final JavaPlugin plugin;
 	@Getter
 	private final Logger logger;
-	
-	private File localeDir;
-	private File flagDir;
 	
 	private Map<ConfigType, ConfigurationObject> configurations;
 	
@@ -102,10 +100,12 @@ public final class HeavySpleef {
 	public void load() {
 		File dataFolder = getDataFolder();
 		
-		this.localeDir = new File(dataFolder, "locale");
-		this.localeDir.mkdirs();
-		this.flagDir = new File(dataFolder, "flags");
-		this.flagDir.mkdirs();
+		File localeDir = new File(dataFolder, "locale");
+		localeDir.mkdirs();
+		File flagDir = new File(dataFolder, "flags");
+		flagDir.mkdirs();
+		File layoutDir = new File(dataFolder, "layout");
+		layoutDir.mkdirs();
 		
 		flagRegistry = new FlagRegistry(this, flagDir);
 		
@@ -190,7 +190,17 @@ public final class HeavySpleef {
 				continue;
 			}
 			
-			ConfigurationObject obj = type.newConfigInstance(config, args.get(type));			
+			ConfigurationObject obj;
+			
+			try {
+				obj = type.newConfigInstance(config, args.get(type));
+			} catch (UnsafeException ex) {
+				Throwable cause = ex.getCause();
+				
+				logger.log(Level.SEVERE, "Could not create config structure for " + destinationFile.getPath() + ", except errors: ", cause);
+				continue;
+			}
+			
 			configurations.put(type, obj);
 		}
 	}
