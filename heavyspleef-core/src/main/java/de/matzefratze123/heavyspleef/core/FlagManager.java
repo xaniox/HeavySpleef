@@ -141,8 +141,8 @@ public class FlagManager {
 		return null;
 	}
 	
-	public AbstractFlag<?> getFlag(String name) {
-		return flags.get(name);
+	public AbstractFlag<?> getFlag(String path) {
+		return flags.get(path);
 	}
 	
 	public Object getProperty(GameProperty property) {

@@ -162,6 +162,10 @@ public class Game {
 		this.heavySpleef = heavySpleef;
 	}
 	
+	public HeavySpleef getHeavySpleef() {
+		return heavySpleef;
+	}
+	
 	public boolean countdown() {
 		GameCountdownEvent event = new GameCountdownEvent(this);
 		eventManager.callEvent(event);
@@ -447,16 +451,18 @@ public class Game {
 			return;
 		}
 		
+		ingamePlayers.remove(player);
+		
 		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player, cause);
 		eventManager.callEvent(event);
 		
 		if (event.isCancelled()) {
+			//Add the player again...
+			ingamePlayers.add(player);
 			return;
 		}
 		
 		Location tpLoc = event.getTeleportationLocation();
-		
-		ingamePlayers.remove(player);
 		
 		//Receive the state back
 		PlayerStateHolder playerState = player.getPlayerState(this);
@@ -618,6 +624,11 @@ public class Game {
 	
 	public <T extends AbstractFlag<?>> T getFlag(Class<T> flag) {
 		return flagManager.getFlag(flag);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractFlag<?>> T getFlag(String path) {
+		return (T) flagManager.getFlag(path);
 	}
 	
 	public FlagManager getFlagManager() {
