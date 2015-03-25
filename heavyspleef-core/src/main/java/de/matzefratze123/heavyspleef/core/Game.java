@@ -120,7 +120,7 @@ public class Game {
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
 	private Queue<SpleefPlayer> queuedPlayers;
-	private BasicTask countdownTask;
+	private CountdownTask countdownTask;
 	
 	private String name;
 	private World world;
@@ -604,6 +604,10 @@ public class Game {
 	
 	public EditSession newEditSession() {
 		return editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
+	}
+	
+	public CountdownTask getCountdownTask() {
+		return countdownTask;
 	}
 	
 	public void addFlag(AbstractFlag<?> flag) {
