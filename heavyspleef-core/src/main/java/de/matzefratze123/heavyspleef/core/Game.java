@@ -117,6 +117,7 @@ public class Game {
 	private HeavySpleef heavySpleef;
 	private EventManager eventManager;
 	private Set<SpleefPlayer> ingamePlayers;
+	private Set<SpleefPlayer> deadPlayers;
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
 	private Queue<SpleefPlayer> queuedPlayers;
@@ -136,6 +137,7 @@ public class Game {
 		this.world = world;
 		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
+		this.deadPlayers = Sets.newLinkedHashSet();
 		this.eventManager = new EventManager();
 		setGameState(GameState.WAITING);
 		
@@ -452,6 +454,7 @@ public class Game {
 		}
 		
 		ingamePlayers.remove(player);
+		deadPlayers.add(player);
 		
 		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player, cause);
 		eventManager.callEvent(event);
@@ -459,6 +462,7 @@ public class Game {
 		if (event.isCancelled()) {
 			//Add the player again...
 			ingamePlayers.add(player);
+			deadPlayers.remove(player);
 			return;
 		}
 		
@@ -596,6 +600,14 @@ public class Game {
 	
 	public World getWorld() {
 		return world;
+	}
+	
+	public Set<SpleefPlayer> getPlayers() {
+		return ingamePlayers;
+	}
+	
+	public Set<SpleefPlayer> getDeadPlayers() {
+		return deadPlayers;
 	}
 	
 	public void registerGameListener(SpleefListener listener) {
@@ -774,10 +786,6 @@ public class Game {
 		default:
 			break;
 		}
-	}
-	
-	public Set<SpleefPlayer> getPlayers() {
-		return ingamePlayers;
 	}
 	
 	/* Event hooks */
