@@ -34,6 +34,7 @@ public class SpleefPlayer {
 	/* Only keep a weak reference to avoid memory leaks.
 	 * Reference should be actually hold by Bukkit itself */
 	private WeakReference<Player> bukkitPlayerRef;
+	private String name;
 	private boolean online;
 	
 	private Map<Object, PlayerStateHolder> playerStates;
@@ -57,7 +58,11 @@ public class SpleefPlayer {
 	}
 	
 	public String getName() {
-		return getBukkitPlayer().getName();
+		if (isOnline()) {
+			name = getBukkitPlayer().getName();
+		}
+		
+		return bukkitPlayerRef.get() != null ? getBukkitPlayer().getName() : name;
 	}
 	
 	public UUID getUniqueId() {
