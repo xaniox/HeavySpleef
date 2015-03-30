@@ -25,14 +25,19 @@ import com.google.common.collect.Lists;
 import de.matzefratze123.heavyspleef.core.layout.SignLine.IfStatementFragment;
 import de.matzefratze123.heavyspleef.core.layout.SignLine.LineFragment;
 import de.matzefratze123.heavyspleef.core.layout.SignLine.StringFragment;
+import de.matzefratze123.heavyspleef.core.layout.SignLine.VariableFragment;
 import de.matzefratze123.heavyspleef.core.script.IfStatement;
 import de.matzefratze123.heavyspleef.core.script.ParsePositionException;
+import de.matzefratze123.heavyspleef.core.script.VariableHolder;
 import de.matzefratze123.heavyspleef.core.script.parser.StatementParser;
+import de.matzefratze123.heavyspleef.core.script.parser.VariableHolderParser;
 
 public class SignLineParser {
 
 	private static final char IF_STATEMENT_OPENING_CHAR = '{';
 	private static final char IF_STATEMENT_CLOSING_CHAR = '}';
+	private static final char VARIABLE_START_CHAR = '$';
+	private static final char VARIABLE_CLOSE_CHAR = ']';
 	
 	private final String line;
 	private int position;
@@ -56,20 +61,41 @@ public class SignLineParser {
 			
 			switch (state) {
 			case READ_STRING:
-				if (c != IF_STATEMENT_OPENING_CHAR && !isLast) {
+				if (c != IF_STATEMENT_OPENING_CHAR && c != VARIABLE_START_CHAR && !isLast) {
 					tmpString += c;
 				} else {
 					if (isLast) {
 						tmpString += c;
 					}
 					
-					StringFragment fragment = new StringFragment(tmpString);
-					fragments.add(fragment);
+					if (!tmpString.isEmpty()) {
+						StringFragment fragment = new StringFragment(tmpString);
+						fragments.add(fragment);
+						tmpString = "";
+					}
 					
-					tmpString = "";
-					state = State.READ_IF_STATEMENT;
+					if (c == IF_STATEMENT_OPENING_CHAR) {
+						state = State.READ_IF_STATEMENT;
+					} else if (c == VARIABLE_START_CHAR) {
+						state = State.READ_VARIABLE;
+						position--;
+					} else {
+						state = State.READ_STRING;
+					}
 				}
 				break;
+			case READ_VARIABLE:
+				tmpString += c;
+				
+				if (c == VARIABLE_CLOSE_CHAR) {
+					VariableHolderParser parser = new VariableHolderParser(tmpString);
+					VariableHolder holder = parser.parse();
+					
+					VariableFragment fragment = new VariableFragment(holder);
+					fragments.add(fragment);
+					
+					state = State.READ_STRING;
+				}
 			case READ_IF_STATEMENT:
 				if (c != IF_STATEMENT_CLOSING_CHAR) {
 					if (isLast) {
@@ -100,7 +126,8 @@ public class SignLineParser {
 	private enum State {
 		
 		READ_STRING,
-		READ_IF_STATEMENT;
+		READ_IF_STATEMENT, 
+		READ_VARIABLE;
 		
 	}
 
