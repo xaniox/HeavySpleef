@@ -4,11 +4,11 @@
 #              $[state] - The current state of the game
 #              $[players] - The amount of players currently playing
 #              $[dead] - The amount of players which are out of the game
-#              $[min-players] - The minimum amount of players needed to start the game
-#              $[max-players] - The amount of max players in the game
+#              $[flag_value:min-players] - The minimum amount of players needed to start the game
+#              $[flag_value:max-players] - The amount of max players in the game
 #              $[countdown] - Seconds left in the countdown
-# Boolean/If-Condition: $[has_max_players] - Wether or not this game has a maximum player count
-#                       $[has_min_players] - Wether or not this game has a minimum player count in order to start the game
+# Boolean/If-Condition: $[has_flag:max-players] - Wether or not this game has a maximum player count
+#                       $[has_flag:min-players] - Wether or not this game has a minimum player count in order to start the game
 #                       $[is_countdown] - Wether or not this game is currently counting down
 # 
 # For a reference on how to use scripting please 
@@ -18,3 +18,6 @@ layout:
   2: "$[state]"
   3: "$[players]/&7$[dead]&r{if $[has_max_players] then \"/$[max-players]\"}"
   4: "{if ($[is_countdown]) then \"Starting in $[countdown]\"}"
+options:
+  ingame-player-prefix: ''
+  dead-player-prefix: '&7' # Light Gray
