@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Set;
 
 import de.matzefratze123.heavyspleef.core.script.IfStatement;
+import de.matzefratze123.heavyspleef.core.script.Value;
 import de.matzefratze123.heavyspleef.core.script.Variable;
+import de.matzefratze123.heavyspleef.core.script.VariableHolder;
 
 public class SignLine {
 	
@@ -35,6 +37,23 @@ public class SignLine {
 		fragments = parser.getFragments();
 	}
 	
+	public void getRequestedVariables(Set<String> requested) {
+		for (LineFragment fragment : fragments) {
+			if (fragment instanceof IfStatementFragment) {
+				IfStatementFragment frag = (IfStatementFragment) fragment;
+				IfStatement statement = frag.getStatement();
+				
+				for (VariableHolder holder : statement.getVariables()) {
+					requested.add(holder.getName());
+				}
+			} else if (fragment instanceof VariableFragment) {
+				VariableFragment frag = (VariableFragment) fragment;
+				VariableHolder holder = frag.getHolder();
+				requested.add(holder.getName());
+			}
+		}
+	}
+	
 	public String generate(Set<Variable> variables) {
 		StringBuilder builder = new StringBuilder();
 		final int size = fragments.size();
@@ -44,6 +63,23 @@ public class SignLine {
 			
 			if (fragment instanceof IfStatementFragment) {
 				((IfStatementFragment) fragment).prepare(variables);
+			} else if (fragment instanceof VariableFragment) {
+				VariableFragment varFrag = (VariableFragment) fragment;
+				VariableHolder holder = varFrag.getHolder();
+				Variable result = null;
+				
+				for (Variable var : variables) {
+					if (var.getName().equals(holder.getName())) {
+						result = var;
+						break;
+					}
+				}
+				
+				if (result == null) {
+					throw new VariableNotAvailableException(holder.getName());
+				}
+				
+				varFrag.prepare(result.getValue());
 			}
 			
 			String result = fragment.toString();
@@ -68,12 +104,20 @@ public class SignLine {
 			this.statement = statement;
 		}
 		
+		public IfStatement getStatement() {
+			return statement;
+		}
+
 		public void prepare(Set<Variable> variables) {
 			this.variables = variables;
 		}
 		
 		@Override
 		public String toString() {
+			if (variables == null) {
+				throw new IllegalStateException("Need to call #prepare(Set<Variable>) before #toString()");
+			}
+			
 			return statement.eval(variables);
 		}
 		
@@ -90,6 +134,34 @@ public class SignLine {
 		@Override
 		public String toString() {
 			return string;
+		}
+		
+	}
+	
+	public static class VariableFragment implements LineFragment {
+		
+		private VariableHolder var;
+		private Value value;
+		
+		public VariableFragment(VariableHolder var) {
+			this.var = var;
+		}
+		
+		public VariableHolder getHolder() {
+			return var;
+		}
+
+		public void prepare(Value value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			if (value == null) {
+				throw new IllegalStateException("Need to call #prepare(Value) before calling #toString()");
+			}
+			
+			return value.get().toString();
 		}
 		
 	}

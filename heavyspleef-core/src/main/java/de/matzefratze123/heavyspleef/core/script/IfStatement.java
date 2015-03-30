@@ -22,19 +22,36 @@ import java.util.Set;
 public class IfStatement {
 	
 	private Condition condition;
-	private String ifString;
-	private String elseString;
+	private VariablizedString ifString;
+	private VariablizedString elseString;
 	
-	public IfStatement(Condition condition, String ifString, String elseString) {
+	public IfStatement(Condition condition, VariablizedString ifString, VariablizedString elseString) {
 		this.condition = condition;
 		this.ifString = ifString;
 		this.elseString = elseString;
 	}
 	
+	public Condition getCondition() {
+		return condition;
+	}
+	
+	public VariableHolder[] getVariables() {
+		VariableHolder[] conditionVars = condition.getVariables();
+		VariableHolder[] ifVars = ifString.getVariables();
+		VariableHolder[] elseVars = elseString.getVariables();
+		
+		VariableHolder[] newArray = new VariableHolder[conditionVars.length + ifVars.length + elseVars.length];
+		System.arraycopy(conditionVars, 0, newArray, 0, conditionVars.length);
+		System.arraycopy(ifVars, 0, newArray, conditionVars.length, ifVars.length);
+		System.arraycopy(elseVars, 0, newArray, ifVars.length, elseVars.length);
+		
+		return newArray;
+	}
+	
 	public String eval(Set<Variable> vars) {
 		boolean result = condition.eval(vars);
 		
-		return result ? ifString : elseString;
+		return result ? ifString.eval(vars) : elseString.eval(vars);
 	}
 	
 }

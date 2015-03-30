@@ -21,6 +21,8 @@ import java.util.Set;
 
 public interface Condition {
 	
+	public VariableHolder[] getVariables();
+	
 	public boolean eval(Set<Variable> vars);
 	
 }

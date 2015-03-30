@@ -28,6 +28,19 @@ public class SimpleCondition implements Condition {
 	}
 	
 	@Override
+	public VariableHolder[] getVariables() {
+		VariableHolder[] vars;
+		
+		if (conditionObj instanceof VariableHolder) {
+			vars = new VariableHolder[] {(VariableHolder) conditionObj};
+		} else {
+			vars = new VariableHolder[0];
+		}
+		
+		return vars;
+	}
+	
+	@Override
 	public boolean eval(Set<Variable> vars) {
 		if (conditionObj instanceof Boolean) {
 			return ((Boolean) conditionObj).booleanValue();

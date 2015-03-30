@@ -17,7 +17,10 @@
  */
 package de.matzefratze123.heavyspleef.core.script;
 
+import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
 
 public class ComparingCondition implements Condition {
 	
@@ -29,6 +32,20 @@ public class ComparingCondition implements Condition {
 		this.operator = type;
 		this.operand1 = operand1;
 		this.operand2 = operand2;
+	}
+	
+	@Override
+	public VariableHolder[] getVariables() {
+		List<VariableHolder> vars = Lists.newArrayList();
+		
+		if (operand1 instanceof VariableHolder) {
+			vars.add((VariableHolder) operand1);
+		}
+		if (operand2 instanceof VariableHolder) {
+			vars.add((VariableHolder) operand2);
+		}
+		
+		return vars.toArray(new VariableHolder[vars.size()]);
 	}
 	
 	@Override
