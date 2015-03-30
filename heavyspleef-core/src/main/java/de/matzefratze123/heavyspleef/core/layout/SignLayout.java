@@ -26,7 +26,6 @@ import org.bukkit.block.Sign;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.script.Variable;
 
 public class SignLayout {
