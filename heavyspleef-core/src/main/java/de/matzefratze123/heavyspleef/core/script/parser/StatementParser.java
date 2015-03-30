@@ -22,6 +22,7 @@ import java.text.ParseException;
 import de.matzefratze123.heavyspleef.core.script.Condition;
 import de.matzefratze123.heavyspleef.core.script.IfStatement;
 import de.matzefratze123.heavyspleef.core.script.ParsePositionException;
+import de.matzefratze123.heavyspleef.core.script.VariablizedString;
 
 public class StatementParser implements Parser<IfStatement> {
 	
@@ -46,8 +47,8 @@ public class StatementParser implements Parser<IfStatement> {
 		int length = statement.length();
 		
 		Condition condition = null;
-		String ifString = null;
-		String elseString = null;
+		VariablizedString ifString = null;
+		VariablizedString elseString = null;
 		
 		int tmpPos = 0;
 		String tmpStr = "";
@@ -135,7 +136,8 @@ public class StatementParser implements Parser<IfStatement> {
 					continue;
 				}
 				
-				ifString = tmpStr;
+				VariablizedStringParser ifStringParser = new VariablizedStringParser(tmpStr);
+				ifString = ifStringParser.parse();
 				tmpStr = "";
 				state = State.READ_ELSE;
 				break;
@@ -173,7 +175,8 @@ public class StatementParser implements Parser<IfStatement> {
 					continue;
 				}
 				
-				elseString = tmpStr;
+				VariablizedStringParser elseStringParser = new VariablizedStringParser(tmpStr);
+				elseString = elseStringParser.parse();
 				tmpStr = "";
 				state = State.FINISH;
 				break;
