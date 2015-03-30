@@ -27,6 +27,10 @@ public class Variable {
 		this.value = value;
 	}
 	
+	public Variable(String name, Object value) {
+		this(name, new Value(value));
+	}
+
 	public String getName() {
 		return name;
 	}
