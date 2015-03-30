@@ -24,7 +24,9 @@ import java.util.Set;
 import org.bukkit.block.Sign;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.script.Variable;
 
 public class SignLayout {
@@ -50,6 +52,25 @@ public class SignLayout {
 			
 			sign.setLine(i, lineString);
 		}
+	}
+	
+	public <T> boolean inflate(Sign sign, VariableProvider<T> provider, T obj) {
+		Set<Variable> vars = Sets.newHashSet();
+		Set<String> requested = Sets.newHashSet();
+		
+		for (SignLine line : lines) {
+			line.getRequestedVariables(requested);
+		}
+		
+		provider.provide(vars, requested, obj);
+		
+		for (int i = 0; i < lines.size(); i++) {
+			String strLine = lines.get(i).generate(vars);
+			
+			sign.setLine(i, strLine);
+		}
+		
+		return sign.update();
 	}
 	
 }
