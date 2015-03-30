@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.core.config;
 import java.text.ParseException;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -30,6 +31,7 @@ import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 public class SignLayoutConfiguration extends ThrowingConfigurationObject<ParseException> {
 	
 	private SignLayout layout;
+	private ConfigurationSection options;
 	
 	public SignLayoutConfiguration(Configuration config) {
 		super(config);
@@ -47,10 +49,26 @@ public class SignLayoutConfiguration extends ThrowingConfigurationObject<ParseEx
 		}
 		
 		layout = new SignLayout(lines);
+		
+		if (config.contains("options")) {
+			options = config.getConfigurationSection("options");
+		}
 	}
 	
 	public SignLayout getLayout() {
 		return layout;
+	}
+	
+	public String getOption(String key) {
+		return getOption(key, null);
+	}
+	
+	public String getOption(String key, String def) {
+		if (options == null) {
+			return def;
+		}
+		
+		return ChatColor.translateAlternateColorCodes('&', options.getString(key));
 	}
 
 	@Override
