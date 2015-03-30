@@ -275,9 +275,6 @@ public class Game {
 	}
 	
 	public void stop() {
-		GameEndEvent event = new GameEndEvent(this);
-		eventManager.callEvent(event);
-		
 		//Create a copy of current ingame players to prevent
 		//a ConcurrentModificationException
 		Set<SpleefPlayer> ingamePlayersCopy = Sets.newHashSet(ingamePlayers);
@@ -286,6 +283,10 @@ public class Game {
 		}
 		
 		resetGame();
+		
+		GameEndEvent event = new GameEndEvent(this);
+		eventManager.callEvent(event);
+		
 		broadcast(i18n.getString(Messages.Broadcast.GAME_STOPPED));
 	}
 	
@@ -570,9 +571,6 @@ public class Game {
 	}
 	
 	public void requestWin(SpleefPlayer... players) {
-		GameWinEvent event = new GameWinEvent(this, players);
-		eventManager.callEvent(event);
-		
 		for (SpleefPlayer ingamePlayer : ingamePlayers) {
 			for (SpleefPlayer player : players) {
 				if (ingamePlayer == player) {
@@ -584,6 +582,9 @@ public class Game {
 		}
 		
 		resetGame();
+		
+		GameWinEvent event = new GameWinEvent(this, players);
+		eventManager.callEvent(event);
 	}
 	
 	public void kickPlayer(SpleefPlayer player, String message, CommandSender sender) {
