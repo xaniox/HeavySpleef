@@ -13,11 +13,11 @@
     <worldedit.version>6.0.2-SNAPSHOT</worldedit.version>
   </properties>
   <modules>
+    <module>bootstrap</module>
   	<module>heavyspleef-commands</module>
   	<module>heavyspleef-core</module>
   	<module>heavyspleef-persistence</module>
   	<module>heavyspleef-flags</module>
-  	<module>package</module>
   	<module>heavyspleef-command-base</module>
   </modules>
   <developers>
