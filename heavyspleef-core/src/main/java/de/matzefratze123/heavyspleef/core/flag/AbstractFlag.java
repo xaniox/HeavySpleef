@@ -22,15 +22,15 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
 
-public abstract class AbstractFlag<T> implements Listener, SpleefListener {
+public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMarshallable {
 	
 	private T item;
 	private AbstractFlag<?> parent;
@@ -40,10 +40,6 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener {
 	public abstract void getDescription(List<String> description);
 	
 	public abstract T parseInput(Player player, String input) throws InputParseException;
-	
-	public abstract void marshal(Element element);
-	
-	public abstract void unmarshal(Element element);
 	
 	public T getValue() {
 		return item;
