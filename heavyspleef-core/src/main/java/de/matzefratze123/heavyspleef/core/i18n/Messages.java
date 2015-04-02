@@ -69,6 +69,19 @@ public interface Messages {
 		public static final String WALLS_REMOVED = PREFIX + "walls-removed"; // $[count]
 		public static final String NO_WALLS_FOUND = PREFIX + "no-walls-found";
 		
+		public static final String GAME_INFORMATION = PREFIX + "game-information";
+		public static final String NAME = PREFIX + "name";
+		public static final String WORLD = PREFIX + "world";
+		public static final String GAME_STATE = PREFIX + "game-state";
+		public static final String FLAGS = PREFIX + "flags";
+		public static final String FLOORS = PREFIX + "floors";
+		public static final String DEATH_ZONES = PREFIX + "death-zones";
+		public static final String EXTENSIONS = PREFIX + "extensions";
+		
+		public static final String CUBOID = PREFIX + "cuboid";
+		public static final String CYLINDRICAL = PREFIX + "cylindrical";
+		public static final String POLYGONAL = PREFIX + "polygonal";
+		
 	}
 	
 	public interface Broadcast {

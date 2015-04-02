@@ -45,6 +45,19 @@ command:
   click-on-wall-to-remove: "Klicke auf eine Lobby-Mauer um sie zu entfernen"
   walls-removed: "Es wurde(n) $[count] Lobby-Mauer(n) entfernt"
   no-walls-found: "An dieser Stelle befindet sich keine Lobby-Mauer"
+  
+  game-information: "Spielinformationen"
+  name: "Name"
+  world: "Welt"
+  game-state: "Spielstatus"
+  flags: "Flags"
+  floors: "Ebenen"
+  death-zones: "Todeszonen"
+  extensions: "Erweiterungen / Extensions"
+  
+  cuboid: "Quaderförmig"
+  cylindrical: "Zylindrisch"
+  polygonal: "Polygonal"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

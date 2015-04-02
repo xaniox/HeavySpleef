@@ -45,6 +45,19 @@ command:
   click-on-wall-to-remove: "Click on a lobby-wall to remove it"
   walls-removed: "$[count] lobby-wall(s) were removed"
   no-walls-found: "There were no lobby-walls found on the block you clicked"
+  
+  game-information: "Game Information"
+  name: "Name"
+  world: "World"
+  game-state: "Game-State"
+  flags: "Flags"
+  floors: "Floors"
+  death-zones: "Death-Zones"
+  extensions: "Extensions"
+  
+  cuboid: "cuboid"
+  cylindrical: "cylindrical"
+  polygonal: "polygonal"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
