@@ -20,9 +20,8 @@ package de.matzefratze123.heavyspleef.core.extension;
 import org.bukkit.event.Listener;
 
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
+import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
 
-public interface GameExtension extends SpleefListener, Listener {
-	
-	
+public interface GameExtension extends SpleefListener, Listener, XMLMarshallable {
 	
 }
