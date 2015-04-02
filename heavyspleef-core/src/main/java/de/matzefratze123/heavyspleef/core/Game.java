@@ -44,6 +44,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -941,6 +942,14 @@ public class Game {
 		boolean disableDamage = getPropertyValue(GameProperty.DISABLE_DAMAGE);
 		
 		if (event.getCause() != DamageCause.ENTITY_ATTACK && disableDamage) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onEntityTargetLivingEntity(EntityTargetLivingEntityEvent event, SpleefPlayer targetted) {
+		boolean disableDamage = getPropertyValue(GameProperty.DISABLE_DAMAGE);
+		
+		if (disableDamage) {
 			event.setCancelled(true);
 		}
 	}
