@@ -61,7 +61,13 @@ public interface Messages {
 		public static final String FLOOR_NOT_PRESENT = PREFIX + "floor-not-present";
 		public static final String FLOOR_REMOVED = PREFIX + "floor-removed";
 		public static final String FLOOR_VISUALIZED = PREFIX + "floor-visualized";
-
+		
+		public static final String BLOCK_NOT_A_SIGN = PREFIX + "block-not-a-sign";
+		public static final String CLICK_ON_SIGN_TO_ADD_WALL = PREFIX + "click-on-sign-to-add-wall";
+		public static final String WALL_ADDED = PREFIX + "wall-added";
+		public static final String CLICK_ON_WALL_TO_REMOVE = PREFIX + "click-on-wall-to-remove";
+		public static final String WALLS_REMOVED = PREFIX + "walls-removed"; // $[count]
+		public static final String NO_WALLS_FOUND = PREFIX + "no-walls-found";
 		
 	}
 	
