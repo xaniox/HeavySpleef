@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.core.extension;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,6 +32,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Attachable;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
+import org.dom4j.Element;
 
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -419,6 +421,66 @@ public class ExtensionLobbyWall implements GameExtension {
 			} else if (loopReturn == SignLooper.LoopReturn.RETURN) {
 				return;
 			}
+		}
+	}
+	
+	@Override
+	public void marshal(Element element) {
+		Element startElement = element.addElement("start");
+		Element xStartElement = startElement.addElement("x");
+		Element yStartElement = startElement.addElement("y");
+		Element zStartElement = startElement.addElement("z");
+		Element worldStartElement = startElement.addElement("world");
+		
+		Element endElement = element.addElement("end");
+		Element xEndElement = endElement.addElement("x");
+		Element yEndElement = endElement.addElement("y");
+		Element zEndElement = endElement.addElement("z");
+		Element worldEndElement = endElement.addElement("world");
+		
+		worldStartElement.addText(start.getWorld().getName());
+		xStartElement.addText(String.valueOf(start.getBlockX()));
+		yStartElement.addText(String.valueOf(start.getBlockY()));
+		zStartElement.addText(String.valueOf(start.getBlockZ()));
+		
+		worldEndElement.addText(end.getWorld().getName());
+		xEndElement.addText(String.valueOf(end.getBlockX()));
+		yEndElement.addText(String.valueOf(end.getBlockY()));
+		zEndElement.addText(String.valueOf(end.getBlockZ()));
+	}
+	
+	@Override
+	public void unmarshal(Element element) {
+		Element startElement = element.element("start");
+		Element endElement = element.element("end");
+		
+		Element xStartElement = startElement.element("x");
+		Element yStartElement = startElement.element("y");
+		Element zStartElement = startElement.element("z");
+		Element worldStartElement = startElement.element("world");
+		
+		Element xEndElement = endElement.element("x");
+		Element yEndElement = endElement.element("y");
+		Element zEndElement = endElement.element("z");
+		Element worldEndElement = endElement.element("world");
+		
+		World startWorld = Bukkit.getWorld(worldStartElement.getText());
+		int startX = Integer.parseInt(xStartElement.getText());
+		int startY = Integer.parseInt(yStartElement.getText());
+		int startZ = Integer.parseInt(zStartElement.getText());
+		
+		World endWorld = Bukkit.getWorld(worldEndElement.getText());
+		int endX = Integer.parseInt(xEndElement.getText());
+		int endY = Integer.parseInt(yEndElement.getText());
+		int endZ = Integer.parseInt(zEndElement.getText());
+		
+		start = new Location(startWorld, startX, startY, startZ);
+		end = new Location(endWorld, endX, endY, endZ);
+		
+		try {
+			recalculate();
+		} catch (WallValidationException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
