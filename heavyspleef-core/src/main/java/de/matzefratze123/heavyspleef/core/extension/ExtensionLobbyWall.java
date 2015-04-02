@@ -62,7 +62,7 @@ import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.layout.VariableProvider;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@CustomCommands
+@Extension(name = "lobby-wall", hasCommands = true)
 public class ExtensionLobbyWall implements GameExtension {
 
 	private static final String INGAME_PLAYER_PREFIX_KEY = "ingame-player-prefix";
@@ -237,6 +237,9 @@ public class ExtensionLobbyWall implements GameExtension {
 	/* The direction looking straight from start to end */
 	private BlockFace2D direction;
 	
+	@SuppressWarnings("unused")
+	private ExtensionLobbyWall() {}
+	
 	public ExtensionLobbyWall(Location start, Location end) throws WallValidationException {
 		this.world = start.getWorld();
 		this.start = start;
@@ -348,23 +351,31 @@ public class ExtensionLobbyWall implements GameExtension {
 							continue;
 						}
 						
-						if (!currentIterator.hasNext()) {
+						String player = null;
+						String prefix = null;
+						
+						if (currentIterator.hasNext()) {
+							player = currentIterator.next().getName();
+							prefix = ingamePlayers ? ingamePrefix : deadPrefix;
+						} else {
 							if (ingamePlayers) {
 								currentIterator = game.getDeadPlayers().iterator();
 								ingamePlayers = false;
 								
-								if (!currentIterator.hasNext()) {
-									breakLoop = true;
-									break;
+								if (currentIterator.hasNext()) {
+									player = currentIterator.next().getName();
+									prefix = deadPrefix;
+								} else {
+									player = "";
+									prefix = "";
 								}
 							} else {
-								breakLoop = true;
-								break;
+								player = "";
+								prefix = "";
 							}
 						}
 						
-						SpleefPlayer player = currentIterator.next();
-						sign.setLine(i, (ingamePlayers ? ingamePrefix : deadPrefix) + player.getName());
+						sign.setLine(i, prefix + player);
 					}
 					
 					sign.update();
@@ -474,6 +485,7 @@ public class ExtensionLobbyWall implements GameExtension {
 		int endY = Integer.parseInt(yEndElement.getText());
 		int endZ = Integer.parseInt(zEndElement.getText());
 		
+		world = startWorld;
 		start = new Location(startWorld, startX, startY, startZ);
 		end = new Location(endWorld, endX, endY, endZ);
 		
