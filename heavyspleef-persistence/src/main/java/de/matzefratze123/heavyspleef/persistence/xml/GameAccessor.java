@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -35,6 +36,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -86,16 +88,24 @@ public class GameAccessor extends XMLAccessor<Game> {
 			floorElement.addAttribute("name", floor.getName());
 		}
 		
+		Collection<GameExtension> extensions = game.getExtensions();
+		Element extensionsElement = element.addElement("extensions");
+		for (GameExtension extension : extensions) {
+			Element extensionElement = extensionsElement.addElement("extension");
+			extensionElement.addAttribute("class", extension.getClass().getName());
+			extension.marshal(extensionElement);
+		}
+		
 		Set<CuboidRegion> deathzones = game.getDeathzones();
 		Element deathzonesElement = element.addElement("deathzones");
 		for (CuboidRegion deathzone : deathzones) {
 			Element deathzoneElement = deathzonesElement.addElement("deathzone");
-			addCoodinateSet(deathzone.getPos1(), deathzoneElement);
-			addCoodinateSet(deathzone.getPos2(), deathzoneElement);
+			addCoordinateSet(deathzone.getPos1(), deathzoneElement);
+			addCoordinateSet(deathzone.getPos2(), deathzoneElement);
 		}
 	}
 	
-	private void addCoodinateSet(Vector vector, Element element) {
+	private void addCoordinateSet(Vector vector, Element element) {
 		Element set = element.addElement("coordinateSet");
 		
 		Element xElement = set.addElement("x");
@@ -146,7 +156,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 			throw new RuntimeException("Name of game cannot be null");
 		}
 		
-		// Not at all thread safe but it is the only way to get a world instance
+		// Not at all thread safe, but it is the only way to get a world instance.
 		// Bukkit#getWorlds() returns an new arraylist instance, so iterating is safe
 		// but the internal ArrayList::new(Collection) isn't
 		World world = null;
@@ -173,6 +183,39 @@ public class GameAccessor extends XMLAccessor<Game> {
 			flag.unmarshal(flagElement);
 			
 			game.addFlag(flag);
+		}
+		
+		Element extensionsElement = element.element("extensions");
+		List<Element> extensionElementsList = extensionsElement.elements("extension");
+		
+		for (Element extensionElement : extensionElementsList) {
+			String className = extensionElement.attributeValue("class");
+			Class<?> clazz;
+			
+			try {
+				clazz = Class.forName(className);
+			} catch (ClassNotFoundException e) {
+				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class " + className + ": ", e);
+				continue;
+			}
+			
+			if (!GameExtension.class.isAssignableFrom(clazz)) {
+				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class " + className + ": Class is not an extension");
+				continue;
+			}
+			
+			Class<? extends GameExtension> extClass = (Class<? extends GameExtension>) clazz;
+			GameExtension extension;
+			
+			try {
+				extension = extClass.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class " + className + ": ", e);
+				continue;
+			}
+			
+			extension.unmarshal(extensionElement);
+			game.addExtension(extension);
 		}
 		
 		Element propertiesElement = element.element("properties");
