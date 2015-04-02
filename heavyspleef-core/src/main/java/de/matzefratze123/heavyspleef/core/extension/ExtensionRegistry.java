@@ -17,9 +17,10 @@
  */
 package de.matzefratze123.heavyspleef.core.extension;
 
-import java.util.Set;
+import java.lang.reflect.Constructor;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.event.EventManager;
@@ -27,23 +28,53 @@ import de.matzefratze123.heavyspleef.core.event.EventManager;
 public class ExtensionRegistry {
 	
 	private final CommandManager commandManager;
-	private Set<Class<? extends GameExtension>> registeredExtensions;
+	private BiMap<String, Class<? extends GameExtension>> registeredExtensions;
 	
 	public ExtensionRegistry(CommandManager commandManager) {
-		this.registeredExtensions = Sets.newHashSet();
+		this.registeredExtensions = HashBiMap.create();
 		this.commandManager = commandManager;
 	}
 	
 	public void registerExtension(Class<? extends GameExtension> extClass) {
-		if (registeredExtensions.contains(extClass)) {
+		if (registeredExtensions.containsValue(extClass)) {
 			throw new IllegalArgumentException("This extension type has already been registered");
 		}
 		
-		if (extClass.isAnnotationPresent(CustomCommands.class)) {
+		if (!extClass.isAnnotationPresent(Extension.class)) {
+			throw new IllegalArgumentException("Extension type " + extClass.getName() + " does not define an @Extension annotation");
+		}
+		
+		Extension annotation = extClass.getAnnotation(Extension.class);
+		String name = annotation.name();
+		
+		if (registeredExtensions.containsKey(name)) {
+			Class<? extends GameExtension> alreadyRegisteredClass = registeredExtensions.get(name);
+			
+			throw new IllegalArgumentException("An extension with the name " + name + " has already been registered ("
+					+ alreadyRegisteredClass.getName() + ")");
+		}
+		
+		try {
+			Constructor<? extends GameExtension> constructor = extClass.getDeclaredConstructor();
+			//Make the constructor accessible
+			constructor.setAccessible(true);
+		} catch (NoSuchMethodException | SecurityException e) {
+			throw new IllegalArgumentException("Failed to find empty constructor on extension class", e);
+		}
+		
+		if (annotation.hasCommands()) {
 			commandManager.registerSpleefCommands(extClass);
 		}
 		
-		registeredExtensions.add(extClass);
+		registeredExtensions.put(name, extClass);
+	}
+	
+	public Class<? extends GameExtension> getExtensionClass(String name) {
+		return registeredExtensions.get(name);
+	}
+	
+	public String getExtensionName(Class<? extends GameExtension> clazz) {
+		return registeredExtensions.inverse().get(clazz);
 	}
 	
 	public ExtensionManager newManagerInstance(EventManager eventManager) {
