@@ -38,6 +38,13 @@ command:
   floor-not-present: "A floor with the name $[floorname] does not exist"
   floor-removed: "The floor with the name $[floorname] was removed"
   floor-visualized: "The floor is now displayed"
+  
+  block-not-a-sign: "The block you clicked is not a sign"
+  click-on-sign-to-add-wall: "Click on a row of signs to add them as a lobby-wall"
+  wall-added: "The clicked lobby-wall has been added"
+  click-on-wall-to-remove: "Click on a lobby-wall to remove it"
+  walls-removed: "$[count] lobby-wall(s) were removed"
+  no-walls-found: "There were no lobby-walls found on the block you clicked"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

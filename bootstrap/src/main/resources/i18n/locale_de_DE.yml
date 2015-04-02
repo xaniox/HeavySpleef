@@ -38,6 +38,13 @@ command:
   floor-not-present: "Eine Ebene mit dem Namen $[floorname] existiert nicht"
   floor-removed: "Die Ebene mit dem Namen $[floorname] wurde entfernt"
   floor-visualized: "Die Ebene wird nun angezeigt"
+  
+  block-not-a-sign: "Der von dir angeklickte Block ist kein Schild"
+  click-on-sign-to-add-wall: "Klicke auf eine Reihe Schilder um sie als eine Lobby-Mauer hinzuzufügen"
+  wall-added: "Die Lobby-Mauer wurde hinzugefügt"
+  click-on-wall-to-remove: "Klicke auf eine Lobby-Mauer um sie zu entfernen"
+  walls-removed: "Es wurde(n) $[count] Lobby-Mauer(n) entfernt"
+  no-walls-found: "An dieser Stelle befindet sich keine Lobby-Mauer"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
