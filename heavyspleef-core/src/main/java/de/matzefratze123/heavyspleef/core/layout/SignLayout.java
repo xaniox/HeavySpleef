@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 
 import com.google.common.collect.Lists;
@@ -31,6 +32,7 @@ import de.matzefratze123.heavyspleef.core.script.Variable;
 public class SignLayout {
 	
 	public static final int LINE_COUNT = 4;
+	private static final char TRANSLATE_CHAR = '&';
 	
 	private List<SignLine> lines;
 	
@@ -65,6 +67,7 @@ public class SignLayout {
 		
 		for (int i = 0; i < lines.size(); i++) {
 			String strLine = lines.get(i).generate(vars);
+			strLine = ChatColor.translateAlternateColorCodes(TRANSLATE_CHAR, strLine);
 			
 			sign.setLine(i, strLine);
 		}
