@@ -93,9 +93,11 @@ public class SignLineParser {
 					
 					VariableFragment fragment = new VariableFragment(holder);
 					fragments.add(fragment);
+					tmpString = "";
 					
 					state = State.READ_STRING;
 				}
+				break;
 			case READ_IF_STATEMENT:
 				if (c != IF_STATEMENT_CLOSING_CHAR) {
 					if (isLast) {
