@@ -38,12 +38,19 @@ public class IfStatement {
 	public VariableHolder[] getVariables() {
 		VariableHolder[] conditionVars = condition.getVariables();
 		VariableHolder[] ifVars = ifString.getVariables();
-		VariableHolder[] elseVars = elseString.getVariables();
+		VariableHolder[] elseVars = null;
 		
-		VariableHolder[] newArray = new VariableHolder[conditionVars.length + ifVars.length + elseVars.length];
+		if (elseString != null) {
+			elseVars = elseString.getVariables();
+		}
+		
+		VariableHolder[] newArray = new VariableHolder[conditionVars.length + ifVars.length + (elseVars != null ? elseVars.length : 0)];
 		System.arraycopy(conditionVars, 0, newArray, 0, conditionVars.length);
 		System.arraycopy(ifVars, 0, newArray, conditionVars.length, ifVars.length);
-		System.arraycopy(elseVars, 0, newArray, ifVars.length, elseVars.length);
+		
+		if (elseVars != null) {
+			System.arraycopy(elseVars, 0, newArray, ifVars.length, elseVars.length);
+		}
 		
 		return newArray;
 	}
@@ -51,7 +58,7 @@ public class IfStatement {
 	public String eval(Set<Variable> vars) {
 		boolean result = condition.eval(vars);
 		
-		return result ? ifString.eval(vars) : elseString.eval(vars);
+		return result ? ifString.eval(vars) : elseString != null ? elseString.eval(vars) : "";
 	}
 	
 }
