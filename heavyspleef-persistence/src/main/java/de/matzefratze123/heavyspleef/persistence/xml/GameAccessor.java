@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.persistence.xml;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
@@ -88,11 +91,12 @@ public class GameAccessor extends XMLAccessor<Game> {
 			floorElement.addAttribute("name", floor.getName());
 		}
 		
+		ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
 		Collection<GameExtension> extensions = game.getExtensions();
 		Element extensionsElement = element.addElement("extensions");
 		for (GameExtension extension : extensions) {
 			Element extensionElement = extensionsElement.addElement("extension");
-			extensionElement.addAttribute("class", extension.getClass().getName());
+			extensionElement.addAttribute("name", extRegistry.getExtensionName(extension.getClass()));
 			extension.marshal(extensionElement);
 		}
 		
@@ -185,32 +189,32 @@ public class GameAccessor extends XMLAccessor<Game> {
 			game.addFlag(flag);
 		}
 		
+		ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
 		Element extensionsElement = element.element("extensions");
 		List<Element> extensionElementsList = extensionsElement.elements("extension");
 		
 		for (Element extensionElement : extensionElementsList) {
-			String className = extensionElement.attributeValue("class");
-			Class<?> clazz;
+			String extName = extensionElement.attributeValue("name");
+			Class<? extends GameExtension> clazz = extRegistry.getExtensionClass(extName);
 			
-			try {
-				clazz = Class.forName(className);
-			} catch (ClassNotFoundException e) {
-				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class " + className + ": ", e);
+			if (clazz == null) {
+				heavySpleef.getLogger().log(Level.SEVERE,
+						"Could not load extension with name \"" + extName + "\"): No corresponding class found for extension name");
 				continue;
 			}
 			
-			if (!GameExtension.class.isAssignableFrom(clazz)) {
-				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class " + className + ": Class is not an extension");
-				continue;
-			}
-			
-			Class<? extends GameExtension> extClass = (Class<? extends GameExtension>) clazz;
 			GameExtension extension;
 			
 			try {
-				extension = extClass.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class " + className + ": ", e);
+				Constructor<? extends GameExtension> constructor = clazz.getDeclaredConstructor();
+				if (!constructor.isAccessible()) {
+					constructor.setAccessible(true);
+				}
+				
+				extension = constructor.newInstance();
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException
+					| InvocationTargetException e) {
+				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class \"" + clazz.getName() + "\" (name = \"" + extName + "\"): ", e);
 				continue;
 			}
 			
