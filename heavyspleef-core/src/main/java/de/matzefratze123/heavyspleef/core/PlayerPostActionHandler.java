@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -32,7 +33,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class PlayerPostActionHandler implements Listener {
 	
 	private final HeavySpleef heavySpleef;
-	private Map<SpleefPlayer, PostDataContainer> awaitingPostAction;
+	private Map<SpleefPlayer, PostDataContainer<?>> awaitingPostAction;
 	
 	public PlayerPostActionHandler(HeavySpleef heavySpleef) {
 		Bukkit.getPluginManager().registerEvents(this, heavySpleef.getPlugin());
@@ -41,19 +42,20 @@ public class PlayerPostActionHandler implements Listener {
 		this.awaitingPostAction = Maps.newHashMap();
 	}
 	
-	public void addPostAction(SpleefPlayer player, PostActionType type, PostActionCallback callback) {
-		addPostAction(player, type, callback, null);
+	public <T extends Event> void addPostAction(SpleefPlayer player, Class<T> event, PostActionCallback<T> callback) {
+		addPostAction(player, event, callback, null);
 	}
 	
-	public void addPostAction(SpleefPlayer player, PostActionType type, PostActionCallback callback, Object cookie) {
+	public <T extends Event> void addPostAction(SpleefPlayer player, Class<T> event, PostActionCallback<T> callback, Object cookie) {
 		Validate.notNull(player, "player cannot be null");
-		Validate.notNull(type, "type cannot be null");
+		Validate.notNull(event, "event class cannot be null");
 		Validate.notNull(callback, "callback cannot be null");
 		
-		PostDataContainer container = new PostDataContainer(type, callback, cookie);
+		PostDataContainer<T> container = new PostDataContainer<T>(event, callback, cookie);
 		awaitingPostAction.put(player, container);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@EventHandler
 	public void onPlayerInteractEvent(PlayerInteractEvent event) {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
@@ -62,42 +64,36 @@ public class PlayerPostActionHandler implements Listener {
 			return;
 		}
 		
-		PostDataContainer container = awaitingPostAction.get(player);
-		if (container.type != PostActionType.PLAYER_INTERACT) {
+		PostDataContainer<?> container = awaitingPostAction.get(player);
+		if (container.event != event.getClass()) {
 			return;
 		}
 		
 		awaitingPostAction.remove(player);
 		
-		PostActionCallback callback = container.callback;
+		PostActionCallback<PlayerInteractEvent> callback = (PostActionCallback<PlayerInteractEvent>) container.callback;
 		Object cookie = container.cookie;
 		
-		callback.onPostAction(player, cookie);
+		callback.onPostAction(event, player, cookie);
 	}
 	
-	private class PostDataContainer {
+	private class PostDataContainer<T extends Event> {
 		
-		private PostActionType type;
-		private PostActionCallback callback;
+		private Class<T> event;
+		private PostActionCallback<T> callback;
 		private Object cookie;
 		
-		public PostDataContainer(PostActionType type, PostActionCallback callback, Object cookie) {
-			this.type = type;
+		public PostDataContainer(Class<T> event, PostActionCallback<T> callback, Object cookie) {
+			this.event = event;
 			this.callback = callback;
 			this.cookie = cookie;
 		}
 		
 	}
 	
-	public enum PostActionType {
+	public static interface PostActionCallback<T> {
 		
-		PLAYER_INTERACT;
-		
-	}
-	
-	public static interface PostActionCallback {
-		
-		public void onPostAction(SpleefPlayer player, Object cookie);
+		public void onPostAction(T event, SpleefPlayer player, Object cookie);
 		
 	}
 	
