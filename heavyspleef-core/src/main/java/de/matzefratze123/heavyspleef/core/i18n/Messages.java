@@ -167,6 +167,8 @@ public interface Messages {
 			public static final String ADDFLOOR = PREFIX + "addfloor";
 			public static final String REMOVEFLOOR = PREFIX + "removefloor";
 			public static final String SHOWFLOOR = PREFIX + "showfloor";
+			public static final String ADDWALL = PREFIX + "addwall";
+			public static final String REMOVEWALL = PREFIX + "removewall";
 			
 		}
 		

@@ -114,6 +114,8 @@ help:
     addfloor: "Fügt eine Ebene mit optionalen Namen dazu"
     removefloor: "Entfernt eine Ebene mit Namen"
     showfloor: "Identifiziert eine Ebene visuell in der Welt mit Namen"
+    addwall: "Fügt eine Mauer aus Schildern hinzu um den Status des Spiels anzuzeigen"
+    removewall: "Entfernt eine Lobby-Mauer durch Klicken"
 arrays:
   team-color-array:
   - "Weiß"

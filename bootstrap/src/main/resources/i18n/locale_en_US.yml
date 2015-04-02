@@ -114,6 +114,8 @@ help:
     addfloor: "Adds a floor to the game with an optional name"
     removefloor: "Removes the floor with a name from the game"
     showfloor: "Visually identifies a floor in the world with a name"
+    addwall: "Adds a wall consisting of signs to show the status of a particular game by clicking it"
+    removewall: "Removes a wall by clicking it"
 arrays:
   team-color-array:
   - "White"

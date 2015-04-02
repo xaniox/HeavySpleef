@@ -72,7 +72,7 @@ public class ExtensionLobbyWall implements GameExtension {
 	private static final String DEFAULT_DEAD_PLAYER_PREFIX = ChatColor.GRAY.toString();
 	
 	@Command(name = "addwall", permission = "heavyspleef.addwall",
-			description = "Adds a wall consisting of signs to show the status of a particular game by clicking it", 
+			descref = Messages.Help.Description.ADDWALL,
 			usage = "/spleef addwall <game>", minArgs = 1)
 	@PlayerOnly
 	public static void onAddWallCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
@@ -113,7 +113,7 @@ public class ExtensionLobbyWall implements GameExtension {
 	}
 	
 	@Command(name = "removewall", permission = "heavyspleef.removewall", minArgs = 1,
-			description = "Removes a wall by clicking it", usage = "/spleef removewall")
+			descref = Messages.Help.Description.REMOVEWALL, usage = "/spleef removewall")
 	@PlayerOnly
 	public static void onRemoveWallCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
