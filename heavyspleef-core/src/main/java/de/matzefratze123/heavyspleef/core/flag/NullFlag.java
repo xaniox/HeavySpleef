@@ -37,6 +37,11 @@ public class NullFlag extends AbstractFlag<Void> {
 	public Void parseInput(Player player, String input) throws InputParseException {
 		return null;
 	}
+	
+	@Override
+	public String getValueAsString() {
+		return null;
+	}
 
 	@Override
 	public void marshal(Element element) {}

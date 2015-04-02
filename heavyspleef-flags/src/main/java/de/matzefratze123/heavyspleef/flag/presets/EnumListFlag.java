@@ -47,6 +47,11 @@ public abstract class EnumListFlag<T extends Enum<T>> extends ListFlag<T> {
 	public abstract Class<T> getEnumType();
 	
 	@Override
+	public String getListItemAsString(T item) {
+		return item.name();
+	}
+	
+	@Override
 	public void marshalListItem(Element element, T item) {
 		element.addText(item.name());
 	}

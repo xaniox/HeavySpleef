@@ -71,6 +71,22 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 	}
 	
 	@Override
+	public String getValueAsString() {
+		Location location = getValue();
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append('(');
+		builder.append(location.getBlockX());
+		builder.append(',');
+		builder.append(location.getBlockY());
+		builder.append(',');
+		builder.append(location.getBlockZ());
+		builder.append(')');
+		
+		return builder.toString();
+	}
+	
+	@Override
 	public void marshal(Element element) {
 		Element worldElement = element.addElement("world");
 		Element xElement = element.addElement("x");

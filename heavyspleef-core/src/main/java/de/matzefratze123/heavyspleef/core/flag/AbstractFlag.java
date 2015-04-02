@@ -41,6 +41,8 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 	
 	public abstract T parseInput(Player player, String input) throws InputParseException;
 	
+	public abstract String getValueAsString();
+	
 	public T getValue() {
 		return item;
 	}

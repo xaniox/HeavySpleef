@@ -62,6 +62,20 @@ public abstract class LocationListFlag extends ListFlag<Location> {
 		Location location = new Location(world, x, y, z);
 		return location;
 	}
+	
+	@Override
+	public String getListItemAsString(Location location) {
+		StringBuilder builder = new StringBuilder();
+		builder.append('(');
+		builder.append(location.getBlockX());
+		builder.append(',');
+		builder.append(location.getBlockY());
+		builder.append(',');
+		builder.append(location.getBlockZ());
+		builder.append(')');
+		
+		return builder.toString();
+	}
 
 	@Override
 	public ListInputParser<Location> createParser() {

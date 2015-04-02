@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.flag.presets;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -69,6 +70,27 @@ public abstract class ListFlag<T> extends AbstractFlag<List<T>>{
 	}
 	
 	@Override
+	public String getValueAsString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append('[');
+		
+		Iterator<T> iterator = getValue().iterator();
+		while (iterator.hasNext()) {
+			T item = iterator.next();
+			
+			builder.append(getListItemAsString(item));
+			
+			if (iterator.hasNext()) {
+				builder.append(", ");
+			}
+		}
+		
+		builder.append(']');
+		
+		return builder.toString();
+	}
+	
+	@Override
 	public void marshal(Element element) {
 		for (T item : getValue()) {
 			Element itemElement = element.addElement("item");
@@ -95,6 +117,8 @@ public abstract class ListFlag<T> extends AbstractFlag<List<T>>{
 	public abstract void marshalListItem(Element element, T item);
 	
 	public abstract T unmarshalListItem(Element element);
+	
+	public abstract String getListItemAsString(T item);
 	
 	public abstract ListInputParser<T> createParser();
 	

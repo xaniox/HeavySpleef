@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.flag.presets;
 
+import java.text.DecimalFormat;
+
 import org.bukkit.entity.Player;
 import org.dom4j.Element;
 
@@ -24,6 +26,8 @@ import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 
 public abstract class DoubleFlag extends AbstractFlag<Double> {
+	
+	private static final DecimalFormat FORMAT = new DecimalFormat("0.##");
 	
 	@Override
 	public Double parseInput(Player player, String input) throws InputParseException {
@@ -36,6 +40,11 @@ public abstract class DoubleFlag extends AbstractFlag<Double> {
 		}
 		
 		return Double.valueOf(result);
+	}
+	
+	@Override
+	public String getValueAsString() {
+		return FORMAT.format(getValue().doubleValue());
 	}
 	
 	@Override

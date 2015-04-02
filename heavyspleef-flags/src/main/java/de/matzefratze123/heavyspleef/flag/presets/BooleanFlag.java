@@ -43,6 +43,11 @@ public abstract class BooleanFlag extends AbstractFlag<Boolean> {
 	}
 	
 	@Override
+	public String getValueAsString() {
+		return String.valueOf(getValue());
+	}
+	
+	@Override
 	public void marshal(Element element) {
 		element.addText(String.valueOf(getValue()));
 	}

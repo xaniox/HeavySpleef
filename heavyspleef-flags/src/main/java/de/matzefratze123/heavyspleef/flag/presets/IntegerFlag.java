@@ -39,6 +39,11 @@ public abstract class IntegerFlag extends AbstractFlag<Integer> {
 	}
 	
 	@Override
+	public String getValueAsString() {
+		return String.valueOf(getValue().intValue());
+	}
+	
+	@Override
 	public void marshal(Element element) {
 		element.addText(String.valueOf(getValue()));
 	}

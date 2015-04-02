@@ -31,6 +31,11 @@ public abstract class StringFlag extends AbstractFlag<String> {
 	}
 	
 	@Override
+	public String getValueAsString() {
+		return getValue();
+	}
+	
+	@Override
 	public void marshal(Element element) {
 		element.addText(getValue());
 	}
