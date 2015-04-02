@@ -88,6 +88,8 @@ import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResul
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
+import de.matzefratze123.heavyspleef.core.extension.ExtensionManager;
+import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
@@ -127,6 +129,7 @@ public class Game {
 	private World world;
 	private com.sk89q.worldedit.world.World worldEditWorld;
 	private FlagManager flagManager;
+	private ExtensionManager extensionManager;
 	private GameState state;
 	private Map<String, Floor> floors;
 	private Set<CuboidRegion> deathzones;
@@ -145,6 +148,7 @@ public class Game {
 		GamePropertyBundle defaults = new DefaultGamePropertyBundle(configuration.getProperties());
 		
 		this.flagManager = new FlagManager(heavySpleef.getPlugin(), defaults);
+		this.extensionManager = heavySpleef.getExtensionRegistry().newManagerInstance(eventManager);
 		this.deathzones = Sets.newLinkedHashSet();
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
@@ -455,7 +459,10 @@ public class Game {
 		}
 		
 		ingamePlayers.remove(player);
-		deadPlayers.add(player);
+		
+		if (state == GameState.INGAME) {
+			deadPlayers.add(player);
+		}
 		
 		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player, cause);
 		eventManager.callEvent(event);
@@ -650,6 +657,26 @@ public class Game {
 	
 	public FlagManager getFlagManager() {
 		return flagManager;
+	}
+	
+	public void addExtension(GameExtension extension) {
+		extensionManager.addExtension(extension);
+	}
+	
+	public void removeExtension(GameExtension extension) {
+		extensionManager.removeExtension(extension);
+	}
+	
+	public Set<GameExtension> getExtensions() {
+		return extensionManager.getExtensions();
+	}
+	
+	public <T extends GameExtension> Set<T> getExtensionsByType(Class<T> extClass) {
+		return getExtensionsByType(extClass, false);
+	}
+	
+	public <T extends GameExtension> Set<T> getExtensionsByType(Class<T> extClass, boolean strict) {
+		return extensionManager.getExtensionsByType(extClass, strict);
 	}
 	
 	public void addFloor(Floor floor) {
