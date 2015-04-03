@@ -133,7 +133,7 @@ public class Game {
 	private ExtensionManager extensionManager;
 	private GameState state;
 	private Map<String, Floor> floors;
-	private Set<CuboidRegion> deathzones;
+	private Map<String, Region> deathzones;
 	
 	public Game(HeavySpleef heavySpleef, String name, World world) {
 		this.heavySpleef = heavySpleef;
@@ -150,7 +150,7 @@ public class Game {
 		
 		this.flagManager = new FlagManager(heavySpleef.getPlugin(), defaults);
 		this.extensionManager = heavySpleef.getExtensionRegistry().newManagerInstance(eventManager);
-		this.deathzones = Sets.newLinkedHashSet();
+		this.deathzones = Maps.newHashMap();
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
 		this.queuedPlayers = new LinkedList<SpleefPlayer>();
@@ -722,15 +722,23 @@ public class Game {
 		return onFloor;
 	}
 	
-	public void addDeathzone(CuboidRegion region) {
-		deathzones.add(region);
+	public void addDeathzone(String name, Region region) {
+		deathzones.put(name, region);
 	}
 	
-	public boolean removeDeathzone(CuboidRegion region) {
-		return deathzones.remove(region);
+	public Region removeDeathzone(String name) {
+		return deathzones.remove(name);
 	}
 	
-	public Set<CuboidRegion> getDeathzones() {
+	public Region getDeathzone(String name) {
+		return deathzones.get(name);
+	}
+	
+	public boolean isDeathzonePresent(String name) {
+		return deathzones.containsKey(name);
+	}
+	
+	public Map<String, Region> getDeathzones() {
 		return deathzones;
 	}
 	
