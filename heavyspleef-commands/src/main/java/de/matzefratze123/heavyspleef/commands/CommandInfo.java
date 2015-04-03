@@ -67,7 +67,7 @@ public class CommandInfo {
 		gameStateName = Character.toUpperCase(gameStateName.charAt(0)) + gameStateName.substring(1);
 		Map<String, AbstractFlag<?>> flags = game.getFlagManager().getPresentFlags();
 		Collection<Floor> floors = game.getFloors();
-		Set<CuboidRegion> deathzones = game.getDeathzones();
+		Map<String, Region> deathzones = game.getDeathzones();
 		Set<GameExtension> extensions = game.getExtensions();
 		
 		StringBuilder builder = new StringBuilder();
@@ -97,29 +97,23 @@ public class CommandInfo {
 			Vector minPos = region.getMinimumPoint();
 			Vector maxPos = region.getMaximumPoint();
 
-			String regionType = null;
-			if (region instanceof CuboidRegion) {
-				regionType = i18n.getString(Messages.Command.CUBOID);
-			} else if (region instanceof CylinderRegion) {
-				regionType = i18n.getString(Messages.Command.CYLINDRICAL);
-			} else if (region instanceof Polygonal2DRegion) {
-				regionType = i18n.getString(Messages.Command.POLYGONAL);
-			}
-
 			builder.append(ChatColor.GOLD + "| ")
-					.append(ChatColor.DARK_GRAY + " - " + ChatColor.YELLOW + floor.getName() + ": " + regionType + " " + vectorAsString(minPos)
+					.append(ChatColor.DARK_GRAY + " - " + ChatColor.YELLOW + floor.getName() + ": " + getRegionTypeName(region) + " " + vectorAsString(minPos)
 							+ " -> " + vectorAsString(maxPos)).append('\n');
 		}
 
 		builder.append(ChatColor.GOLD + "| ")
 				.append(ChatColor.BLUE + i18n.getString(Messages.Command.DEATH_ZONES) + ": " + ChatColor.YELLOW + deathzones.size()).append('\n');
 
-		for (CuboidRegion deathzone : deathzones) {
-			Vector minPos = deathzone.getMinimumPoint();
-			Vector maxPos = deathzone.getMaximumPoint();
+		for (Entry<String, Region> entry : deathzones.entrySet()) {
+			String name = entry.getKey();
+			Region region = entry.getValue();
+			
+			Vector minPos = region.getMinimumPoint();
+			Vector maxPos = region.getMaximumPoint();
 
 			builder.append(ChatColor.GOLD + "| ")
-					.append(ChatColor.DARK_GRAY + " - " + ChatColor.YELLOW + i18n.getString(Messages.Command.CUBOID) + " " + vectorAsString(minPos)
+					.append(ChatColor.DARK_GRAY + " - " + ChatColor.YELLOW + name + ": " + getRegionTypeName(region) + ", " + vectorAsString(minPos)
 							+ " -> " + vectorAsString(maxPos)).append('\n');
 		}
 
@@ -135,6 +129,19 @@ public class CommandInfo {
 
 		builder.append(ChatColor.GOLD + "----------------------------------");
 		sender.sendMessage(builder.toString());
+	}
+	
+	private String getRegionTypeName(Region region) {
+		String regionType = null;
+		if (region instanceof CuboidRegion) {
+			regionType = i18n.getString(Messages.Command.CUBOID);
+		} else if (region instanceof CylinderRegion) {
+			regionType = i18n.getString(Messages.Command.CYLINDRICAL);
+		} else if (region instanceof Polygonal2DRegion) {
+			regionType = i18n.getString(Messages.Command.POLYGONAL);
+		}
+		
+		return regionType;
 	}
 	
 	private String vectorAsString(Vector vector) {
