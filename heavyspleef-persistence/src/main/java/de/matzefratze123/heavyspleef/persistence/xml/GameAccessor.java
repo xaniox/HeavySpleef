@@ -24,14 +24,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.dom4j.Element;
 
-import com.sk89q.worldedit.Vector;
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
+import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.FlagManager;
 import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
@@ -43,9 +45,19 @@ import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.persistence.RegionType;
 
 public class GameAccessor extends XMLAccessor<Game> {
 
+	private static final Map<Class<? extends Region>, XMLRegionMetadataCodec<?>> METADATA_CODECS;
+	
+	static {
+		METADATA_CODECS = Maps.newConcurrentMap();
+		METADATA_CODECS.put(CuboidRegion.class, new CuboidRegionXMLCodec());
+		METADATA_CODECS.put(CylinderRegion.class, new CylinderRegionXMLCodec());
+		METADATA_CODECS.put(Polygonal2DRegion.class, new Polygonal2DRegionXMLCodec());
+	}
+	
 	private HeavySpleef heavySpleef;
 	private FlagRegistry flagRegistry;
 	
@@ -59,6 +71,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 		return Game.class;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void write(Game game, Element element) {
 		element.addAttribute("name", game.getName());
@@ -100,34 +113,20 @@ public class GameAccessor extends XMLAccessor<Game> {
 			extension.marshal(extensionElement);
 		}
 		
-		Set<CuboidRegion> deathzones = game.getDeathzones();
+		Map<String, Region> deathzones = game.getDeathzones();
 		Element deathzonesElement = element.addElement("deathzones");
-		for (CuboidRegion deathzone : deathzones) {
+		for (Entry<String, Region> entry : deathzones.entrySet()) {
+			String name = entry.getKey();
+			Region deathzone = entry.getValue();
+			RegionType type = RegionType.byRegionType(deathzone.getClass());
+			
 			Element deathzoneElement = deathzonesElement.addElement("deathzone");
-			addCoordinateSet(deathzone.getPos1(), deathzoneElement);
-			addCoordinateSet(deathzone.getPos2(), deathzoneElement);
+			deathzoneElement.addAttribute("name", name);
+			deathzoneElement.addAttribute("regiontype", type.getPersistenceName());
+			
+			XMLRegionMetadataCodec<Region> metadataCodec = (XMLRegionMetadataCodec<Region>) METADATA_CODECS.get(deathzone.getClass());
+			metadataCodec.apply(deathzoneElement, deathzone);
 		}
-	}
-	
-	private void addCoordinateSet(Vector vector, Element element) {
-		Element set = element.addElement("coordinateSet");
-		
-		Element xElement = set.addElement("x");
-		xElement.addText(String.valueOf(vector.getBlockX()));
-		
-		Element yElement = set.addElement("y");
-		yElement.addText(String.valueOf(vector.getBlockY()));
-		
-		Element zElement = set.addElement("z");
-		zElement.addText(String.valueOf(vector.getBlockZ()));
-	}
-	
-	private Vector getCoordinateSet(Element element) {
-		int x = Integer.parseInt(element.elementText("x"));
-		int y = Integer.parseInt(element.elementText("y"));
-		int z = Integer.parseInt(element.elementText("z"));
-		
-		return new Vector(x, y, z);
 	}
 	
 	private Object getPropertyValue(String type, String valueString) {
@@ -239,16 +238,14 @@ public class GameAccessor extends XMLAccessor<Game> {
 		List<Element> deathzoneElementList = deathzonesElement.elements("deathzone");
 		
 		for (Element deathzoneElement : deathzoneElementList) {
-			List<Element> coodinateSetElements = deathzoneElement.elements("coordinateSet");
-			if (coodinateSetElements.size() < 2) {
-				throw new RuntimeException("deathzone must contain at least two coordinate sets");
-			}
+			String deathzoneName = deathzoneElement.attributeValue("name");
+			String persistenceName = deathzoneElement.attributeValue("regiontype");
+			RegionType regionType = RegionType.byPersistenceName(persistenceName);
 			
-			Vector pos1 = getCoordinateSet(coodinateSetElements.get(0));
-			Vector pos2 = getCoordinateSet(coodinateSetElements.get(1));
+			XMLRegionMetadataCodec<Region> metadataCodec = (XMLRegionMetadataCodec<Region>) METADATA_CODECS.get(regionType.getRegionClass());
+			Region region = metadataCodec.asRegion(deathzoneElement);
 			
-			CuboidRegion region = new CuboidRegion(pos1, pos2);
-			game.addDeathzone(region);
+			game.addDeathzone(deathzoneName, region);
 		}
 		
 		return game;
