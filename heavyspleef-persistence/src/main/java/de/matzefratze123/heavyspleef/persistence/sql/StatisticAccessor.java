@@ -53,7 +53,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		schema.put(ColumnContract.KNOCKOUTS, new Field(Type.INT));
 		schema.put(ColumnContract.GAMES_PLAYED, new Field(Type.INT));
 		schema.put(ColumnContract.TIME_PLAYED, new Field(Type.BIGINT));
-		schema.put(ColumnContract.POINTS, new Field(Type.INT));
+		schema.put(ColumnContract.RATING, new Field(Type.DOUBLE));
 		
 		return schema;
 	}
@@ -120,7 +120,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		builder.append(ColumnContract.KNOCKOUTS).append(", ");
 		builder.append(ColumnContract.GAMES_PLAYED).append(", ");
 		builder.append(ColumnContract.TIME_PLAYED).append(", ");
-		builder.append(ColumnContract.POINTS);
+		builder.append(ColumnContract.RATING);
 	}
 	
 	private void setValues(PreparedStatement statement, Statistic statistic, boolean addUniqueColumns) throws SQLException {
@@ -135,7 +135,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		statement.setInt(index++, statistic.getKnockouts());
 		statement.setInt(index++, statistic.getGamesPlayed());
 		statement.setLong(index++, statistic.getTimePlayed());
-		statement.setInt(index++, statistic.getPoints());
+		statement.setDouble(index++, statistic.getRating());
 	}
 
 	@Override
@@ -171,14 +171,14 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		int knockouts = result.getInt(ColumnContract.KNOCKOUTS);
 		int gamesPlayed = result.getInt(ColumnContract.GAMES_PLAYED);
 		long timePlayed = result.getLong(ColumnContract.TIME_PLAYED);
-		int points = result.getInt(ColumnContract.POINTS);
+		int rating = result.getInt(ColumnContract.RATING);
 		
 		statistic.setWins(wins);
 		statistic.setLosses(losses);
 		statistic.setKnockouts(knockouts);
 		statistic.setGamesPlayed(gamesPlayed);
 		statistic.setTimePlayed(timePlayed);
-		statistic.setPoints(points);
+		statistic.setRating(rating);
 		
 		return statistic;
 	}
@@ -217,9 +217,9 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		public static final String KNOCKOUTS = "knockouts";
 		public static final String GAMES_PLAYED = "games_played";
 		public static final String TIME_PLAYED = "time_played";
-		public static final String POINTS = "points";
+		public static final String RATING = "rating";
 		
-		public static final String[] ALL_COLUMNS = {UUID, WINS, LOSSES, KNOCKOUTS, GAMES_PLAYED, TIME_PLAYED, POINTS};
+		public static final String[] ALL_COLUMNS = {UUID, WINS, LOSSES, KNOCKOUTS, GAMES_PLAYED, TIME_PLAYED, RATING};
 		
 	}
 

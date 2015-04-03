@@ -30,7 +30,7 @@ public class Statistic implements Comparable<Statistic> {
 	private int knockouts;
 	private int gamesPlayed;
 	private long timePlayed;
-	private int points;
+	private double rating;
 	
 	public Statistic() {}
 	
@@ -82,17 +82,17 @@ public class Statistic implements Comparable<Statistic> {
 		this.timePlayed = timePlayed;
 	}
 	
-	public int getPoints() {
-		return points;
+	public double getRating() {
+		return rating;
 	}
 	
-	public void setPoints(int points) {
-		this.points = points;
+	public void setRating(double rating) {
+		this.rating = rating;
 	}
 	
 	@Override
 	public int compareTo(Statistic o) {
-		return Integer.valueOf(points).compareTo(o.points);
+		return Double.valueOf(rating).compareTo(o.rating);
 	}
 	
 }
