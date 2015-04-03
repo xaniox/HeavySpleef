@@ -60,7 +60,11 @@ public interface Messages {
 		public static final String FLOOR_ADDED = PREFIX +"floor-added";
 		public static final String FLOOR_NOT_PRESENT = PREFIX + "floor-not-present";
 		public static final String FLOOR_REMOVED = PREFIX + "floor-removed";
-		public static final String FLOOR_VISUALIZED = PREFIX + "floor-visualized";
+		public static final String REGION_VISUALIZED = PREFIX + "deathzone-not-present";
+		
+		public static final String DEATHZONE_NOT_PRESENT = PREFIX + "deathzone-not-present";
+		public static final String DEATHZONE_REMOVED = PREFIX + "deathzone-removed";
+		public static final String DEATHZONE_ADDED = PREFIX + "deathzone-added";
 		
 		public static final String BLOCK_NOT_A_SIGN = PREFIX + "block-not-a-sign";
 		public static final String CLICK_ON_SIGN_TO_ADD_WALL = PREFIX + "click-on-sign-to-add-wall";
@@ -169,6 +173,9 @@ public interface Messages {
 			public static final String SHOWFLOOR = PREFIX + "showfloor";
 			public static final String ADDWALL = PREFIX + "addwall";
 			public static final String REMOVEWALL = PREFIX + "removewall";
+			public static final String ADDDEATHZONE = PREFIX + "adddeathzone";
+			public static final String REMOVEDEATHZONE = PREFIX + "removedeathzone";
+			public static final String SHOWDEATHZONE = PREFIX + "showdeathzone";
 			
 		}
 		

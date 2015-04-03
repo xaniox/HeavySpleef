@@ -37,7 +37,11 @@ command:
   floor-added: "The floor with the name $[floorname] was added"
   floor-not-present: "A floor with the name $[floorname] does not exist"
   floor-removed: "The floor with the name $[floorname] was removed"
-  floor-visualized: "The floor is now displayed"
+  region-visualized: "The region is now being visualized"
+  
+  deathzone-not-present: "A deathzone with this name does not exist"
+  deathzone-removed: "The deathzone with the name $[deathzonename] has been removed"
+  deathzone-added: "A deathzone with the name $[deathzonename] has been added"
   
   block-not-a-sign: "The block you clicked is not a sign"
   click-on-sign-to-add-wall: "Click on a row of signs to add them as a lobby-wall"
@@ -113,9 +117,12 @@ help:
     stop: "Stops the current game or one with a name"
     addfloor: "Adds a floor to the game with an optional name"
     removefloor: "Removes the floor with a name from the game"
-    showfloor: "Visually identifies a floor in the world with a name"
+    showfloor: "Visually identifies a floor in the world"
     addwall: "Adds a wall consisting of signs to show the status of a particular game by clicking it"
     removewall: "Removes a wall by clicking it"
+    adddeathzone: "Adds a deathzone to the game"
+    removedeathzone: "Removes a deathzone from a game"
+    showdeathzone: "Visually identifies a deathzone in the world"
 arrays:
   team-color-array:
   - "White"

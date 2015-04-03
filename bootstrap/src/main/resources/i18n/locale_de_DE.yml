@@ -37,7 +37,11 @@ command:
   floor-added: "Die Ebene mit dem Namen $[floorname] wurde hinzugefügt"
   floor-not-present: "Eine Ebene mit dem Namen $[floorname] existiert nicht"
   floor-removed: "Die Ebene mit dem Namen $[floorname] wurde entfernt"
-  floor-visualized: "Die Ebene wird nun angezeigt"
+  region-visualized: "Die Region wird nun visualisiert dargestellt"
+  
+  deathzone-not-present: "Eine Todeszone mit diesem Namen existiert nicht"
+  deathzone-removed: "Die Todeszone mit dem Namen $[deathzonename] wurde entfernt"
+  deathzone-added: "Eine Todeszone mit dem Namen $[deathzonename] wurde zum Spiel hinzugefügt"
   
   block-not-a-sign: "Der von dir angeklickte Block ist kein Schild"
   click-on-sign-to-add-wall: "Klicke auf eine Reihe Schilder um sie als eine Lobby-Mauer hinzuzufügen"
@@ -113,9 +117,12 @@ help:
     stop: "Stoppt das jetzige Spiel oder eines mit Namen"
     addfloor: "Fügt eine Ebene mit optionalen Namen dazu"
     removefloor: "Entfernt eine Ebene mit Namen"
-    showfloor: "Identifiziert eine Ebene visuell in der Welt mit Namen"
+    showfloor: "Identifiziert eine Ebene visuell in der Welt"
     addwall: "Fügt eine Mauer aus Schildern hinzu um den Status des Spiels anzuzeigen"
     removewall: "Entfernt eine Lobby-Mauer durch Klicken"
+    adddeathzone: "Fügt dem Spiel eine Todeszone hinzu"
+    removedeathzone: "Entfernt eine Todeszone von einem Spiel"
+    showdeathzone: "Identifiziert eine Todeszone visuell in der Welt"
 arrays:
   team-color-array:
   - "Weiß"
