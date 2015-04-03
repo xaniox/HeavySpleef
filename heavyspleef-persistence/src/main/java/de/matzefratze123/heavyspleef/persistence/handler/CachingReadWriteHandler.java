@@ -61,10 +61,7 @@ import de.matzefratze123.heavyspleef.persistence.xml.GameAccessor;
 import de.matzefratze123.heavyspleef.persistence.xml.XMLContext;
 
 public class CachingReadWriteHandler implements ReadWriteHandler {
-	
-	public static final String AVAJE_ORM_DATABASE = "avaje_orm";
-	public static final String XML_DATABASE = "xml";
-	
+		
 	private static final long STATISTIC_CACHE_EXPIRE = 10 * 60 * 1000L;
 	private static final FilenameFilter FLOOR_SCHEMATIC_FILTER = new FilenameFilter() {
 		
