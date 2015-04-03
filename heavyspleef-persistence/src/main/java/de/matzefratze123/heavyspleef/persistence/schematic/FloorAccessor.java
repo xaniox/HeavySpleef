@@ -58,17 +58,18 @@ import com.sk89q.worldedit.world.World;
 
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
+import de.matzefratze123.heavyspleef.persistence.RegionType;
 
 public class FloorAccessor extends SchematicAccessor<Floor> {
 
 	private static final String ROOT_TAG_NAME = "floor-schematic";
-	private static final Map<Class<? extends Region>, RegionMetadataCodec<?>> METADATA_CODECS;
+	private static final Map<Class<? extends Region>, SchematicRegionMetadataCodec<?>> METADATA_CODECS;
 	
 	static {
 		METADATA_CODECS = Maps.newConcurrentMap();
-		METADATA_CODECS.put(CuboidRegion.class, new CuboidRegionMetadataCodec());
-		METADATA_CODECS.put(CylinderRegion.class, new CylinderRegionMetadataCodec());
-		METADATA_CODECS.put(Polygonal2DRegion.class, new Polygonal2DRegionMetadataCodec());
+		METADATA_CODECS.put(CuboidRegion.class, new CuboidRegionSchematicCodec());
+		METADATA_CODECS.put(CylinderRegion.class, new CylinderRegionSchematicCodec());
+		METADATA_CODECS.put(Polygonal2DRegion.class, new Polygonal2DRegionSchematicCodec());
 	}
 	
 	//Lock for bukkit related calls
@@ -117,9 +118,10 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		ListTag originTag = new ListTag(IntTag.class, originCoordinateList);
 		
 		// Also save region specific data (class name, attributes)
-		StringTag regionTypeTag = new StringTag(region.getClass().getName());
+		RegionType regionType = RegionType.byRegionType(region.getClass());
+		StringTag regionTypeTag = new StringTag(regionType.getPersistenceName());
 		Map<String, Tag> metadataMap = Maps.newHashMap();
-		RegionMetadataCodec<Region> metadataCodec = (RegionMetadataCodec<Region>) METADATA_CODECS.get(region.getClass());
+		SchematicRegionMetadataCodec<Region> metadataCodec = (SchematicRegionMetadataCodec<Region>) METADATA_CODECS.get(region.getClass());
 		metadataCodec.apply(metadataMap, region);
 		
 		CompoundTag metadataTag = new CompoundTag(metadataMap);
@@ -316,16 +318,11 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 		}
 		
 		String regionTypeName = getChildTag(childs, "regiontype", StringTag.class).getValue();
-		Class<? extends Region> regionClass;
-		
-		try {
-			regionClass = (Class<? extends Region>) Class.forName(regionTypeName);
-		} catch (ClassNotFoundException e1) {
-			throw new CodecException("The region type " + regionTypeName + " is not available (is the class loaded?)");
-		}
+		RegionType regionType = RegionType.byPersistenceName(regionTypeName);
+		Class<? extends Region> regionClass = regionType.getRegionClass();
 		
 		Map<String, Tag> metadataMap = getChildTag(childs, "metadata", CompoundTag.class).getValue();
-		RegionMetadataCodec<Region> metadataCodec = (RegionMetadataCodec<Region>) METADATA_CODECS.get(regionClass);
+		SchematicRegionMetadataCodec<Region> metadataCodec = (SchematicRegionMetadataCodec<Region>) METADATA_CODECS.get(regionClass);
 		Region region = metadataCodec.asRegion(metadataMap);
 		region.setWorld(world);
 		
