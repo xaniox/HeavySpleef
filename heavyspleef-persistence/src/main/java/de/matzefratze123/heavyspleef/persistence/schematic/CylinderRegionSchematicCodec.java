@@ -28,7 +28,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;
 import com.sk89q.worldedit.regions.CylinderRegion;
 
-public class CylinderRegionMetadataCodec implements RegionMetadataCodec<CylinderRegion> {
+public class CylinderRegionSchematicCodec implements SchematicRegionMetadataCodec<CylinderRegion> {
 
 	@Override
 	public void apply(Map<String, Tag> tags, CylinderRegion region) {

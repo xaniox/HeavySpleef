@@ -27,7 +27,7 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 
-public class Polygonal2DRegionMetadataCodec implements RegionMetadataCodec<Polygonal2DRegion> {
+public class Polygonal2DRegionSchematicCodec implements SchematicRegionMetadataCodec<Polygonal2DRegion> {
 
 	@Override
 	public void apply(Map<String, Tag> tags, Polygonal2DRegion region) {

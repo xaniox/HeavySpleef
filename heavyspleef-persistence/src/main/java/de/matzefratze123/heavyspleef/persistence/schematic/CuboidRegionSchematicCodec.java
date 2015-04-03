@@ -27,7 +27,7 @@ import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
 
-public class CuboidRegionMetadataCodec implements RegionMetadataCodec<CuboidRegion> {
+public class CuboidRegionSchematicCodec implements SchematicRegionMetadataCodec<CuboidRegion> {
 
 	@Override
 	public void apply(Map<String, Tag> tags, CuboidRegion region) {
