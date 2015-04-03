@@ -91,7 +91,9 @@ public final class HeavySpleef {
 	@Getter
 	private PlayerManager playerManager;
 	@Getter
-	private BukkitListener listener;
+	private BukkitListener bukkitListener;
+	@Getter
+	private RegionVisualizer regionVisualizer;
 	
 	@Getter
 	private PlayerPostActionHandler postActionHandler;
@@ -112,25 +114,27 @@ public final class HeavySpleef {
 		flagDir.mkdirs();
 		flagRegistry = new FlagRegistry(this, flagDir);
 		
-		this.configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
+		configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
 		
 		Map<ConfigType, Object[]> configArgs = new EnumMap<ConfigType, Object[]>(ConfigType.class);
 		configArgs.put(ConfigType.DATABASE_CONFIG, new Object[] { getDataFolder() });
 		
 		prepareConfigurations(configArgs);
 		
-		this.moduleManager = new ModuleManager();
+		moduleManager = new ModuleManager();
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		I18N.initialize(defaultConfig.getLocalization().getLocale(), localeDir, logger);
 		
-		this.playerManager = new PlayerManager(plugin);
-		this.hookManager = new HookManager();
+		playerManager = new PlayerManager(plugin);
+		hookManager = new HookManager();
 		
 		hookManager.registerHook(HookReference.VAULT);
 		hookManager.registerHook(HookReference.WORLDEDIT);
 		
-		this.postActionHandler = new PlayerPostActionHandler(this);
+		postActionHandler = new PlayerPostActionHandler(this);
+		
+		regionVisualizer = new RegionVisualizer(getPlugin());
 	}
 	
 	public void enable() {
@@ -155,7 +159,7 @@ public final class HeavySpleef {
 			}
 		});
 		
-		listener = new BukkitListener(playerManager, gameManager, plugin);
+		bukkitListener = new BukkitListener(playerManager, gameManager, plugin);
 		BasicTask loseCheckTask = new LoseCheckerTask(plugin, gameManager);
 		loseCheckTask.start();
 	}

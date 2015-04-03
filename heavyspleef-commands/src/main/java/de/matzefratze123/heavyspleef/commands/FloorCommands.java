@@ -17,21 +17,9 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
-import java.util.Iterator;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
-import com.google.common.collect.Maps;
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
@@ -57,6 +45,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.RegionVisualizer;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
@@ -67,7 +56,6 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class FloorCommands {
 	
 	private final I18N i18n = I18N.getInstance();
-	private FloorVisualizationManager visualizationManager;
 	
 	@Command(name = "addfloor", permission = "heavyspleef.addfloor", minArgs = 1,
 			descref = Messages.Help.Description.ADDFLOOR,
@@ -180,10 +168,6 @@ public class FloorCommands {
 		Player player = context.getSender();
 		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
 		
-		if (visualizationManager == null) {
-			visualizationManager = new FloorVisualizationManager(heavySpleef.getPlugin());
-		}
-		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
@@ -199,107 +183,10 @@ public class FloorCommands {
 				.toString());
 		
 		Floor floor = game.getFloor(floorName);
-		visualizationManager.visualize(floor, spleefPlayer);
-		player.sendMessage(i18n.getString(Messages.Command.FLOOR_VISUALIZED));
-	}
-	
-	private class FloorVisualizationManager {
-	
-		private static final long DELAY = 0L;
-		private static final long INTERVAL = 15L;
+		RegionVisualizer visualizer = heavySpleef.getRegionVisualizer();
 		
-		private final JavaPlugin plugin;
-		private final BukkitScheduler scheduler = Bukkit.getScheduler();
-		private final Map<SpleefPlayer, BukkitTask> tasks = Maps.newHashMap();
-		
-		public FloorVisualizationManager(JavaPlugin plugin) {
-			this.plugin = plugin;
-		}
-		
-		public void visualize(Floor floor, SpleefPlayer player) {
-			if (tasks.containsKey(player)) {
-				// There is already another visualization task running for this player
-				// Cancel that task
-				BukkitTask task = tasks.get(player);
-				task.cancel();
-			}
-			
-			FloorVisualizationAnimation animationRunnable = new FloorVisualizationAnimation(floor.getRegion(), player);
-			BukkitTask task = scheduler.runTaskTimer(plugin, animationRunnable, DELAY, INTERVAL);
-			
-			tasks.put(player, task);
-		}
-		
-		private class FloorVisualizationAnimation implements Runnable {
-			
-			private static final byte LIME_WOOL_DATA = 5;
-			private static final byte RED_WOOL_DATA = 14;
-			private static final int REPETITIONS = 10;
-			
-			private int currentRepetitions;
-			private SpleefPlayer player;
-			private Region region;
-			
-			public FloorVisualizationAnimation(Region region, SpleefPlayer player) {
-				this.player = player;
-				this.region = region;
-			}
-			
-			@Override
-			public void run() {
-				boolean finish = !player.isOnline();
-				
-				if (player.isOnline()) {
-					Player bukkitPlayer = player.getBukkitPlayer();
-					
-					// Stores the current wool data
-					byte data;
-					
-					if (currentRepetitions % 2 == 0) {
-						data = LIME_WOOL_DATA;
-					} else {
-						data = RED_WOOL_DATA;
-					}
-					
-					finish = currentRepetitions > REPETITIONS;
-					Iterator<BlockVector> iterator = region.iterator();
-					World world = region.getWorld();
-					
-					while (iterator.hasNext()) {
-						BlockVector vec = iterator.next();
-						
-						org.bukkit.World bukkitWorld = Bukkit.getWorld(world.getName());
-						int x = vec.getBlockX();
-						int y = vec.getBlockY();
-						int z = vec.getBlockZ();
-						
-						Location location = new Location(bukkitWorld, x, y, z);
-						
-						if (!finish) {
-							bukkitPlayer.sendBlockChange(location, Material.WOOL, data);
-						} else {
-							Block block = bukkitWorld.getBlockAt(location);
-							
-							Material material = block.getType();
-							data = block.getData();
-							
-							bukkitPlayer.sendBlockChange(location, material, data);
-						}
-					}
-				}
-				
-				if (finish) {
-					BukkitTask task = tasks.get(player);
-					task.cancel();
-					
-					tasks.remove(player);
-				}
-				
-				++currentRepetitions;
-			}
-			
-		}
-		
+		visualizer.visualize(floor.getRegion(), spleefPlayer, game.getWorld());
+		player.sendMessage(i18n.getString(Messages.Command.REGION_VISUALIZED));
 	}
 
 }
