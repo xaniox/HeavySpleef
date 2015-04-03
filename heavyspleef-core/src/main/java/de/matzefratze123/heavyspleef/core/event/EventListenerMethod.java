@@ -46,6 +46,10 @@ public class EventListenerMethod {
 		this.eventClass = (Class<? extends GameEvent>) eventClass;
 	}
 	
+	public String getMethodName() {
+		return method.getName();
+	}
+	
 	public Class<? extends GameEvent> getDeclaringClass() {
 		return eventClass;
 	}

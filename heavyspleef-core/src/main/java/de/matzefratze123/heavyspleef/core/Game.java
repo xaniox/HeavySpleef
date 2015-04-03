@@ -142,7 +142,7 @@ public class Game {
 		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.deadPlayers = Sets.newLinkedHashSet();
-		this.eventManager = new EventManager();
+		this.eventManager = new EventManager(heavySpleef.getLogger());
 		setGameState(GameState.WAITING);
 		
 		DefaultConfig configuration = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);

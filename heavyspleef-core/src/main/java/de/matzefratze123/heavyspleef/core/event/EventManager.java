@@ -20,14 +20,18 @@ package de.matzefratze123.heavyspleef.core.event;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.common.collect.Sets;
 
 public class EventManager {
 	
+	private final Logger logger;
 	private Set<EventListenerMethod> registeredEventListeners;
 	
-	public EventManager() {
+	public EventManager(Logger logger) {
+		this.logger = logger;
 		this.registeredEventListeners = Sets.newLinkedHashSet();
 	}
 	
@@ -65,7 +69,11 @@ public class EventManager {
 				continue;
 			}
 			
-			method.invoke(event);
+			try {
+				method.invoke(event);
+			} catch (Throwable t) {
+				logger.log(Level.SEVERE, "Could not pass " + event.getClass().getSimpleName() + " to method " + method.getMethodName(), t);
+			}
 		}
 	}
 	
