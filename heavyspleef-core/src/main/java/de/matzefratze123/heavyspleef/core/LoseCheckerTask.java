@@ -26,7 +26,7 @@ import org.bukkit.plugin.Plugin;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
@@ -37,7 +37,7 @@ public class LoseCheckerTask extends SimpleBasicTask {
 	private final GameManager gameManager;
 	
 	public LoseCheckerTask(Plugin plugin, GameManager gameManager) {
-		super(plugin, TaskType.SYNC_REPEATING_TASK, 0L, 10L);
+		super(plugin, TaskType.SYNC_REPEATING_TASK, 0L, 4L);
 		
 		this.gameManager = gameManager;
 	}
@@ -61,10 +61,11 @@ public class LoseCheckerTask extends SimpleBasicTask {
 				} else {
 					Vector playerPos = BukkitUtil.toVector(playerLoc);
 					
-					for (CuboidRegion deathzone : game.getDeathzones()) {
+					for (Region deathzone : game.getDeathzones().values()) {
 						if (deathzone.contains(playerPos)) {
 							//Player is in deathzone, so take him out
 							isDeathCandidate = true;
+							break;
 						}
 					}
 				}
