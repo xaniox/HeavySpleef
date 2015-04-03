@@ -333,12 +333,14 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	}
 
 	@Override
-	public List<Statistic> getTopStatistics(int limit) {
+	public List<Statistic> getTopStatistics(int offset, int limit) {
 		validateSqlDatabaseSetup();
 		
+		String limitStr = offset == 0 ? String.valueOf(limit) : offset + "," + limit;
+		
 		SQLQueryOptionsBuilder optionsBuilder = SQLQueryOptionsBuilder.newBuilder()
-				.limit(limit)
-				.sortBy(StatisticAccessor.ColumnContract.POINTS);
+				.limit(limitStr)
+				.sortBy(StatisticAccessor.ColumnContract.RATING);
 		List<Statistic> result;
 		
 		try {

@@ -176,12 +176,12 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	}
 
 	@Override
-	public ListenableFuture<List<Statistic>> getTopStatistics(final int limit, FutureCallback<List<Statistic>> callback) {
+	public ListenableFuture<List<Statistic>> getTopStatistics(final int offset, final int limit, FutureCallback<List<Statistic>> callback) {
 		return runCallableThreadDynamic(new Callable<List<Statistic>>() {
 
 			@Override
 			public List<Statistic> call() throws Exception {
-				return delegate.getTopStatistics(limit);
+				return delegate.getTopStatistics(offset, limit);
 			}
 		}, callback);
 	}

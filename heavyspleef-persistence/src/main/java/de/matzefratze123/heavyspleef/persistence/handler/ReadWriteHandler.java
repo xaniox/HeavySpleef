@@ -43,6 +43,6 @@ public interface ReadWriteHandler {
 	
 	public Statistic getStatistic(String playerName);
 
-	public List<Statistic> getTopStatistics(int limit);
+	public List<Statistic> getTopStatistics(int offset, int limit);
 	
 }

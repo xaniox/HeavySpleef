@@ -46,6 +46,6 @@ public interface AsyncReadWriteHandler {
 	
 	public ListenableFuture<Statistic> getStatistic(UUID uuid, FutureCallback<Statistic> callback);
 	
-	public ListenableFuture<List<Statistic>> getTopStatistics(int limit, FutureCallback<List<Statistic>> callback);
+	public ListenableFuture<List<Statistic>> getTopStatistics(int offset, int limit, FutureCallback<List<Statistic>> callback);
 	
 }
