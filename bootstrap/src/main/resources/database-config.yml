@@ -9,6 +9,12 @@
 database-modules:
   statistics:
     enabled: true
+	
+    # For experts only
+    # Specify the maximim account of statistics
+    # which will be cached (other statistics will be evicted from
+    # the cache and need to be loaded again from the database)
+    max-cache-size: 1024
 
 # This is for advanced users only.
 # HeavySpleef automatically handles
@@ -36,15 +42,15 @@ persistence-connection:
     # Database connection url
     #
     # MySQL scheme: "jdbc:mysql://{host}/{database}"
-    # MySQL example: "jdbc:mysql://localhost/heavyspleef"
+    # MySQL example: "jdbc:mysql://localhost:3306/heavyspleef"
     #
-    # SQLite scheme: "jdbc:sqlite://{path-to-file}"
-    # SQLite example: "jdbc:sqlite://{basedir}/persistence/database.db"
+    # SQLite scheme: "jdbc:sqlite:{path-to-file}"
+    # SQLite example: "jdbc:sqlite:{basedir}/persistence/database.sqlite"
     #
-    url: "jdbc:sqlite:{basedir}/persistence/database.db"
+    url: "jdbc:sqlite:{basedir}/persistence/database.sqlite"
     
     # Set this to true if you use an authentication based sql database
-    # (for instance MySQL)
+    # (MySQL for instance)
     use-authentication: false
     
     # Specify an database user for use with MySQL
