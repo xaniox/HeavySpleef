@@ -57,6 +57,14 @@
               <pattern>snaq</pattern>
               <shadedPattern>de.matzefratze123.heavyspleef.lib.snaq</shadedPattern>
             </relocation>
+            <relocation>
+              <pattern>com.google.commons</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.com.google.commons</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.poly2tri</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.org.poly2tri</shadedPattern>
+            </relocation>
           </relocations>
           <transformers>
             <transformer implementation="de.matzefratze123.resource.RenameResourceTransformer">
