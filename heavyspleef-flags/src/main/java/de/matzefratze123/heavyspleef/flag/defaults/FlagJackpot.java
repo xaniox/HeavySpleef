@@ -22,7 +22,7 @@ import java.util.List;
 import net.milkbowl.vault.economy.Economy;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
-import de.matzefratze123.heavyspleef.core.event.GameWinEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -45,7 +45,7 @@ public class FlagJackpot extends BooleanFlag {
 	}
 	
 	@GameListener
-	public void onPlayerWin(GameWinEvent event) {
+	public void onPlayerWin(PlayerWinGameEvent event) {
 		SpleefPlayer[] winners = event.getWinners();
 		FlagEntryFee flagEntryFee = (FlagEntryFee) getParent();
 		
