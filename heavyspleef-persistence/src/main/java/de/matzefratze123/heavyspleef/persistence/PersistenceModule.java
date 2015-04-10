@@ -37,14 +37,16 @@ public class PersistenceModule extends SimpleModule {
 	private static final String SCHEMATIC_CONNECTION_IDENTIFIER = "schematic";
 	private static final String SQL_CONNECTION_IDENTIFIER = "sql";
 	
+	private final File defaultPersistenceDir;
 	private final File defaultXmlDir;
 	private final File defaultSchematicDir;
 	
 	public PersistenceModule(HeavySpleef heavySpleef) {
 		super(heavySpleef);
 		
-		defaultXmlDir = new File(heavySpleef.getDataFolder(), "persistence/games/xml");
-		defaultSchematicDir = new File(heavySpleef.getDataFolder(), "persistence/games/schematic");
+		defaultPersistenceDir = new File(heavySpleef.getDataFolder(), "persistence");
+		defaultXmlDir = new File(defaultPersistenceDir, "games/xml");
+		defaultSchematicDir = new File(defaultPersistenceDir, "games/schematic");
 	}
 
 	@Override
@@ -55,6 +57,7 @@ public class PersistenceModule extends SimpleModule {
 		DatabaseConfig config = heavySpleef.getConfiguration(ConfigType.DATABASE_CONFIG);
 		Properties properties = new Properties();
 		properties.put("statistic.enabled", config.isStatisticsModuleEnabled());
+		properties.put("statistic.max_cache_size", config.getMaxStatisticCacheSize());
 		
 		DatabaseConnection xmlConn = config.getConnection(XML_CONNECTION_IDENTIFIER);
 		String xmlDirString = xmlConn.getString("dir");

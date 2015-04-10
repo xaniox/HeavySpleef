@@ -37,14 +37,20 @@ import org.bukkit.material.MaterialData;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
+import de.matzefratze123.heavyspleef.core.RatingCompute;
+import de.matzefratze123.heavyspleef.core.Statistic;
+import de.matzefratze123.heavyspleef.core.StatisticRecorder;
+import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameListener.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
@@ -82,11 +88,15 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	private static final String TEAM_SELECT_ITEM_KEY = "team_select";
 	
 	private Map<SpleefPlayer, TeamColor> players;
+	private Map<SpleefPlayer, TeamColor> deadPlayers;
+	private List<TeamColor> deadTeams;
 	private boolean updateInventory;
 	private GuiInventory teamChooser;
 	
 	public FlagTeam() {
 		players = Maps.newHashMap();
+		deadPlayers = Maps.newLinkedHashMap();
+		deadTeams = Lists.newArrayList();
 		updateInventory = true;
 	}
 	
@@ -110,9 +120,22 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		description.add("Enables team games in spleef.");
 	}
 	
+	@Override
+	public void onFlagAdd(Game game) {
+		StatisticRecorder recorder = game.getStatisticRecorder();
+		RatingCompute compute = new TeamRatingCompute();
+		recorder.setRatingCompute(compute);
+	}
+	
+	@Override
+	public void onFlagRemove(Game game) {
+		StatisticRecorder recorder = game.getStatisticRecorder();
+		recorder.setRatingCompute(null);
+	}
+	
 	private void updateInventory(Game game) {
 		List<Integer> slots = getInventoryLayout();
-		GuiInventory inventory = new GuiInventory(getHeavySpleef().getPlugin(), 1, "Team selection") { //TODO Add message
+		GuiInventory inventory = new GuiInventory(getHeavySpleef().getPlugin(), 1, getI18N().getString(Messages.Player.TEAM_SELECTOR_TITLE)) {
 			
 			@Override
 			public void onClick(GuiClickEvent event) {
@@ -263,7 +286,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	}
 	
 	@GameListener
-	public void onPlayerLose(PlayerLoseGameEvent event) {
+	public void onPlayerLose(PlayerLeaveGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		TeamColor color = players.get(player);
 		
@@ -272,9 +295,11 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 		
 		players.remove(player);
+		deadPlayers.put(player, color);
 		int size = size(color);
 		
 		if (size <= 0) {
+			deadTeams.add(color);
 			event.getGame().broadcast(getI18N().getVarString(Messages.Broadcast.TEAM_IS_OUT)
 					.setVariable("color", getLocalizedColorName(color))
 					.toString());
@@ -299,6 +324,12 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			
 			event.getGame().requestWin(left);
 		}
+	}
+	
+	@GameListener(priority = Priority.HIGH)
+	public void onGameEnd(GameEndEvent event) {
+		deadPlayers.clear();
+		deadTeams.clear();
 	}
 	
 	private String getLocalizedColorName(TeamColor color) {
@@ -374,6 +405,103 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			}
 			
 			return values()[index];
+		}
+		
+	}
+	
+	private class TeamRatingCompute implements RatingCompute {
+		
+		@Override
+		public RatingResult compute(Map<String, Statistic> statistics, Game game, SpleefPlayer[] winnersArray) {
+			Map<TeamColor, Double> ratings = Maps.newHashMap();
+			Map<String, Double> results = Maps.newHashMap();
+			
+			for (TeamColor color : getValue()) {
+				Set<SpleefPlayer> subSet = getDeadPlayersByTeam(color);
+				
+				double averageRating = 0;
+				int counter = 0;
+				
+				for (SpleefPlayer player : subSet) {
+					Statistic statistic = statistics.get(player.getName());
+					if (statistic == null) {
+						continue;
+					}
+					
+					averageRating += statistic.getRating();
+					counter++;
+				}
+				
+				averageRating /= counter;
+				ratings.put(color, averageRating);
+			}
+			
+			for (Entry<TeamColor, Double> entry : ratings.entrySet()) {
+				TeamColor teamColor = entry.getKey();
+				
+				double expectation = e(ratings, teamColor);
+				double score = s(getPlace(teamColor), ratings.size());
+				
+				double ratingDif = K * (score - expectation);
+				
+				for (SpleefPlayer player : getDeadPlayersByTeam(teamColor)) {
+					Statistic statistic = statistics.get(player.getName());
+					
+					results.put(player.getName(), statistic.getRating() + ratingDif);
+				}
+			}
+			
+			return new RatingResult(results);
+		}
+		
+		private Set<SpleefPlayer> getDeadPlayersByTeam(TeamColor color) {
+			Set<SpleefPlayer> subSet = Sets.newHashSet();
+			for (Entry<SpleefPlayer, TeamColor> entry : deadPlayers.entrySet()) {
+				if (entry.getValue() != color) {
+					continue;
+				}
+				
+				subSet.add(entry.getKey());
+			}
+			
+			return subSet;
+		}
+		
+		private int getPlace(TeamColor color) {
+			for (int i = 0; i < deadTeams.size(); i++) {
+				TeamColor deadTeam = deadTeams.get(i);
+				
+				if (deadTeam == color) {
+					return deadTeams.size() - i;
+				}
+			}
+			
+			throw new IllegalArgumentException("Dead team list has does not contain a team with the color " + color.name());
+		}
+		
+		private double e(Map<TeamColor, Double> ratings, TeamColor color) {
+			double sumE = 0;
+			for (Entry<TeamColor, Double> entry : ratings.entrySet()) {
+				if (entry.getKey() == color) {
+					continue;
+				}
+				
+				double dif = ratings.get(entry.getKey()) - ratings.get(color);
+				if (dif > D) {
+					dif = D;
+				} else if (dif < -D) {
+					dif = -D;
+				}
+				
+				sumE += 1D / (1 + Math.pow(10, dif / D));
+			}
+			
+			final int size = ratings.size();
+			return sumE / ((size * (size - 1)) / 2);
+		}
+		
+		private double s(int place, int numTeams) {
+			return (double) (numTeams - place) / ((numTeams * (numTeams - 1)) / 2);
 		}
 		
 	}

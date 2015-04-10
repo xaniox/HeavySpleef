@@ -17,32 +17,46 @@
  */
 package de.matzefratze123.heavyspleef.persistence.handler;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
+import org.dom4j.DocumentException;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Statistic;
 
 public interface ReadWriteHandler {
 	
-	public void saveGames(Iterable<Game> iterable);
+	public void saveGames(Iterable<Game> iterable) throws IOException;
 	
-	public void saveGame(Game game);
+	public void saveGame(Game game) throws IOException;
 	
-	public Game getGame(String name);
+	public Game getGame(String name) throws IOException, DocumentException;
 	
-	public List<Game> getGames();
+	public List<Game> getGames() throws IOException, DocumentException;
 	
-	public void deleteGame(Game game);
+	public void deleteGame(Game game) throws IOException;
 	
-	public void saveStatistics(Iterable<Statistic> iterable);
+	public void saveStatistics(Iterable<Statistic> iterable) throws SQLException;
 	
-	public void saveStatistic(Statistic statistic);
+	public void saveStatistic(Statistic statistic) throws SQLException;
 	
-	public Statistic getStatistic(UUID uuid);
+	public Statistic getStatistic(UUID uuid) throws Exception;
 	
-	public Statistic getStatistic(String playerName);
+	public Statistic getStatistic(String playerName) throws Exception;
+	
+	public Integer getStatisticRank(String player) throws Exception;
 
-	public List<Statistic> getTopStatistics(int offset, int limit);
+	public Integer getStatisticRank(UUID uuid) throws Exception;
+
+	public Map<String, Statistic> getStatistics(String[] players) throws Exception;
+	
+	public Map<String, Statistic> getTopStatistics(int offset, int limit) throws SQLException, ExecutionException;
+
+	public void clearCache();
 	
 }

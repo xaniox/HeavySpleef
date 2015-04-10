@@ -107,6 +107,7 @@ public class SpleefCommandManager implements CommandManager {
 	@Command(name = "spleef", usage = "/spleef [sub-command]",
 			description = "Spleef command for HeavySpleef")
 	@NestedCommands(value = {
+			CommandClearCache.class,
 			CommandCreate.class,
 			CommandDelete.class,
 			CommandDisable.class,

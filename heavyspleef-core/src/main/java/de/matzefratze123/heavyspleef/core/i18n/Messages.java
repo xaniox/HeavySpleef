@@ -85,6 +85,18 @@ public interface Messages {
 		public static final String CUBOID = PREFIX + "cuboid";
 		public static final String CYLINDRICAL = PREFIX + "cylindrical";
 		public static final String POLYGONAL = PREFIX + "polygonal";
+
+		public static final String ERROR_ON_STATISTIC_LOAD = PREFIX + "error-on-statistic-load";
+		public static final String TOP_STATISTICS_HEADER = PREFIX + "top-statistics-header";
+		public static final String TOP_STATISTIC_FORMAT = PREFIX + "top-statistics-format";
+		public static final String TOP_STATISTICS_FOOTER = PREFIX + "top-statistics-footer";
+		public static final String TIME_FORMAT = PREFIX + "time-format";
+		
+		public static final String STATISTIC_HEADER = PREFIX + "statistic-header";
+		public static final String STATISTIC_FORMAT = PREFIX + "statistic-format";
+		public static final String STATISTIC_FOOTER = PREFIX + "statistic-footer";
+
+		public static final String STATISTIC_CACHE_CLEARED = PREFIX + "statistic-cache-cleared";
 		
 	}
 	
@@ -154,6 +166,7 @@ public interface Messages {
 			
 			public static final String PREFIX = Help.PREFIX + "description.";
 			
+			public static final String CLEARCACHE = PREFIX + "clearcache";
 			public static final String CREATE = PREFIX + "create";
 			public static final String DELETE = PREFIX + "delete";
 			public static final String DISABLE = PREFIX + "disable";

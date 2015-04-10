@@ -19,18 +19,29 @@ package de.matzefratze123.heavyspleef.core;
 
 import java.util.UUID;
 
-public class Statistic implements Comparable<Statistic> {
+import lombok.Getter;
+import lombok.Setter;
 
-	public static final String UUID_ATTRIBUTE = "uuid";
-	public static final String RATING_ATTRIBUTE = "rating";
+public class Statistic implements Comparable<Statistic>, Rateable {
+
+	private static final double START_RATING = 1000D;
 	
+	@Getter
 	private UUID uniqueIdentifier;
+	@Getter @Setter
 	private int wins;
+	@Getter @Setter
 	private int losses;
+	@Getter @Setter
 	private int knockouts;
+	@Getter @Setter
 	private int gamesPlayed;
+	@Getter @Setter
 	private long timePlayed;
-	private double rating;
+	@Getter @Setter
+	private int blocksBroken;
+	@Getter @Setter
+	private double rating = START_RATING;
 	
 	public Statistic() {}
 	
@@ -38,61 +49,13 @@ public class Statistic implements Comparable<Statistic> {
 		this.uniqueIdentifier = uuid;
 	}
 	
-	public UUID getUniqueIdentifier() {
-		return uniqueIdentifier;
-	}
-	
-	public int getWins() {
-		return wins;
-	}
-	
-	public void setWins(int wins) {
-		this.wins = wins;
-	}
-	
-	public int getLosses() {
-		return losses;
-	}
-	
-	public void setLosses(int losses) {
-		this.losses = losses;
-	}
-	
-	public int getKnockouts() {
-		return knockouts;
-	}
-	
-	public void setKnockouts(int knockouts) {
-		this.knockouts = knockouts;
-	}
-	
-	public int getGamesPlayed() {
-		return gamesPlayed;
-	}
-	
-	public void setGamesPlayed(int gamesPlayed) {
-		this.gamesPlayed = gamesPlayed;
-	}
-	
-	public long getTimePlayed() {
-		return timePlayed;
-	}
-	
-	public void setTimePlayed(long timePlayed) {
-		this.timePlayed = timePlayed;
-	}
-	
-	public double getRating() {
-		return rating;
-	}
-	
-	public void setRating(double rating) {
-		this.rating = rating;
-	}
-	
 	@Override
 	public int compareTo(Statistic o) {
 		return Double.valueOf(rating).compareTo(o.rating);
+	}
+
+	public boolean isEmpty() {
+		return wins == 0 && losses == 0 && knockouts == 0 && gamesPlayed == 0 && timePlayed == 0 && blocksBroken == 0 && rating == START_RATING;
 	}
 	
 }

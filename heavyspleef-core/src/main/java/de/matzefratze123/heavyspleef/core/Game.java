@@ -28,12 +28,13 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.Getter;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -77,17 +79,16 @@ import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
-import de.matzefratze123.heavyspleef.core.event.GameWinEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
+import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionManager;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
@@ -117,22 +118,33 @@ public class Game {
 	private final I18N i18n = I18N.getInstance();
 	
 	private final EditSessionFactory editSessionFactory;
+	@Getter
 	private HeavySpleef heavySpleef;
 	private EventManager eventManager;
 	private Set<SpleefPlayer> ingamePlayers;
-	private Set<SpleefPlayer> deadPlayers;
+	@Getter
+	private List<SpleefPlayer> deadPlayers;
+	@Getter
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
 	private Queue<SpleefPlayer> queuedPlayers;
+	@Getter
 	private CountdownTask countdownTask;
+	@Getter
+	private StatisticRecorder statisticRecorder;
 	
+	@Getter
 	private String name;
+	@Getter
 	private World world;
 	private com.sk89q.worldedit.world.World worldEditWorld;
+	@Getter
 	private FlagManager flagManager;
 	private ExtensionManager extensionManager;
-	private GameState state;
+	@Getter
+	private GameState gameState;
 	private Map<String, Floor> floors;
+	@Getter
 	private Map<String, Region> deathzones;
 	
 	public Game(HeavySpleef heavySpleef, String name, World world) {
@@ -141,8 +153,11 @@ public class Game {
 		this.world = world;
 		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
-		this.deadPlayers = Sets.newLinkedHashSet();
+		this.deadPlayers = Lists.newArrayList();
 		this.eventManager = new EventManager(heavySpleef.getLogger());
+		this.statisticRecorder = new StatisticRecorder(heavySpleef.getDatabaseHandler(), heavySpleef.getLogger());
+		
+		eventManager.registerListener(statisticRecorder);
 		setGameState(GameState.WAITING);
 		
 		DefaultConfig configuration = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
@@ -167,10 +182,6 @@ public class Game {
 	public void setHeavySpleef(HeavySpleef heavySpleef) {
 		Validate.notNull(heavySpleef, "HeavySpleef instance cannot be null");
 		this.heavySpleef = heavySpleef;
-	}
-	
-	public HeavySpleef getHeavySpleef() {
-		return heavySpleef;
 	}
 	
 	public boolean countdown() {
@@ -326,6 +337,7 @@ public class Game {
 		
 		queuedPlayers.addAll(failedToQueue);
 		blocksBroken.clear();
+		deadPlayers.clear();
 		setGameState(GameState.WAITING);
 		
 		//Stop the countdown if necessary
@@ -336,14 +348,14 @@ public class Game {
 	}
 	
 	public void disable() {
-		if (state == GameState.DISABLED) {
+		if (gameState == GameState.DISABLED) {
 			return;
 		}
 		
-		if (state.isGameActive()) {
+		if (gameState.isGameActive()) {
 			//Stop this game before disabling it
 			stop();
-		} else if (state == GameState.LOBBY) {
+		} else if (gameState == GameState.LOBBY) {
 			//Create a copy of current ingame players to prevent
 			//a ConcurrentModificationException
 			Set<SpleefPlayer> ingamePlayersCopy = Sets.newHashSet(ingamePlayers);
@@ -359,7 +371,7 @@ public class Game {
 	}
 	
 	public void enable() {
-		if (state.isGameEnabled()) {
+		if (gameState.isGameEnabled()) {
 			return;
 		}
 		
@@ -408,7 +420,7 @@ public class Game {
 			return;
 		case NOT_SPECIFIED:
 			//Do a state check
-			if (state == GameState.INGAME) {
+			if (gameState == GameState.INGAME) {
 				return;
 			}
 			break;
@@ -461,11 +473,16 @@ public class Game {
 		
 		ingamePlayers.remove(player);
 		
-		if (state == GameState.INGAME) {
+		if (gameState == GameState.INGAME) {
 			deadPlayers.add(player);
 		}
 		
-		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player, cause);
+		SpleefPlayer killer = null;
+		if (cause == QuitCause.LOSE && args.length > 0 && args[0] != null && args[0] instanceof SpleefPlayer) {
+			killer = (SpleefPlayer) args[0];
+		}
+		
+		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player, killer, cause);
 		eventManager.callEvent(event);
 		
 		if (event.isCancelled()) {
@@ -490,7 +507,7 @@ public class Game {
 			player.getBukkitPlayer().teleport(tpLoc);
 		}
 		
-		if (ingamePlayers.size() == 0 && state == GameState.LOBBY) {
+		if (ingamePlayers.size() == 0 && gameState == GameState.LOBBY) {
 			setGameState(GameState.WAITING);
 		}
 		
@@ -528,12 +545,10 @@ public class Game {
 			playerMessage = i18n.getString(Messages.Player.GAME_STOPPED);
 			break;
 		case LOSE:
-			String killer = args.length > 0 && args[0] != null ? (String)args[0] : null;
-			
 			if (killer != null) {
 				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
 						.setVariable("player", player.getName())
-						.setVariable("killer", killer)
+						.setVariable("killer", killer.getName())
 						.toString();
 			} else {
 				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME_UNKNOWN_KILLER)
@@ -566,11 +581,8 @@ public class Game {
 			return;
 		}
 		
-		final OfflinePlayer killer = killDetector.detectKiller(this, player);
-		PlayerLoseGameEvent event = new PlayerLoseGameEvent(this, player, killer);
-		eventManager.callEvent(event);
-		
-		leave(player, QuitCause.LOSE, killer != null ? killer.getName() : null);
+		final SpleefPlayer killer = killDetector.detectKiller(this, player);
+		leave(player, QuitCause.LOSE, killer);
 		
 		if (ingamePlayers.size() == 1 && checkWin) {
 			SpleefPlayer playerLeft = ingamePlayers.iterator().next();
@@ -589,10 +601,10 @@ public class Game {
 			}
 		}
 		
-		resetGame();
-		
-		GameWinEvent event = new GameWinEvent(this, players);
+		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players);
 		eventManager.callEvent(event);
+		
+		resetGame();		
 	}
 	
 	public void kickPlayer(SpleefPlayer player, String message, CommandSender sender) {
@@ -603,20 +615,8 @@ public class Game {
 		leave(player, QuitCause.KICK, sender, message);
 	}
 	
-	public String getName() {
-		return name;
-	}
-	
-	public World getWorld() {
-		return world;
-	}
-	
 	public Set<SpleefPlayer> getPlayers() {
 		return ingamePlayers;
-	}
-	
-	public Set<SpleefPlayer> getDeadPlayers() {
-		return deadPlayers;
 	}
 	
 	public void registerGameListener(SpleefListener listener) {
@@ -627,11 +627,8 @@ public class Game {
 		return editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
 	}
 	
-	public CountdownTask getCountdownTask() {
-		return countdownTask;
-	}
-	
 	public void addFlag(AbstractFlag<?> flag) {
+		flag.onFlagAdd(this);
 		flagManager.addFlag(flag);
 		
 		eventManager.registerListener(flag);
@@ -639,6 +636,7 @@ public class Game {
 	
 	public void removeFlag(String path) {
 		AbstractFlag<?> flag = flagManager.removeFlag(path);
+		flag.onFlagRemove(this);
 		
 		eventManager.unregister(flag);
 	}
@@ -654,10 +652,6 @@ public class Game {
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractFlag<?>> T getFlag(String path) {
 		return (T) flagManager.getFlag(path);
-	}
-	
-	public FlagManager getFlagManager() {
-		return flagManager;
 	}
 	
 	public void addExtension(GameExtension extension) {
@@ -706,7 +700,7 @@ public class Game {
 			return false;
 		}
 		
-		if (state != GameState.INGAME) {
+		if (gameState != GameState.INGAME) {
 			//Players can't spleef while the game is not ingame
 			return false;
 		}
@@ -738,20 +732,12 @@ public class Game {
 		return deathzones.containsKey(name);
 	}
 	
-	public Map<String, Region> getDeathzones() {
-		return deathzones;
-	}
-	
 	public void setGameState(GameState state) {
-		GameState old = this.state;
-		this.state = state;
+		GameState old = this.gameState;
+		this.gameState = state;
 		
 		GameStateChangeEvent event = new GameStateChangeEvent(this, old);
 		eventManager.callEvent(event);
-	}
-	
-	public GameState getGameState() {
-		return state;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -772,10 +758,6 @@ public class Game {
 		}
 		
 		set.add(brokenBlock);
-	}
-	
-	public BiMap<SpleefPlayer, Set<Block>> getBlocksBroken() {
-		return Maps.unmodifiableBiMap(blocksBroken);
 	}
 	
 	public void setKillDetector(KillDetector detector) {
@@ -828,7 +810,7 @@ public class Game {
 	/* Event hooks */
 	@SuppressWarnings("deprecation")
 	public void onPlayerInteract(PlayerInteractEvent event, SpleefPlayer player) {
-		if (state != GameState.INGAME) {
+		if (gameState != GameState.INGAME) {
 			return;
 		}
 		
@@ -869,7 +851,7 @@ public class Game {
 	}
 	
 	public void onPlayerBreakBlock(BlockBreakEvent event, SpleefPlayer player) {
-		if (state != GameState.INGAME) {
+		if (gameState != GameState.INGAME) {
 			return;
 		}
 		
@@ -960,6 +942,10 @@ public class Game {
 		if (disableDamage) {
 			event.setCancelled(true);
 		}
+	}
+	
+	public void onPlayerQuit(PlayerQuitEvent event, SpleefPlayer quitter) {
+		leave(quitter, QuitCause.SELF);
 	}
 
 }

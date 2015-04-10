@@ -68,7 +68,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		insertSql.append("INTO " + ColumnContract.TABLE_NAME + " (");
 		addColumnSignature(insertSql);
 		
-		insertSql.append(") VALUES (?, ?, ?, ?, ?, ?, ?)");
+		insertSql.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		
 		if (getSqlImplementation() == SQLImplementation.MYSQL) {
 			insertSql.append(" ON DUPLICATE KEY UPDATE ");
@@ -119,12 +119,13 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		builder.append(ColumnContract.LOSSES).append(", ");
 		builder.append(ColumnContract.KNOCKOUTS).append(", ");
 		builder.append(ColumnContract.GAMES_PLAYED).append(", ");
+		builder.append(ColumnContract.BLOCKS_BROKEN).append(", ");
 		builder.append(ColumnContract.TIME_PLAYED).append(", ");
 		builder.append(ColumnContract.RATING);
 	}
 	
 	private void setValues(PreparedStatement statement, Statistic statistic, boolean addUniqueColumns) throws SQLException {
-		int index = 0;
+		int index = 1;
 		
 		if (addUniqueColumns) {
 			statement.setString(index++, statistic.getUniqueIdentifier().toString());
@@ -134,6 +135,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		statement.setInt(index++, statistic.getLosses());
 		statement.setInt(index++, statistic.getKnockouts());
 		statement.setInt(index++, statistic.getGamesPlayed());
+		statement.setInt(index++, statistic.getBlocksBroken());
 		statement.setLong(index++, statistic.getTimePlayed());
 		statement.setDouble(index++, statistic.getRating());
 	}
@@ -170,6 +172,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		int losses = result.getInt(ColumnContract.LOSSES);
 		int knockouts = result.getInt(ColumnContract.KNOCKOUTS);
 		int gamesPlayed = result.getInt(ColumnContract.GAMES_PLAYED);
+		int blocksBroken = result.getInt(ColumnContract.BLOCKS_BROKEN);
 		long timePlayed = result.getLong(ColumnContract.TIME_PLAYED);
 		int rating = result.getInt(ColumnContract.RATING);
 		
@@ -178,6 +181,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		statistic.setKnockouts(knockouts);
 		statistic.setGamesPlayed(gamesPlayed);
 		statistic.setTimePlayed(timePlayed);
+		statistic.setBlocksBroken(blocksBroken);
 		statistic.setRating(rating);
 		
 		return statistic;
@@ -209,6 +213,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 	
 	public interface ColumnContract {
 		
+
 		public static final String TABLE_NAME = "heavyspleef_statistics";
 		
 		public static final String UUID = "uuid";
@@ -216,10 +221,11 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		public static final String LOSSES = "losses";
 		public static final String KNOCKOUTS = "knockouts";
 		public static final String GAMES_PLAYED = "games_played";
+		public static final String BLOCKS_BROKEN = "blocks_broken";
 		public static final String TIME_PLAYED = "time_played";
 		public static final String RATING = "rating";
 		
-		public static final String[] ALL_COLUMNS = {UUID, WINS, LOSSES, KNOCKOUTS, GAMES_PLAYED, TIME_PLAYED, RATING};
+		public static final String[] ALL_COLUMNS = {UUID, WINS, LOSSES, KNOCKOUTS, GAMES_PLAYED, BLOCKS_BROKEN, TIME_PLAYED, RATING};
 		
 	}
 

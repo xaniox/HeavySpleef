@@ -28,7 +28,10 @@ import com.google.common.collect.Lists;
 
 public class DatabaseConfig extends ConfigurationObject {
 	
+	private static final int DEFAULT_MAX_CACHE_SIZE = 1024;
+	
 	private boolean statisticsEnabled;
+	private int maxStatisticCacheSize;
 	private List<DatabaseConnection> connections;
 	
 	public DatabaseConfig(Configuration config, Object... args) {
@@ -44,6 +47,7 @@ public class DatabaseConfig extends ConfigurationObject {
 		
 		ConfigurationSection moduleSection = config.getConfigurationSection("database-modules");
 		this.statisticsEnabled = moduleSection.getBoolean("statistics.enabled");
+		this.maxStatisticCacheSize = moduleSection.getInt("statistics.max-cache-size", DEFAULT_MAX_CACHE_SIZE);
 		
 		this.connections = Lists.newArrayList();
 		ConfigurationSection connectionsSection = config.getConfigurationSection("persistence-connection");
@@ -55,6 +59,10 @@ public class DatabaseConfig extends ConfigurationObject {
 	
 	public boolean isStatisticsModuleEnabled() {
 		return statisticsEnabled;
+	}
+	
+	public int getMaxStatisticCacheSize() {
+		return maxStatisticCacheSize;
 	}
 	
 	public List<DatabaseConnection> getDatabaseConnections() {

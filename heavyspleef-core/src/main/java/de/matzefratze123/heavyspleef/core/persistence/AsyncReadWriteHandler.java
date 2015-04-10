@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.core.persistence;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -46,6 +47,14 @@ public interface AsyncReadWriteHandler {
 	
 	public ListenableFuture<Statistic> getStatistic(UUID uuid, FutureCallback<Statistic> callback);
 	
-	public ListenableFuture<List<Statistic>> getTopStatistics(int offset, int limit, FutureCallback<List<Statistic>> callback);
+	public ListenableFuture<Integer> getStatisticRank(String player, FutureCallback<Integer> callback);
+	
+	public ListenableFuture<Integer> getStatisticRank(UUID uuid, FutureCallback<Integer> callback);
+	
+	public ListenableFuture<Map<String, Statistic>> getTopStatistics(int offset, int limit, FutureCallback<Map<String, Statistic>> callback);
+
+	public ListenableFuture<Map<String, Statistic>> getStatistics(String[] players, FutureCallback<Map<String, Statistic>> callback);
+
+	public void clearCache();
 	
 }

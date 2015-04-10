@@ -19,6 +19,7 @@ package de.matzefratze123.heavyspleef.persistence.handler;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -174,16 +175,54 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 			}
 		}, callback);
 	}
-
+	
 	@Override
-	public ListenableFuture<List<Statistic>> getTopStatistics(final int offset, final int limit, FutureCallback<List<Statistic>> callback) {
-		return runCallableThreadDynamic(new Callable<List<Statistic>>() {
+	public ListenableFuture<Map<String, Statistic>> getStatistics(final String[] players, FutureCallback<Map<String, Statistic>> callback) {
+		return runCallableThreadDynamic(new Callable<Map<String, Statistic>>() {
 
 			@Override
-			public List<Statistic> call() throws Exception {
+			public Map<String, Statistic> call() throws Exception {
+				return delegate.getStatistics(players);
+			}
+		}, callback);
+	}
+	
+	@Override
+	public ListenableFuture<Integer> getStatisticRank(final String player, FutureCallback<Integer> callback) {
+		return runCallableThreadDynamic(new Callable<Integer>() {
+
+			@Override
+			public Integer call() throws Exception {
+				return delegate.getStatisticRank(player);
+			}
+		}, callback);
+	}
+
+	@Override
+	public ListenableFuture<Integer> getStatisticRank(final UUID uuid, FutureCallback<Integer> callback) {
+		return runCallableThreadDynamic(new Callable<Integer>() {
+
+			@Override
+			public Integer call() throws Exception {
+				return delegate.getStatisticRank(uuid);
+			}
+		}, callback);
+	}
+
+	@Override
+	public ListenableFuture<Map<String, Statistic>> getTopStatistics(final int offset, final int limit, FutureCallback<Map<String, Statistic>> callback) {
+		return runCallableThreadDynamic(new Callable<Map<String, Statistic>>() {
+
+			@Override
+			public Map<String, Statistic> call() throws Exception {
 				return delegate.getTopStatistics(offset, limit);
 			}
 		}, callback);
+	}
+	
+	@Override
+	public void clearCache() {
+		delegate.clearCache();
 	}
 	
 	public <R> ListenableFuture<R> runCallableThreadDynamic(Callable<R> callable, FutureCallback<R> callback) {

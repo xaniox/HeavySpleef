@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.persistence.sql;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -61,11 +63,25 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 			accessor.setSqlImplementation(implementationType);
 		}
 		
+		String url = properties.getProperty("url");
+		if (implementationType == SQLImplementation.SQLITE) {
+			File file = extractSQLiteFileFromURL(url);
+			file.getAbsoluteFile().getParentFile().mkdirs();
+			
+			if (!file.exists()) {
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		
 		dataSource = new DBPoolDataSource();
 		dataSource.setName(properties.getProperty("pool-name"));
 		dataSource.setDescription("SQLDatabaseContext for accessing objects through SQL");
 		dataSource.setDriverClassName(properties.getProperty("driver"));
-		dataSource.setUrl(properties.getProperty("url"));
+		dataSource.setUrl(url);
 		
 		boolean useAuthentication;
 		Object useAuthenticationObj = properties.get("useAuthentication");
@@ -88,12 +104,28 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		dataSource.registerShutdownHook();
 	}
 	
+	private File extractSQLiteFileFromURL(String urlSpec) {
+		final String sqliteJDBCProtocol = "jdbc:sqlite:";
+		final String fileName = urlSpec.substring(sqliteJDBCProtocol.length());
+		
+		return new File(fileName);
+	}
+	
+	public Connection getConnectionFromPool() throws SQLException {
+		Connection connection = dataSource.getConnection();
+		return ForwardingCompatConnection.wrap(connection, implementationType);
+	}
+	
+	public SQLImplementation getImplementationType() {
+		return implementationType;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T> void writeObject(T object) throws SQLException {
 		Class<T> clazz = (Class<T>) object.getClass();
 		SQLAccessor<T, ?> accessor = (SQLAccessor<T, ?>) searchAccessor(clazz);
 		
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = getConnectionFromPool()) {
 			checkAccessorTable(accessor, connection);
 			
 			accessor.write(object, connection);
@@ -104,7 +136,7 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 	public <T, K> T readObject(K key, Class<T> objectClass) throws SQLException {
 		SQLAccessor<T, K> accessor = (SQLAccessor<T, K>) searchAccessor(objectClass);
 		
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = getConnectionFromPool()) {
 			checkAccessorTable(accessor, connection);
 			
 			return accessor.fetch(key, connection);
@@ -115,7 +147,7 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 	public <T, K> List<T> readAll(Class<T> objectClass) throws SQLException {
 		SQLAccessor<T, K> accessor = (SQLAccessor<T, K>) searchAccessor(objectClass);
 		
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = getConnectionFromPool()) {
 			checkAccessorTable(accessor, connection);
 			
 			return accessor.fetchAll(connection);
@@ -126,7 +158,7 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 	public <T, K> List<T> readSql(Class<T> objectClass, SQLQueryOptionsBuilder optionsBuilder) throws SQLException {
 		SQLAccessor<T, K> accessor = (SQLAccessor<T, K>) searchAccessor(objectClass);
 		
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = getConnectionFromPool()) {
 			checkAccessorTable(accessor, connection);
 			
 			return accessor.fetch(optionsBuilder, connection);

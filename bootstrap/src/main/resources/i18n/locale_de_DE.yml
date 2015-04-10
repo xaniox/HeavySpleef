@@ -62,6 +62,17 @@ command:
   cuboid: "Quaderförmig"
   cylindrical: "Zylindrisch"
   polygonal: "Polygonal"
+  
+  error-on-statistic-load: "Konnte Statistik nicht laden. Bitte versuche es später erneut oder kontaktiere einen Administrator"
+  top-statistics-header: "-------- [ Bestplatzierte Spieler ] --------"
+  top-statistics-format: "$[place]. $[player] ($[rating])"
+  top-statistics-footer: "-------------------------------"
+  time-format: "$[days] Tage $[hours] Stunden $[minutes] Minuten"
+  
+  statistic-header: "-------- [ Statistik von $[player] ] --------"
+  statistic-format: "Globaler Spielerrang: $[place]\nGewonnen: $[wins]\nVerloren: $[losses]\nKnockouts: $[knockouts]\nAnzahl Spiele: $[games-played]\nBlöcke zerstört: $[blocks-broken]\nZeit gespielt: $[time-played]\nRating: $[rating]\nKnockouts / Deaths (KD): $[knockouts-per-death]\nWins / Lose (WL): $[wins-per-lose]\nKnockouts pro Spiel: $[knockouts-per-game]"
+  statistic-footer: "---------------------------------------------"
+  statistic-cache-cleared: "Statistik-Cache wurde erfolgreich geleert"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -101,6 +112,7 @@ player:
   need-min-players: "Es werden mindestens $[amount] Spieler zum Starten benötigt"
 help:
   description:
+    clearcache: "Leert den Statistik-Cache"
     create: "Erstellt ein neues Spiel mit Namen"
     delete: "Löscht ein Spiel mit Namen"
     disable: "Deaktiviert die Benutzung eines Spieles"

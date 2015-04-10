@@ -21,13 +21,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,11 +45,14 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-import de.matzefratze123.guavacachecompat.CacheCompat;
-import de.matzefratze123.guavacachecompat.CacheFactory;
-import de.matzefratze123.guavacachecompat.CacheLoaderCompat;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Statistic;
@@ -55,7 +62,9 @@ import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 import de.matzefratze123.heavyspleef.persistence.schematic.FloorAccessor;
 import de.matzefratze123.heavyspleef.persistence.schematic.SchematicContext;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLDatabaseContext;
+import de.matzefratze123.heavyspleef.persistence.sql.SQLDatabaseContext.SQLImplementation;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLQueryOptionsBuilder;
+import de.matzefratze123.heavyspleef.persistence.sql.SQLQueryOptionsBuilder.ExpressionList;
 import de.matzefratze123.heavyspleef.persistence.sql.StatisticAccessor;
 import de.matzefratze123.heavyspleef.persistence.xml.GameAccessor;
 import de.matzefratze123.heavyspleef.persistence.xml.XMLContext;
@@ -83,7 +92,6 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	
 	private final Logger logger;
 	private final UUIDManager uuidManager = new UUIDManager();
-	private final CacheFactory cacheFactory = new CacheFactory();
 	private final SAXReader saxReader = new SAXReader();
 	private final OutputFormat xmlOutputFormat = OutputFormat.createPrettyPrint();
 	
@@ -91,8 +99,10 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	private SchematicContext schematicContext;
 	private XMLContext xmlContext;
 	
-	private CacheCompat<UUID, Statistic> statisticCache;
-	private final CacheLoaderCompat<UUID, Statistic> statisticCacheLoader = new CacheLoaderCompat<UUID, Statistic>() {
+	private ReentrantLock rankLock = new ReentrantLock();
+	
+	private LoadingCache<UUID, Statistic> statisticCache;
+	private final CacheLoader<UUID, Statistic> statisticCacheLoader = new CacheLoader<UUID, Statistic>() {
 		
 		@Override
 		public Statistic load(UUID uuid) throws Exception {
@@ -107,7 +117,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 					.back();
 			
 			List<Statistic> statisticResult = sqlContext.readSql(Statistic.class, optionsBuilder);
-			return !statisticResult.isEmpty() ? statisticResult.get(0) : null;
+			return !statisticResult.isEmpty() ? statisticResult.get(0) : new Statistic(uuid);
 		}
 	};
 	
@@ -128,29 +138,44 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 			StatisticAccessor statisticAccessor = new StatisticAccessor();
 			sqlContext = new SQLDatabaseContext(properties, statisticAccessor);
 			
+			int maxCacheSize = (int) properties.get("statistic.max_cache_size");
+			
 			//Create a cache for fast data access
-			statisticCache = cacheFactory.newCacheBuilder()
+			statisticCache = CacheBuilder.newBuilder()
 					.expireAfterAccess(STATISTIC_CACHE_EXPIRE, TimeUnit.MILLISECONDS)
+					.maximumSize(maxCacheSize)
+					.removalListener(new RemovalListener<UUID, Statistic>() {
+
+						@Override
+						public void onRemoval(RemovalNotification<UUID, Statistic> notification) {
+							//Save the statistic on remove
+							Statistic statistic = notification.getValue();
+							
+							if (!statistic.isEmpty()) {
+								try {
+									saveStatistic(statistic);
+								} catch (SQLException e) {
+									logger.log(Level.SEVERE, "Could not save statistic for player with uuid " + statistic.getUniqueIdentifier() + ": ", e);
+								}
+							}
+						}
+					})
 					.build(statisticCacheLoader);
 		}
 	}
 	
 	@Override
-	public void saveGames(Iterable<Game> iterable) {
+	public void saveGames(Iterable<Game> iterable) throws IOException {
 		for (Game game : iterable) {
 			saveGame(game);
 		}
 	}
 
 	@Override
-	public void saveGame(Game game) {
+	public void saveGame(Game game) throws IOException {
 		File gameFile = new File(xmlFolder, game.getName() + ".xml");
 		if (!gameFile.exists()) {
-			try {
-				gameFile.createNewFile();
-			} catch (IOException e) {
-				throw new RuntimeException("Could not create xml file for game \"" + game.getName() + "\"", e);
-			}
+			gameFile.createNewFile();
 		}
 		
 		Document document = DocumentHelper.createDocument();
@@ -170,31 +195,19 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 			
 			writer = new XMLWriter(out, xmlOutputFormat);
 			writer.write(document);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		} finally {
 			if (writer != null) {
-				try {
-					writer.close();
-				} catch (IOException e) {}
+				writer.close();
 			}
 		}
 		
 		for (Floor floor : game.getFloors()) {	
 			File floorFile = new File(gameSchematicFolder, getFloorFileName(floor));
 			if (!floorFile.exists()) {
-				try {
-					floorFile.createNewFile();
-				} catch (IOException e) {
-					throw new RuntimeException("Could not create floor schematic file for game \"" + game.getName() + "\"", e);
-				}
+				floorFile.createNewFile();
 			}
 			
-			try {
-				schematicContext.write(floorFile, floor);
-			} catch (IOException e) {
-				throw new RuntimeException("Could not write floor schematic file", e);
-			}
+			schematicContext.write(floorFile, floor);
 		}
 	}
 	
@@ -203,7 +216,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	}
 
 	@Override
-	public Game getGame(String name) {
+	public Game getGame(String name) throws IOException, DocumentException {
 		File gameFile = new File(xmlFolder, name + ".xml");
 		if (!gameFile.exists()) {
 			return null;
@@ -212,13 +225,8 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		return getGame(gameFile);
 	}
 	
-	private Game getGame(File file) {
-		Document document;
-		try {
-			document = saxReader.read(file);
-		} catch (DocumentException e) {
-			throw new RuntimeException("Could not parse xml game file " + file.getPath(), e);
-		}
+	private Game getGame(File file) throws IOException, DocumentException {
+		Document document = saxReader.read(file);
 		
 		if (!document.hasContent()) {
 			return null;
@@ -231,13 +239,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		File gameFloorFolder = new File(schematicFolder, game.getName());
 		if (gameFloorFolder.exists()) {
 			for (File floorSchematicFile : gameFloorFolder.listFiles(FLOOR_SCHEMATIC_FILTER)) {
-				Floor floor;
-				
-				try {
-					floor = schematicContext.read(floorSchematicFile, Floor.class);
-				} catch (IOException e) {
-					throw new RuntimeException("Could not read floor schematic for game " + game.getName() + ": " + floorSchematicFile.getPath(), e);
-				}
+				Floor floor = schematicContext.read(floorSchematicFile, Floor.class);
 				
 				game.addFloor(floor);
 			}
@@ -247,7 +249,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	}
 	
 	@Override
-	public List<Game> getGames() {
+	public List<Game> getGames() throws IOException, DocumentException {
 		List<Game> result = Lists.newArrayList();
 		
 		for (File gameFile : xmlFolder.listFiles(XML_GAME_FILTER)) {
@@ -282,7 +284,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	}
 
 	@Override
-	public void saveStatistics(Iterable<Statistic> iterable) {
+	public void saveStatistics(Iterable<Statistic> iterable) throws SQLException {
 		validateSqlDatabaseSetup();
 		
 		for (Statistic statistic : iterable) {
@@ -291,19 +293,39 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	}
 
 	@Override
-	public void saveStatistic(Statistic statistic) {
+	public void saveStatistic(Statistic statistic) throws SQLException {
 		validateSqlDatabaseSetup();
 		
-		try {
-			sqlContext.writeObject(statistic);
-		} catch (SQLException e) {
-			throw new RuntimeException("Could not save statistic for uuid {" + statistic.getUniqueIdentifier() + "}", e);
-		}
+		sqlContext.writeObject(statistic);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Statistic getStatistic(String playerName) {
+	public Statistic getStatistic(String playerName) throws Exception {
+		GameProfile profile;
+		
+		try {
+			profile = uuidManager.getProfile(playerName);
+		} catch (ExecutionException e) {
+			logger.log(Level.SEVERE, "Could not retrieve player uuid from mojang api, using OfflinePlayer#getUniqueId()", e);
+			OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
+			profile = new GameProfile(player.getUniqueId(), player.getName());
+		}
+		
+		return getStatistic(profile.getUniqueIdentifier());
+	}
+	
+	@Override
+	public Statistic getStatistic(UUID uuid) throws Exception {
+		validateSqlDatabaseSetup();
+		
+		Statistic statistic = statisticCache.get(uuid);
+		return statistic;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public Integer getStatisticRank(String playerName) throws Exception {
 		GameProfile profile;
 		
 		try {
@@ -314,44 +336,150 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 			profile = new GameProfile(player.getUniqueId(), player.getName());
 		}
 		
-		return getStatistic(profile.getUniqueIdentifier());
-	}
-	
-	@Override
-	public Statistic getStatistic(UUID uuid) {
-		validateSqlDatabaseSetup();
-		
-		Statistic statistic;
-		
-		try {
-			statistic = statisticCache.get(uuid);
-		} catch (ExecutionException e) {
-			throw new RuntimeException(e.getCause());
-		}
-		
-		return statistic;
+		return getStatisticRank(profile.getUniqueIdentifier());
 	}
 
 	@Override
-	public List<Statistic> getTopStatistics(int offset, int limit) {
+	public Integer getStatisticRank(UUID uuid) throws Exception {
+		validateSqlDatabaseSetup();
+		
+		rankLock.lock();
+		Connection connection = null;
+		
+		int resultRank = 0;
+		
+		try {
+			connection = sqlContext.getConnectionFromPool();
+			
+			final String uuidColumn = StatisticAccessor.ColumnContract.UUID;
+			final String ratingColumn = StatisticAccessor.ColumnContract.RATING;
+			final String tableName = StatisticAccessor.ColumnContract.TABLE_NAME;
+			final String rankColumn = "rank";
+			
+			PreparedStatement rankStatement;
+			SQLImplementation implementation = sqlContext.getImplementationType();
+			
+			if (implementation == SQLImplementation.MYSQL) {
+				rankStatement = connection.prepareStatement("SELECT " + rankColumn + " FROM "
+						+ "(SELECT @rn:=@rn+1 AS " + rankColumn + ", " + uuidColumn + " FROM "
+								+ tableName + " ORDER BY " + ratingColumn + " DESC"
+						+ ") AS t1, "
+						+ "(SELECT @rn:=0) t2 "
+							+ "WHERE " + uuidColumn + " = ?");
+			} else if (implementation == SQLImplementation.SQLITE) {
+				rankStatement = connection.prepareStatement("SELECT "
+						+ "(SELECT COUNT() + 1 FROM"
+							+ "(SELECT DISTINCT " + ratingColumn + " FROM "
+							+ tableName + " AS t WHERE " + ratingColumn + " > " + tableName + "." + ratingColumn + ")"
+						+ ") "
+						+ "AS " + rankColumn + " "
+						+ "FROM " + tableName + " "
+						+ "WHERE " + uuidColumn + "=?");
+			} else {
+				throw new IllegalStateException("Unknown sql implementation " + (implementation == null ? null : implementation.name()));
+			}
+			
+			rankStatement.setString(1, uuid.toString());
+			ResultSet result = rankStatement.executeQuery();
+			
+			if (result.next()) {
+				resultRank = result.getInt(rankColumn);
+			}
+		} finally {
+			rankLock.unlock();
+			
+			if (connection != null) {
+				connection.close();
+			}
+		}
+		
+		return resultRank;
+	}
+	
+	@Override
+	public Map<String, Statistic> getStatistics(String[] players) throws Exception {
+		validateSqlDatabaseSetup();
+		
+		List<GameProfile> profiles = uuidManager.getProfiles(players);
+		
+		if (sqlContext == null) {
+			throw new IllegalStateException("SQL database has not been initialized");
+		}
+		
+		SQLQueryOptionsBuilder optionsBuilder = SQLQueryOptionsBuilder.newBuilder();
+		ExpressionList where = optionsBuilder.where();
+		
+		for (int i = 0; i < profiles.size(); i++) {
+			GameProfile profile = profiles.get(i);
+			where.eq(StatisticAccessor.ColumnContract.UUID, profile.getUniqueIdentifier());
+			
+			if (i + 1 < profiles.size()) {
+				where.or();
+			}
+		}
+		
+		List<Statistic> statisticResult = sqlContext.readSql(Statistic.class, optionsBuilder);
+		Map<String, Statistic> statisticsMap = Maps.newHashMap();
+		
+		for (GameProfile profile : profiles) {
+			Statistic found = null;
+			
+			for (Statistic statistic : statisticResult) {
+				if (profile.getUniqueIdentifier().equals(statistic.getUniqueIdentifier())) {
+					found = statistic;
+				}
+			}
+			
+			if (found == null) {
+				found = new Statistic(profile.getUniqueIdentifier());
+			}
+			
+			String name = null;
+			for (String playerName : players) {
+				if (playerName.equalsIgnoreCase(profile.getName())) {
+					name = playerName;
+				}
+			}
+			
+			if (name == null) {
+				throw new IllegalStateException("Could not find name for " + profile.getName() + ": " + profile.getUniqueIdentifier());
+			}
+			
+			statisticsMap.put(name, found);
+			statisticCache.put(profile.getUniqueIdentifier(), found);
+		}
+		
+		return statisticsMap;
+	}
+
+	@Override
+	public Map<String, Statistic> getTopStatistics(int offset, int limit) throws SQLException, ExecutionException {
 		validateSqlDatabaseSetup();
 		
 		String limitStr = offset == 0 ? String.valueOf(limit) : offset + "," + limit;
 		
 		SQLQueryOptionsBuilder optionsBuilder = SQLQueryOptionsBuilder.newBuilder()
 				.limit(limitStr)
-				.sortBy(StatisticAccessor.ColumnContract.RATING);
-		List<Statistic> result;
+				.sortBy(StatisticAccessor.ColumnContract.RATING + " DESC");
+		List<Statistic> result = sqlContext.readSql(Statistic.class, optionsBuilder);
 		
-		try {
-			result = sqlContext.readSql(Statistic.class, optionsBuilder);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
+		Map<String, Statistic> statisticMapping = Maps.newLinkedHashMap();
+		for (Statistic statistic : result) {
+			UUID uuid = statistic.getUniqueIdentifier();
+			GameProfile profile;
+			
+			profile = uuidManager.getProfile(uuid);
+			statisticMapping.put(profile.getName(), statistic);
 		}
 		
-		Collections.sort(result);
-		
-		return Collections.unmodifiableList(result);
+		return statisticMapping;
+	}
+	
+	@Override
+	public void clearCache() {
+		if (statisticCache != null) {
+			statisticCache.asMap().clear();
+		}
 	}
 	
 	private void validateSqlDatabaseSetup() {
