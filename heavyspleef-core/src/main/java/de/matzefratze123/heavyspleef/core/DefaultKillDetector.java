@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -37,9 +36,8 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class DefaultKillDetector implements KillDetector {
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public OfflinePlayer detectKiller(Game game, SpleefPlayer deadPlayer) {
+	public SpleefPlayer detectKiller(Game game, SpleefPlayer deadPlayer) {
 		Location location = deadPlayer.getBukkitPlayer().getLocation();
 		Vector playerVector = BukkitUtil.toVector(location);
 		
@@ -116,14 +114,7 @@ public class DefaultKillDetector implements KillDetector {
 			}
 		}
 		
-		OfflinePlayer offlinePlayerKiller = null;
-		
-		if (killer != null) {
-			String name = killer.getName();
-			offlinePlayerKiller = Bukkit.getOfflinePlayer(name);
-		}
-		
-		return offlinePlayerKiller;
+		return killer;
 	}
 
 }
