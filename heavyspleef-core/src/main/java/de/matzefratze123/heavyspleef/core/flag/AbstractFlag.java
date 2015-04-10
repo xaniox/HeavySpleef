@@ -61,6 +61,10 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 		return heavySpleef;
 	}
 	
+	public void onFlagAdd(Game game) {}
+	
+	public void onFlagRemove(Game game) {}
+	
 	public I18N getI18N() {
 		if (i18n == null) {
 			i18n = I18N.getInstance();
