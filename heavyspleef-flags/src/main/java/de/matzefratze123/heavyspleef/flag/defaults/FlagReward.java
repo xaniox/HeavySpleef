@@ -21,7 +21,7 @@ import java.util.List;
 
 import net.milkbowl.vault.economy.Economy;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
-import de.matzefratze123.heavyspleef.core.event.GameWinEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
@@ -39,7 +39,7 @@ public class FlagReward extends IntegerFlag {
 	}
 	
 	@GameListener
-	public void onGameWin(GameWinEvent event) {
+	public void onGameWin(PlayerWinGameEvent event) {
 		//Call the method to potentially initialize the economy plugin
 		Economy economy = getEconomy();
 		int depositValue = getValue();
