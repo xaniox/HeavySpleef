@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -30,11 +29,13 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameListener;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLoseGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
@@ -87,15 +88,21 @@ public class FlagScoreboard extends BooleanFlag {
 	}
 	
 	@GameListener
-	public void onPlayerLose(PlayerLoseGameEvent event) {
+	public void onPlayerLeave(PlayerLeaveGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
+		Game game = event.getGame();
 		
 		Team team = scoreboard.getTeam(player.getName());
-		team.setPrefix(IS_DEAD_SYMBOL);
+				
+		if (game.getGameState() == GameState.INGAME) {
+			team.setPrefix(IS_DEAD_SYMBOL);
+		} else {
+			team.unregister();
+		}
 		
 		//Note: Scoreboard restoring is managed by the PlayerState
 		
-		OfflinePlayer killer = event.getKiller();
+		SpleefPlayer killer = event.getKiller();
 		if (killer != null) {
 			Score killerScore = objective.getScore(killer.getName());
 			int previousScore = killerScore.getScore();
