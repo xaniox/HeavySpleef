@@ -50,6 +50,11 @@ public class YMLResourceBundle extends ResourceBundle {
 			value = array;
 		}
 		
+		if (value instanceof String) {
+			String str = (String) value;
+			str.replace("\\n", "\n");
+		}
+		
 		return value;
 	}
 
