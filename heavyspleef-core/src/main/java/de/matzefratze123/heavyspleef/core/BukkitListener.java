@@ -34,6 +34,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.matzefratze123.heavyspleef.core.player.PlayerManager;
@@ -108,6 +109,11 @@ public class BukkitListener implements Listener {
 		handlePlayerEvent(player, event);
 	}
 	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		handlePlayerEvent(event.getPlayer(), event);
+	}
+	
 	private void handleEntityDamageEvent(EntityDamageEvent event) {
 		Entity damagedEntity = event.getEntity();
 		if (!(damagedEntity instanceof Player)) {
@@ -140,6 +146,8 @@ public class BukkitListener implements Listener {
 				game.onEntityDamageEvent((EntityDamageEvent) event, player);
 			} else if (event instanceof EntityTargetLivingEntityEvent) {
 				game.onEntityTargetLivingEntity((EntityTargetLivingEntityEvent) event, player);
+			} else if (event instanceof PlayerQuitEvent) {
+				game.onPlayerQuit((PlayerQuitEvent) event, player);
 			}
 		}
 	}
