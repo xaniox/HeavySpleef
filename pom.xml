@@ -134,15 +134,15 @@
   </repositories>
   <dependencies>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
       <version>LATEST</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>de.matzefratze123</groupId>
-      <artifactId>guava-cache-compat</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
 	  <groupId>dom4j</groupId>
