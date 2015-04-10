@@ -43,6 +43,7 @@ public class SpleefPlayer {
 		this.bukkitPlayerRef = new WeakReference<Player>(bukkitPlayer);
 		this.online = bukkitPlayer.isOnline();
 		this.playerStates = Maps.newHashMap();
+		this.name = bukkitPlayer.getName();
 	}
 	
 	public Player getBukkitPlayer() {
@@ -58,27 +59,26 @@ public class SpleefPlayer {
 	}
 	
 	public String getName() {
-		if (isOnline()) {
-			name = getBukkitPlayer().getName();
-		}
-		
 		return bukkitPlayerRef.get() != null ? getBukkitPlayer().getName() : name;
 	}
 	
 	public UUID getUniqueId() {
+		Validate.isTrue(isOnline(), "Player is not online");
 		return getBukkitPlayer().getUniqueId();
 	}
 	
 	public void sendMessage(String message) {
+		Validate.isTrue(isOnline(), "Player is not online");
 		getBukkitPlayer().sendMessage(HeavySpleef.PREFIX + message);
 	}
 	
 	public void teleport(Location location) {
+		Validate.isTrue(isOnline(), "Player is not online");
 		getBukkitPlayer().teleport(location);
 	}
 	
 	public void savePlayerState(Object key) {
-		Validate.isTrue(isOnline(), "Player must be online");
+		Validate.isTrue(isOnline(), "Player is not online");
 		
 		PlayerStateHolder holder = PlayerStateHolder.create(getBukkitPlayer());
 		playerStates.put(key, holder);
