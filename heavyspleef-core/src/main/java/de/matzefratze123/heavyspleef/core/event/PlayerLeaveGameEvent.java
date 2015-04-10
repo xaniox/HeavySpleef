@@ -28,10 +28,12 @@ public class PlayerLeaveGameEvent extends PlayerGameEvent implements Cancellable
 	private boolean cancel;
 	private QuitCause cause;
 	private Location teleportationLocation;
+	private SpleefPlayer killer;
 	
-	public PlayerLeaveGameEvent(Game game, SpleefPlayer player, QuitCause cause) {
+	public PlayerLeaveGameEvent(Game game, SpleefPlayer player, SpleefPlayer killer, QuitCause cause) {
 		super(game, player);
 		
+		this.killer = killer;
 		this.cause = cause;
 	}
 
@@ -47,6 +49,10 @@ public class PlayerLeaveGameEvent extends PlayerGameEvent implements Cancellable
 	
 	public QuitCause getCause() {
 		return cause;
+	}
+	
+	public SpleefPlayer getKiller() {
+		return killer;
 	}
 
 	public void setTeleportationLocation(Location location) {
