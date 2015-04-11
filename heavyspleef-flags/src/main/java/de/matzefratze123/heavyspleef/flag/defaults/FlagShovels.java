@@ -29,7 +29,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
@@ -63,7 +63,7 @@ public class FlagShovels extends BooleanFlag {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@GameListener
+	@GameEventHandler
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();
 		

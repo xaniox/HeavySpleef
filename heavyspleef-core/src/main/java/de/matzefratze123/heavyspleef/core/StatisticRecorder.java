@@ -28,7 +28,7 @@ import org.bukkit.block.Block;
 import com.google.common.util.concurrent.FutureCallback;
 
 import de.matzefratze123.heavyspleef.core.RatingCompute.RatingResult;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
@@ -59,7 +59,7 @@ public class StatisticRecorder implements SpleefListener {
 		this.ratingCompute = ratingCompute;
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameStart(GameStartEvent event) {
 		gameStartedAt = System.currentTimeMillis();
 		Game game = event.getGame();
@@ -86,7 +86,7 @@ public class StatisticRecorder implements SpleefListener {
 		});
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
 		Game game = event.getGame();
 		
@@ -109,7 +109,7 @@ public class StatisticRecorder implements SpleefListener {
 		});
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onPlayerWinGame(PlayerWinGameEvent event) {
 		final Game game = event.getGame();
 		final SpleefPlayer[] winners = event.getWinners();
@@ -132,7 +132,7 @@ public class StatisticRecorder implements SpleefListener {
 		databaseHandler.saveStatistics(loadedStatistics.values(), null);
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onPlayerLeave(PlayerLeaveGameEvent event) {
 		Game game = event.getGame();
 		SpleefPlayer player = event.getPlayer();

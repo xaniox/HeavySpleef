@@ -27,7 +27,7 @@ import com.sk89q.worldedit.EditSession;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -49,7 +49,7 @@ public class FlagAutoRegen extends IntegerFlag {
 		description.add("Defines a floor-regeneration interval");
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameStart(GameStartEvent event) {
 		FloorRegenRunnable runnable = new FloorRegenRunnable(event.getGame());
 		final long intervalTicks = getValue() * TICKS_MULTIPLIER;
@@ -57,7 +57,7 @@ public class FlagAutoRegen extends IntegerFlag {
 		scheduler.runTaskTimer(getHeavySpleef().getPlugin(), runnable, intervalTicks, intervalTicks);
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameEnd(GameEndEvent event) {
 		if (task != null) {
 			//Cancel the task as this game ends

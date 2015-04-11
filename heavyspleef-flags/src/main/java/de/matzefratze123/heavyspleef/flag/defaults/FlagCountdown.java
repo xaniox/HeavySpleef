@@ -20,7 +20,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
@@ -32,7 +32,7 @@ public class FlagCountdown extends IntegerFlag {
 		description.add("Defines the countdown length");
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameCountdown(GameCountdownEvent event) {
 		event.setCountdownEnabled(true);
 		event.setCountdownLength(getValue());

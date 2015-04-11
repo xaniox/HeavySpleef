@@ -33,7 +33,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -67,7 +67,7 @@ public class FlagScoreboard extends BooleanFlag {
 		description.add("Enables a sidebar scoreboard to show the status of the game");
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameStart(GameStartEvent event) {
 		scoreboard = manager.getNewScoreboard();
 		objective = scoreboard.registerNewObjective(SCOREBOARD_NAME, SCOREBOARD_CRITERIA);
@@ -87,7 +87,7 @@ public class FlagScoreboard extends BooleanFlag {
 		}
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onPlayerLeave(PlayerLeaveGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		Game game = event.getGame();
@@ -111,7 +111,7 @@ public class FlagScoreboard extends BooleanFlag {
 		}
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameEnd(GameEndEvent event) {
 		//Remove that reference
 		scoreboard = null;

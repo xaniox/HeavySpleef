@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.matzefratze123.heavyspleef.core.GameProperty;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Required;
@@ -39,7 +39,7 @@ public class FlagLobby extends LocationFlag {
 		description.add("Defines the lobby point for a Spleef game");
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onPlayerJoinGame(PlayerPreJoinGameEvent event) {
 		if (getValue() == null) {
 			return;

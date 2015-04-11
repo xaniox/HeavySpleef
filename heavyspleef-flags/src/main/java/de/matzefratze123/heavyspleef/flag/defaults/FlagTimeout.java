@@ -25,8 +25,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
-import de.matzefratze123.heavyspleef.core.event.GameListener.Priority;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -49,14 +49,14 @@ public class FlagTimeout extends IntegerFlag {
 		description.add("Defines a timeout for a Spleef game to stop");
 	}
 	
-	@GameListener(priority = Priority.HIGHEST)
+	@GameEventHandler(priority = Priority.HIGHEST)
 	public void onGameStart(GameStartEvent event) {
 		TimeoutRunnable runnable = new TimeoutRunnable(event.getGame());
 		
 		task = scheduler.runTaskTimer(getHeavySpleef().getPlugin(), runnable, 0L, 1L * TICKS_MULTIPLIER);
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameEnd(GameEndEvent event) {
 		if (task != null) {
 			//This game has already ended

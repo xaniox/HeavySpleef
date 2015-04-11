@@ -22,7 +22,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 
@@ -34,7 +34,7 @@ public class FlagSpawnpoint extends LocationFlag {
 		description.add("Defines the spawnpoint for players when a game starts to countdown");
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onGameCountdown(GameCountdownEvent event) {
 		if (getValue() == null) {
 			return;

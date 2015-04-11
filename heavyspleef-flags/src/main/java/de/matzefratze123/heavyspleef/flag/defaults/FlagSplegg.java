@@ -39,7 +39,7 @@ import com.google.common.collect.Lists;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -75,7 +75,7 @@ public class FlagSplegg extends BooleanFlag {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@GameListener
+	@GameEventHandler
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();
 		

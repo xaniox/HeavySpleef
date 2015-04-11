@@ -22,7 +22,7 @@ import java.util.Map;
 
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.QuitCause;
-import de.matzefratze123.heavyspleef.core.event.GameListener;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
@@ -38,7 +38,7 @@ public class FlagWinPoint extends LocationFlag {
 		description.add("Defines the teleportation point for the winners of the Spleef game");
 	}
 	
-	@GameListener
+	@GameEventHandler
 	public void onPlayerLeaveGame(PlayerLeaveGameEvent event) {
 		if (getValue() == null) {
 			return;

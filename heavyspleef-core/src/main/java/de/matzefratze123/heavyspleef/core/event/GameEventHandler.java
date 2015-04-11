@@ -15,12 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.event;
 
-public interface Rateable {
-	
-	public double getRating();
-	
-	public void setRating(double rating);
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface GameEventHandler {
+	
+	Priority priority() default Priority.NORMAL;
+	
+	public enum Priority {
+		
+		LOWEST,
+		LOW,
+		NORMAL,
+		HIGH,
+		HIGHEST,
+		MONITOR;
+		
+	}
+	
 }
