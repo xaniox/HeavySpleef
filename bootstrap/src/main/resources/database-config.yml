@@ -9,7 +9,7 @@
 database-modules:
   statistics:
     enabled: true
-	
+
     # For experts only
     # Specify the maximim account of statistics
     # which will be cached (other statistics will be evicted from
