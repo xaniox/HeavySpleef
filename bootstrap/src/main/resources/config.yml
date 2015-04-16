@@ -20,3 +20,6 @@ localization:
 signs:
   join-sign-layout: layout/layout_join-sign.yml
   info-wall-sign-layout: layout/layout_info-wall-info.yml
+  
+flags:
+  autostart-vote: 75

@@ -20,15 +20,20 @@ package de.matzefratze123.heavyspleef.core.flag;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -36,6 +41,8 @@ import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyHashBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyMap.DualKeyPair;
 import de.matzefratze123.heavyspleef.core.collection.DualMaps;
+import de.matzefratze123.heavyspleef.core.hook.HookManager;
+import de.matzefratze123.heavyspleef.core.hook.HookReference;
 
 public class FlagRegistry {
 	
@@ -55,6 +62,7 @@ public class FlagRegistry {
 	private ClassLoader classLoader;
 	
 	private DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> registeredFlagsMap;
+	private Queue<Method> queuedInitMethods;
 	
 	public FlagRegistry(HeavySpleef heavySpleef, File customFlagFolder) {
 		this.heavySpleef = heavySpleef;
@@ -71,6 +79,7 @@ public class FlagRegistry {
 		}
 		
 		this.classLoader = new URLClassLoader(new URL[] { url });
+		this.queuedInitMethods = Lists.newLinkedList();
 		
 		loadClasses();
 	}
@@ -162,12 +171,65 @@ public class FlagRegistry {
 			throw new IllegalArgumentException("Flag-Class must provide an empty constructor");
 		}
 		
-		if (flagAnnotation.hasCommands()) {
-			CommandManager manager = heavySpleef.getCommandManager();
-			manager.registerSpleefCommands(clazz);
+		HookManager hookManager = heavySpleef.getHookManager();
+		boolean allHooksPresent = true;
+		for (HookReference ref : flagAnnotation.depend()) {
+			if (!hookManager.getHook(ref).isProvided()) {
+				allHooksPresent = false;
+			}
+		}
+		
+		if (allHooksPresent) {
+			for (Method method : clazz.getDeclaredMethods()) {
+				if (!method.isAnnotationPresent(FlagInit.class)) {
+					continue;
+				}
+				
+				if ((method.getModifiers() & Modifier.STATIC) == 0) {
+					throw new IllegalArgumentException("Flag initialization method " + method.getName() + " in type " + clazz.getCanonicalName()
+							+ " is not declared as static");
+				}
+				
+				queuedInitMethods.add(method);
+			}
+			
+			if (flagAnnotation.hasCommands()) {
+				CommandManager manager = heavySpleef.getCommandManager();
+				manager.registerSpleefCommands(clazz);
+			}
 		}
 		
 		registeredFlagsMap.put(path, flagAnnotation, clazz);
+	}
+	
+	public void flushAndExecuteInitMethods() {
+		while (!queuedInitMethods.isEmpty()) {
+			Method method = queuedInitMethods.poll();
+			
+			boolean accessible = method.isAccessible();
+			if (!accessible) {
+				method.setAccessible(true);
+			}
+			
+			Class<?>[] parameters = method.getParameterTypes();
+			Object[] args = new Object[parameters.length];
+			
+			for (int i = 0; i < parameters.length; i++) {
+				Class<?> parameter = parameters[i];
+				if (parameter == HeavySpleef.class) {
+					args[i] = heavySpleef;
+				}
+			}
+			
+			try {
+				method.invoke(null, args);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new IllegalArgumentException("Could not invoke flag initialization method " + method.getName() + " of type "
+						+ method.getDeclaringClass().getCanonicalName() + ": ", e);
+			} finally {
+				method.setAccessible(accessible);
+			}
+		}
 	}
 	
 	public Flag getFlagData(Class<? extends AbstractFlag<?>> clazz) {
