@@ -35,6 +35,7 @@ public class DefaultConfig extends ConfigurationObject {
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
 	private Map<GameProperty, Object> defaultGameProperties;
 	private Localization localization;
+	private FlagSection flagSection;
 	
 	public DefaultConfig(Configuration config) {
 		super(config);
@@ -63,6 +64,9 @@ public class DefaultConfig extends ConfigurationObject {
 		
 		ConfigurationSection localizationSection = config.getConfigurationSection("localization");
 		this.localization = new Localization(localizationSection);
+		
+		ConfigurationSection flagSection = config.getConfigurationSection("flags");
+		this.flagSection = new FlagSection(flagSection);
 	}
 	
 	public Object getGameProperty(GameProperty property) {
@@ -75,6 +79,10 @@ public class DefaultConfig extends ConfigurationObject {
 	
 	public Localization getLocalization() {
 		return localization;
+	}
+	
+	public FlagSection getFlagSection() {
+		return flagSection;
 	}
 	
 	private static GameProperty mapPropertyString(String configKey) {
