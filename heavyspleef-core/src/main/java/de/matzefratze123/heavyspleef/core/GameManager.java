@@ -53,18 +53,28 @@ public class GameManager {
 	}
 	
 	public Game deleteGame(String name) {
-		Game game = games.remove(name);
+		Game game = games.remove(getRealGameName(name));
 		
 		databaseHandler.deleteGame(game, null);
 		return game;
 	}
 	
 	public boolean hasGame(String name) {
-		return games.containsKey(name);
+		return games.containsKey(getRealGameName(name));
 	}
 	
 	public Game getGame(String name) {
-		return games.get(name);
+		return games.get(getRealGameName(name));
+	}
+	
+	private String getRealGameName(String name) {
+		for (String gameName : games.keySet()) {
+			if (gameName.equalsIgnoreCase(name)) {
+				return gameName;
+			}
+		}
+		
+		return null;
 	}
 	
 	public Game getGame(SpleefPlayer player) {
