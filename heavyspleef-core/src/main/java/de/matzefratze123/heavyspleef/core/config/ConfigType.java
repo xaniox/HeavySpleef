@@ -29,6 +29,10 @@ public enum ConfigType {
 	DEFAULT_CONFIG("config.yml", "/config.yml", DefaultConfig.class),
 	DATABASE_CONFIG("database-config.yml", "/database-config.yml", DatabaseConfig.class),
 	JOIN_SIGN_LAYOUT_CONFIG("layout/layout_join-sign.yml", "/layout/layout_join-sign.yml", SignLayoutConfiguration.class),
+	LEAVE_SIGN_LAYOUT_CONFIG("layout/layout_leave-sign.yml", "/layout/layout_leave-sign.yml", SignLayoutConfiguration.class),
+	START_SIGN_LAYOUT_CONFIG("layout/layout_start-sign.yml", "/layout/layout_start-sign.yml", SignLayoutConfiguration.class),
+	VOTE_SIGN_LAYOUT_CONFIG("layout/layout_vote-sign.yml", "/layout/layout_vote-sign.yml", SignLayoutConfiguration.class),
+	SPECTATE_SIGN_LAYOUT_CONFIG("layout/layout_spectate-sign.yml", "/layout/layout_spectate-sign.yml", SignLayoutConfiguration.class),
 	INFO_WALL_SIGN_LAYOUT_CONFIG("layout/layout_info-wall-sign.yml", "/layout/layout_info-wall-sign.yml", SignLayoutConfiguration.class);
 
 	private String destinationFileName;

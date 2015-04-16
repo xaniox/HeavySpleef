@@ -51,6 +51,9 @@ import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.ThrowingConfigurationObject.UnsafeException;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
+import de.matzefratze123.heavyspleef.core.extension.JoinSignExtension;
+import de.matzefratze123.heavyspleef.core.extension.LeaveSignExtension;
+import de.matzefratze123.heavyspleef.core.extension.StartSignExtension;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
@@ -73,6 +76,7 @@ public final class HeavySpleef {
 	private Map<ConfigType, ConfigurationObject> configurations;
 	
 	private ModuleManager moduleManager;
+	
 	@Getter
 	private FlagRegistry flagRegistry;
 	@Getter
@@ -112,6 +116,7 @@ public final class HeavySpleef {
 		layoutDir.mkdirs();
 		File flagDir = new File(getDataFolder(), "flags");
 		flagDir.mkdirs();
+		
 		flagRegistry = new FlagRegistry(this, flagDir);
 		
 		configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
@@ -140,8 +145,13 @@ public final class HeavySpleef {
 	public void enable() {
 		gameManager = new GameManager(databaseHandler);
 		
-		extensionRegistry = new ExtensionRegistry(commandManager);
+		extensionRegistry = new ExtensionRegistry(this);
 		extensionRegistry.registerExtension(ExtensionLobbyWall.class);
+		extensionRegistry.registerExtension(JoinSignExtension.class);
+		extensionRegistry.registerExtension(LeaveSignExtension.class);
+		extensionRegistry.registerExtension(StartSignExtension.class);
+		
+		flagRegistry.flushAndExecuteInitMethods();
 		
 		//Load all games
 		databaseHandler.getGames(new FutureCallback<List<Game>>() {
