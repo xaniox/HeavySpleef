@@ -73,6 +73,13 @@ command:
   statistic-format: "Global player rank: $[place]\nWins: $[wins]\nLost: $[losses]\nKnockouts: $[knockouts]\nGames played: $[games-played]\nBlocks broken: $[blocks-broken]\nTime played: $[time-played]\nRating: $[rating]\nKills / Deaths (KD): $[knockouts-per-death]\nWins / Lose (WL): $[wins-per-lose]\nKills per game: $[knockouts-per-game]"
   statistic-footer: "---------------------------------------------"
   statistic-cache-cleared: "Statistic cache was successfully cleared"
+  
+  no-vote-enabled: "Voting is not enabled for this game"
+  successfully-voted: "You successfully voted to start the game"
+  already-voted: "You have already voted"
+  
+  cannot-do-that-ingame: "You cannot do that while ingame"
+  game-doesnt-allow-spectate: "Spectating is not enabled for this game"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -87,6 +94,7 @@ broadcast:
   game-timedout-countdown: "Game times out in $[minutes]:$[seconds] minutes"
   
   team-is-out: "Team $[color] lost and left the game"
+  need-floors: "This game needs at least one floor to start"
 player:
   player-leave: "You left the game."
   player-kick: "You were kicked by $[kicker]: $[message]"
@@ -110,6 +118,8 @@ player:
   team-selector-title: "Team Selection"
   click-to-join-team: "Join Team"
   need-min-players: "Need at least $[amount] players to start the game!"
+  
+  no-sign-available: "Signtype \"$[identifier]\" is not available"
 help:
   description:
     clearcache: "Clears the statistic cache"

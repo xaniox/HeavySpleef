@@ -98,6 +98,13 @@ public interface Messages {
 
 		public static final String STATISTIC_CACHE_CLEARED = PREFIX + "statistic-cache-cleared";
 		
+		public static final String NO_VOTE_ENABLED = PREFIX + "no-vote-enabled";
+		public static final String SUCCESSFULLY_VOTED = PREFIX + "successfully-voted";
+		public static final String ALREADY_VOTED = PREFIX + "already-voted";
+
+		public static final String CANNOT_DO_THAT_INGAME = PREFIX + "cannot-do-that-ingame";
+		public static final String GAME_DOESNT_ALLOW_SPECTATE = PREFIX + "game-doesnt-allow-spectate";
+		
 	}
 	
 	public interface Broadcast {
@@ -118,7 +125,7 @@ public interface Messages {
 		
 		public static final String TEAM_IS_OUT = PREFIX + "team-is-out"; // $[color]
 
-		public static final String NEED_FLOORS = "need-floors";
+		public static final String NEED_FLOORS = PREFIX + "need-floors";
 
 		
 	}
@@ -155,6 +162,8 @@ public interface Messages {
 		public static final String TEAM_SELECTOR_TITLE = PREFIX + "team-selector-title";
 		public static final String CLICK_TO_JOIN_TEAM = PREFIX + "click-to-join-team";
 		public static final String NEED_MIN_PLAYERS = PREFIX + "need-min-players"; // $[amount]
+
+		public static final String NO_SIGN_AVAILABLE = PREFIX + "no-sign-available"; //$[identifier]
 		
 	}
 	
@@ -178,6 +187,7 @@ public interface Messages {
 			public static final String KICK = PREFIX + "kick";
 			public static final String LEAVE = PREFIX + "leave";
 			public static final String LIST = PREFIX + "list";
+			public static final String SAVE = PREFIX + "save";
 			public static final String START = PREFIX + "start";
 			public static final String STATS = PREFIX + "stats";
 			public static final String STOP = PREFIX + "stop";
@@ -189,6 +199,7 @@ public interface Messages {
 			public static final String ADDDEATHZONE = PREFIX + "adddeathzone";
 			public static final String REMOVEDEATHZONE = PREFIX + "removedeathzone";
 			public static final String SHOWDEATHZONE = PREFIX + "showdeathzone";
+			public static final String VOTE = PREFIX + "vote";
 			
 		}
 		

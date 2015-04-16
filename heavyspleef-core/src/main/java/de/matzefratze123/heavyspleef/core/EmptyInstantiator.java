@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.extension;
+package de.matzefratze123.heavyspleef.core;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-import org.bukkit.event.Listener;
+public class EmptyInstantiator<T> implements Instantiator<T> {
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.event.SpleefListener;
-import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
+	@Override
+	public T newInstance(Class<T> clazz, InstantitatorArgs args) throws InstantiationException {
+		try {
+			Constructor<T> constr = clazz.getConstructor();
+			return constr.newInstance();
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			throw new InstantiationException(e.getMessage());
+		}
+	}
 
-@Getter @Setter
-public abstract class GameExtension implements SpleefListener, Listener, XMLMarshallable {
-	
-	protected HeavySpleef heavySpleef;
-	protected Game game;
-	
 }

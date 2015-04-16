@@ -217,6 +217,8 @@ public class GameAccessor extends XMLAccessor<Game> {
 				continue;
 			}
 			
+			extension.setHeavySpleef(heavySpleef);
+			extension.setGame(game);
 			extension.unmarshal(extensionElement);
 			game.addExtension(extension);
 		}

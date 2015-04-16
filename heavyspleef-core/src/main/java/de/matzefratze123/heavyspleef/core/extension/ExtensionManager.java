@@ -20,16 +20,22 @@ package de.matzefratze123.heavyspleef.core.extension;
 import java.util.Collections;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+
 import com.google.common.collect.Sets;
 
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.EventManager;
 
 public class ExtensionManager {
 	
+	private final HeavySpleef heavySpleef;
 	private final EventManager eventManager;
 	private Set<GameExtension> extensions;
 	
-	protected ExtensionManager(EventManager eventManager) {
+	protected ExtensionManager(HeavySpleef heavySpleef, EventManager eventManager) {
+		this.heavySpleef = heavySpleef;
 		this.eventManager = eventManager;
 		this.extensions = Sets.newHashSet();
 	}
@@ -39,11 +45,14 @@ public class ExtensionManager {
 			throw new IllegalArgumentException("This extension has already been registered on this ExtensionManager");
 		}
 		
+		extension.setHeavySpleef(heavySpleef);
+		Bukkit.getPluginManager().registerEvents(extension, heavySpleef.getPlugin());
 		eventManager.registerListener(extension);
 		extensions.add(extension);
 	}
 	
 	public void removeExtension(GameExtension extension) {
+		HandlerList.unregisterAll(extension);
 		eventManager.unregister(extension);
 		extensions.remove(extension);
 	}

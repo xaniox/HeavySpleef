@@ -17,20 +17,28 @@
  */
 package de.matzefratze123.heavyspleef.core.extension;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-import org.bukkit.event.Listener;
+import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.event.SpleefListener;
-import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
+import de.matzefratze123.heavyspleef.core.Instantiator;
 
-@Getter @Setter
-public abstract class GameExtension implements SpleefListener, Listener, XMLMarshallable {
-	
-	protected HeavySpleef heavySpleef;
-	protected Game game;
-	
+public class SignExtensionInstantiator implements Instantiator<SignExtension> {
+
+	@Override
+	public SignExtension newInstance(Class<SignExtension> clazz, InstantitatorArgs args) throws InstantiationException {
+		try {
+			Constructor<SignExtension> constr = clazz.getDeclaredConstructor(Location.class, Game.class);
+			
+			Location location = args.getFirst(Location.class);
+			Game game = args.getFirst(Game.class);
+			
+			return constr.newInstance(location, game);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			throw new InstantiationException(e.getMessage());
+		}
+	}
+
 }

@@ -17,20 +17,13 @@
  */
 package de.matzefratze123.heavyspleef.core.extension;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.bukkit.event.Listener;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ExtensionInit {
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.event.SpleefListener;
-import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
-
-@Getter @Setter
-public abstract class GameExtension implements SpleefListener, Listener, XMLMarshallable {
-	
-	protected HeavySpleef heavySpleef;
-	protected Game game;
-	
 }

@@ -73,6 +73,13 @@ command:
   statistic-format: "Globaler Spielerrang: $[place]\nGewonnen: $[wins]\nVerloren: $[losses]\nKnockouts: $[knockouts]\nAnzahl Spiele: $[games-played]\nBlöcke zerstört: $[blocks-broken]\nZeit gespielt: $[time-played]\nRating: $[rating]\nKnockouts / Deaths (KD): $[knockouts-per-death]\nWins / Lose (WL): $[wins-per-lose]\nKnockouts pro Spiel: $[knockouts-per-game]"
   statistic-footer: "---------------------------------------------"
   statistic-cache-cleared: "Statistik-Cache wurde erfolgreich geleert"
+  
+  no-vote-enabled: "Dieses Spiel unterstützt kein Voting"
+  successfully-voted: "Du hast erfolgreich dafür gestimmt, das Spiel zu starten"
+  already-voted: "Du hast bereits gevoted"
+  
+  cannot-do-that-ingame: "Du kannst das nicht im Spiel ausführen"
+  game-doesnt-allow-spectate: "Dieses Spiel unterstützt keinen Spectate- / Beobachtungsmodus"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -87,6 +94,7 @@ broadcast:
   game-timedout-countdown: "Spiel endet in $[minutes]:$[seconds] Minuten"
   
   team-is-out: "Das Team $[color] hat verloren und ist ausgeschieden"
+  need-floors: "Dieses Spiel benötigt mindestens eine Ebene um zu Starten"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"
@@ -110,6 +118,8 @@ player:
   team-selector-title: "Teamauswahl"
   click-to-join-team: "Team beitreten"
   need-min-players: "Es werden mindestens $[amount] Spieler zum Starten benötigt"
+  
+  no-sign-available: "Der Schildtyp \"$[identifier]\" ist nicht verfügbar"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"

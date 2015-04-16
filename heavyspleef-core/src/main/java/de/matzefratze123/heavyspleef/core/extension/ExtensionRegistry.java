@@ -18,23 +18,30 @@
 package de.matzefratze123.heavyspleef.core.extension;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Set;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.EventManager;
 
 public class ExtensionRegistry {
 	
-	private final CommandManager commandManager;
+	private final HeavySpleef heavySpleef;
 	private BiMap<String, Class<? extends GameExtension>> registeredExtensions;
 	
-	public ExtensionRegistry(CommandManager commandManager) {
+	public ExtensionRegistry(HeavySpleef heavySpleef) {
 		this.registeredExtensions = HashBiMap.create();
-		this.commandManager = commandManager;
+		this.heavySpleef = heavySpleef;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void registerExtension(Class<? extends GameExtension> extClass) {
 		if (registeredExtensions.containsValue(extClass)) {
 			throw new IllegalArgumentException("This extension type has already been registered");
@@ -62,11 +69,62 @@ public class ExtensionRegistry {
 			throw new IllegalArgumentException("Failed to find empty constructor on extension class", e);
 		}
 		
+		Class<? extends GameExtension> currentClass = extClass;
+		
+		do {
+			for (Method method : currentClass.getDeclaredMethods()) {
+				if (!method.isAnnotationPresent(ExtensionInit.class)) {
+					continue;
+				}
+				
+				if ((method.getModifiers() & Modifier.STATIC) == 0) {
+					throw new IllegalArgumentException("Init method " + method.getName() + " of type " + extClass.getCanonicalName() + " is not static!");
+				}
+				
+				boolean accessible = method.isAccessible();
+				if (!accessible) {
+					method.setAccessible(true);
+				}
+				
+				Class<?>[] parameters = method.getParameterTypes();
+				Object[] args = new Object[parameters.length];
+				
+				for (int i = 0; i < parameters.length; i++) {
+					Class<?> parameter = parameters[i];
+					if (parameter == HeavySpleef.class) {
+						args[i] = heavySpleef;
+					}
+				}
+				
+				try {
+					method.invoke(null, args);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw new IllegalArgumentException(
+							"Cannot invoke init method " + method.getName() + " of type " + extClass.getCanonicalName() + ": ", e);
+				} finally {
+					method.setAccessible(accessible);
+				}
+			}
+			
+			currentClass = (Class<? extends GameExtension>) currentClass.getSuperclass();
+		} while (!isRegistered(currentClass) && currentClass != GameExtension.class); 
+		
 		if (annotation.hasCommands()) {
-			commandManager.registerSpleefCommands(extClass);
+			CommandManager manager = heavySpleef.getCommandManager();
+			manager.registerSpleefCommands(extClass);
 		}
 		
 		registeredExtensions.put(name, extClass);
+	}
+	
+	private boolean isRegistered(Class<? extends GameExtension> clazz) {
+		for (Class<? extends GameExtension> extClass : registeredExtensions.values()) {
+			if (clazz.isAssignableFrom(extClass)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public Class<? extends GameExtension> getExtensionClass(String name) {
@@ -78,8 +136,20 @@ public class ExtensionRegistry {
 	}
 	
 	public ExtensionManager newManagerInstance(EventManager eventManager) {
-		ExtensionManager manager = new ExtensionManager(eventManager);
+		ExtensionManager manager = new ExtensionManager(heavySpleef, eventManager);
 		return manager;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends GameExtension> Set<Class<? extends T>> getExtensionsByType(Class<T> clazz) {
+		Set<Class<? extends T>> set = Sets.newHashSet();
+		for (Class<? extends GameExtension> extClass : registeredExtensions.values()) {
+			if (clazz.isAssignableFrom(extClass)) {
+				set.add((Class<? extends T>) extClass);
+			}
+		}
+		
+		return set;
 	}
 	
 }
