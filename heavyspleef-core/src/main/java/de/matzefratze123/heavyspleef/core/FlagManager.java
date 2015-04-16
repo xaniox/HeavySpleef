@@ -126,6 +126,16 @@ public class FlagManager {
 		return flags.containsKey(name);
 	}
 	
+	public boolean isFlagPresent(Class<? extends AbstractFlag<?>> clazz) {
+		for (AbstractFlag<?> val : flags.values()) {
+			if (clazz.isInstance(val)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public Map<String, AbstractFlag<?>> getPresentFlags() {
 		return Collections.unmodifiableMap(flags);
 	}
