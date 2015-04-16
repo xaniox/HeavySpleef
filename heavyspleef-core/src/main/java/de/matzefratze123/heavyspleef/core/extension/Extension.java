@@ -29,5 +29,5 @@ public @interface Extension {
 	public String name();
 	
 	public boolean hasCommands() default false;
-
+	
 }

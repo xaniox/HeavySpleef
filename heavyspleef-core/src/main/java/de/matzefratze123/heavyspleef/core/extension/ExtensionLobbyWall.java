@@ -63,7 +63,7 @@ import de.matzefratze123.heavyspleef.core.layout.VariableProvider;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 @Extension(name = "lobby-wall", hasCommands = true)
-public class ExtensionLobbyWall implements GameExtension {
+public class ExtensionLobbyWall extends GameExtension {
 
 	private static final String INGAME_PLAYER_PREFIX_KEY = "ingame-player-prefix";
 	private static final String DEAD_PLAYER_PREFIX_KEY = "dead-player-prefix";
