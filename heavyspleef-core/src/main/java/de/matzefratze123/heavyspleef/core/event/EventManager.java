@@ -72,7 +72,7 @@ public class EventManager {
 			try {
 				method.invoke(event);
 			} catch (Throwable t) {
-				logger.log(Level.SEVERE, "Could not pass " + event.getClass().getSimpleName() + " to method " + method.getMethodName(), t);
+				logger.log(Level.SEVERE, "Could not pass " + event.getClass().getSimpleName() + " of class " + method.getDeclaringClass().getCanonicalName(), t);
 			}
 		}
 	}
