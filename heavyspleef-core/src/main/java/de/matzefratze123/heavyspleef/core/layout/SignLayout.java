@@ -56,8 +56,18 @@ public class SignLayout {
 	}
 	
 	public <T> boolean inflate(Sign sign, VariableProvider<T> provider, T obj) {
+		String[] result = generate(provider, obj);
+		for (int i = 0; i < result.length; i++) {
+			sign.setLine(i, result[i]);
+		}
+		
+		return sign.update();
+	}
+
+	public <T> String[] generate(VariableProvider<T> provider, T obj) {
 		Set<Variable> vars = Sets.newHashSet();
 		Set<String> requested = Sets.newHashSet();
+		String[] result = new String[LINE_COUNT];
 		
 		for (SignLine line : lines) {
 			line.getRequestedVariables(requested);
@@ -69,10 +79,10 @@ public class SignLayout {
 			String strLine = lines.get(i).generate(vars);
 			strLine = ChatColor.translateAlternateColorCodes(TRANSLATE_CHAR, strLine);
 			
-			sign.setLine(i, strLine);
+			result[i] = strLine;
 		}
 		
-		return sign.update();
+		return result;
 	}
 	
 }
