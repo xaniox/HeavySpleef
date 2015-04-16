@@ -57,7 +57,7 @@ public class CommandFlag {
 		Player player = context.getSender();
 		FlagRegistry registry = heavySpleef.getFlagRegistry();
 		
-		if (context.argsLength() <= 2) {
+		if (context.argsLength() < 2) {
 			//Print some fancy information about available flags
 			printAvailableFlags(registry, player);
 			return;
@@ -72,9 +72,9 @@ public class CommandFlag {
 		
 		Game game = manager.getGame(gameName);
 		String flagPath = context.getString(1);
-		String removeIdentifier = context.getString(2);
+		String removeIdentifier = context.getStringSafely(2);
 		
-		if (context.argsLength() > 3 && (removeIdentifier.equalsIgnoreCase("remove") || removeIdentifier.equalsIgnoreCase("clear"))) {
+		if (context.argsLength() > 2 && (removeIdentifier.equalsIgnoreCase("remove") || removeIdentifier.equalsIgnoreCase("clear"))) {
 			CommandValidate.isTrue(game.isFlagPresent(flagPath), i18n.getVarString(Messages.Command.FLAG_NOT_PRESENT)
 					.setVariable("flag", flagPath)
 					.toString());
@@ -134,6 +134,8 @@ public class CommandFlag {
 					.setVariable("flag", flagData.name())
 					.toString());
 		}
+		
+		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
 	
 	private void printAvailableFlags(FlagRegistry registry, CommandSender sender) {

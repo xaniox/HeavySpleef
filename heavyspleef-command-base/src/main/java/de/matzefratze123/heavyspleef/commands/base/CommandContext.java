@@ -40,6 +40,14 @@ public class CommandContext {
 		return args[index];
 	}
 	
+	public String getStringSafely(int index) {
+		try {
+			return getString(index);
+		} catch (CommandException e) {
+			return "";
+		}
+	}
+	
 	public Integer getInt(int index) throws CommandException {
 		checkBounds(index);
 		
