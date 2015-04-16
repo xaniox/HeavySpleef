@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Sets;
@@ -32,9 +33,18 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
+import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.extension.Extension;
+import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
+import de.matzefratze123.heavyspleef.core.extension.SignExtension;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
@@ -65,11 +75,21 @@ public class FlagSpectate extends LocationFlag {
 		
 		if (spectateFlag.isSpectating(spleefPlayer)) {			
 			spectateFlag.spectate(spleefPlayer, game);
-			spleefPlayer.sendMessage(i18n.getString(Messages.Player.PLAYER_SPECTATE));
+			spleefPlayer.sendMessage(i18n.getVarString(Messages.Player.PLAYER_SPECTATE)
+					.setVariable("game", game.getName())
+					.toString());
 		} else {
 			spectateFlag.leave(spleefPlayer);
-			spleefPlayer.sendMessage(i18n.getString(Messages.Player.PLAYER_LEAVE_SPECTATE));
+			spleefPlayer.sendMessage(i18n.getVarString(Messages.Player.PLAYER_LEAVE_SPECTATE)
+					.setVariable("game", game.getName())
+					.toString());
 		}
+	}
+	
+	@FlagInit
+	public static void initSpectateSign(HeavySpleef heavySpleef) {
+		ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
+		registry.registerExtension(SpectateSignExtension.class);
 	}
 	
 	public FlagSpectate() {
@@ -79,6 +99,18 @@ public class FlagSpectate extends LocationFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Enables the spectate mode for Spleef");
+	}
+	
+	@GameEventHandler
+	public void onPlayerPreJoin(PlayerPreJoinGameEvent event) {
+		SpleefPlayer player = event.getPlayer();
+		
+		if (isSpectating(player)) {
+			leave(player);
+			player.sendMessage(getI18N().getVarString(Messages.Player.PLAYER_LEAVE_SPECTATE)
+					.setVariable("game", event.getGame().getName())
+					.toString());
+		}
 	}
 	
 	public void spectate(SpleefPlayer player, Game game) {
@@ -102,6 +134,59 @@ public class FlagSpectate extends LocationFlag {
 	
 	public boolean isSpectating(SpleefPlayer player) {
 		return spectators.contains(player);
+	}
+	
+	@Extension(name = "spectate-sign")
+	public static class SpectateSignExtension extends SignExtension {
+
+		public static final String IDENTIFIER = "spectate";
+		private final I18N i18n = I18N.getInstance();
+		
+		@SuppressWarnings("unused")
+		private SpectateSignExtension() {}
+		
+		public SpectateSignExtension(Location location) {
+			super(location);
+		}
+
+		@Override
+		public void onSignClick(SpleefPlayer player) {
+			GameManager manager = getHeavySpleef().getGameManager();
+			
+			if (manager.getGame(player) != null) {
+				player.sendMessage(i18n.getString(Messages.Command.CANNOT_DO_THAT_INGAME));
+				return;
+			}
+			
+			Game game = getGame();
+			if (!game.isFlagPresent(FlagSpectate.class)) {
+				player.sendMessage(i18n.getVarString(Messages.Command.GAME_DOESNT_ALLOW_SPECTATE)
+						.setVariable("game", game.getName())
+						.toString());
+				return;
+			}
+			
+			FlagSpectate flag = game.getFlag(FlagSpectate.class);
+			
+			if (flag.isSpectating(player)) {
+				flag.leave(player);
+				player.sendMessage(i18n.getVarString(Messages.Player.PLAYER_LEAVE_SPECTATE)
+						.setVariable("game", game.getName())
+						.toString());
+			} else {
+				flag.spectate(player, game);
+				player.sendMessage(i18n.getVarString(Messages.Player.PLAYER_SPECTATE)
+						.setVariable("game", game.getName())
+						.toString());
+			}
+		}
+		
+		@Override
+		public SignLayout getSignLayout() {
+			SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.SPECTATE_SIGN_LAYOUT_CONFIG);
+			return config.getLayout();
+		}
+		
 	}
 	
 }
