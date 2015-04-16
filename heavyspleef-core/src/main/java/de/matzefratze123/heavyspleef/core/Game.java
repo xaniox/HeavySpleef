@@ -430,6 +430,10 @@ public class Game {
 		
 		ingamePlayers.add(player);
 		
+		if (gameState == GameState.WAITING) {
+			setGameState(GameState.LOBBY);
+		}
+		
 		//Store a reference to the player state
 		player.savePlayerState(this);
 		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
@@ -466,7 +470,7 @@ public class Game {
 		leave(player, QuitCause.SELF);
 	}
 	
-	private void leave(SpleefPlayer player, QuitCause cause, Object... args) {
+	public void leave(SpleefPlayer player, QuitCause cause, Object... args) {
 		if (!ingamePlayers.contains(player)) {
 			return;
 		}
@@ -587,6 +591,11 @@ public class Game {
 		if (ingamePlayers.size() == 1 && checkWin) {
 			SpleefPlayer playerLeft = ingamePlayers.iterator().next();
 			requestWin(playerLeft);
+		} else if (ingamePlayers.size() == 0) {
+			GameEndEvent event = new GameEndEvent(this);
+			eventManager.callEvent(event);
+			
+			resetGame();
 		}
 	}
 	
@@ -619,6 +628,10 @@ public class Game {
 		return ingamePlayers;
 	}
 	
+	public boolean isIngame(SpleefPlayer player) {
+		return ingamePlayers.contains(player);
+	}
+	
 	public void registerGameListener(SpleefListener listener) {
 		eventManager.registerListener(listener);
 	}
@@ -643,6 +656,10 @@ public class Game {
 	
 	public boolean isFlagPresent(String path) {
 		return flagManager.isFlagPresent(path);
+	}
+	
+	public boolean isFlagPresent(Class<? extends AbstractFlag<?>> clazz) {
+		return flagManager.isFlagPresent(clazz);
 	}
 	
 	public <T extends AbstractFlag<?>> T getFlag(Class<T> flag) {
