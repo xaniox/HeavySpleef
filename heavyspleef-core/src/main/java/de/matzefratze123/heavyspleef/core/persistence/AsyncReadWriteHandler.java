@@ -56,5 +56,7 @@ public interface AsyncReadWriteHandler {
 	public ListenableFuture<Map<String, Statistic>> getStatistics(String[] players, FutureCallback<Map<String, Statistic>> callback);
 
 	public void clearCache();
+
+	public ListenableFuture<?> forceCacheSave(FutureCallback<Void> callback);
 	
 }

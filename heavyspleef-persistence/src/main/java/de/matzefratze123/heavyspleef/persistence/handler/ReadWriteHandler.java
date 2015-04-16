@@ -58,5 +58,7 @@ public interface ReadWriteHandler {
 	public Map<String, Statistic> getTopStatistics(int offset, int limit) throws SQLException, ExecutionException;
 
 	public void clearCache();
+
+	public void forceCacheSave() throws SQLException;
 	
 }

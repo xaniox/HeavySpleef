@@ -225,6 +225,17 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 		delegate.clearCache();
 	}
 	
+	@Override
+	public ListenableFuture<?> forceCacheSave(FutureCallback<Void> callback) {
+		return runCallableThreadDynamic(new VoidCallable() {
+			
+			@Override
+			public void voidCall() throws Exception {
+				delegate.forceCacheSave();
+			}
+		}, callback);
+	}
+	
 	public <R> ListenableFuture<R> runCallableThreadDynamic(Callable<R> callable, FutureCallback<R> callback) {
 		ListenableFuture<R> future = null;
 		

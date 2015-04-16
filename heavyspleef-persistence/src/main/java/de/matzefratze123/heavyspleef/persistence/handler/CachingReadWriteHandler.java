@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -480,6 +481,12 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		if (statisticCache != null) {
 			statisticCache.asMap().clear();
 		}
+	}
+	
+	@Override
+	public void forceCacheSave() throws SQLException {
+		Collection<Statistic> cachedStatistics = statisticCache.asMap().values();
+		saveStatistics(cachedStatistics);
 	}
 	
 	private void validateSqlDatabaseSetup() {
