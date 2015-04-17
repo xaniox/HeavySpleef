@@ -69,7 +69,7 @@ public class CommandHelp {
 				.setVariable("max-pages", String.valueOf(maxPage))
 				.toString());
 		
-		for (int i = page; i < page + RECORDS_PER_PAGE; i++) {
+		for (int i = page * RECORDS_PER_PAGE; i < page * RECORDS_PER_PAGE + RECORDS_PER_PAGE; i++) {
 			CommandContainer child = childs.get(i);
 			
 			String desc = child.getDescription();
