@@ -90,7 +90,7 @@ command:
   help-header: "&6-------- &8&l[&aHeavySpleef Help - Page $[page]/$[max-pages] &8&l] &6--------"
   help-record: "&c- &6$[usage]\n&7  $[description]"
   
-  plugin-reloaded: "HeavySpleef v$[version] reloaded [$[time_dif_ms]ms]"
+  plugin-reloaded: "HeavySpleef v$[version] reloaded [$[time-dif-ms]ms]"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
