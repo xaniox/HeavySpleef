@@ -240,7 +240,7 @@ public final class HeavySpleef {
 		
 		final int bufferSize = 1024;
 		
-		try (InputStream inStream = connection.getInputStream(); 
+		try (InputStream inStream = connection.getInputStream();
 				FileOutputStream outStream = new FileOutputStream(destination)) {
 			byte[] buffer = new byte[bufferSize];
 			

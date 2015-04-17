@@ -81,6 +81,7 @@ command:
   cannot-do-that-ingame: "You cannot do that while ingame"
   game-doesnt-allow-spectate: "Spectating is not enabled for this game"
   
+  saving-data: "Saving data..."
   error-on-save: "An error occured while saving: $[detail-message]\nPlease check the log for more information"
   everything-saved: "All games and pending/cached statistics have been saved"
   statistics-saved: "Pending/Cached statistics saved"

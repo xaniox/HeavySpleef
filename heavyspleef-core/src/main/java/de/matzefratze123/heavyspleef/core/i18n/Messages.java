@@ -105,6 +105,7 @@ public interface Messages {
 		public static final String CANNOT_DO_THAT_INGAME = PREFIX + "cannot-do-that-ingame";
 		public static final String GAME_DOESNT_ALLOW_SPECTATE = PREFIX + "game-doesnt-allow-spectate";
 		
+		public static final String SAVING_DATA = PREFIX + "saving-data";
 		public static final String ERROR_ON_SAVE = PREFIX + "error-on-save";
 		public static final String EVERYTHING_SAVED = PREFIX + "everything-saved";
 		public static final String STATISTICS_SAVED = PREFIX + "statistics-saved";

@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.commands;
 
 import java.util.Collection;
+import java.util.logging.Level;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,8 @@ import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
 
 public class CommandSave {
 
+	private I18N i18n = I18N.getInstance();
+	
 	@Command(name = "save", permission = "heavyspleef.admin.save",
 			usage = "/spleef save [games|statistics|all]", descref = Messages.Help.Description.SAVE)
 	public void onSaveCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
@@ -56,6 +59,7 @@ public class CommandSave {
 		}
 		
 		AsyncReadWriteHandler handler = heavySpleef.getDatabaseHandler();
+		sender.sendMessage(i18n.getString(Messages.Command.SAVING_DATA));
 		operation.complete(handler, heavySpleef, sender);
 	}
 	
@@ -131,8 +135,7 @@ public class CommandSave {
 				receiver.sendMessage(i18n.getVarString(Messages.Command.ERROR_ON_SAVE)
 						.setVariable("error-message", t.toString())
 						.toString());
-				
-				
+				heavySpleef.getLogger().log(Level.SEVERE, "Exception occured while saving data: ", t);
 			}
 			
 		}
