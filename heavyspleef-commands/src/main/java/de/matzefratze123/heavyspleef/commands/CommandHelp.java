@@ -70,6 +70,10 @@ public class CommandHelp {
 				.toString());
 		
 		for (int i = page * RECORDS_PER_PAGE; i < page * RECORDS_PER_PAGE + RECORDS_PER_PAGE; i++) {
+			if (i >= childs.size()) {
+				break;
+			}
+			
 			CommandContainer child = childs.get(i);
 			
 			String desc = child.getDescription();
