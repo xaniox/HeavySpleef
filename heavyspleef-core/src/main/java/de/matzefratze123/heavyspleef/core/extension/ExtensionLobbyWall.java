@@ -104,6 +104,7 @@ public class ExtensionLobbyWall extends GameExtension {
 				ExtensionLobbyWall wall = generateWall(sign);
 				
 				game.addExtension(wall);
+				wall.updateWall(game, false);
 				player.sendMessage(i18n.getString(Messages.Command.WALL_ADDED));
 			}
 			
@@ -316,7 +317,7 @@ public class ExtensionLobbyWall extends GameExtension {
 		updateWall(game, true);
 	}
 	
-	private void updateWall(final Game game, final boolean reset) {
+	public void updateWall(final Game game, final boolean reset) {
 		final HeavySpleef heavySpleef = game.getHeavySpleef();
 		final VariableProvider<Game> varProvider = new GameVariableProvider();
 		
