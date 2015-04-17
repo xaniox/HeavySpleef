@@ -66,7 +66,7 @@ public class CommandHelp {
 		
 		sender.sendMessage(i18n.getVarString(Messages.Command.HELP_HEADER)
 				.setVariable("page", String.valueOf(page + 1))
-				.setVariable("max-page", String.valueOf(maxPage))
+				.setVariable("max-pages", String.valueOf(maxPage))
 				.toString());
 		
 		for (int i = page; i < page + RECORDS_PER_PAGE; i++) {
