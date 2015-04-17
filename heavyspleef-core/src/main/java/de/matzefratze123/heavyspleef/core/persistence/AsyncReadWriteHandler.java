@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Statistic;
+import de.matzefratze123.heavyspleef.core.persistence.OperationBatch.BatchResult;
 
 public interface AsyncReadWriteHandler {
 	
@@ -54,7 +55,9 @@ public interface AsyncReadWriteHandler {
 	public ListenableFuture<Map<String, Statistic>> getTopStatistics(int offset, int limit, FutureCallback<Map<String, Statistic>> callback);
 
 	public ListenableFuture<Map<String, Statistic>> getStatistics(String[] players, FutureCallback<Map<String, Statistic>> callback);
-
+	
+	public ListenableFuture<BatchResult> executeBatch(OperationBatch batch, FutureCallback<BatchResult> callback);
+	
 	public void clearCache();
 
 	public ListenableFuture<?> forceCacheSave(FutureCallback<Void> callback);

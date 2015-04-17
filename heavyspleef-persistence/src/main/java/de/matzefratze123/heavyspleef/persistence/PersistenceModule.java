@@ -27,9 +27,9 @@ import de.matzefratze123.heavyspleef.core.config.DatabaseConfig;
 import de.matzefratze123.heavyspleef.core.config.DatabaseConnection;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
 import de.matzefratze123.heavyspleef.persistence.handler.CachingReadWriteHandler;
 import de.matzefratze123.heavyspleef.persistence.handler.ForwardingAsyncReadWriteHandler;
-import de.matzefratze123.heavyspleef.persistence.handler.ReadWriteHandler;
 
 public class PersistenceModule extends SimpleModule {
 

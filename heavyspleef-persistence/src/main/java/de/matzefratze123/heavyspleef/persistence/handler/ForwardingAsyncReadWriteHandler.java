@@ -39,6 +39,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.core.persistence.OperationBatch;
+import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
+import de.matzefratze123.heavyspleef.core.persistence.OperationBatch.BatchResult;
 import de.matzefratze123.heavyspleef.persistence.MoreFutures;
 
 public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
@@ -218,6 +221,12 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 				return delegate.getTopStatistics(offset, limit);
 			}
 		}, callback);
+	}
+	
+	@Override
+	public ListenableFuture<BatchResult> executeBatch(OperationBatch batch, FutureCallback<BatchResult> callback) {
+		batch.setHandler(delegate);
+		return runCallableThreadDynamic(batch, callback);
 	}
 	
 	@Override
