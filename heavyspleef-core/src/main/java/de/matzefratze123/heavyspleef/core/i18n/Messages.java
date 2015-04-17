@@ -105,6 +105,11 @@ public interface Messages {
 		public static final String CANNOT_DO_THAT_INGAME = PREFIX + "cannot-do-that-ingame";
 		public static final String GAME_DOESNT_ALLOW_SPECTATE = PREFIX + "game-doesnt-allow-spectate";
 		
+		public static final String ERROR_ON_SAVE = PREFIX + "error-on-save";
+		public static final String EVERYTHING_SAVED = PREFIX + "everything-saved";
+		public static final String STATISTICS_SAVED = PREFIX + "statistics-saved";
+		public static final String GAMES_SAVED = PREFIX + "games-saved";
+		
 	}
 	
 	public interface Broadcast {
@@ -124,9 +129,7 @@ public interface Messages {
 		public static final String GAME_TIMEOUT_COUNTDOWN = PREFIX + "game-timeout-countdown"; // $[minutes]; $[seconds]
 		
 		public static final String TEAM_IS_OUT = PREFIX + "team-is-out"; // $[color]
-
 		public static final String NEED_FLOORS = PREFIX + "need-floors";
-
 		
 	}
 	

@@ -80,6 +80,11 @@ command:
   
   cannot-do-that-ingame: "Du kannst das nicht im Spiel ausführen"
   game-doesnt-allow-spectate: "Dieses Spiel unterstützt keinen Spectate- / Beobachtungsmodus"
+  
+  error-on-save: "Ein Fehler trat auf: $[detail-message]\nBitte prüfe den Log für mehr Informationen"
+  everything-saved: "Alle Spiele und zwischengespeicherte Statistiken wurden in gesichert"
+  statistics-saved: "Zwischengespeicherte Statistiken wurden gesichert"
+  games-saved: "Alle Spiele wurden gesichert"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -120,6 +125,7 @@ player:
   need-min-players: "Es werden mindestens $[amount] Spieler zum Starten benötigt"
   
   no-sign-available: "Der Schildtyp \"$[identifier]\" ist nicht verfügbar"
+  sign-removed: "Schild entfernt"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"
@@ -134,6 +140,7 @@ help:
     kick: "Wirft einen Spieler aus dem Spiel"
     leave: "Verlässt ein Spiel"
     list: "Listet alle Spiele auf dem Server auf"
+    save: "Sichert Statistiken, Spiele oder beides"
     start: "Start das jetzige Spiel oder eines mit Namen"
     stats: "Zeigt Spleef-Statistiken an"
     stop: "Stoppt das jetzige Spiel oder eines mit Namen"

@@ -80,6 +80,11 @@ command:
   
   cannot-do-that-ingame: "You cannot do that while ingame"
   game-doesnt-allow-spectate: "Spectating is not enabled for this game"
+  
+  error-on-save: "An error occured while saving: $[detail-message]\nPlease check the log for more information"
+  everything-saved: "All games and pending/cached statistics have been saved"
+  statistics-saved: "Pending/Cached statistics saved"
+  games-saved: "All games have been saved"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -120,6 +125,7 @@ player:
   need-min-players: "Need at least $[amount] players to start the game!"
   
   no-sign-available: "Signtype \"$[identifier]\" is not available"
+  sign-removed: "Sign removed"
 help:
   description:
     clearcache: "Clears the statistic cache"
@@ -134,6 +140,7 @@ help:
     kick: "Kicks a player"
     leave: "Leaves a game"
     list: "Lists all spleef games on the server"
+    save: "Saves statistics, games or both"
     start: "Starts the current game or one with a name"
     stats: "Shows Spleef statistics"
     stop: "Stops the current game or one with a name"
