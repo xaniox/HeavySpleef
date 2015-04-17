@@ -164,6 +164,7 @@ public interface Messages {
 		public static final String NEED_MIN_PLAYERS = PREFIX + "need-min-players"; // $[amount]
 
 		public static final String NO_SIGN_AVAILABLE = PREFIX + "no-sign-available"; //$[identifier]
+		public static final String SIGN_REMOVED = PREFIX + "sign-removed";
 		
 	}
 	

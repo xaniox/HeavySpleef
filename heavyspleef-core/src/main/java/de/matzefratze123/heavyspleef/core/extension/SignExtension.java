@@ -33,6 +33,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -222,6 +223,48 @@ public abstract class SignExtension extends GameExtension {
 			for (int i = 0; i < result.length; i++) {
 				event.setLine(i, result[i]);
 			}
+			
+			heavySpleef.getDatabaseHandler().saveGame(game, null);
+		}
+		
+		@EventHandler(priority = EventPriority.MONITOR)
+		public void onBlockBreak(BlockBreakEvent event) {
+			if (event.isCancelled()) {
+				return;
+			}
+			
+			GameManager manager = heavySpleef.getGameManager();
+			Block block = event.getBlock();
+			Location blockLoc = block.getLocation();			
+			
+			Game gameFound = null;
+			SignExtension found = null;
+			
+			for (Game game : manager.getGames()) {
+				for (SignExtension extension : game.getExtensionsByType(SignExtension.class)) {
+					Location location = extension.getLocation();
+					if (blockLoc.equals(location)) {
+						found = extension;
+						gameFound = game;
+						break;
+					}
+				}
+				
+				if (found != null) {
+					break;
+				}
+			}
+			
+			if (found == null) {
+				return;
+			}
+			
+			gameFound.removeExtension(found);
+			event.getPlayer().sendMessage(i18n.getVarString(Messages.Player.SIGN_REMOVED)
+					.setVariable("game", gameFound.getName())
+					.toString());
+			
+			heavySpleef.getDatabaseHandler().saveGame(gameFound, null);
 		}
 		
 	}
