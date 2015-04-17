@@ -112,6 +112,8 @@ public interface Messages {
 		
 		public static final String HELP_HEADER = PREFIX + "help-header";
 		public static final String HELP_RECORD = PREFIX + "help-record";
+
+		public static final String PLUGIN_RELOADED = PREFIX + "plugin-reloaded";
 		
 	}
 	
@@ -199,6 +201,7 @@ public interface Messages {
 			public static final String STATS = PREFIX + "stats";
 			public static final String STOP = PREFIX + "stop";
 			public static final String ADDFLOOR = PREFIX + "addfloor";
+			public static final String RELOAD = PREFIX + "reload";
 			public static final String REMOVEFLOOR = PREFIX + "removefloor";
 			public static final String SHOWFLOOR = PREFIX + "showfloor";
 			public static final String ADDWALL = PREFIX + "addwall";
@@ -207,6 +210,7 @@ public interface Messages {
 			public static final String REMOVEDEATHZONE = PREFIX + "removedeathzone";
 			public static final String SHOWDEATHZONE = PREFIX + "showdeathzone";
 			public static final String VOTE = PREFIX + "vote";
+
 			
 		}
 		

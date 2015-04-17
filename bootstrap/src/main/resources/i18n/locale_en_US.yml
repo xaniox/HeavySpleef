@@ -88,6 +88,8 @@ command:
   
   help-header: "&6-------- &8&l[&aHeavySpleef Help - Page $[page]/$[max-pages] &8&l] &6--------"
   help-record: "&c- &6$[usage]\n&7  $[description]"
+  
+  plugin-reloaded: "HeavySpleef v$[version] reloaded [$[time_dif_ms]ms]"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -143,6 +145,7 @@ help:
     kick: "Kicks a player"
     leave: "Leaves a game"
     list: "Lists all spleef games on the server"
+    reload: "Reloads the plugin"
     save: "Saves statistics, games or both"
     start: "Starts the current game or one with a name"
     stats: "Shows Spleef statistics"

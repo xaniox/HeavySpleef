@@ -67,7 +67,7 @@ public class I18N {
 	private ResourceBundle bundle;
 	
 	public static void initialize(Locale locale, File localeDir, Logger logger) {
-		instance = new I18N(locale, localeDir, logger); 
+		instance = new I18N(locale, localeDir, logger);
 	}
 	
 	public static void setDefaultLocale(Locale locale) {
@@ -93,6 +93,14 @@ public class I18N {
 		
 		this.locale = locale;
 		
+		load();
+	}
+	
+	public void reload() {
+		load();
+	}
+	
+	private void load() {
 		try {
 			checkResourcesAndCopy();
 		} catch (IOException e) {
@@ -103,7 +111,7 @@ public class I18N {
 		loadBundle();
 	}
 	
-	public void loadBundle() {
+	private void loadBundle() {
 		try {
 			bundle = ResourceBundle.getBundle("locale", locale, defaultControl);
 		} catch (MissingResourceException mre) {
@@ -185,7 +193,8 @@ public class I18N {
 			
 			if (changesToCommit) {
 				//Manually write the configuration as Bukkit's
-				//configuration API does not provide custom encoding...
+				//configuration API does not provide custom encoding when
+				//the standard charset does not support unicode...
 				final YamlConfigurationOptions options = fileConfig.options();
 				final YamlRepresenter representer = new YamlRepresenter();
 				

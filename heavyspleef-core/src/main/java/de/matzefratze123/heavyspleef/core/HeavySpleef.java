@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -98,6 +99,7 @@ public final class HeavySpleef {
 	private BukkitListener bukkitListener;
 	@Getter
 	private RegionVisualizer regionVisualizer;
+	private File localeDir;
 	
 	@Getter
 	private PlayerPostActionHandler postActionHandler;
@@ -110,7 +112,7 @@ public final class HeavySpleef {
 	public void load() {
 		File dataFolder = getDataFolder();
 		
-		File localeDir = new File(dataFolder, "locale");
+		localeDir = new File(dataFolder, "locale");
 		localeDir.mkdirs();
 		File layoutDir = new File(dataFolder, "layout");
 		layoutDir.mkdirs();
@@ -120,11 +122,7 @@ public final class HeavySpleef {
 		flagRegistry = new FlagRegistry(this, flagDir);
 		
 		configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
-		
-		Map<ConfigType, Object[]> configArgs = new EnumMap<ConfigType, Object[]>(ConfigType.class);
-		configArgs.put(ConfigType.DATABASE_CONFIG, new Object[] { getDataFolder() });
-		
-		prepareConfigurations(configArgs);
+		loadConfigurations();
 		
 		moduleManager = new ModuleManager();
 				
@@ -192,6 +190,13 @@ public final class HeavySpleef {
 		}
 	}
 	
+	private void loadConfigurations() {
+		Map<ConfigType, Object[]> configArgs = new EnumMap<ConfigType, Object[]>(ConfigType.class);
+		configArgs.put(ConfigType.DATABASE_CONFIG, new Object[] { getDataFolder() });
+		
+		prepareConfigurations(configArgs);
+	}
+	
 	private void prepareConfigurations(Map<ConfigType, Object[]> args) {
 		for (ConfigType type : ConfigType.values()) {
 			File destinationFile = new File(getDataFolder(), type.getDestinationFileName());
@@ -244,6 +249,15 @@ public final class HeavySpleef {
 				outStream.write(buffer, 0, read);
 			}
 		}
+	}
+	
+	public void reload() {
+		loadConfigurations();
+		DefaultConfig config = getConfiguration(ConfigType.DEFAULT_CONFIG);
+		Locale locale = config.getLocalization().getLocale();
+		
+		I18N.setDefaultLocale(locale);
+		I18N.getInstance().reload();
 	}
 	
 	@SuppressWarnings("unchecked")
