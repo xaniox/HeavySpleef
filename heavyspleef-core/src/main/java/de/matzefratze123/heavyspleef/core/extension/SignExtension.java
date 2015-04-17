@@ -201,8 +201,8 @@ public abstract class SignExtension extends GameExtension {
 			SignExtension extension;
 			
 			try {
-				Constructor<? extends SignExtension> constructor = found.getConstructor(Location.class, Game.class, HeavySpleef.class);
-				extension = constructor.newInstance(event.getBlock().getLocation(), game, heavySpleef);
+				Constructor<? extends SignExtension> constructor = found.getConstructor(Location.class);
+				extension = constructor.newInstance(event.getBlock().getLocation());
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				player.sendMessage(i18n.getVarString(Messages.Player.NO_SIGN_AVAILABLE)
 						.setVariable("identifier", identifier)
