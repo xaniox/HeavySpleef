@@ -85,6 +85,9 @@ command:
   everything-saved: "Alle Spiele und zwischengespeicherte Statistiken wurden in gesichert"
   statistics-saved: "Zwischengespeicherte Statistiken wurden gesichert"
   games-saved: "Alle Spiele wurden gesichert"
+  
+  help-header: "&6-------- &8&l[&aHeavySpleef Hilfe - Seite $[page]/$[max-pages] &8&l] &6--------"
+  help-record: "&c- &6$[usage]\n&7  $[description]"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

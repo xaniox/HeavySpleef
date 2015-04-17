@@ -110,6 +110,9 @@ public interface Messages {
 		public static final String STATISTICS_SAVED = PREFIX + "statistics-saved";
 		public static final String GAMES_SAVED = PREFIX + "games-saved";
 		
+		public static final String HELP_HEADER = PREFIX + "help-header";
+		public static final String HELP_RECORD = PREFIX + "help-record";
+		
 	}
 	
 	public interface Broadcast {

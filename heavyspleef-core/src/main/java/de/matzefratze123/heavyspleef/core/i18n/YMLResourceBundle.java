@@ -23,10 +23,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class YMLResourceBundle extends ResourceBundle {
 	
+	private static final char TRANSLATION_CHAR = '&';
 	private YamlConfiguration config;
 	
 	public YMLResourceBundle(YamlConfiguration config, boolean loadParent) {
@@ -44,15 +46,14 @@ public class YMLResourceBundle extends ResourceBundle {
 			String[] array = new String[size];
 			
 			for (int i = 0; i < size; i++) {
-				array[i] = list.get(i).toString();
+				array[i] = ChatColor.translateAlternateColorCodes(TRANSLATION_CHAR, list.get(i).toString());
 			}
 			
 			value = array;
-		}
-		
-		if (value instanceof String) {
+		} else if (value instanceof String) {
 			String str = (String) value;
-			str.replace("\\n", "\n");
+			str = str.replace("\\n", "\n");
+			value = ChatColor.translateAlternateColorCodes(TRANSLATION_CHAR, str);
 		}
 		
 		return value;

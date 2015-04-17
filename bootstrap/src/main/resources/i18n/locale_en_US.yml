@@ -85,6 +85,9 @@ command:
   everything-saved: "All games and pending/cached statistics have been saved"
   statistics-saved: "Pending/Cached statistics saved"
   games-saved: "All games have been saved"
+  
+  help-header: "&6-------- &8&l[&aHeavySpleef Help - Page $[page]/$[max-pages] &8&l] &6--------"
+  help-record: "&c- &6$[usage]\n&7  $[description]"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
