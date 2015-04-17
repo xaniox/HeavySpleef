@@ -182,7 +182,7 @@ public class FlagSpectate extends LocationFlag {
 		}
 		
 		@Override
-		public SignLayout getSignLayout() {
+		public SignLayout retrieveSignLayout() {
 			SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.SPECTATE_SIGN_LAYOUT_CONFIG);
 			return config.getLayout();
 		}

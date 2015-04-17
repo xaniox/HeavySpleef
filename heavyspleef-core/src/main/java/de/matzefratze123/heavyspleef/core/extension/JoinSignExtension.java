@@ -62,7 +62,7 @@ public class JoinSignExtension extends SignExtension {
 	}
 	
 	@Override
-	public SignLayout getSignLayout() {
+	public SignLayout retrieveSignLayout() {
 		SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.JOIN_SIGN_LAYOUT_CONFIG);
 		return config.getLayout();
 	}

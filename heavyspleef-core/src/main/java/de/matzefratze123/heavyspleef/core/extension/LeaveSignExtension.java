@@ -55,7 +55,7 @@ public class LeaveSignExtension extends SignExtension {
 	}
 	
 	@Override
-	public SignLayout getSignLayout() {
+	public SignLayout retrieveSignLayout() {
 		SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.LEAVE_SIGN_LAYOUT_CONFIG);
 		return config.getLayout();
 	}

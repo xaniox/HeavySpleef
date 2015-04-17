@@ -55,7 +55,7 @@ public class StartSignExtension extends SignExtension {
 	}
 	
 	@Override
-	public SignLayout getSignLayout() {
+	public SignLayout retrieveSignLayout() {
 		SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.START_SIGN_LAYOUT_CONFIG);
 		return config.getLayout();
 	}

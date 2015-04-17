@@ -23,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
+import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,6 +34,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
@@ -51,14 +54,16 @@ public abstract class SignExtension extends GameExtension {
 	protected static final String SPLEEF_SIGN_IDENTIFIER = "[spleef]";
 	private static final VariableProvider<Game> GAME_VAR_PROVIDER = new GameVariableProvider();
 	
+	@Getter
 	private Location location;
+	@Getter
 	private SignLayout layout;
 	
 	protected SignExtension() {}
 	
 	public SignExtension(Location location) {
 		this.location = location;
-		this.layout = getSignLayout();
+		this.layout = retrieveSignLayout();
 	}
 	
 	@ExtensionInit
@@ -69,7 +74,7 @@ public abstract class SignExtension extends GameExtension {
 	
 	public abstract void onSignClick(SpleefPlayer player);
 	
-	public abstract SignLayout getSignLayout();
+	protected abstract SignLayout retrieveSignLayout();
 	
 	public void updateSign() {
 		Block block = location.getWorld().getBlockAt(location);

@@ -164,7 +164,7 @@ public class FlagVote extends BooleanFlag {
 		}
 		
 		@Override
-		public SignLayout getSignLayout() {
+		public SignLayout retrieveSignLayout() {
 			SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.VOTE_SIGN_LAYOUT_CONFIG);
 			return config.getLayout();
 		}
