@@ -85,10 +85,11 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		}
 		
 		insertSql.append(';');
-		PreparedStatement insertStatement = connection.prepareStatement(insertSql.toString());
-		setValues(insertStatement, object, true);
-		
-		insertStatement.executeUpdate();
+		try (PreparedStatement insertStatement = connection.prepareStatement(insertSql.toString())) {
+			setValues(insertStatement, object, true);
+			
+			insertStatement.executeUpdate();
+		}
 		
 		if (getSqlImplementation() == SQLImplementation.SQLITE) {
 			StringBuilder updateSql = new StringBuilder("UPDATE ");
@@ -106,10 +107,11 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 			
 			updateSql.append(" WHERE " + ColumnContract.UUID + "=?");
 			
-			PreparedStatement updateStatement = connection.prepareStatement(updateSql.toString());
-			setValues(updateStatement, object, false);
-			
-			updateStatement.executeUpdate();
+			try (PreparedStatement updateStatement = connection.prepareStatement(updateSql.toString())) {
+				setValues(updateStatement, object, false);
+				
+				updateStatement.executeUpdate();
+			}
 		}
 	}
 	
@@ -147,14 +149,15 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		selectSql.append(" WHERE " + ColumnContract.UUID + "=?");
 		selectSql.append(";");
 		
-		PreparedStatement statement = connection.prepareStatement(selectSql.toString());
-		statement.setString(0, key.toString());
-		
 		Statistic statistic = null;
 		
-		try (ResultSet result = statement.executeQuery()) {
-			if (result.next()) {
-				statistic = fetchStatisticFromResult(key, result);
+		try (PreparedStatement statement = connection.prepareStatement(selectSql.toString())) {
+			statement.setString(0, key.toString());
+			
+			try (ResultSet result = statement.executeQuery()) {
+				if (result.next()) {
+					statistic = fetchStatisticFromResult(key, result);
+				}
 			}
 		}
 		
@@ -199,10 +202,9 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		
 		selectSql.append(";");
 		
-		PreparedStatement statement = connection.prepareStatement(selectSql.toString());
-		
 		List<Statistic> statistics = new ArrayList<Statistic>();
-		try (ResultSet result = statement.executeQuery()) {
+		try (PreparedStatement statement = connection.prepareStatement(selectSql.toString());
+			ResultSet result = statement.executeQuery()) {			
 			while (result.next()) {
 				statistics.add(fetchStatisticFromResult(null, result));
 			}

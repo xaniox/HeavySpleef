@@ -34,7 +34,7 @@ public class DatabaseContext<T extends ObjectDatabaseAccessor<?>> {
 		this.accessors = ImmutableSet.copyOf(accessors);
 	}
 	
-	protected <E> T searchAccessor(Class<E> objectClass) {
+	protected synchronized <E> T searchAccessor(Class<E> objectClass) {
 		for (T accessor : accessors) {
 			if (accessor.getObjectClass().isAssignableFrom(objectClass)) {
 				return accessor;

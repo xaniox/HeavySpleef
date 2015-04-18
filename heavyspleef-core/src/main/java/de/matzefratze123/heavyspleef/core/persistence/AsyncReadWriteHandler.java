@@ -61,5 +61,7 @@ public interface AsyncReadWriteHandler {
 	public void clearCache();
 
 	public ListenableFuture<?> forceCacheSave(FutureCallback<Void> callback);
+
+	public void release();
 	
 }

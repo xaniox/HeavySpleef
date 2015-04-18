@@ -25,7 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -74,6 +77,9 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 	
 	//Lock for bukkit related calls
 	private final ReentrantLock bukkitLock = new ReentrantLock();
+	private final ReadWriteLock rwl = new ReentrantReadWriteLock();
+	private final Lock wl = rwl.writeLock();
+	private final Lock rl = rwl.readLock();
 	
 	@Override
 	public Class<Floor> getObjectClass() {
@@ -83,275 +89,294 @@ public class FloorAccessor extends SchematicAccessor<Floor> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void write(OutputStream out, Floor floor) throws IOException, CodecException {
-		StringTag nameTag = new StringTag(floor.getName());
+		wl.lock();
 		
-		Clipboard clipboard = floor.getClipboard();
-		Region region = clipboard.getRegion();
-		
-		World world = region.getWorld();
-		StringTag worldTag = new StringTag(world.getName());
-		
-		int width = region.getWidth();
-		int height = region.getHeight();
-		int length = region.getLength();
-		
-		// Store the boundaries of the region
-		ShortTag widthTag = new ShortTag((short)width);
-		ShortTag heightTag = new ShortTag((short)height);
-		ShortTag lengthTag = new ShortTag((short)length);
-		
-		Map<String, Tag> boundariesMap = Maps.newHashMap();
-		boundariesMap.put("width", widthTag);
-		boundariesMap.put("height", heightTag);
-		boundariesMap.put("length", lengthTag);
-		
-		CompoundTag boundariesTag = new CompoundTag(boundariesMap);
-		
-		Vector origin = clipboard.getOrigin();
-		
-		// Store the origin of the clipboard (this will always be the minimum point of the region)
-		List<IntTag> originCoordinateList = Lists.newArrayList();
-		originCoordinateList.add(new IntTag(origin.getBlockX()));
-		originCoordinateList.add(new IntTag(origin.getBlockY()));
-		originCoordinateList.add(new IntTag(origin.getBlockZ()));
-		
-		ListTag originTag = new ListTag(IntTag.class, originCoordinateList);
-		
-		// Also save region specific data (class name, attributes)
-		RegionType regionType = RegionType.byRegionType(region.getClass());
-		StringTag regionTypeTag = new StringTag(regionType.getPersistenceName());
-		Map<String, Tag> metadataMap = Maps.newHashMap();
-		SchematicRegionMetadataCodec<Region> metadataCodec = (SchematicRegionMetadataCodec<Region>) METADATA_CODECS.get(region.getClass());
-		metadataCodec.apply(metadataMap, region);
-		
-		CompoundTag metadataTag = new CompoundTag(metadataMap);
-		
-		byte[] blocks = new byte[width * height * length];
-		byte[] data = new byte[width * height * length];
-		byte[] addBlocks = null;
-		List<Tag> tileEntities = new ArrayList<Tag>();
-		
-		Vector minPoint = region.getMinimumPoint();
-		
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				for (int z = 0; z < length; z++) {
-					int index = y * width * length + z * width + x;
-					BaseBlock block = clipboard.getBlock(minPoint.add(new Vector(x, y, z)));
-					
-					if (block.getId() > Byte.MAX_VALUE - Byte.MIN_VALUE) {
-						if (addBlocks == null) {
-							addBlocks = new byte[(blocks.length >> 1) + 1];
+		try {
+			StringTag nameTag = new StringTag(floor.getName());
+			
+			Clipboard clipboard = floor.getClipboard();
+			Region region = clipboard.getRegion();
+			
+			World world = region.getWorld();
+			StringTag worldTag = new StringTag(world.getName());
+			
+			int width = region.getWidth();
+			int height = region.getHeight();
+			int length = region.getLength();
+			
+			// Store the boundaries of the region
+			ShortTag widthTag = new ShortTag((short)width);
+			ShortTag heightTag = new ShortTag((short)height);
+			ShortTag lengthTag = new ShortTag((short)length);
+			
+			Map<String, Tag> boundariesMap = Maps.newHashMap();
+			boundariesMap.put("width", widthTag);
+			boundariesMap.put("height", heightTag);
+			boundariesMap.put("length", lengthTag);
+			
+			CompoundTag boundariesTag = new CompoundTag(boundariesMap);
+			
+			Vector origin = clipboard.getOrigin();
+			
+			// Store the origin of the clipboard (this will always be the minimum point of the region)
+			List<IntTag> originCoordinateList = Lists.newArrayList();
+			originCoordinateList.add(new IntTag(origin.getBlockX()));
+			originCoordinateList.add(new IntTag(origin.getBlockY()));
+			originCoordinateList.add(new IntTag(origin.getBlockZ()));
+			
+			ListTag originTag = new ListTag(IntTag.class, originCoordinateList);
+			
+			// Also save region specific data (class name, attributes)
+			RegionType regionType = RegionType.byRegionType(region.getClass());
+			StringTag regionTypeTag = new StringTag(regionType.getPersistenceName());
+			Map<String, Tag> metadataMap = Maps.newHashMap();
+			SchematicRegionMetadataCodec<Region> metadataCodec = (SchematicRegionMetadataCodec<Region>) METADATA_CODECS.get(region.getClass());
+			metadataCodec.apply(metadataMap, region);
+			
+			CompoundTag metadataTag = new CompoundTag(metadataMap);
+			
+			byte[] blocks = new byte[width * height * length];
+			byte[] data = new byte[width * height * length];
+			byte[] addBlocks = null;
+			List<Tag> tileEntities = new ArrayList<Tag>();
+			
+			Vector minPoint = region.getMinimumPoint();
+			
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					for (int z = 0; z < length; z++) {
+						int index = y * width * length + z * width + x;
+						BaseBlock block = clipboard.getBlock(minPoint.add(new Vector(x, y, z)));
+						
+						if (block.getId() > Byte.MAX_VALUE - Byte.MIN_VALUE) {
+							if (addBlocks == null) {
+								addBlocks = new byte[(blocks.length >> 1) + 1];
+							}
+							
+							if ((index & 1) == 0) {
+								addBlocks[index >> 1] = (byte) (addBlocks[index >> 1] & 0xF0 | (block.getId() >> 8) & 0x0F);
+							} else {
+								addBlocks[index >> 1] = (byte) (addBlocks[index >> 1] & 0x0F | (block.getId() >> 4) & 0xF0);
+							}
 						}
 						
-						if ((index & 1) == 0) {
-							addBlocks[index >> 1] = (byte) (addBlocks[index >> 1] & 0xF0 | (block.getId() >> 8) & 0x0F);
-						} else {
-							addBlocks[index >> 1] = (byte) (addBlocks[index >> 1] & 0x0F | (block.getId() >> 4) & 0xF0);
-						}
-					}
-					
-					blocks[index] = (byte)(block.getId() & 0xFF);
-					data[index] = (byte)(block.getData() & 0xFF);
-					
-					// Get the list of key/values from the block
-					CompoundTag rawTag = block.getNbtData();
-					if (rawTag != null) {
-						Map<String, Tag> values = new HashMap<String, Tag>();
-						for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
-							values.put(entry.getKey(), entry.getValue());
-						}
+						blocks[index] = (byte)(block.getId() & 0xFF);
+						data[index] = (byte)(block.getData() & 0xFF);
 						
-						values.put("id", new StringTag(block.getNbtId()));
-						values.put("x", new IntTag(x));
-						values.put("y", new IntTag(y));
-						values.put("z", new IntTag(z));
-						
-						CompoundTag tileEntityTag = new CompoundTag(values);
-						tileEntities.add(tileEntityTag);
+						// Get the list of key/values from the block
+						CompoundTag rawTag = block.getNbtData();
+						if (rawTag != null) {
+							Map<String, Tag> values = new HashMap<String, Tag>();
+							for (Entry<String, Tag> entry : rawTag.getValue().entrySet()) {
+								values.put(entry.getKey(), entry.getValue());
+							}
+							
+							values.put("id", new StringTag(block.getNbtId()));
+							values.put("x", new IntTag(x));
+							values.put("y", new IntTag(y));
+							values.put("z", new IntTag(z));
+							
+							CompoundTag tileEntityTag = new CompoundTag(values);
+							tileEntities.add(tileEntityTag);
+						}
 					}
 				}
 			}
-		}
-		
-		ByteArrayTag blocksTag = new ByteArrayTag(blocks);
-		ByteArrayTag dataTag = new ByteArrayTag(data);
-		ListTag tileEntitiesTag = new ListTag(CompoundTag.class, tileEntities);
-		
-		Map<String, Tag> childs = Maps.newHashMap();
-		childs.put("name", nameTag);
-		childs.put("world", worldTag);
-		childs.put("boundaries", boundariesTag);
-		childs.put("origin", originTag);
-		childs.put("regiontype", regionTypeTag);
-		childs.put("metadata", metadataTag);
-		childs.put("blocks", blocksTag);
-		childs.put("data", dataTag);
-		childs.put("tileentities", tileEntitiesTag);
-		
-		if (addBlocks != null) {
-			childs.put("addblocks", new ByteArrayTag(addBlocks));
-		}
-		
-		CompoundTag rootTag = new CompoundTag(childs);
-		
-		try (NBTOutputStream nbtOut = new NBTOutputStream(
-				new GZIPOutputStream(out))) {
-			nbtOut.writeNamedTag(ROOT_TAG_NAME, rootTag);
+			
+			ByteArrayTag blocksTag = new ByteArrayTag(blocks);
+			ByteArrayTag dataTag = new ByteArrayTag(data);
+			ListTag tileEntitiesTag = new ListTag(CompoundTag.class, tileEntities);
+			
+			Map<String, Tag> childs = Maps.newHashMap();
+			childs.put("name", nameTag);
+			childs.put("world", worldTag);
+			childs.put("boundaries", boundariesTag);
+			childs.put("origin", originTag);
+			childs.put("regiontype", regionTypeTag);
+			childs.put("metadata", metadataTag);
+			childs.put("blocks", blocksTag);
+			childs.put("data", dataTag);
+			childs.put("tileentities", tileEntitiesTag);
+			
+			if (addBlocks != null) {
+				childs.put("addblocks", new ByteArrayTag(addBlocks));
+			}
+			
+			CompoundTag rootTag = new CompoundTag(childs);
+			
+			try (NBTOutputStream nbtOut = new NBTOutputStream(
+					new GZIPOutputStream(out))) {
+				nbtOut.writeNamedTag(ROOT_TAG_NAME, rootTag);
+			}
+		} finally {
+			wl.unlock();
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Floor read(InputStream in) throws IOException, CodecException {
-		NBTInputStream nbtStream = new NBTInputStream(
-				new GZIPInputStream(in));
+		Floor floor;
+		rl.lock();
 		
-		NamedTag namedRootTag = nbtStream.readNamedTag();
-		nbtStream.close();
-		
-		if (!namedRootTag.getName().equals(ROOT_TAG_NAME)) {
-			throw new CodecException("Could not find root tag name with name \"" + ROOT_TAG_NAME + "\"");
-		}
-		
-		CompoundTag rootTag = (CompoundTag) namedRootTag.getTag();
-		
-		Vector origin = new Vector();
-		
-		Map<String, Tag> childs = rootTag.getValue();
-		
-		CompoundTag boundariesTag = getChildTag(childs, "boundaries", CompoundTag.class);
-		Map<String, Tag> boundariesChilds = boundariesTag.getValue();
-		
-		String name = getChildTag(childs, "name", StringTag.class).getValue();
-		String worldName = getChildTag(childs, "world", StringTag.class).getValue();
-		
-		bukkitLock.lock();
-		org.bukkit.World bukkitWorld = Bukkit.getWorld(worldName);
-		bukkitLock.unlock();
-		
-		World world = BukkitUtil.getLocalWorld(bukkitWorld);
-		short length = getChildTag(boundariesChilds, "length", ShortTag.class).getValue();
-		short width = getChildTag(boundariesChilds, "width", ShortTag.class).getValue();
-		short height = getChildTag(boundariesChilds, "height", ShortTag.class).getValue();
-		
-		if (childs.containsKey("origin")) {
-			ListTag originTag = getChildTag(childs, "origin", ListTag.class);
-			if (!IntTag.class.isAssignableFrom(originTag.getType())) {
-				throw new CodecException("Found list tag \"origin\" but their type is not an instance of IntTag");
-			}
-	
-			List<Tag> originCoordinates = originTag.getValue();
-			if (originCoordinates.size() < 3) {
-				throw new CodecException("List Tag \"origin\" must have at least 3 entries (x, y, z)");
+		try {
+			NBTInputStream nbtStream = new NBTInputStream(
+					new GZIPInputStream(in));
+			
+			NamedTag namedRootTag = nbtStream.readNamedTag();
+			nbtStream.close();
+			
+			if (!namedRootTag.getName().equals(ROOT_TAG_NAME)) {
+				throw new CodecException("Could not find root tag name with name \"" + ROOT_TAG_NAME + "\"");
 			}
 			
-			int originX = ((IntTag)originCoordinates.get(0)).getValue();
-			int originY = ((IntTag)originCoordinates.get(1)).getValue();
-			int originZ = ((IntTag)originCoordinates.get(2)).getValue();
+			CompoundTag rootTag = (CompoundTag) namedRootTag.getTag();
 			
-			origin = new Vector(originX, originY, originZ);
-		}
-		
-		// Get blocks
-		byte[] blockId = getChildTag(childs, "blocks", ByteArrayTag.class).getValue();
-		byte[] blockData = getChildTag(childs, "data", ByteArrayTag.class).getValue();
-		byte[] addId = new byte[0];
-		short[] blocks = new short[blockId.length]; // Have to later combine IDs
-		
-		// We support 4096 block IDs using the same method as vanilla Minecraft, where
-		// the highest 4 bits are stored in a separate byte array.
-		if (childs.containsKey("addblocks")) {
-			addId = getChildTag(childs, "addblocks", ByteArrayTag.class).getValue();
-		}
-		
-		// Combine the AddBlocks data with the first 8-bit block ID
-		for (int index = 0; index < blockId.length; index++) {
-			if ((index >> 1) >= addId.length) { 
-				// No corresponding AddBlock index
-				blocks[index] = (short) (blockId[index] & 0xFF);
-			} else {
-				if ((index & 1) == 0) {
-					blocks[index] = (short) (((addId[index >> 1] & 0x0F) << 8) + (blockId[index] & 0xFF));
-				} else {
-					blocks[index] = (short) (((addId[index >> 1] & 0xF0) << 4) + (blockId[index] & 0xFF));
+			Vector origin = new Vector();
+			
+			Map<String, Tag> childs = rootTag.getValue();
+			
+			CompoundTag boundariesTag = getChildTag(childs, "boundaries", CompoundTag.class);
+			Map<String, Tag> boundariesChilds = boundariesTag.getValue();
+			
+			String name = getChildTag(childs, "name", StringTag.class).getValue();
+			String worldName = getChildTag(childs, "world", StringTag.class).getValue();
+			
+			bukkitLock.lock();
+			org.bukkit.World bukkitWorld;
+			
+			try {
+				bukkitWorld = Bukkit.getWorld(worldName);
+			} finally {
+				bukkitLock.unlock();
+			}
+			
+			World world = BukkitUtil.getLocalWorld(bukkitWorld);
+			short length = getChildTag(boundariesChilds, "length", ShortTag.class).getValue();
+			short width = getChildTag(boundariesChilds, "width", ShortTag.class).getValue();
+			short height = getChildTag(boundariesChilds, "height", ShortTag.class).getValue();
+			
+			if (childs.containsKey("origin")) {
+				ListTag originTag = getChildTag(childs, "origin", ListTag.class);
+				if (!IntTag.class.isAssignableFrom(originTag.getType())) {
+					throw new CodecException("Found list tag \"origin\" but their type is not an instance of IntTag");
 				}
-			}
-		}
 		
-		// Need to pull out tile entities
-		List<Tag> tileEntities = getChildTag(childs, "tileentities", ListTag.class).getValue();
-		Map<BlockVector, Map<String, Tag>> tileEntitiesMap = new HashMap<BlockVector, Map<String, Tag>>();
-		
-		for (Tag tag : tileEntities) {
-			if (!(tag instanceof CompoundTag)) {
-				continue;
-			}
-			
-			CompoundTag t = (CompoundTag) tag;
-			
-			int x = 0;
-			int y = 0;
-			int z = 0;
-			
-			Map<String, Tag> values = new HashMap<String, Tag>();
-			for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-				if (entry.getKey().equals("x")) {
-					if (entry.getValue() instanceof IntTag) {
-						x = ((IntTag) entry.getValue()).getValue();
-					}
-				} else if (entry.getKey().equals("y")) {
-					if (entry.getValue() instanceof IntTag) {
-						y = ((IntTag) entry.getValue()).getValue();
-					}
-				} else if (entry.getKey().equals("z")) {
-					if (entry.getValue() instanceof IntTag) {
-						z = ((IntTag) entry.getValue()).getValue();
-					}
+				List<Tag> originCoordinates = originTag.getValue();
+				if (originCoordinates.size() < 3) {
+					throw new CodecException("List Tag \"origin\" must have at least 3 entries (x, y, z)");
 				}
 				
-				values.put(entry.getKey(), entry.getValue());
+				int originX = ((IntTag)originCoordinates.get(0)).getValue();
+				int originY = ((IntTag)originCoordinates.get(1)).getValue();
+				int originZ = ((IntTag)originCoordinates.get(2)).getValue();
+				
+				origin = new Vector(originX, originY, originZ);
 			}
 			
-			BlockVector vec = new BlockVector(x, y, z);
-			tileEntitiesMap.put(vec, values);
-		}
-		
-		String regionTypeName = getChildTag(childs, "regiontype", StringTag.class).getValue();
-		RegionType regionType = RegionType.byPersistenceName(regionTypeName);
-		Class<? extends Region> regionClass = regionType.getRegionClass();
-		
-		Map<String, Tag> metadataMap = getChildTag(childs, "metadata", CompoundTag.class).getValue();
-		SchematicRegionMetadataCodec<Region> metadataCodec = (SchematicRegionMetadataCodec<Region>) METADATA_CODECS.get(regionClass);
-		Region region = metadataCodec.asRegion(metadataMap);
-		region.setWorld(world);
-		
-		BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-		clipboard.setOrigin(origin);
-		
-		Vector min = region.getMinimumPoint();
-		
-		for (int x = 0; x < width; ++x) {
-			for (int y = 0; y < height; ++y) {
-				for (int z = 0; z < length; ++z) {
-					int index = y * width * length + z * width + x;
-					BlockVector pt = new BlockVector(x, y, z);
-					BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
-					
-					if (tileEntitiesMap.containsKey(pt)) {
-						block.setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
-					}
-					
-					try {
-						clipboard.setBlock(min.add(pt), block);
-					} catch (WorldEditException e) {
-						throw new CodecException(e);
+			// Get blocks
+			byte[] blockId = getChildTag(childs, "blocks", ByteArrayTag.class).getValue();
+			byte[] blockData = getChildTag(childs, "data", ByteArrayTag.class).getValue();
+			byte[] addId = new byte[0];
+			short[] blocks = new short[blockId.length]; // Have to later combine IDs
+			
+			// We support 4096 block IDs using the same method as vanilla Minecraft, where
+			// the highest 4 bits are stored in a separate byte array.
+			if (childs.containsKey("addblocks")) {
+				addId = getChildTag(childs, "addblocks", ByteArrayTag.class).getValue();
+			}
+			
+			// Combine the AddBlocks data with the first 8-bit block ID
+			for (int index = 0; index < blockId.length; index++) {
+				if ((index >> 1) >= addId.length) { 
+					// No corresponding AddBlock index
+					blocks[index] = (short) (blockId[index] & 0xFF);
+				} else {
+					if ((index & 1) == 0) {
+						blocks[index] = (short) (((addId[index >> 1] & 0x0F) << 8) + (blockId[index] & 0xFF));
+					} else {
+						blocks[index] = (short) (((addId[index >> 1] & 0xF0) << 4) + (blockId[index] & 0xFF));
 					}
 				}
 			}
+			
+			// Need to pull out tile entities
+			List<Tag> tileEntities = getChildTag(childs, "tileentities", ListTag.class).getValue();
+			Map<BlockVector, Map<String, Tag>> tileEntitiesMap = new HashMap<BlockVector, Map<String, Tag>>();
+			
+			for (Tag tag : tileEntities) {
+				if (!(tag instanceof CompoundTag)) {
+					continue;
+				}
+				
+				CompoundTag t = (CompoundTag) tag;
+				
+				int x = 0;
+				int y = 0;
+				int z = 0;
+				
+				Map<String, Tag> values = new HashMap<String, Tag>();
+				for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
+					if (entry.getKey().equals("x")) {
+						if (entry.getValue() instanceof IntTag) {
+							x = ((IntTag) entry.getValue()).getValue();
+						}
+					} else if (entry.getKey().equals("y")) {
+						if (entry.getValue() instanceof IntTag) {
+							y = ((IntTag) entry.getValue()).getValue();
+						}
+					} else if (entry.getKey().equals("z")) {
+						if (entry.getValue() instanceof IntTag) {
+							z = ((IntTag) entry.getValue()).getValue();
+						}
+					}
+					
+					values.put(entry.getKey(), entry.getValue());
+				}
+				
+				BlockVector vec = new BlockVector(x, y, z);
+				tileEntitiesMap.put(vec, values);
+			}
+			
+			String regionTypeName = getChildTag(childs, "regiontype", StringTag.class).getValue();
+			RegionType regionType = RegionType.byPersistenceName(regionTypeName);
+			Class<? extends Region> regionClass = regionType.getRegionClass();
+			
+			Map<String, Tag> metadataMap = getChildTag(childs, "metadata", CompoundTag.class).getValue();
+			SchematicRegionMetadataCodec<Region> metadataCodec = (SchematicRegionMetadataCodec<Region>) METADATA_CODECS.get(regionClass);
+			Region region = metadataCodec.asRegion(metadataMap);
+			region.setWorld(world);
+			
+			BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+			clipboard.setOrigin(origin);
+			
+			Vector min = region.getMinimumPoint();
+			
+			for (int x = 0; x < width; ++x) {
+				for (int y = 0; y < height; ++y) {
+					for (int z = 0; z < length; ++z) {
+						int index = y * width * length + z * width + x;
+						BlockVector pt = new BlockVector(x, y, z);
+						BaseBlock block = new BaseBlock(blocks[index], blockData[index]);
+						
+						if (tileEntitiesMap.containsKey(pt)) {
+							block.setNbtData(new CompoundTag(tileEntitiesMap.get(pt)));
+						}
+						
+						try {
+							clipboard.setBlock(min.add(pt), block);
+						} catch (WorldEditException e) {
+							throw new CodecException(e);
+						}
+					}
+				}
+			}
+			
+			floor = new SimpleClipboardFloor(name, clipboard);
+		} finally {
+			rl.unlock();
 		}
 		
-		Floor floor = new SimpleClipboardFloor(name, clipboard);
 		return floor;
 	}
 	

@@ -245,6 +245,11 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 		}, callback);
 	}
 	
+	@Override
+	public void release() {
+		delegate.release();
+	}
+	
 	public <R> ListenableFuture<R> runCallableThreadDynamic(Callable<R> callable, FutureCallback<R> callback) {
 		ListenableFuture<R> future = null;
 		

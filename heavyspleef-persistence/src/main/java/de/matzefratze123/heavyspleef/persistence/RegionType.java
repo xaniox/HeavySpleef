@@ -44,7 +44,7 @@ public enum RegionType {
 		return persistenceName;
 	}
 	
-	public static RegionType byRegionType(Class<? extends Region> clazz) {
+	public synchronized static RegionType byRegionType(Class<? extends Region> clazz) {
 		for (RegionType type : values()) {
 			if (type.getRegionClass() == clazz) {
 				return type;
@@ -54,7 +54,7 @@ public enum RegionType {
 		return null;
 	}
 	
-	public static RegionType byPersistenceName(String name) {
+	public synchronized static RegionType byPersistenceName(String name) {
 		for (RegionType type : values()) {
 			if (type.getPersistenceName().equals(name)) {
 				return type;

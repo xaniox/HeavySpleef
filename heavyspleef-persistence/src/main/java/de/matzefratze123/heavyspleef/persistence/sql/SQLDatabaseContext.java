@@ -101,7 +101,12 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		dataSource.setMaxPool(maxSize);
 		dataSource.setMaxSize(maxSize);
 		dataSource.setIdleTimeout((int)properties.get("idle-timeout"));
-		dataSource.registerShutdownHook();
+	}
+	
+	public void release() {
+		if (dataSource != null) {
+			dataSource.release();
+		}
 	}
 	
 	private File extractSQLiteFileFromURL(String urlSpec) {
@@ -165,7 +170,7 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		}
 	}
 	
-	public void checkAccessorTable(SQLAccessor<?, ?> accessor, Connection connection) throws SQLException {
+	public synchronized void checkAccessorTable(SQLAccessor<?, ?> accessor, Connection connection) throws SQLException {
 		String table = accessor.getTableName();
 		
 		// Check if the table exists

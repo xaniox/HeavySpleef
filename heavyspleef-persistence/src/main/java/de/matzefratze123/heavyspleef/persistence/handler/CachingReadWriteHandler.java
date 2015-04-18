@@ -490,6 +490,13 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		saveStatistics(cachedStatistics);
 	}
 	
+	@Override
+	public void release() {
+		if (sqlContext != null) {
+			sqlContext.release();
+		}
+	}
+	
 	private void validateSqlDatabaseSetup() {
 		if (sqlContext == null) {
 			throw new IllegalStateException("No statistic-database has been setup");

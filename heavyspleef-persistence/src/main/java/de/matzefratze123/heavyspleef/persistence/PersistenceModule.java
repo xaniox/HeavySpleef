@@ -91,6 +91,13 @@ public class PersistenceModule extends SimpleModule {
 	}
 
 	@Override
-	public void disable() {}
+	public void disable() {
+		HeavySpleef heavySpleef = getHeavySpleef();
+		AsyncReadWriteHandler handler;
+		
+		if ((handler = heavySpleef.getDatabaseHandler()) != null) {
+			handler.release();
+		}
+	}
 	
 }

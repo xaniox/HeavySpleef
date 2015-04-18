@@ -60,5 +60,7 @@ public interface ReadWriteHandler {
 	public void clearCache();
 
 	public void forceCacheSave() throws SQLException;
+
+	public void release();
 	
 }

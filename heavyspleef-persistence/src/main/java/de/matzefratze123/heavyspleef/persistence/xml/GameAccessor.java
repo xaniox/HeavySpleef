@@ -23,6 +23,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -61,6 +65,11 @@ public class GameAccessor extends XMLAccessor<Game> {
 	private HeavySpleef heavySpleef;
 	private FlagRegistry flagRegistry;
 	
+	private ReentrantLock worldLock = new ReentrantLock();
+	private ReadWriteLock rwl = new ReentrantReadWriteLock();
+	private Lock wl = rwl.writeLock();
+	private Lock rl = rwl.readLock();
+	
 	public GameAccessor(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
 		this.flagRegistry = heavySpleef.getFlagRegistry();
@@ -74,62 +83,68 @@ public class GameAccessor extends XMLAccessor<Game> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void write(Game game, Element element) {
-		element.addAttribute("name", game.getName());
-		element.addAttribute("world", game.getWorld().getName());
+		wl.lock();
 		
-		FlagManager flagManager = game.getFlagManager();
-		Map<String, AbstractFlag<?>> flags = flagManager.getPresentFlags();
-		
-		Element flagsElement = element.addElement("flags");
-		for (Entry<String, AbstractFlag<?>> entry : flags.entrySet()) {
-			Element flagElement = flagsElement.addElement("flag");
-			flagElement.addAttribute("name", entry.getKey());
-			entry.getValue().marshal(flagElement);
-		}
-		
-		GamePropertyBundle defaultBundle = flagManager.getDefaultPropertyBundle();
-		Element propertiesElement = element.addElement("properties");
-		
-		for (Entry<GameProperty, Object> propertyEntry : defaultBundle.entrySet()) {
-			Element propertyElement = propertiesElement.addElement("property");
-			propertyElement.addAttribute("key", propertyEntry.getKey().name().toLowerCase());
-			propertyElement.addAttribute("class", propertyEntry.getValue().getClass().getName());
-			propertyElement.addText(propertyEntry.getValue().toString());
-		}
-		
-		Collection<Floor> floors = game.getFloors();
-		Element floorsElement = element.addElement("floors");
-		for (Floor floor : floors) {
-			Element floorElement = floorsElement.addElement("floor");
-			floorElement.addAttribute("name", floor.getName());
-		}
-		
-		ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
-		Collection<GameExtension> extensions = game.getExtensions();
-		Element extensionsElement = element.addElement("extensions");
-		for (GameExtension extension : extensions) {
-			Element extensionElement = extensionsElement.addElement("extension");
-			extensionElement.addAttribute("name", extRegistry.getExtensionName(extension.getClass()));
-			extension.marshal(extensionElement);
-		}
-		
-		Map<String, Region> deathzones = game.getDeathzones();
-		Element deathzonesElement = element.addElement("deathzones");
-		for (Entry<String, Region> entry : deathzones.entrySet()) {
-			String name = entry.getKey();
-			Region deathzone = entry.getValue();
-			RegionType type = RegionType.byRegionType(deathzone.getClass());
+		try {
+			element.addAttribute("name", game.getName());
+			element.addAttribute("world", game.getWorld().getName());
 			
-			Element deathzoneElement = deathzonesElement.addElement("deathzone");
-			deathzoneElement.addAttribute("name", name);
-			deathzoneElement.addAttribute("regiontype", type.getPersistenceName());
+			FlagManager flagManager = game.getFlagManager();
+			Map<String, AbstractFlag<?>> flags = flagManager.getPresentFlags();
 			
-			XMLRegionMetadataCodec<Region> metadataCodec = (XMLRegionMetadataCodec<Region>) METADATA_CODECS.get(deathzone.getClass());
-			metadataCodec.apply(deathzoneElement, deathzone);
+			Element flagsElement = element.addElement("flags");
+			for (Entry<String, AbstractFlag<?>> entry : flags.entrySet()) {
+				Element flagElement = flagsElement.addElement("flag");
+				flagElement.addAttribute("name", entry.getKey());
+				entry.getValue().marshal(flagElement);
+			}
+			
+			GamePropertyBundle defaultBundle = flagManager.getDefaultPropertyBundle();
+			Element propertiesElement = element.addElement("properties");
+			
+			for (Entry<GameProperty, Object> propertyEntry : defaultBundle.entrySet()) {
+				Element propertyElement = propertiesElement.addElement("property");
+				propertyElement.addAttribute("key", propertyEntry.getKey().name().toLowerCase());
+				propertyElement.addAttribute("class", propertyEntry.getValue().getClass().getName());
+				propertyElement.addText(propertyEntry.getValue().toString());
+			}
+			
+			Collection<Floor> floors = game.getFloors();
+			Element floorsElement = element.addElement("floors");
+			for (Floor floor : floors) {
+				Element floorElement = floorsElement.addElement("floor");
+				floorElement.addAttribute("name", floor.getName());
+			}
+			
+			ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
+			Collection<GameExtension> extensions = game.getExtensions();
+			Element extensionsElement = element.addElement("extensions");
+			for (GameExtension extension : extensions) {
+				Element extensionElement = extensionsElement.addElement("extension");
+				extensionElement.addAttribute("name", extRegistry.getExtensionName(extension.getClass()));
+				extension.marshal(extensionElement);
+			}
+			
+			Map<String, Region> deathzones = game.getDeathzones();
+			Element deathzonesElement = element.addElement("deathzones");
+			for (Entry<String, Region> entry : deathzones.entrySet()) {
+				String name = entry.getKey();
+				Region deathzone = entry.getValue();
+				RegionType type = RegionType.byRegionType(deathzone.getClass());
+				
+				Element deathzoneElement = deathzonesElement.addElement("deathzone");
+				deathzoneElement.addAttribute("name", name);
+				deathzoneElement.addAttribute("regiontype", type.getPersistenceName());
+				
+				XMLRegionMetadataCodec<Region> metadataCodec = (XMLRegionMetadataCodec<Region>) METADATA_CODECS.get(deathzone.getClass());
+				metadataCodec.apply(deathzoneElement, deathzone);
+			}
+		} finally {
+			wl.unlock();
 		}
 	}
 	
-	private Object getPropertyValue(String type, String valueString) {
+	private static Object getPropertyValue(String type, String valueString) {
 		Class<?> clazz;
 		
 		try {
@@ -152,102 +167,114 @@ public class GameAccessor extends XMLAccessor<Game> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Game fetch(Element element) {
-		String name = element.attributeValue("name");
-		String worldName = element.attributeValue("world");
+		Game game;
+		rl.lock();
 		
-		if (name == null) {
-			throw new RuntimeException("Name of game cannot be null");
-		}
-		
-		// Not at all thread safe, but it is the only way to get a world instance.
-		// Bukkit#getWorlds() returns an new arraylist instance, so iterating is safe
-		// but the internal ArrayList::new(Collection) isn't
-		World world = null;
-		List<World> worlds = Bukkit.getWorlds();
-		for (World w : worlds) {
-			if (w.getName().equals(worldName)) {
-				world = w;
-			}
-		}
-		
-		if (world == null) {
-			throw new RuntimeException("World \"" + worldName + " does not exist (game: " + name + ")");
-		}
-		
-		Game game = new Game(heavySpleef, name, world);
-		
-		Element flagsElement = element.element("flags");
-		List<Element> flagElementsList = flagsElement.elements("flag");
-		
-		for (Element flagElement : flagElementsList) {
-			String flagName = flagElement.attributeValue("name");
+		try {
+			String name = element.attributeValue("name");
+			String worldName = element.attributeValue("world");
 			
-			AbstractFlag<?> flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class);
-			flag.unmarshal(flagElement);
-			
-			game.addFlag(flag);
-		}
-		
-		ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
-		Element extensionsElement = element.element("extensions");
-		List<Element> extensionElementsList = extensionsElement.elements("extension");
-		
-		for (Element extensionElement : extensionElementsList) {
-			String extName = extensionElement.attributeValue("name");
-			Class<? extends GameExtension> clazz = extRegistry.getExtensionClass(extName);
-			
-			if (clazz == null) {
-				heavySpleef.getLogger().log(Level.SEVERE,
-						"Could not load extension with name \"" + extName + "\"): No corresponding class found for extension name");
-				continue;
+			if (name == null) {
+				throw new RuntimeException("Name of game cannot be null");
 			}
 			
-			GameExtension extension;
-			
+			// Not at all thread safe, but it is the only way to get a world instance.
+			// Bukkit#getWorlds() returns an new arraylist instance, so iterating is safe
+			// but the internal ArrayList::new(Collection) isn't
+			World world = null;
+			worldLock.lock();
 			try {
-				Constructor<? extends GameExtension> constructor = clazz.getDeclaredConstructor();
-				if (!constructor.isAccessible()) {
-					constructor.setAccessible(true);
+				List<World> worlds = Bukkit.getWorlds();
+				for (World w : worlds) {
+					if (w.getName().equals(worldName)) {
+						world = w;
+					}
+				}
+			} finally {
+				worldLock.unlock();
+			}
+			
+			if (world == null) {
+				throw new RuntimeException("World \"" + worldName + " does not exist (game: " + name + ")");
+			}
+			
+			game = new Game(heavySpleef, name, world);
+			
+			Element flagsElement = element.element("flags");
+			List<Element> flagElementsList = flagsElement.elements("flag");
+			
+			for (Element flagElement : flagElementsList) {
+				String flagName = flagElement.attributeValue("name");
+				
+				AbstractFlag<?> flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class);
+				flag.unmarshal(flagElement);
+				
+				game.addFlag(flag);
+			}
+			
+			ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
+			Element extensionsElement = element.element("extensions");
+			List<Element> extensionElementsList = extensionsElement.elements("extension");
+			
+			for (Element extensionElement : extensionElementsList) {
+				String extName = extensionElement.attributeValue("name");
+				Class<? extends GameExtension> clazz = extRegistry.getExtensionClass(extName);
+				
+				if (clazz == null) {
+					heavySpleef.getLogger().log(Level.SEVERE,
+							"Could not load extension with name \"" + extName + "\"): No corresponding class found for extension name");
+					continue;
 				}
 				
-				extension = constructor.newInstance();
-			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException
-					| InvocationTargetException e) {
-				heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class \"" + clazz.getName() + "\" (name = \"" + extName + "\"): ", e);
-				continue;
+				GameExtension extension;
+				
+				try {
+					Constructor<? extends GameExtension> constructor = clazz.getDeclaredConstructor();
+					if (!constructor.isAccessible()) {
+						constructor.setAccessible(true);
+					}
+					
+					extension = constructor.newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException
+						| InvocationTargetException e) {
+					heavySpleef.getLogger().log(Level.SEVERE, "Could not load extension for class \"" + clazz.getName() + "\" (name = \"" + extName + "\"): ", e);
+					continue;
+				}
+				
+				extension.setHeavySpleef(heavySpleef);
+				extension.setGame(game);
+				extension.unmarshal(extensionElement);
+				game.addExtension(extension);
 			}
 			
-			extension.setHeavySpleef(heavySpleef);
-			extension.setGame(game);
-			extension.unmarshal(extensionElement);
-			game.addExtension(extension);
-		}
-		
-		Element propertiesElement = element.element("properties");
-		List<Element> propertiesElementList = propertiesElement.elements("property");
-		
-		for (Element propertyElement : propertiesElementList) {
-			String key = propertyElement.attributeValue("key");
-			String className = propertyElement.attributeValue("class");
+			Element propertiesElement = element.element("properties");
+			List<Element> propertiesElementList = propertiesElement.elements("property");
 			
-			GameProperty property = GameProperty.forName(key);
-			Object value = getPropertyValue(className, propertyElement.getText());
+			for (Element propertyElement : propertiesElementList) {
+				String key = propertyElement.attributeValue("key");
+				String className = propertyElement.attributeValue("class");
+				
+				GameProperty property = GameProperty.forName(key);
+				Object value = getPropertyValue(className, propertyElement.getText());
+				
+				game.requestProperty(property, value);
+			}
 			
-			game.requestProperty(property, value);
-		}
-		
-		Element deathzonesElement = element.element("deathzones");
-		List<Element> deathzoneElementList = deathzonesElement.elements("deathzone");
-		
-		for (Element deathzoneElement : deathzoneElementList) {
-			String deathzoneName = deathzoneElement.attributeValue("name");
-			String persistenceName = deathzoneElement.attributeValue("regiontype");
-			RegionType regionType = RegionType.byPersistenceName(persistenceName);
+			Element deathzonesElement = element.element("deathzones");
+			List<Element> deathzoneElementList = deathzonesElement.elements("deathzone");
 			
-			XMLRegionMetadataCodec<Region> metadataCodec = (XMLRegionMetadataCodec<Region>) METADATA_CODECS.get(regionType.getRegionClass());
-			Region region = metadataCodec.asRegion(deathzoneElement);
-			
-			game.addDeathzone(deathzoneName, region);
+			for (Element deathzoneElement : deathzoneElementList) {
+				String deathzoneName = deathzoneElement.attributeValue("name");
+				String persistenceName = deathzoneElement.attributeValue("regiontype");
+				RegionType regionType = RegionType.byPersistenceName(persistenceName);
+				
+				XMLRegionMetadataCodec<Region> metadataCodec = (XMLRegionMetadataCodec<Region>) METADATA_CODECS.get(regionType.getRegionClass());
+				Region region = metadataCodec.asRegion(deathzoneElement);
+				
+				game.addDeathzone(deathzoneName, region);
+			}
+		} finally {
+			rl.unlock();
 		}
 		
 		return game;
