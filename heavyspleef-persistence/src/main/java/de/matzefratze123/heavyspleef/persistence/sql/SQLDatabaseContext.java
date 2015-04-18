@@ -83,13 +83,8 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		dataSource.setDriverClassName(properties.getProperty("driver"));
 		dataSource.setUrl(url);
 		
-		boolean useAuthentication;
-		Object useAuthenticationObj = properties.get("useAuthentication");
-		if (useAuthenticationObj != null && useAuthenticationObj instanceof Boolean && (Boolean)useAuthenticationObj) {
-			useAuthentication = true;
-		} else {
-			useAuthentication = false;
-		}
+		Object useAuthenticationObj = properties.get("use-authentication");
+		boolean useAuthentication = useAuthenticationObj != null && useAuthenticationObj instanceof Boolean && (Boolean)useAuthenticationObj;
 		
 		if (useAuthentication) {
 			dataSource.setUser(properties.getProperty("user"));
@@ -190,7 +185,7 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 				Entry<String, Field> entry = iterator.next();
 				schemaBuilder.append(entry.getKey())
 					.append(' ')
-					.append(entry.getValue());
+					.append(entry.getValue().toString(implementationType));
 				
 				if (iterator.hasNext()) {
 					schemaBuilder.append(',');

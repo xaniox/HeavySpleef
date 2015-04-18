@@ -46,12 +46,14 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 	
 	@Override
 	public Map<String, Field> defineSchema() {
-		Map<String, Field> schema = Maps.newHashMap();
-		schema.put(ColumnContract.UUID, new Field(Type.TINYTEXT).length(36));
+		Map<String, Field> schema = Maps.newLinkedHashMap();
+		schema.put(ColumnContract.ID, new Field(Type.INT).primaryKey().autoIncrement());
+		schema.put(ColumnContract.UUID, new Field(Type.CHAR).length(36).unique());
 		schema.put(ColumnContract.WINS, new Field(Type.INT));
 		schema.put(ColumnContract.LOSSES, new Field(Type.INT));
 		schema.put(ColumnContract.KNOCKOUTS, new Field(Type.INT));
 		schema.put(ColumnContract.GAMES_PLAYED, new Field(Type.INT));
+		schema.put(ColumnContract.BLOCKS_BROKEN, new Field(Type.INT));
 		schema.put(ColumnContract.TIME_PLAYED, new Field(Type.BIGINT));
 		schema.put(ColumnContract.RATING, new Field(Type.DOUBLE));
 		
@@ -74,9 +76,9 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 			insertSql.append(" ON DUPLICATE KEY UPDATE ");
 			
 			String[] allColumns = ColumnContract.ALL_COLUMNS;
-			for (int i = 1; i < allColumns.length; i++) {
+			for (int i = 0; i < allColumns.length; i++) {
 				String column = allColumns[i];
-				insertSql.append(column + "=VALUES(" + column + ")");
+				insertSql.append(column + "=?");
 				
 				if (i + 1 < allColumns.length) {
 					insertSql.append(',');
@@ -86,7 +88,11 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		
 		insertSql.append(';');
 		try (PreparedStatement insertStatement = connection.prepareStatement(insertSql.toString())) {
-			setValues(insertStatement, object, true);
+			setValues(insertStatement, object, true, 1);
+			
+			if (getSqlImplementation() == SQLImplementation.MYSQL) {
+				setValues(insertStatement, object, true, 9);
+			}
 			
 			insertStatement.executeUpdate();
 		}
@@ -96,7 +102,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 			updateSql.append(ColumnContract.TABLE_NAME).append(" SET ");
 			
 			String[] allColumns = ColumnContract.ALL_COLUMNS;
-			for (int i = 1; i < allColumns.length; i++) {
+			for (int i = 0; i < allColumns.length; i++) {
 				String column = allColumns[i];
 				updateSql.append(column + "=?");
 				
@@ -108,8 +114,9 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 			updateSql.append(" WHERE " + ColumnContract.UUID + "=?");
 			
 			try (PreparedStatement updateStatement = connection.prepareStatement(updateSql.toString())) {
-				setValues(updateStatement, object, false);
-				
+				setValues(updateStatement, object, false, 1);
+
+				updateStatement.setString(9, object.getUniqueIdentifier().toString());
 				updateStatement.executeUpdate();
 			}
 		}
@@ -126,8 +133,8 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		builder.append(ColumnContract.RATING);
 	}
 	
-	private void setValues(PreparedStatement statement, Statistic statistic, boolean addUniqueColumns) throws SQLException {
-		int index = 1;
+	private void setValues(PreparedStatement statement, Statistic statistic, boolean addUniqueColumns, int indexOffset) throws SQLException {
+		int index = indexOffset;
 		
 		if (addUniqueColumns) {
 			statement.setString(index++, statistic.getUniqueIdentifier().toString());
@@ -152,7 +159,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		Statistic statistic = null;
 		
 		try (PreparedStatement statement = connection.prepareStatement(selectSql.toString())) {
-			statement.setString(0, key.toString());
+			statement.setString(1, key.toString());
 			
 			try (ResultSet result = statement.executeQuery()) {
 				if (result.next()) {
@@ -215,9 +222,9 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 	
 	public interface ColumnContract {
 		
-
 		public static final String TABLE_NAME = "heavyspleef_statistics";
 		
+		public static final String ID = "id";
 		public static final String UUID = "uuid";
 		public static final String WINS = "wins";
 		public static final String LOSSES = "losses";

@@ -57,6 +57,10 @@ public abstract class SQLAccessor<T, K> implements ObjectDatabaseAccessor<T> {
 		
 		private Type type;
 		private int length;
+		private boolean notNull;
+		private boolean primaryKey;
+		private boolean autoIncrement;
+		private boolean unique;
 		
 		public Field(Type type) {
 			this.type = type;
@@ -72,9 +76,33 @@ public abstract class SQLAccessor<T, K> implements ObjectDatabaseAccessor<T> {
 			return this;
 		}
 		
-		@Override
-		public String toString() {
-			return type.name() + (length > 0 ? "(" + length + ")" : "");
+		public Field notNull() {
+			notNull = true;
+			return this;
+		}
+		
+		public Field primaryKey() {
+			primaryKey = true;
+			return this;
+		}
+		
+		public Field autoIncrement() {
+			autoIncrement = true;
+			return this;
+		}
+		
+		public Field unique() {
+			unique = true;
+			return this;
+		}
+		
+		public String toString(SQLImplementation impl) {
+			return type.name()
+					+ (length > 0 ? "(" + length + ")" : "")
+					+ (notNull ? " NOT NULL" : "")
+					+ (primaryKey ? " PRIMARY KEY" : "")
+					+ (autoIncrement ? impl == SQLImplementation.MYSQL ? " AUTO_INCREMENT"
+							: impl == SQLImplementation.SQLITE ? " AUTOINCREMENT" : "" : "") + (unique ? " UNIQUE" : "");
 		}
 		
 		public enum Type {

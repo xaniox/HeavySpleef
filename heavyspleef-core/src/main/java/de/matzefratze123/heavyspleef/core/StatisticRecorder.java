@@ -155,9 +155,11 @@ public class StatisticRecorder implements SpleefListener {
 			}
 			
 			StatisticAction action = new IncrementingStatisticAction(actionType);
+			StatisticAction addGameAction = new IncrementingStatisticAction(EnumStatisticAction.GAMES_PLAYED);
 			StatisticAction recordTimeAction = new RecordTimeAction();
 			
 			action.executeAction(playerStatistic, false);
+			addGameAction.executeAction(playerStatistic, false);
 			recordTimeAction.executeAction(playerStatistic, true);			
 			
 			SpleefPlayer killer = event.getKiller();
