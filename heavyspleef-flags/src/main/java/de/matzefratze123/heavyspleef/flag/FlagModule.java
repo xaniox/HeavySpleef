@@ -80,6 +80,11 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagTimeout.class);
 		registry.registerFlag(FlagWinPoint.class);
 	}
+	
+	@Override
+	public void reload() {
+		
+	}
 
 	@Override
 	public void disable() {

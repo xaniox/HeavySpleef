@@ -26,7 +26,7 @@ public class ModuleManager {
 	private Set<Module> modules;
 	
 	public ModuleManager() {
-		this.modules = Sets.newHashSet();
+		this.modules = Sets.newLinkedHashSet();
 	}
 	
 	public void registerModule(Module module) {
@@ -37,6 +37,12 @@ public class ModuleManager {
 	public void disableModules() {
 		for (Module module : modules) {
 			module.disable();
+		}
+	}
+
+	public void reloadModules() {
+		for (Module module : modules) {
+			module.reload();
 		}
 	}
 	

@@ -27,6 +27,8 @@ public interface Module {
 	
 	public void enable();
 	
+	public void reload();
+	
 	public void disable();
 	
 	public Logger getLogger();

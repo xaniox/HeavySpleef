@@ -258,6 +258,8 @@ public final class HeavySpleef {
 		
 		I18N.setDefaultLocale(locale);
 		I18N.getInstance().reload();
+		
+		moduleManager.reloadModules();
 	}
 	
 	@SuppressWarnings("unchecked")

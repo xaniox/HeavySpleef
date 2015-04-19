@@ -34,6 +34,9 @@ public class CommandModule extends SimpleModule {
 		
 		getHeavySpleef().setCommandManager(manager);
 	}
+	
+	@Override
+	public void reload() {}
 
 	@Override
 	public void disable() {}
