@@ -179,6 +179,11 @@ public class YMLControl extends ResourceBundle.Control {
 	}
 	
 	@Override
+	public long getTimeToLive(String baseName, Locale locale) {
+		return TTL_DONT_CACHE;
+	}
+	
+	@Override
 	public Locale getFallbackLocale(String baseName, Locale locale) {
 		return Locale.US;
 	}
