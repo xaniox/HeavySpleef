@@ -63,5 +63,7 @@ public interface AsyncReadWriteHandler {
 	public ListenableFuture<?> forceCacheSave(FutureCallback<Void> callback);
 
 	public void release();
+
+	public void shutdownGracefully();
 	
 }

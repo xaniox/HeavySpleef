@@ -62,5 +62,7 @@ public interface ReadWriteHandler {
 	public void forceCacheSave() throws SQLException;
 
 	public void release();
+
+	public void shutdownGracefully();
 	
 }

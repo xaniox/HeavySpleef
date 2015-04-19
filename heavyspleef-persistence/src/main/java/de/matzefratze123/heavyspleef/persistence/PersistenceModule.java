@@ -18,16 +18,19 @@
 package de.matzefratze123.heavyspleef.persistence;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.UUID;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DatabaseConfig;
 import de.matzefratze123.heavyspleef.core.config.DatabaseConnection;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
-import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
+import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 import de.matzefratze123.heavyspleef.persistence.handler.CachingReadWriteHandler;
 import de.matzefratze123.heavyspleef.persistence.handler.ForwardingAsyncReadWriteHandler;
 
@@ -41,6 +44,9 @@ public class PersistenceModule extends SimpleModule {
 	private final File defaultXmlDir;
 	private final File defaultSchematicDir;
 	
+	private AsyncReadWriteHandler asyncHandler;
+	private CachingReadWriteHandler cachingHandler;
+	
 	public PersistenceModule(HeavySpleef heavySpleef) {
 		super(heavySpleef);
 		
@@ -51,8 +57,29 @@ public class PersistenceModule extends SimpleModule {
 
 	@Override
 	public void enable() {
+		setupDatabase();
+	}
+	
+	@Override
+	public void reload() {
+		setupDatabase();
+	}
+	
+	private void setupDatabase() {
+		Map<UUID, Statistic> cachedStatistics = null;
+		UUIDManager uuidManager = null;
+		
+		if (asyncHandler != null) {
+			//Get values out of the old handler
+			if (cachingHandler != null) {
+				cachedStatistics = cachingHandler.getCachedStatistics();
+				uuidManager = cachingHandler.getUUIDManager();
+			}
+			
+			asyncHandler.shutdownGracefully();
+		}
+		
 		HeavySpleef heavySpleef = getHeavySpleef();
-		ReadWriteHandler handler = null;
 		
 		DatabaseConfig config = heavySpleef.getConfiguration(ConfigType.DATABASE_CONFIG);
 		Properties properties = new Properties();
@@ -81,13 +108,13 @@ public class PersistenceModule extends SimpleModule {
 		}
 		
 		try {
-			handler = new CachingReadWriteHandler(heavySpleef, properties);
+			cachingHandler = new CachingReadWriteHandler(heavySpleef, properties, cachedStatistics, uuidManager);
 		} catch (Exception e) {
 			throw new RuntimeException("Could not enable HeavySpleef persistence module", e);
 		}
 		
-		AsyncReadWriteHandler delegateHandler = new ForwardingAsyncReadWriteHandler(handler, heavySpleef.getPlugin(), false);
-		heavySpleef.setDatabaseHandler(delegateHandler);
+		asyncHandler = new ForwardingAsyncReadWriteHandler(cachingHandler, heavySpleef.getPlugin(), false);
+		heavySpleef.setDatabaseHandler(asyncHandler);
 	}
 
 	@Override

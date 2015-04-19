@@ -25,6 +25,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -248,6 +249,23 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	@Override
 	public void release() {
 		delegate.release();
+	}
+	
+	@Override
+	public void shutdownGracefully() {
+		final long timeout = 5000;
+		
+		//Request the service to shutdown
+		executorService.shutdown();
+		
+		try {
+			//Wait for running tasks to complete
+			executorService.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException("InterruptedException thrown while waiting for tasks to be completed: ", e);
+		}
+		
+		delegate.shutdownGracefully();
 	}
 	
 	public <R> ListenableFuture<R> runCallableThreadDynamic(Callable<R> callable, FutureCallback<R> callback) {

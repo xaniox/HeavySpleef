@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -51,6 +52,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -93,7 +95,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	private final File schematicFolder;
 	
 	private final Logger logger;
-	private final UUIDManager uuidManager = new UUIDManager();
+	private UUIDManager uuidManager;
 	private final SAXReader saxReader = new SAXReader();
 	private final OutputFormat xmlOutputFormat = OutputFormat.createPrettyPrint();
 	
@@ -123,9 +125,11 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		}
 	};
 	
-	public CachingReadWriteHandler(HeavySpleef heavySpleef, Properties properties) throws IOException, Exception {
+	public CachingReadWriteHandler(HeavySpleef heavySpleef, Properties properties, Map<UUID, Statistic> initStatistics, UUIDManager uuidManager)
+			throws IOException, Exception {
 		this.logger = heavySpleef.getLogger();
 		
+		this.uuidManager = uuidManager != null ? uuidManager : new UUIDManager();
 		this.xmlFolder = (File) properties.get("xml.dir");
 		this.schematicFolder = (File) properties.get("schematic.dir");
 		
@@ -164,8 +168,14 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 					})
 					.build(statisticCacheLoader);
 		}
+		
+		if (initStatistics != null && !initStatistics.isEmpty()) {
+			for (Entry<UUID, Statistic> entry : initStatistics.entrySet()) {
+				statisticCache.put(entry.getKey(), entry.getValue());
+			}
+		}
 	}
-	
+
 	@Override
 	public void saveGames(Iterable<Game> iterable) throws IOException {
 		for (Game game : iterable) {
@@ -491,16 +501,39 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	}
 	
 	@Override
+	public void shutdownGracefully() {
+		Collection<Statistic> statistics = statisticCache.asMap().values();
+		
+		try {
+			saveStatistics(statistics);
+		} catch (SQLException e) {
+			throw new RuntimeException("Could not save cached statistics on reload: ", e);
+		}
+		
+		release();
+	}
+	
 	public void release() {
 		if (sqlContext != null) {
 			sqlContext.release();
 		}
+		
+		uuidManager = null;
+		statisticCache = null;
 	}
 	
 	private void validateSqlDatabaseSetup() {
 		if (sqlContext == null) {
 			throw new IllegalStateException("No statistic-database has been setup");
 		}
+	}
+
+	public Map<UUID, Statistic> getCachedStatistics() {
+		return ImmutableMap.copyOf(statisticCache.asMap());
+	}
+
+	public UUIDManager getUUIDManager() {
+		return uuidManager;
 	}
 
 }

@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import snaq.db.ConnectionPool;
 import snaq.db.DBPoolDataSource;
 import de.matzefratze123.heavyspleef.persistence.DatabaseContext;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLAccessor.Field;
@@ -99,6 +100,30 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 	}
 	
 	public void release() {
+		//Fix for checking if pool has been initialized in the data source
+		java.lang.reflect.Field poolField = null; 
+		for (java.lang.reflect.Field field : dataSource.getClass().getDeclaredFields()) {
+			if (field.getType() == ConnectionPool.class) {
+				poolField = field;
+			}
+		}
+		
+		if (poolField != null) {
+			poolField.setAccessible(true);
+			ConnectionPool pool = null;
+			
+			try {
+				pool = (ConnectionPool) poolField.get(dataSource);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException("Could not release pool: Cannot check pool for null: ", e);
+			}
+			
+			if (pool == null) {
+				//This pool is null
+				return;
+			}
+		}
+		
 		if (dataSource != null) {
 			dataSource.release();
 		}
