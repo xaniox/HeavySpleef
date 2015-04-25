@@ -20,6 +20,10 @@ package de.matzefratze123.heavyspleef.core.flag;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -32,8 +36,10 @@ import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
 
 public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMarshallable {
 	
-	private T item;
+	private @Getter @Setter T value;
+	@Getter(value = AccessLevel.PROTECTED) @Setter(value = AccessLevel.PROTECTED)
 	private AbstractFlag<?> parent;
+	@Getter(value = AccessLevel.PROTECTED) @Setter(value = AccessLevel.PROTECTED)
 	private HeavySpleef heavySpleef;
 	private I18N i18n;
 	
@@ -43,42 +49,18 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 	
 	public abstract String getValueAsString();
 	
-	public T getValue() {
-		return item;
-	}
-	
-	public void setValue(T value) {
-		this.item = value;
-	}
-	
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
-	
-	protected void setHeavySpleef(HeavySpleef heavySpleef) {
-		this.heavySpleef = heavySpleef;
-	}
-	
-	protected HeavySpleef getHeavySpleef() {
-		return heavySpleef;
-	}
 	
 	public void onFlagAdd(Game game) {}
 	
 	public void onFlagRemove(Game game) {}
 	
-	public I18N getI18N() {
+	protected I18N getI18N() {
 		if (i18n == null) {
 			i18n = I18N.getInstance();
 		}
 		
 		return i18n;
-	}
-	
-	protected AbstractFlag<?> getParent() {
-		return parent;
-	}
-	
-	protected void setParent(AbstractFlag<?> parent) {
-		this.parent = parent;
 	}
 	
 	@SuppressWarnings("unchecked")
