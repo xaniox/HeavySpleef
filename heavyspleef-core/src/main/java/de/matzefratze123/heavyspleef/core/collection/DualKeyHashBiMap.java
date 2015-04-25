@@ -17,7 +17,9 @@
  */
 package de.matzefratze123.heavyspleef.core.collection;
 
+import java.util.AbstractCollection;
 import java.util.AbstractMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +36,7 @@ public class DualKeyHashBiMap<K1, K2, V> implements DualKeyBiMap<K1, K2, V> {
 	private Class<K2> secondaryKeyClass;
 	
 	private Inverse inverse;
+	private Values values;
 	
 	public DualKeyHashBiMap(Class<K1> primaryKeyClass, Class<K2> secondaryKeyClass) {
 		this.primaryKeyClass = primaryKeyClass;
@@ -201,7 +204,7 @@ public class DualKeyHashBiMap<K1, K2, V> implements DualKeyBiMap<K1, K2, V> {
 
 	@Override
 	public Set<V> values() {
-		return primaryDelegate.values();
+		return (values == null ? values = new Values() : values);
 	}
 
 	@Override
@@ -213,6 +216,50 @@ public class DualKeyHashBiMap<K1, K2, V> implements DualKeyBiMap<K1, K2, V> {
 		if (!primaryKeyClass.isInstance(key) && !secondaryKeyClass.isInstance(key)) {
 			throw new IllegalArgumentException("key is not an instance of " + primaryKeyClass.getName() + " nor of " + secondaryKeyClass.getName());
 		}
+	}
+	
+	private final class Values extends AbstractCollection<V> implements Set<V> {
+		
+		@Override
+		public Iterator<V> iterator() {
+			return new ForwardingValueIterator(primaryDelegate.values()
+					.iterator(), secondaryDelegate.values().iterator());
+		}
+
+		@Override
+		public int size() {
+			return primaryDelegate.size();
+		}
+		
+		private final class ForwardingValueIterator implements Iterator<V> {
+
+			private final Iterator<V> delegate1;
+			private final Iterator<V> delegate2;
+			
+			public ForwardingValueIterator(Iterator<V> delegate1, Iterator<V> delegate2) {
+				this.delegate1 = delegate1;
+				this.delegate2 = delegate2;
+			}
+
+			@Override
+			public boolean hasNext() {
+				return delegate1.hasNext();
+			}
+
+			@Override
+			public V next() {
+				delegate2.next();
+				return delegate1.next();
+			}
+
+			@Override
+			public void remove() {
+				delegate1.remove();
+				delegate2.remove();
+			}
+			
+		}
+		
 	}
 	
 	private final class Inverse extends AbstractMap<V, DualKeyPair<K1, K2>> implements BiMap<V, DualKeyPair<K1, K2>> {
