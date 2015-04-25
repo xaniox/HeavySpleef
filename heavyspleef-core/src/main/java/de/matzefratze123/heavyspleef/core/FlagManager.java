@@ -18,7 +18,6 @@
 package de.matzefratze123.heavyspleef.core;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,20 +28,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.collect.BiMap;
 import com.google.common.collect.ForwardingMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
 
 public class FlagManager {
 	
 	private final JavaPlugin plugin;
-	private Map<String, AbstractFlag<?>> flags;
+	private BiMap<String, AbstractFlag<?>> flags;
+	private Set<String> disabledFlags;
 	private Set<GamePropertyBundle> propertyBundles;
 	private DefaultGamePropertyBundle requestedProperties;
 	private GamePropertyBundle defaults;
@@ -50,17 +55,49 @@ public class FlagManager {
 	public FlagManager(JavaPlugin plugin, GamePropertyBundle defaults) {
 		this.plugin = plugin;
 		this.defaults = defaults;
-		this.flags = Maps.newLinkedHashMap();
+		this.flags = HashBiMap.create();
+		this.disabledFlags = Sets.newHashSet();
 		this.propertyBundles = Sets.newTreeSet();
 		this.requestedProperties = new DefaultGamePropertyBundle(Maps.newEnumMap(GameProperty.class));
 	}
 	
 	public void addFlag(AbstractFlag<?> flag) {
+		addFlag(flag, false);
+	}
+	
+	public void addFlag(AbstractFlag<?> flag, boolean disable) {
 		Class<?> clazz = flag.getClass();
 		
 		Validate.isTrue(clazz.isAnnotationPresent(Flag.class), "Flag class " + clazz.getCanonicalName() + " must annotate " + Flag.class.getCanonicalName());
 		Flag flagAnnotation = clazz.getAnnotation(Flag.class);
+		String path = generatePath(flagAnnotation);
 		
+		if (flags.containsKey(path) || disabledFlags.contains(path)) {
+			return;
+		}
+		
+		if (disable) {
+			disabledFlags.add(path);
+		} else {
+			flags.put(path, flag);
+			
+			if (clazz.isAnnotationPresent(BukkitListener.class)) {
+				Bukkit.getPluginManager().registerEvents(flag, plugin);
+			}
+			
+			if (flagAnnotation.hasGameProperties()) {
+				Map<GameProperty, Object> flagGamePropertiesMap = new EnumMap<GameProperty, Object>(GameProperty.class);
+				flag.defineGameProperties(flagGamePropertiesMap);
+				
+				if (!flagGamePropertiesMap.isEmpty()) {
+					GamePropertyBundle properties = new GamePropertyBundle(flag, flagGamePropertiesMap);
+					propertyBundles.add(properties);
+				}
+			}
+		}
+	}
+	
+	private String generatePath(Flag flagAnnotation) {
 		//Generate the full path
 		StringBuilder pathBuilder = new StringBuilder();
 		
@@ -77,34 +114,20 @@ public class FlagManager {
 		}
 		
 		String path = pathBuilder.toString();
-		
-		if (flags.containsKey(path)) {
-			return;
-		}
-		
-		flags.put(path, flag);
-		
-		if (clazz.isAnnotationPresent(BukkitListener.class)) {
-			Bukkit.getPluginManager().registerEvents(flag, plugin);
-		}
-		
-		if (flagAnnotation.hasGameProperties()) {
-			Map<GameProperty, Object> flagGamePropertiesMap = new EnumMap<GameProperty, Object>(GameProperty.class);
-			flag.defineGameProperties(flagGamePropertiesMap);
-			
-			if (!flagGamePropertiesMap.isEmpty()) {
-				GamePropertyBundle properties = new GamePropertyBundle(flag, flagGamePropertiesMap);
-				propertyBundles.add(properties);
-			}
-		}
+		return path;
 	}
 	
 	public AbstractFlag<?> removeFlag(String path) {
-		if (!flags.containsKey(path)) {
+		if (!flags.containsKey(path) && !disabledFlags.contains(path)) {
 			return null;
 		}
 		
 		AbstractFlag<?> flag = flags.remove(path);
+		if (flag == null) {
+			disabledFlags.remove(path);
+			return null;
+		}
+		
 		if (flag.getClass().isAnnotationPresent(BukkitListener.class)) {
 			HandlerList.unregisterAll(flag);
 		}
@@ -122,8 +145,17 @@ public class FlagManager {
 		return flag;
 	}
 	
-	public boolean isFlagPresent(String name) {
-		return flags.containsKey(name);
+	public boolean isFlagPresent(String path) {
+		return isFlagPresent(path, false);
+	}
+	
+	public boolean isFlagPresent(String path, boolean checkDisabled) {		
+		boolean present = flags.containsKey(path);
+		if (checkDisabled && !present) {
+			present = disabledFlags.contains(path);
+		}
+		
+		return present;
 	}
 	
 	public boolean isFlagPresent(Class<? extends AbstractFlag<?>> clazz) {
@@ -136,10 +168,81 @@ public class FlagManager {
 		return false;
 	}
 	
-	public Map<String, AbstractFlag<?>> getPresentFlags() {
-		return Collections.unmodifiableMap(flags);
+	@SuppressWarnings("unchecked")
+	public void disableFlag(String path) {
+		Validate.isTrue(flags.containsKey(path), "Flag is not registered or already disabled");
+		
+		AbstractFlag<?> flag = flags.get(path);
+		disableFlag((Class<? extends AbstractFlag<?>>)flag.getClass());
 	}
 	
+	public void disableFlag(Class<? extends AbstractFlag<?>> clazz) {		
+		AbstractFlag<?> flag = getFlag(clazz);
+		Validate.notNull(flag, "Flag is not registered or already disabled");
+		
+		String path = flags.inverse().remove(flag);
+		
+		if (clazz.isAnnotationPresent(BukkitListener.class)) {
+			HandlerList.unregisterAll(flag);
+		}
+		
+		Iterator<GamePropertyBundle> iterator = propertyBundles.iterator();
+		while (iterator.hasNext()) {
+			GamePropertyBundle bundle = iterator.next();
+			if (bundle.getRelatingFlag() == null || bundle.getRelatingFlag() != flag) {
+				continue;
+			}
+			
+			iterator.remove();
+		}
+		
+		disabledFlags.add(path);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void enableFlag(String path, FlagRegistry registry) {
+		Validate.isTrue(disabledFlags.contains(path), "Flag is not disabled");
+		
+		AbstractFlag<?> flag = flags.get(path);
+		enableFlag((Class<? extends AbstractFlag<?>>)flag.getClass(), registry);
+	}
+	
+	public void enableFlag(Class<? extends AbstractFlag<?>> clazz, FlagRegistry registry) {
+		Validate.isTrue(!isFlagPresent(clazz));
+		Validate.isTrue(clazz.isAnnotationPresent(Flag.class));
+		
+		Flag flagAnnotation = clazz.getAnnotation(Flag.class);
+		String path = generatePath(flagAnnotation);
+		
+		Validate.isTrue(disabledFlags.contains(path), "Flag is not disabled");
+		AbstractFlag<?> flag = registry.newFlagInstance(path, AbstractFlag.class);
+		
+		if (clazz.isAnnotationPresent(BukkitListener.class)) {
+			Bukkit.getPluginManager().registerEvents(flag, plugin);
+		}
+		
+		if (flagAnnotation.hasGameProperties()) {
+			Map<GameProperty, Object> flagGamePropertiesMap = new EnumMap<GameProperty, Object>(GameProperty.class);
+			flag.defineGameProperties(flagGamePropertiesMap);
+			
+			if (!flagGamePropertiesMap.isEmpty()) {
+				GamePropertyBundle properties = new GamePropertyBundle(flag, flagGamePropertiesMap);
+				propertyBundles.add(properties);
+			}
+		}
+		
+		flags.put(path, flag);
+		disabledFlags.remove(path);
+	}
+	
+	public Map<String, AbstractFlag<?>> getPresentFlags() {
+		return ImmutableMap.copyOf(flags);
+	}
+	
+	public Set<String> getDisabledFlags() {
+		return ImmutableSet.copyOf(disabledFlags);
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractFlag<?>> T getFlag(Class<T> clazz) {
 		for (AbstractFlag<?> flag : flags.values()) {
@@ -147,12 +250,12 @@ public class FlagManager {
 				return (T) flag;
 			}
 		}
-		
 		return null;
 	}
 	
 	public AbstractFlag<?> getFlag(String path) {
-		return flags.get(path);
+		AbstractFlag<?> flag = flags.get(path);
+		return flag;
 	}
 	
 	public Object getProperty(GameProperty property) {

@@ -9,7 +9,7 @@
   <url>http://dev.bukkit.org/bukkit-plugins/heavyspleef/</url>
   <inceptionYear>2014-2015</inceptionYear>
   <properties>
-    <project.encoding>UTF-8</project.encoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <worldedit.version>6.0.2-SNAPSHOT</worldedit.version>
   </properties>
   <modules>
@@ -19,6 +19,8 @@
   	<module>heavyspleef-persistence</module>
   	<module>heavyspleef-flags</module>
   	<module>heavyspleef-command-base</module>
+  	<module>heavyspleef-addons</module>
+  	<module>heavyspleef-api</module>
   </modules>
   <developers>
     <developer>
@@ -53,7 +55,7 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
-          <encoding>${project.encoding}</encoding>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
       <plugin>
@@ -77,7 +79,7 @@
                 <inceptionYear>${project.inceptionYear}</inceptionYear>
               </properties>
               <quiet>true</quiet>
-              <encoding>${project.encoding}</encoding>
+              <encoding>${project.build.sourceEncoding}</encoding>
               <strictCheck>true</strictCheck>
               <header>HEADER.txt</header>
               <mapping>

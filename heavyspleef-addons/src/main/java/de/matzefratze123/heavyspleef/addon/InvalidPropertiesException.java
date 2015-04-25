@@ -15,12 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.base;
+package de.matzefratze123.heavyspleef.addon;
 
-public interface CommandManager {
-	
-	public void registerSpleefCommands(Class<?> clazz);
+public class InvalidPropertiesException extends InvalidAddOnException {
 
-	public void unregisterSpleefCommand(Class<?> clazz);
+	private static final long serialVersionUID = -3043608513753425144L;
+
+	public InvalidPropertiesException() {
+		super();
+	}
+
+	public InvalidPropertiesException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public InvalidPropertiesException(String message) {
+		super(message);
+	}
+
+	public InvalidPropertiesException(Throwable cause) {
+		super(cause);
+	}
 
 }

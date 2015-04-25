@@ -112,6 +112,32 @@ public abstract class CommandManagerService implements CommandExecutor {
 		}
 	}
 	
+	public void unregisterCommands(Class<?> clazz, CommandContainer base) {
+		Iterator<CommandContainer> iterator;
+		
+		if (base == null) {
+			iterator = commandMap.values().iterator();
+		} else {
+			iterator = base.getChildCommands().iterator();
+		}
+		
+		unregisterRecursively(clazz, iterator);
+	}
+	
+	private void unregisterRecursively(Class<?> clazz, Iterator<CommandContainer> iterator) {
+		while (iterator.hasNext()) {
+			CommandContainer container = iterator.next();
+			Method method = container.getCommandMethod();
+			Set<CommandContainer> childs = container.getChildCommands();
+			
+			if (method.getDeclaringClass() == clazz) {
+				iterator.remove();
+			} else if (!childs.isEmpty()) {
+				unregisterRecursively(clazz, childs.iterator());
+			}
+		}
+	}
+	
 	public CommandContainer containerOf(String path) {
 		Validate.notNull(path, "path cannot be null");
 		Validate.isTrue(!path.isEmpty(), "path cannot be empty");

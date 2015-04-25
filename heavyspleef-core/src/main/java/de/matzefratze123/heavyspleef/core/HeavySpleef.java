@@ -119,7 +119,7 @@ public final class HeavySpleef {
 		File flagDir = new File(getDataFolder(), "flags");
 		flagDir.mkdirs();
 		
-		flagRegistry = new FlagRegistry(this, flagDir);
+		flagRegistry = new FlagRegistry(this);
 		
 		configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
 		loadConfigurations();

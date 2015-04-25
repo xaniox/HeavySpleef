@@ -19,6 +19,7 @@ package de.matzefratze123.heavyspleef;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.matzefratze123.heavyspleef.addon.AddOnModule;
 import de.matzefratze123.heavyspleef.commands.CommandModule;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.module.Module;
@@ -37,10 +38,12 @@ public class HeavySpleefPlugin extends JavaPlugin {
 		Module flagModule = new FlagModule(heavySpleef);
 		Module commandModule = new CommandModule(heavySpleef);
 		Module persistenceModule = new PersistenceModule(heavySpleef);
+		Module addOnModule = new AddOnModule(heavySpleef);
 		
 		heavySpleef.registerModule(flagModule);
 		heavySpleef.registerModule(commandModule);
 		heavySpleef.registerModule(persistenceModule);
+		heavySpleef.registerModule(addOnModule);
 		
 		heavySpleef.enable();
 	}

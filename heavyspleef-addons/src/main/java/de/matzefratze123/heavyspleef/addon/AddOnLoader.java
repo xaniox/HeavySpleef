@@ -15,12 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.commands.base;
+package de.matzefratze123.heavyspleef.addon;
 
-public interface CommandManager {
+import java.io.File;
+
+public interface AddOnLoader {
+
+	public static final String ADD_ON_PROPERTIES_FILE = "addon.yml";
 	
-	public void registerSpleefCommands(Class<?> clazz);
-
-	public void unregisterSpleefCommand(Class<?> clazz);
+	public AddOn load(File addOnFile) throws InvalidAddOnException;
 
 }

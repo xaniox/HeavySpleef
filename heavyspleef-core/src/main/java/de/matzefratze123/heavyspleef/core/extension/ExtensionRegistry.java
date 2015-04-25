@@ -29,6 +29,7 @@ import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.event.EventManager;
 
 public class ExtensionRegistry {
@@ -125,6 +126,22 @@ public class ExtensionRegistry {
 		}
 		
 		return false;
+	}
+	
+	public void unregister(Class<? extends GameExtension> extClass) {
+		if (!registeredExtensions.containsValue(extClass)) {
+			throw new IllegalArgumentException("Extension " + extClass.getCanonicalName() + " is not registered");
+		}
+		
+		Unregister.Unregisterer.runUnregisterMethods(extClass, heavySpleef, true, true);
+		Extension extAnnotation = extClass.getAnnotation(Extension.class);
+		
+		if (extAnnotation.hasCommands()) {
+			CommandManager manager = heavySpleef.getCommandManager();
+			manager.unregisterSpleefCommand(extClass);
+		}
+		
+		registeredExtensions.inverse().remove(extClass);
 	}
 	
 	public Class<? extends GameExtension> getExtensionClass(String name) {

@@ -17,18 +17,12 @@
  */
 package de.matzefratze123.heavyspleef.core.flag;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.util.Iterator;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
 
@@ -37,6 +31,7 @@ import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyHashBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyMap.DualKeyPair;
@@ -46,83 +41,17 @@ import de.matzefratze123.heavyspleef.core.hook.HookReference;
 
 public class FlagRegistry {
 	
-	private static final FilenameFilter CLASS_FILE_FILTER = new FilenameFilter() {
-		
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.toLowerCase().endsWith(".class");
-		}
-	};
-	
 	private static final String FLAG_PATH_SEPERATOR = ":";
 	
 	private final HeavySpleef heavySpleef;
-	private File customFlagFolder;
-	private Logger logger;
-	private ClassLoader classLoader;
 	
 	private DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> registeredFlagsMap;
 	private Queue<Method> queuedInitMethods;
 	
-	public FlagRegistry(HeavySpleef heavySpleef, File customFlagFolder) {
+	public FlagRegistry(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
-		this.customFlagFolder = customFlagFolder;
-		this.logger = heavySpleef.getLogger();
 		this.registeredFlagsMap = new DualKeyHashBiMap<String, Flag, Class<? extends AbstractFlag<?>>>(String.class, Flag.class);
-		
-		URL url;
-		
-		try {
-			url = customFlagFolder.toURI().toURL();
-		} catch (MalformedURLException mue) {
-			throw new RuntimeException(mue);
-		}
-		
-		this.classLoader = new URLClassLoader(new URL[] { url });
 		this.queuedInitMethods = Lists.newLinkedList();
-		
-		loadClasses();
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void loadClasses() {
-		File[] classFiles = customFlagFolder.listFiles(CLASS_FILE_FILTER);
-		
-		for (File classFile : classFiles) {
-			String className = cutExtension(classFile);
-			
-			Class<?> clazz;
-			
-			try {
-				clazz = classLoader.loadClass(className);
-			} catch (ClassNotFoundException e) {
-				logger.log(Level.SEVERE, "Failed to load flag class " + className, e);
-				continue;
-			}
-			
-			if (!(AbstractFlag.class.isAssignableFrom(clazz))) {
-				logger.warning("Could not load flag class " + className + " as it is not a subclass of " + AbstractFlag.class.getName());
-				continue;
-			}
-			
-			Class<? extends AbstractFlag<?>> flagClazz = (Class<? extends AbstractFlag<?>>) clazz;
-			registerFlag(flagClazz);
-		}
-	}
-	
-	private String cutExtension(File file) {
-		String fileName = file.getName();
-		int lastDotIndex = fileName.length() - 1;
-		
-		while (fileName.charAt(lastDotIndex) != '.' && lastDotIndex > 0) {
-			--lastDotIndex;
-		}
-		
-		return fileName.substring(0, lastDotIndex);
-	}
-	
-	public File getCustomFlagFolder() {
-		return customFlagFolder;
 	}
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz) {
@@ -200,6 +129,34 @@ public class FlagRegistry {
 		}
 		
 		registeredFlagsMap.put(path, flagAnnotation, clazz);
+	}
+	
+	public void unregister(Class<? extends AbstractFlag<?>> flagClass) {
+		Iterator<Class<? extends AbstractFlag<?>>> iterator = registeredFlagsMap.values().iterator();
+		while (iterator.hasNext()) {
+			Class<? extends AbstractFlag<?>> clazz = iterator.next();
+			
+			if (clazz == flagClass) {
+				Unregister.Unregisterer.runUnregisterMethods(clazz, heavySpleef, true, true);
+				
+				Flag annotation = registeredFlagsMap.inverse().get(clazz).getSecondaryKey();
+				if (annotation.hasCommands()) {
+					CommandManager manager = heavySpleef.getCommandManager();
+					manager.unregisterSpleefCommand(clazz);
+				}
+				
+				Iterator<Method> methodIterator = queuedInitMethods.iterator();
+				while (methodIterator.hasNext()) {
+					Method method = methodIterator.next();
+					if (method.getDeclaringClass() == flagClass) {
+						methodIterator.remove();
+					}
+				}
+				
+				iterator.remove();
+				break;
+			}
+		}
 	}
 	
 	public void flushAndExecuteInitMethods() {

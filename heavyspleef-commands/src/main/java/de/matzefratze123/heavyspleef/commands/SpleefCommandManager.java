@@ -100,6 +100,12 @@ public class SpleefCommandManager implements CommandManager {
 		service.registerCommands(clazz, spleefCommand);
 	}
 	
+	@Override
+	public void unregisterSpleefCommand(Class<?> clazz) {
+		CommandContainer spleefCommand = service.containerOf("spleef");
+		service.unregisterCommands(clazz, spleefCommand);
+	}
+	
 	public CommandManagerService getService() {
 		return service;
 	}
