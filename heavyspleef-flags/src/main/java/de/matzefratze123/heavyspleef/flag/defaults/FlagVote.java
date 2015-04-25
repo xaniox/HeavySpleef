@@ -33,6 +33,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
@@ -85,6 +86,12 @@ public class FlagVote extends BooleanFlag {
 	public static void initVoteSign(HeavySpleef heavySpleef) {
 		ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
 		registry.registerExtension(VoteSignExtension.class);
+	}
+	
+	@Unregister
+	public static void unregisterVoteSign(HeavySpleef heavySpleef) {
+		ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
+		registry.unregister(VoteSignExtension.class);
 	}
 
 	@Override

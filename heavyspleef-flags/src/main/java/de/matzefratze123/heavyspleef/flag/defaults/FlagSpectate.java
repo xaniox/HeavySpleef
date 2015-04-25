@@ -33,6 +33,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
 import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
@@ -88,6 +89,12 @@ public class FlagSpectate extends LocationFlag {
 	
 	@FlagInit
 	public static void initSpectateSign(HeavySpleef heavySpleef) {
+		ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
+		registry.registerExtension(SpectateSignExtension.class);
+	}
+	
+	@Unregister
+	public static void unregisterSpectateSign(HeavySpleef heavySpleef) {
 		ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
 		registry.registerExtension(SpectateSignExtension.class);
 	}
