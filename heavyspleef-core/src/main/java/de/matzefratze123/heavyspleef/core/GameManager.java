@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.FutureCallback;
 
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -57,6 +58,18 @@ public class GameManager {
 		
 		databaseHandler.deleteGame(game, null);
 		return game;
+	}
+	
+	public void renameGame(final Game game, final String to, FutureCallback<Void> callback) {
+		Validate.isTrue(!hasGame(to), "A game with the name '" + to + "' already exists");
+		
+		String oldName = game.getName();
+		game.setName(to);
+		
+		games.remove(oldName);
+		games.put(to, game);
+		
+		databaseHandler.renameGame(game, oldName, to, callback);
 	}
 	
 	public boolean hasGame(String name) {

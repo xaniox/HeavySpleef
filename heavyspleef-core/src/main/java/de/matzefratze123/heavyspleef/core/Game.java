@@ -28,7 +28,9 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -133,7 +135,7 @@ public class Game {
 	@Getter
 	private StatisticRecorder statisticRecorder;
 	
-	@Getter
+	@Getter @Setter(value = AccessLevel.PACKAGE)
 	private String name;
 	@Getter
 	private World world;

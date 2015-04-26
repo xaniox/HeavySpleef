@@ -38,6 +38,8 @@ public interface AsyncReadWriteHandler {
 	
 	public ListenableFuture<List<Game>> getGames(FutureCallback<List<Game>> callback);
 	
+	public ListenableFuture<?> renameGame(Game game, String from, String to, FutureCallback<Void> callback);
+	
 	public ListenableFuture<?> deleteGame(Game game, FutureCallback<Void> callback);
 	
 	public ListenableFuture<?> saveStatistics(Iterable<Statistic> statistics, FutureCallback<Void> callback);

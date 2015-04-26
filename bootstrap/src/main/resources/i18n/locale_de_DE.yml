@@ -91,6 +91,7 @@ command:
   help-record: "&c- &6$[usage]\n&7  $[description]"
   
   plugin-reloaded: "HeavySpleef v$[version] neu geladen [$[time-dif-ms]ms]"
+  game-renamed: "Spiel '$[from]' wurde zu '$[to]' umbenannt"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -147,6 +148,7 @@ help:
     leave: "Verlässt ein Spiel"
     list: "Listet alle Spiele auf dem Server auf"
     reload: "Lädt Konfigurationen neu"
+    rename: "Benennt ein Spiel um"
     save: "Sichert Statistiken, Spiele oder beides"
     start: "Start das jetzige Spiel oder eines mit Namen"
     stats: "Zeigt Spleef-Statistiken an"

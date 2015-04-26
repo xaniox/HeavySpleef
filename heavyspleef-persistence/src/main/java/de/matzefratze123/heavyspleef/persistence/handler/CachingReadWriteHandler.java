@@ -104,6 +104,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 	private XMLContext xmlContext;
 	
 	private ReentrantLock rankLock = new ReentrantLock();
+	private ReentrantLock renameLock = new ReentrantLock(true);
 	
 	private LoadingCache<UUID, Statistic> statisticCache;
 	private final CacheLoader<UUID, Statistic> statisticCacheLoader = new CacheLoader<UUID, Statistic>() {
@@ -274,6 +275,29 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public void renameGame(Game game, String from, String to) throws IOException {
+		renameLock.lock();
+		
+		try {
+			File xmlFile = new File(xmlFolder, from + ".xml");
+			if (xmlFile.exists()) {
+				xmlFile.delete();
+			}
+			
+			File gameSchematicFolder = new File(schematicFolder, from);
+			File newGameSchematicFolder = new File(schematicFolder, to);
+			
+			if (gameSchematicFolder.exists()) {
+				gameSchematicFolder.renameTo(newGameSchematicFolder);
+			}
+			
+			saveGame(game);
+		} finally {
+			renameLock.unlock();
+		}
 	}
 	
 	@Override

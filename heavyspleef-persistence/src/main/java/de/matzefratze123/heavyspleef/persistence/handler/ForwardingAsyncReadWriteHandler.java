@@ -124,6 +124,17 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 			}
 		}, callback);
 	}
+	
+	@Override
+	public ListenableFuture<?> renameGame(final Game game, final String from, final String to, FutureCallback<Void> callback) {
+		return runCallableThreadDynamic(new VoidCallable() {
+			
+			@Override
+			public void voidCall() throws Exception {
+				delegate.renameGame(game, from, to);
+			}
+		}, callback);
+	}
 
 	@Override
 	public ListenableFuture<?> deleteGame(final Game game, FutureCallback<Void> callback) {

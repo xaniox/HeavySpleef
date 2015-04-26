@@ -126,6 +126,7 @@ public class SpleefCommandManager implements CommandManager {
 			CommandLeave.class,
 			CommandList.class,
 			CommandReload.class,
+			CommandRename.class,
 			CommandSave.class,
 			CommandStart.class,
 			CommandStats.class,

@@ -39,6 +39,8 @@ public interface ReadWriteHandler {
 	
 	public List<Game> getGames() throws IOException, DocumentException;
 	
+	public void renameGame(Game game, String from, String to) throws IOException;
+	
 	public void deleteGame(Game game) throws IOException;
 	
 	public void saveStatistics(Iterable<Statistic> iterable) throws SQLException;
