@@ -112,6 +112,13 @@
       </plugin>
     </plugins>
   </build>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>matzes-repo</id>
+      <name>Matze's Repository</name>
+      <url>http://matzefratze123.de/artifactory/release/</url>
+    </pluginRepository>
+  </pluginRepositories>
   <repositories>
     <repository>
        <id>bukkit-repo</id>

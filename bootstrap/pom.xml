@@ -105,13 +105,6 @@
       </resource>
     </resources>
   </build>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>matzes-repo</id>
-      <name>Matze's Repository</name>
-      <url>http://matzefratze123.de/artifactory/release/</url>
-    </pluginRepository>
-  </pluginRepositories>
   <dependencies>
     <dependency>
       <groupId>de.matzefratze123</groupId>
