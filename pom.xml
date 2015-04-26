@@ -112,6 +112,52 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>deploy</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>de.matzefratze123</groupId>
+            <artifactId>set-property-maven-plugin</artifactId>
+            <version>1.0</version>
+            <executions>
+              <execution>
+                <id>set-deploy-url</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>set-properties</goal>
+                </goals>
+                <configuration>
+                  <operations>
+                    <operation>
+                      <condition>
+                        <string>${project.version}</string>
+                        <operator>EQUALS_REGEX</operator>
+                        <operand>.*-SNAPSHOT</operand>
+                      </condition>
+                      <setpropertiestrue>
+                        <setproperty>
+                          <property>deploy.url</property>
+                          <value>http://matzefratze123.de/artifactory/snapshots/</value>
+                        </setproperty>
+                      </setpropertiestrue>
+                      <setpropertiesfalse>
+                        <setproperty>
+                          <property>deploy.url</property>
+                          <value>http://matzefratze123.de/artifactory/release/</value>
+                        </setproperty>
+                      </setpropertiesfalse>
+                    </operation>
+                  </operations>
+                </configuration>
+              </execution>
+            </executions>    
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <pluginRepositories>
     <pluginRepository>
       <id>matzes-repo</id>
