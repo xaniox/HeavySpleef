@@ -6,7 +6,6 @@
   <packaging>jar</packaging>
   <name>HeavySpleef</name>
   <description>Spleef plugin for Bukkit</description>
-  <packaging>jar</packaging>
   <url>http://dev.bukkit.org/bukkit-plugins/heavyspleef/</url>
   <inceptionYear>2014-2015</inceptionYear>
   <properties>
