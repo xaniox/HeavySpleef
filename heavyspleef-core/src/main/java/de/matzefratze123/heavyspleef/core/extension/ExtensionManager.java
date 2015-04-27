@@ -26,15 +26,15 @@ import org.bukkit.event.HandlerList;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.event.EventManager;
+import de.matzefratze123.heavyspleef.core.event.EventBus;
 
 public class ExtensionManager {
 	
 	private final HeavySpleef heavySpleef;
-	private final EventManager eventManager;
+	private final EventBus eventManager;
 	private Set<GameExtension> extensions;
 	
-	protected ExtensionManager(HeavySpleef heavySpleef, EventManager eventManager) {
+	protected ExtensionManager(HeavySpleef heavySpleef, EventBus eventManager) {
 		this.heavySpleef = heavySpleef;
 		this.eventManager = eventManager;
 		this.extensions = Sets.newHashSet();

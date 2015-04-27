@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Unregister;
-import de.matzefratze123.heavyspleef.core.event.EventManager;
+import de.matzefratze123.heavyspleef.core.event.EventBus;
 
 public class ExtensionRegistry {
 	
@@ -152,7 +152,7 @@ public class ExtensionRegistry {
 		return registeredExtensions.inverse().get(clazz);
 	}
 	
-	public ExtensionManager newManagerInstance(EventManager eventManager) {
+	public ExtensionManager newManagerInstance(EventBus eventManager) {
 		ExtensionManager manager = new ExtensionManager(heavySpleef, eventManager);
 		return manager;
 	}

@@ -74,7 +74,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
-import de.matzefratze123.heavyspleef.core.event.EventManager;
+import de.matzefratze123.heavyspleef.core.event.EventBus;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
@@ -122,7 +122,7 @@ public class Game {
 	private final EditSessionFactory editSessionFactory;
 	@Getter
 	private HeavySpleef heavySpleef;
-	private EventManager eventManager;
+	private EventBus eventManager;
 	private Set<SpleefPlayer> ingamePlayers;
 	@Getter
 	private List<SpleefPlayer> deadPlayers;
@@ -156,7 +156,7 @@ public class Game {
 		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.deadPlayers = Lists.newArrayList();
-		this.eventManager = new EventManager(heavySpleef.getLogger());
+		this.eventManager = new EventBus(heavySpleef.getLogger());
 		this.statisticRecorder = new StatisticRecorder(heavySpleef.getDatabaseHandler(), heavySpleef.getLogger());
 		
 		eventManager.registerListener(statisticRecorder);
