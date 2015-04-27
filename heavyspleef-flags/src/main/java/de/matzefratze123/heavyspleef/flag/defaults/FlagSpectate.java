@@ -36,7 +36,7 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
@@ -108,7 +108,7 @@ public class FlagSpectate extends LocationFlag {
 		description.add("Enables the spectate mode for Spleef");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPlayerPreJoin(PlayerPreJoinGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		

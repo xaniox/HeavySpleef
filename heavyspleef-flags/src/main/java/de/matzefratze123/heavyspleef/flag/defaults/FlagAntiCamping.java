@@ -43,7 +43,7 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -81,7 +81,7 @@ public class FlagAntiCamping extends BooleanFlag {
 		description.add("Enables the anticamping feature for a Spleef game");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPlayerLeaveGame(PlayerLeaveGameEvent event) {
 		if (task == null) {
 			return;

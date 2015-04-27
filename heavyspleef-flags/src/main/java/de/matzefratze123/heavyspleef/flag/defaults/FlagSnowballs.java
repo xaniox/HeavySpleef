@@ -36,7 +36,7 @@ import org.bukkit.util.Vector;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameProperty;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -52,7 +52,7 @@ public class FlagSnowballs extends IntegerFlag {
 		description.add("Gives players a certain amount of snowballs to use when they break blocks");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onBlockBreak(PlayerBlockBreakEvent event) {
 		int val = getValue();
 		

@@ -21,8 +21,8 @@ import java.util.List;
 
 import org.bukkit.Location;
 
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler.Priority;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
@@ -35,7 +35,7 @@ public class FlagLeavepoint extends LocationFlag {
 		description.add("Defines the general teleportation point when leaving a spleef game");
 	}
 	
-	@GameEventHandler(priority = Priority.LOW)
+	@Subscribe(priority = Priority.LOW)
 	public void onPlayerLeaveGame(PlayerLeaveGameEvent event) {
 		Location value = getValue();
 		if (value == null) {

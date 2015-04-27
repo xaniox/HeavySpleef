@@ -50,8 +50,8 @@ import de.matzefratze123.heavyspleef.core.PlayerPostActionHandler.PostActionCall
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler.Priority;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
@@ -289,19 +289,19 @@ public class ExtensionLobbyWall extends GameExtension {
 		return direction;
 	}
 	
-	@GameEventHandler(priority = Priority.MONITOR)
+	@Subscribe(priority = Priority.MONITOR)
 	public void onGameStateChange(GameStateChangeEvent event) {
 		Game game = event.getGame();
 		updateWall(game, false);
 	}
 	
-	@GameEventHandler(priority = Priority.MONITOR)
+	@Subscribe(priority = Priority.MONITOR)
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
 		Game game = event.getGame();
 		updateWall(game, false);
 	}
 	
-	@GameEventHandler(priority = Priority.MONITOR)
+	@Subscribe(priority = Priority.MONITOR)
 	public void onPlayerLeave(PlayerLeaveGameEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -311,7 +311,7 @@ public class ExtensionLobbyWall extends GameExtension {
 		updateWall(game, false);
 	}
 	
-	@GameEventHandler(priority = Priority.MONITOR)
+	@Subscribe(priority = Priority.MONITOR)
 	public void onGameEnd(GameEndEvent event) {
 		Game game = event.getGame();
 		updateWall(game, true);

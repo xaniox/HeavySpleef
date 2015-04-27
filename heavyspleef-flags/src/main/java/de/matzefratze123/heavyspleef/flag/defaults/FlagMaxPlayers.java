@@ -19,7 +19,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -34,7 +34,7 @@ public class FlagMaxPlayers extends IntegerFlag {
 		description.add("Defines the maximum count of players for a Spleef game");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPlayerJoinGame(PlayerPreJoinGameEvent event) {
 		int playersCount = event.getGame().getPlayers().size();
 		if (playersCount >= getValue()) {

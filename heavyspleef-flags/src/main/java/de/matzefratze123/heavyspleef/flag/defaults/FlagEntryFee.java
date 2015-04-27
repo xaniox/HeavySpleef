@@ -20,7 +20,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import net.milkbowl.vault.economy.Economy;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
@@ -49,7 +49,7 @@ public class FlagEntryFee extends DoubleFlag {
 		return economy;
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		double fee = getValue();
 		

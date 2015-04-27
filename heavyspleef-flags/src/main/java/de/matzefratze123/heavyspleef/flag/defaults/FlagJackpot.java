@@ -20,7 +20,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import net.milkbowl.vault.economy.Economy;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -39,13 +39,13 @@ public class FlagJackpot extends BooleanFlag {
 		description.add("Defines wether the sum of all entry fees is given to the winner");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		// Save the count of players
 		playerCount = event.getGame().getPlayers().size();
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPlayerWin(PlayerWinGameEvent event) {
 		SpleefPlayer[] winners = event.getWinners();
 		FlagEntryFee flagEntryFee = (FlagEntryFee) getParent();

@@ -19,8 +19,8 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler.Priority;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
@@ -33,7 +33,7 @@ public class FlagMinPlayers extends IntegerFlag {
 		description.add("Defines the minimum count of players required to start a game");
 	}
 	
-	@GameEventHandler(priority = Priority.HIGH)
+	@Subscribe(priority = Priority.HIGH)
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
 		int playersNow = event.getGame().getPlayers().size();
 		if (playersNow < getValue()) {

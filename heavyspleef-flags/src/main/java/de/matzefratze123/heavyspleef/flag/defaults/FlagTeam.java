@@ -46,8 +46,8 @@ import de.matzefratze123.heavyspleef.core.RatingCompute;
 import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.StatisticRecorder;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler.Priority;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
@@ -194,7 +194,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		return slots;
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPreGameJoin(PlayerPreJoinGameEvent event) {
 		FlagMaxTeamSize maxSizeFlag = getChildFlag(FlagMaxTeamSize.class, event.getGame());
 		if (maxSizeFlag != null) {
@@ -233,7 +233,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@GameEventHandler
+	@Subscribe
 	public void onGameJoin(PlayerJoinGameEvent event) {
 		Game game = event.getGame();
 		SpleefPlayer player = event.getPlayer();
@@ -255,7 +255,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		players.put(player, null);
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
 			if (!players.containsKey(player)) {
@@ -285,7 +285,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPlayerLose(PlayerLeaveGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		TeamColor color = players.get(player);
@@ -326,7 +326,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 	}
 	
-	@GameEventHandler(priority = Priority.HIGH)
+	@Subscribe(priority = Priority.HIGH)
 	public void onGameEnd(GameEndEvent event) {
 		deadPlayers.clear();
 		deadTeams.clear();

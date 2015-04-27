@@ -38,7 +38,7 @@ import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
@@ -99,7 +99,7 @@ public class FlagVote extends BooleanFlag {
 		description.add("Enables the ability to vote to start the game");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPlayerLeaveGameEvent(PlayerLeaveGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		
@@ -108,7 +108,7 @@ public class FlagVote extends BooleanFlag {
 		}
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onGameEnd(PlayerGameEvent event) {
 		voted.clear();
 	}

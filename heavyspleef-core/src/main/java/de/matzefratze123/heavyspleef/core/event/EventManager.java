@@ -40,7 +40,7 @@ public class EventManager {
 		
 		Method[] methods = clazz.getDeclaredMethods();
 		for (Method method : methods) {
-			if (!method.isAnnotationPresent(GameEventHandler.class)) {
+			if (!method.isAnnotationPresent(Subscribe.class)) {
 				continue;
 			}
 			

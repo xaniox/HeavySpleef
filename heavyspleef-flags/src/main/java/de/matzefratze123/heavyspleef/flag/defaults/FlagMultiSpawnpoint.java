@@ -25,7 +25,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
@@ -50,7 +50,7 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 		description.add("Defines multiple spawnpoints for players");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onGameCountdown(GameCountdownEvent event) {
 		List<Location> list = getValue();
 		event.setSpawnLocations(list);

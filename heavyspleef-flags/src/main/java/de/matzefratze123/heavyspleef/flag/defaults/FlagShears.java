@@ -29,7 +29,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -61,7 +61,7 @@ public class FlagShears extends BooleanFlag {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@GameEventHandler
+	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();
 		

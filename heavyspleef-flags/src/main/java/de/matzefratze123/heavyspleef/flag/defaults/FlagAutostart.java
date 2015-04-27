@@ -19,7 +19,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
-import de.matzefratze123.heavyspleef.core.event.GameEventHandler;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
@@ -32,7 +32,7 @@ public class FlagAutostart extends IntegerFlag {
 		description.add("Defines the count of players needed to automatically start the game");
 	}
 	
-	@GameEventHandler
+	@Subscribe
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
 		int playersNow = event.getGame().getPlayers().size();
 		if (playersNow >= getValue()) {
