@@ -25,12 +25,12 @@ import java.util.logging.Logger;
 
 import com.google.common.collect.Sets;
 
-public class EventManager {
+public class EventBus {
 	
 	private final Logger logger;
 	private Set<EventListenerMethod> registeredEventListeners;
 	
-	public EventManager(Logger logger) {
+	public EventBus(Logger logger) {
 		this.logger = logger;
 		this.registeredEventListeners = Sets.newLinkedHashSet();
 	}

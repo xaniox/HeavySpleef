@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface GameEventHandler {
+public @interface Subscribe {
 	
 	Priority priority() default Priority.NORMAL;
 	
