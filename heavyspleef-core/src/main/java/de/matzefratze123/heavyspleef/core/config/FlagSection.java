@@ -17,18 +17,23 @@
  */
 package de.matzefratze123.heavyspleef.core.config;
 
+import lombok.Getter;
+
 import org.bukkit.configuration.ConfigurationSection;
 
+@Getter
 public class FlagSection {
 	
 	private int autostartVote;
+	private int anticampingWarn;
+	private boolean anticampingDoWarn;
+	private int anticampingTeleport;
 	
 	public FlagSection(ConfigurationSection section) {
-		this.autostartVote = section.getInt("autostart-vote");
-	}
-	
-	public int getAutostartVote() {
-		return autostartVote;
+		this.autostartVote = section.getInt("autostart-vote", 75);
+		this.anticampingWarn = section.getInt("anticamping-warn", 3);
+		this.anticampingDoWarn = section.getBoolean("anticamping-do-warn", true);
+		this.anticampingTeleport = section.getInt("anticamping-teleported", 6);
 	}
 
 }

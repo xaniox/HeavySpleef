@@ -92,6 +92,8 @@ command:
   
   plugin-reloaded: "HeavySpleef v$[version] reloaded [$[time-dif-ms]ms]"
   game-renamed: "Game '$[from]' was renamed to '$[to]'"
+  anticamping-warn: "Warning: You will be teleported down if you continue to camp"
+  anticamping-teleported: "You have been teleported down for camping"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

@@ -175,6 +175,8 @@ public interface Messages {
 
 		public static final String NO_SIGN_AVAILABLE = PREFIX + "no-sign-available"; //$[identifier]
 		public static final String SIGN_REMOVED = PREFIX + "sign-removed";
+		public static final String ANTICAMPING_WARN = PREFIX + "anticamping-warn";
+		public static final String ANTICAMPING_TELEPORT = PREFIX + "anticamping-teleport";
 		
 	}
 	

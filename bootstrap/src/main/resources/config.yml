@@ -23,3 +23,6 @@ signs:
   
 flags:
   autostart-vote: 75
+  anticamping-warn: 3
+  anticamping-do-warn: true
+  anticamping-teleport: 6
