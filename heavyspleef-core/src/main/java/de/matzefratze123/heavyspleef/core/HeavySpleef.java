@@ -215,18 +215,22 @@ public final class HeavySpleef {
 				continue;
 			}
 			
-			ConfigurationObject obj;
-			
-			try {
-				obj = type.newConfigInstance(config, args.get(type));
-			} catch (UnsafeException ex) {
-				Throwable cause = ex.getCause();
+			ConfigurationObject obj = configurations.get(type);
+			if (obj == null) {
+				try {
+					obj = type.newConfigInstance(config, args.get(type));
+				} catch (UnsafeException ex) {
+					Throwable cause = ex.getCause();
+					
+					logger.log(Level.SEVERE, "Could not create config structure for " + destinationFile.getPath() + ", except errors: ", cause);
+					continue;
+				}
 				
-				logger.log(Level.SEVERE, "Could not create config structure for " + destinationFile.getPath() + ", except errors: ", cause);
-				continue;
+				configurations.put(type, obj);
+			} else {
+				obj.inflate(config, args.get(type));
 			}
 			
-			configurations.put(type, obj);
 		}
 	}
 	
