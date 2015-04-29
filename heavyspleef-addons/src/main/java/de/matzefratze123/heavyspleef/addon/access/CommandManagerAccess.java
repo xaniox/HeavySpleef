@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.addon.AddOn;
@@ -34,6 +35,7 @@ public class CommandManagerAccess {
 	
 	public CommandManagerAccess(CommandManager delegate) {
 		this.delegate = delegate;
+		this.registeredAddOnCommands = Maps.newHashMap();
 	}
 	
 	public void registerSpleefCommand(Class<?> clazz, AddOn addOn) {
