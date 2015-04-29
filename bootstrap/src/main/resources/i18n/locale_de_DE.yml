@@ -92,8 +92,6 @@ command:
   
   plugin-reloaded: "HeavySpleef v$[version] neu geladen [$[time-dif-ms]ms]"
   game-renamed: "Spiel '$[from]' wurde zu '$[to]' umbenannt"
-  anticamping-warn: "Warnung: Du wirst nach unten teleportiert, wenn du weiterhin campst"
-  anticamping-teleported: "Du wurdest nach unten teleportiert, da du gecampt hast"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -135,6 +133,9 @@ player:
   
   no-sign-available: "Der Schildtyp \"$[identifier]\" ist nicht verfügbar"
   sign-removed: "Schild entfernt"
+  
+  anticamping-warn: "Warnung: Du wirst nach unten teleportiert, wenn du weiterhin campst"
+  anticamping-teleported: "Du wurdest nach unten teleportiert, da du gecampt hast"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"
