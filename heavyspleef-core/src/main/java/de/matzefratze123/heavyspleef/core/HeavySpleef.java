@@ -51,6 +51,7 @@ import de.matzefratze123.heavyspleef.core.Updater.Version;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.UpdateSection;
 import de.matzefratze123.heavyspleef.core.config.ThrowingConfigurationObject.UnsafeException;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
@@ -175,26 +176,33 @@ public final class HeavySpleef {
 		BasicTask loseCheckTask = new LoseCheckerTask(plugin, gameManager);
 		loseCheckTask.start();
 		
-		//Check for updates
-		updater = new Updater(plugin);
-		updater.check(new FutureCallback<Updater.CheckResult>() {
-
-			@Override
-			public void onSuccess(CheckResult result) {
-				if (result.isUpdateAvailable()) {
-					Version version = result.getVersion();
-					
-					getLogger().log(Level.INFO, "Found a new update for HeavySpleef [v" + version + "]!");
-					getLogger().log(Level.INFO, "Please remember to check for config & database compatibility issues which may occur when you update to the latest version");
-					getLogger().log(Level.INFO, "Use '/spleef update' to update to the latest version of HeavySpleef");
+		DefaultConfig config = getConfiguration(ConfigType.DEFAULT_CONFIG);
+		UpdateSection updateSection = config.getUpdateSection();
+		
+		//Only check for updates when the user hasn't
+		//disabled it in the configuration
+		if (updateSection.isUpdateChecking()) {
+			//Check for updates
+			updater = new Updater(plugin);
+			updater.check(new FutureCallback<Updater.CheckResult>() {
+	
+				@Override
+				public void onSuccess(CheckResult result) {
+					if (result.isUpdateAvailable()) {
+						Version version = result.getVersion();
+						
+						getLogger().log(Level.INFO, "Found a new update for HeavySpleef [v" + version + "]!");
+						getLogger().log(Level.INFO, "Please remember to check for config & database compatibility issues which may occur when you update to the latest version");
+						getLogger().log(Level.INFO, "Use '/spleef update' to update to the latest version of HeavySpleef");
+					}
 				}
-			}
-
-			@Override
-			public void onFailure(Throwable t) {
-				getLogger().log(Level.WARNING, "Could not check for latest updates: " + t);
-			}
-		});
+	
+				@Override
+				public void onFailure(Throwable t) {
+					getLogger().log(Level.WARNING, "Could not check for latest updates: " + t);
+				}
+			});
+		}
 	}
 	
 	public void disable() {

@@ -31,6 +31,9 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Updater;
 import de.matzefratze123.heavyspleef.core.Updater.CheckResult;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.UpdateSection;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.i18n.Messages.Player;
@@ -43,6 +46,13 @@ public class CommandUpdate {
 			usage = "/spleef update", descref = Messages.Help.Description.UPDATE)
 	public void onUpdateCommand(CommandContext context, final HeavySpleef heavySpleef) throws CommandException {
 		final CommandSender sender = context.getSender();
+		
+		DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+		UpdateSection section = config.getUpdateSection();
+		
+		//Don't continue if the user disabled updating checking or updating via command
+		CommandValidate.isTrue(section.isUpdateChecking() && section.isUpdateCommandEnabled(), 
+				i18n.getString(Messages.Command.UPDATING_NOT_ENABLED));
 		
 		final Updater updater = heavySpleef.getUpdater();
 		final CheckResult result = updater.getResult();

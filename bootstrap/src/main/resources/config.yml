@@ -26,3 +26,7 @@ flags:
   anticamping-warn: 3
   anticamping-do-warn: true
   anticamping-teleport: 6
+  
+update:
+  enable-update-check: true
+  enable-update-command: true

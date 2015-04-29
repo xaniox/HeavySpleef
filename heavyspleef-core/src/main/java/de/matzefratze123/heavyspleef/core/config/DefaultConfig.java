@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import lombok.Getter;
+
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -34,8 +36,9 @@ public class DefaultConfig extends ConfigurationObject {
 	
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
 	private Map<GameProperty, Object> defaultGameProperties;
-	private Localization localization;
-	private FlagSection flagSection;
+	private @Getter Localization localization;
+	private @Getter FlagSection flagSection;
+	private @Getter UpdateSection updateSection;
 	
 	public DefaultConfig(Configuration config) {
 		super(config);
@@ -67,6 +70,9 @@ public class DefaultConfig extends ConfigurationObject {
 		
 		ConfigurationSection flagSection = config.getConfigurationSection("flags");
 		this.flagSection = new FlagSection(flagSection);
+		
+		ConfigurationSection updateSection = config.getConfigurationSection("update");
+		this.updateSection = new UpdateSection(updateSection);
 	}
 	
 	public Object getGameProperty(GameProperty property) {
@@ -75,14 +81,6 @@ public class DefaultConfig extends ConfigurationObject {
 	
 	public Map<GameProperty, Object> getProperties() {
 		return Collections.unmodifiableMap(defaultGameProperties);
-	}
-	
-	public Localization getLocalization() {
-		return localization;
-	}
-	
-	public FlagSection getFlagSection() {
-		return flagSection;
 	}
 	
 	private static GameProperty mapPropertyString(String configKey) {
