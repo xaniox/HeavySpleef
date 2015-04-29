@@ -76,6 +76,8 @@ public class FlagRegistryAccess {
 		for (Class<? extends AbstractFlag<?>> clazz : set) {
 			registry.unregister(clazz);
 		}
+		
+		addOnRegistrations.remove(addOn);
 	}
 	
 }
