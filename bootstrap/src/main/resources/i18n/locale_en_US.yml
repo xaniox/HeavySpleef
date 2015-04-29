@@ -92,6 +92,13 @@ command:
   
   plugin-reloaded: "HeavySpleef v$[version] reloaded [$[time-dif-ms]ms]"
   game-renamed: "Game '$[from]' was renamed to '$[to]'"
+  
+  updater-not-finished-yet: "The updater has not finished its work yet. Please be patient..."
+  no-update-available: "There is no new version of the plugin available [v$[this-version]]"
+  starting-update: "Starting update to version v$[new-version]"
+  successfully-pulled-update: "Update successfully downloaded into folder $[folder]"
+  restart-server-to-update: "Please restart your server to activate the new version"
+  error-on-updating: "Could not download plugin, please check the log for more details"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -164,6 +171,8 @@ help:
     adddeathzone: "Adds a deathzone to the game"
     removedeathzone: "Removes a deathzone from a game"
     showdeathzone: "Visually identifies a deathzone in the world"
+    update: "Updates the plugin to the latest version available"
+    vote: "Adds a vote to start to the game"
 arrays:
   team-color-array:
   - "White"

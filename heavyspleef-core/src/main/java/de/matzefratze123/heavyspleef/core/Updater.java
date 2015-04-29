@@ -1,6 +1,24 @@
+/*
+ * This file is part of HeavySpleef.
+ * Copyright (c) 2014-2015 matzefratze123
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.matzefratze123.heavyspleef.core;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -10,7 +28,6 @@ import java.net.URLConnection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +48,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import de.matzefratze123.heavyspleef.core.persistence.MoreFutures;
-import de.schlichtherle.io.FileOutputStream;
 
 public class Updater {
 	
@@ -46,8 +62,8 @@ public class Updater {
 	private final ListeningExecutorService service;
 	private final Plugin plugin;
 	private final PluginDescriptionFile desc;
-	private final File updateFolder;
-	private CheckResult result;
+	private @Getter final File updateFolder;
+	private @Getter CheckResult result;
 	
 	public Updater(Plugin plugin) {
 		ExecutorService execService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -137,7 +153,7 @@ public class Updater {
 		public Void call() throws Exception {
 			String downloadUrl = result.getDownloadUrl();
 			
-			if (updateFolder.exists()) {
+			if (!updateFolder.exists()) {
 				updateFolder.mkdir();
 			}
 			
@@ -164,38 +180,30 @@ public class Updater {
 				while ((read = in.read(buffer, 0, BUFFER_SIZE)) > 0) {
 					downloaded += read;
 					out.write(buffer, 0, read);
-				}
-				
-				int percent = (int) (downloaded * 100D / size);
-				if (percent % 5 == 0 && messageReceiver != null && percent != lastPercentagePrinted) {
-					StringBuilder progressionBuilder = new StringBuilder();
-					progressionBuilder.append(ChatColor.GREEN);
-					int partsDownloaded = percent / 20;
-					int partsLeft = 100 - partsDownloaded;
 					
-					for (int i = 0; i < partsDownloaded; i++) {
-						progressionBuilder.append("|||||");
+					int percent = (int) (downloaded * 100D / size);
+					if (percent % 5 == 0 && messageReceiver != null && percent != lastPercentagePrinted) {
+						StringBuilder progressionBuilder = new StringBuilder();
+						progressionBuilder.append(ChatColor.GREEN);
+						int partsDownloaded = percent / 5;
+						int partsLeft = (100 - percent) / 5;
 						
-						if (i + 1 < partsDownloaded || partsLeft != 0) {
-							progressionBuilder.append(' ');
+						for (int i = 0; i < partsDownloaded; i++) {
+							progressionBuilder.append("|");
 						}
-					}
-					
-					progressionBuilder.append(ChatColor.RED);
-					for (int i = 0; i < partsLeft; i++) {
-						progressionBuilder.append("|||||");
 						
-						if (i + 1 < partsLeft) {
-							progressionBuilder.append(' ');
+						progressionBuilder.append(ChatColor.RED);
+						for (int i = 0; i < partsLeft; i++) {
+							progressionBuilder.append("|");
 						}
+						
+						messageReceiver.sendMessage(ChatColor.DARK_GRAY + " [" + progressionBuilder
+								+ ChatColor.DARK_GRAY + "] " + ChatColor.GOLD + percent + "%");
+						lastPercentagePrinted = percent;
 					}
-					
-					messageReceiver.sendMessage(ChatColor.GOLD + " " + percent + "% " + ChatColor.DARK_GRAY + "[" + progressionBuilder
-							+ ChatColor.DARK_GRAY + "]");
 				}
 			}
 			
-			plugin.getLogger().log(Level.INFO, "Successfully pulled the latest version of HeavySpleef into '" + updateFolder.getPath() + "'");
 			return (Void) null;
 		}
 		

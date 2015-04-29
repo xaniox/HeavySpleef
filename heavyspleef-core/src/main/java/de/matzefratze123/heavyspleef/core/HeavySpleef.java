@@ -46,6 +46,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
+import de.matzefratze123.heavyspleef.core.Updater.CheckResult;
+import de.matzefratze123.heavyspleef.core.Updater.Version;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
@@ -100,6 +102,8 @@ public final class HeavySpleef {
 	@Getter
 	private RegionVisualizer regionVisualizer;
 	private File localeDir;
+	@Getter
+	private Updater updater;
 	
 	@Getter
 	private PlayerPostActionHandler postActionHandler;
@@ -170,6 +174,27 @@ public final class HeavySpleef {
 		bukkitListener = new BukkitListener(playerManager, gameManager, plugin);
 		BasicTask loseCheckTask = new LoseCheckerTask(plugin, gameManager);
 		loseCheckTask.start();
+		
+		//Check for updates
+		updater = new Updater(plugin);
+		updater.check(new FutureCallback<Updater.CheckResult>() {
+
+			@Override
+			public void onSuccess(CheckResult result) {
+				if (result.isUpdateAvailable()) {
+					Version version = result.getVersion();
+					
+					getLogger().log(Level.INFO, "Found a new update for HeavySpleef [v" + version + "]!");
+					getLogger().log(Level.INFO, "Please remember to check for config & database compability issues which may occur when you update to the latest version");
+					getLogger().log(Level.INFO, "Use '/spleef update' to update to the latest version of HeavySpleef");
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable t) {
+				getLogger().log(Level.WARNING, "Could not check for latest updates: " + t);
+			}
+		});
 	}
 	
 	public void disable() {

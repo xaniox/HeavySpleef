@@ -116,6 +116,13 @@ public interface Messages {
 
 		public static final String PLUGIN_RELOADED = PREFIX + "plugin-reloaded";
 		public static final String GAME_RENAMED = PREFIX + "game-renamed";
+
+		public static final String UPDATER_NOT_FINISHED_YET = PREFIX + "updater-not-finished-yet";
+		public static final String NO_UPDATE_AVAILABLE = PREFIX + "no-update-available";
+		public static final String STARTING_UPDATE = PREFIX + "starting-update";
+		public static final String SUCCESSFULLY_PULLED_UPDATE = PREFIX + "successfully-pulled-update";
+		public static final String RESTART_SERVER_TO_UPDATE = PREFIX + "restart-server-to-update";
+		public static final String ERROR_ON_UPDATING = PREFIX + "error-on-updating";
 		
 	}
 	
@@ -214,7 +221,9 @@ public interface Messages {
 			public static final String ADDDEATHZONE = PREFIX + "adddeathzone";
 			public static final String REMOVEDEATHZONE = PREFIX + "removedeathzone";
 			public static final String SHOWDEATHZONE = PREFIX + "showdeathzone";
+			public static final String UPDATE = PREFIX + "update";
 			public static final String VOTE = PREFIX + "vote";
+
 			
 		}
 		
