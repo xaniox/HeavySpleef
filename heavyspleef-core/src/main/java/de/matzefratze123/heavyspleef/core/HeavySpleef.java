@@ -185,7 +185,7 @@ public final class HeavySpleef {
 					Version version = result.getVersion();
 					
 					getLogger().log(Level.INFO, "Found a new update for HeavySpleef [v" + version + "]!");
-					getLogger().log(Level.INFO, "Please remember to check for config & database compability issues which may occur when you update to the latest version");
+					getLogger().log(Level.INFO, "Please remember to check for config & database compatibility issues which may occur when you update to the latest version");
 					getLogger().log(Level.INFO, "Use '/spleef update' to update to the latest version of HeavySpleef");
 				}
 			}
