@@ -84,7 +84,6 @@ public class BasicAddOn implements AddOn {
 	
 	public class AddOnLogger extends Logger {
 
-		private static final String ADD_ON_PREFIX = "[AddOn]";
 		private String loggerPrefix;
 		
 		public AddOnLogger() {
@@ -95,7 +94,7 @@ public class BasicAddOn implements AddOn {
 		
 		@Override
 		public void log(LogRecord record) {
-			record.setMessage("[" + heavySpleef.getPlugin().getName() + "]" + ADD_ON_PREFIX + loggerPrefix + " " + record.getMessage());
+			record.setMessage("[" + heavySpleef.getPlugin().getName() + "] " + loggerPrefix + " " + record.getMessage());
 			super.log(record);
 		}
 		
