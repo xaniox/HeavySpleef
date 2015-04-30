@@ -18,10 +18,12 @@
 package de.matzefratze123.heavyspleef.core;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 
@@ -100,8 +102,8 @@ public class GameManager {
 		return null;
 	}
 	
-	public Collection<Game> getGames() {
-		return games.values();
+	public List<Game> getGames() {
+		return ImmutableList.copyOf(games.values());
 	}
 	
 }
