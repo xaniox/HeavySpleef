@@ -22,13 +22,11 @@ import org.bukkit.entity.Player;
 
 public class CommandContext {
 	
-	private CommandManagerService manager;
 	private String[] args;
 	private CommandContainer command;
 	private CommandSender sender;
 	
-	public CommandContext(CommandManagerService manager, String[] args, CommandContainer command, CommandSender sender) {
-		this.manager = manager;
+	public CommandContext(String[] args, CommandContainer command, CommandSender sender) {
 		this.args = args;
 		this.command = command;
 		this.sender = sender;
@@ -51,25 +49,25 @@ public class CommandContext {
 	public Integer getInt(int index) throws CommandException {
 		checkBounds(index);
 		
-		return manager.getTransformer(Integer.class).transform(args[index]);
+		return CommandManagerService.getTransformer(Integer.class).transform(args[index]);
 	}
 	
 	public Double getDouble(int index) throws CommandException {
 		checkBounds(index);
 		
-		return manager.getTransformer(Double.class).transform(args[index]);
+		return CommandManagerService.getTransformer(Double.class).transform(args[index]);
 	}
 	
 	public Boolean getBoolean(int index) throws CommandException {
 		checkBounds(index);
 		
-		return manager.getTransformer(Boolean.class).transform(args[index]);
+		return CommandManagerService.getTransformer(Boolean.class).transform(args[index]);
 	}
 	
 	public Player getPlayer(int index) throws CommandException {
 		checkBounds(index);
 		
-		return manager.getTransformer(Player.class).transform(args[index]);
+		return CommandManagerService.getTransformer(Player.class).transform(args[index]);
 	}
 	
 	public int argsLength() {
@@ -85,8 +83,12 @@ public class CommandContext {
 	public <R> R getArgument(int index, Class<R> clazz) throws CommandException {
 		checkBounds(index);
 		
-		Transformer<R> transformer = manager.getTransformer(clazz);
+		Transformer<R> transformer = CommandManagerService.getTransformer(clazz);
 		return transformer.transform(args[index]);
+	}
+	
+	public String[] args() {
+		return args;
 	}
 	
 	public CommandContainer getCommand() {

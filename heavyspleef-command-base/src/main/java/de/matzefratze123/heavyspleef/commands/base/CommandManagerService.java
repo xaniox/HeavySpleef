@@ -17,13 +17,11 @@
  */
 package de.matzefratze123.heavyspleef.commands.base;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.Validate;
@@ -31,53 +29,50 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Maps;
 
-public abstract class CommandManagerService implements CommandExecutor {
+import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
+
+public class CommandManagerService implements CommandExecutor {
 	
-	private static final Properties DEFAULT_MESSAGES;
-	private static final String[] HELP_IDENTIFIERS = {"?", "help"};
-	
-	static {
-		DEFAULT_MESSAGES = new Properties();
-		DEFAULT_MESSAGES.put("message.player_only", "This command can only be executed by a player!");
-		DEFAULT_MESSAGES.put("message.no_permission", "You don't have permission to execute this command!");
-		DEFAULT_MESSAGES.put("message.description_format", "Description: %s");
-		DEFAULT_MESSAGES.put("message.usage_format", "Usage: %s");
-	}
+	private static Map<Class<?>, Transformer<?>> TRANSFORMERS = Maps.newHashMap(BaseTransformers.BASE_TRANSFORMERS);
 	
 	private final JavaPlugin plugin;
 	private final Logger logger;
+	private final DefaultCommandExecution execution;
 	private Object[] args;
 	private Instantiator instantiator;
+	private MessageBundle messageBundle;
+	private PermissionChecker permissionChecker;
 	private Map<String, CommandContainer> commandMap;
-	private Map<Class<?>, Transformer<?>> transformers;
 	
-	public CommandManagerService(JavaPlugin plugin, Logger logger, Object... args) {
+	public CommandManagerService(JavaPlugin plugin, Logger logger, MessageProvider messageProvider, PermissionChecker permissionChecker, Object... args) {
 		this.plugin = plugin;
 		this.logger = logger;
 		this.args = args;
 		this.instantiator = new UnsafeInstantiator();
 		this.commandMap = Maps.newHashMap();
-		this.transformers = Maps.newHashMap(BaseTransformers.BASE_TRANSFORMERS);
-	}
-	
-	public abstract boolean checkPermission(CommandSender sender, String permission);
-	
-	public abstract String getMessage(String key, String... messageArgs);
-	
-	public String getMessage0(String key, String... messageArgs) {
-		String message = getMessage(key, messageArgs);
-		if (message == null) {
-			message = DEFAULT_MESSAGES.getProperty(key);
-		}
 		
-		return message;
+		InputStream defaultMessagesStream = getClass().getResourceAsStream("/command_messages.yml");
+		this.messageBundle = new MessageBundle(messageProvider, defaultMessagesStream);
+		this.permissionChecker = permissionChecker;
+		this.execution = new DefaultCommandExecution(plugin);
 	}
 	
+	public static <T> void registerTransformer(Class<T> returnType, Transformer<T> transformer) {
+		Validate.notNull(returnType);
+		Validate.notNull(transformer);
+		
+		TRANSFORMERS.put(returnType, transformer);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Transformer<T> getTransformer(Class<T> clazz) {
+		return (Transformer<T>) TRANSFORMERS.get(clazz);
+	}
+		
 	public void registerCommands(Class<?> clazz) {
 		registerCommands(clazz, null);
 	}
@@ -85,7 +80,7 @@ public abstract class CommandManagerService implements CommandExecutor {
 	public void registerCommands(Class<?> clazz, CommandContainer base) {
 		Validate.notNull(clazz);
 		
-		Set<CommandContainer> commands = CommandContainer.create(clazz, instantiator, logger);
+		Set<CommandContainer> commands = CommandContainer.create(clazz, instantiator, execution, logger);
 		Iterator<CommandContainer> iterator = commands.iterator();
 		
 		while (iterator.hasNext()) {
@@ -166,18 +161,6 @@ public abstract class CommandManagerService implements CommandExecutor {
 		return commandMap.get(baseCommand);
 	}
 	
-	public <T> void registerTransformer(Class<T> returnType, Transformer<T> transformer) {
-		Validate.notNull(returnType);
-		Validate.notNull(transformer);
-		
-		transformers.put(returnType, transformer);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> Transformer<T> getTransformer(Class<T> clazz) {
-		return (Transformer<T>) transformers.get(clazz);
-	}
-	
 	public void setInstantiator(Instantiator instantiator) {
 		this.instantiator = instantiator;
 	}
@@ -215,13 +198,8 @@ public abstract class CommandManagerService implements CommandExecutor {
 			} while (index < args.length && subFound);
 		}
 		
-		if (!(sender instanceof Player) && command.isPlayerOnly()) {
-			sender.sendMessage(getMessage0("message.player_only"));
-			return true;
-		}
-		
-		if (!command.getPermission().isEmpty() && !checkPermission(sender, command.getPermission())) {
-			sender.sendMessage(getMessage0("message.no_permission"));
+		if (command == null) {
+			sender.sendMessage(messageBundle.getMessage("message-unknown-command"));
 			return true;
 		}
 		
@@ -229,110 +207,9 @@ public abstract class CommandManagerService implements CommandExecutor {
 		String[] cutArgs = new String[args.length - index];
 		System.arraycopy(args, index, cutArgs, 0, args.length - index);
 		
-		if (cutArgs.length > 0 && isHelpArg(cutArgs[0])) {
-			String description = command.getDescription();
-			
-			if (description.isEmpty() && !command.getDescriptionRef().isEmpty()) {
-				description = getMessage(command.getDescriptionRef());
-			}
-			
-			sender.sendMessage(getMessage0("message.description_format", command.getDescription()));
-			return true;
-		}
-		
-		if (cutArgs.length < command.getMinArgs()) {
-			sender.sendMessage(getMessage0("message.usage_format", command.getUsage()));
-			return true;
-		}
-		
-		CommandContext context = new CommandContext(this, cutArgs, command, sender);
-		executeCommand(context);
-		
+		CommandContext context = new CommandContext(cutArgs, command, sender);
+		command.execute(context, messageBundle, permissionChecker, this.args);
 		return true;
-	}
-
-	protected void executeCommand(CommandContext context) {
-		Method method = context.getCommand().getCommandMethod();
-		Object instance = context.getCommand().getCommandClassInstance();
-		
-		boolean accessible = method.isAccessible();
-		method.setAccessible(true);
-		
-		//Analyse the method
-		//Default method format is: methodName(CommandContext)
-		
-		try {
-			Class<?>[] parameterTypes = method.getParameterTypes();
-			if (parameterTypes.length == 0) {
-				//No parameters in this method, so just invoke it
-				method.invoke(instance);
-			} else {
-				Object[] parameterValues = new Object[parameterTypes.length];
-				
-				for (int i = 0; i < parameterTypes.length; i++) {
-					Class<?> parameterType = parameterTypes[i];
-					
-					if (parameterType == CommandContext.class) {
-						parameterValues[i] = context;
-					} else if (plugin.getClass() == parameterType) {
-						parameterValues[i] = plugin;
-					} else if (parameterType.isPrimitive()) {
-						parameterValues[i] = getDefaultPrimitiveValue(parameterType);
-					} else {
-						for (Object arg : args) {
-							if (parameterType.isInstance(arg)) {
-								parameterValues[i] = arg;
-								break;
-							}
-						}
-					}
-				}
-				
-				method.invoke(instance, parameterValues);
-			}
-		} catch (InvocationTargetException e) {
-			Throwable cause = e.getCause();
-			
-			if (cause instanceof CommandException) {
-				((CommandException) cause).sendToPlayer(context.getSender());
-			} else {
-				logger.log(Level.SEVERE, "Unhandled exception executing command \"" + context.getCommand().getName() + "\"", cause);
-			}
-		} catch (IllegalAccessException | IllegalArgumentException e) {
-			logger.log(Level.SEVERE, "Could not invoke command method for '" + context.getCommand().getFullyQualifiedName() + "'", e);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Unhandled exception executing command '" + context.getCommand().getFullyQualifiedName() + "'", e);
-		} finally {
-			method.setAccessible(accessible);
-		}
-	}
-	
-	private Object getDefaultPrimitiveValue(Class<?> clazz) {
-		if (!clazz.isPrimitive()) {
-			return null;
-		}
-		
-		Object value = null;
-		
-		if (clazz == int.class || clazz == long.class || clazz == short.class
-				|| clazz == byte.class || clazz == double.class
-				|| clazz == float.class) {
-			value = 0;
-		} else if (clazz == boolean.class) {
-			value = false;
-		}
-		
-		return value;
-	}
-	
-	private boolean isHelpArg(String arg) {
-		for (String identifier : HELP_IDENTIFIERS) {
-			if (identifier.equalsIgnoreCase(arg)) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
  	
 }

@@ -21,26 +21,35 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import com.google.common.collect.Sets;
 
 public class CommandContainer {
 	
 	private Command command;
+	@Getter @Setter
+	private CommandExecution execution;
+	@Getter @Setter(value = AccessLevel.PROTECTED)
 	private Set<CommandContainer> childCommands;
-	private boolean playerOnly;
-	private CommandContainer parent;
-	private Method method;
-	private Object instance;
+	private @Getter boolean playerOnly;
+	private @Getter CommandContainer parent;
+	@Getter(value = AccessLevel.PROTECTED)
+	private Method commandMethod;
+	private @Getter Object commandClassInstance;
 	
-	protected CommandContainer(Method method, Object instance, Command command, boolean playerOnly) {
-		this.method = method;
-		this.instance = instance;
+	protected CommandContainer(Method method, Object instance, Command command, boolean playerOnly, CommandExecution execution) {
+		this.commandMethod = method;
+		this.commandClassInstance = instance;
 		this.command = command;
 		this.playerOnly = playerOnly;
+		this.execution = execution;
 	}
 	
-	protected CommandContainer(Method method, Object instance, Command command, boolean playerOnly, CommandContainer parent) {
-		this(method, instance, command, playerOnly);
+	protected CommandContainer(Method method, Object instance, Command command, boolean playerOnly, CommandExecution execution, CommandContainer parent) {
+		this(method, instance, command, playerOnly, execution);
 		
 		this.parent = parent;
 	}
@@ -55,7 +64,7 @@ public class CommandContainer {
 		
 		CommandContainer currentParent = parent;
 		while (currentParent != null) {
-			builder.insert(0, " ");
+			builder.insert(0, "/");
 			builder.insert(0, currentParent.getName());
 			
 			currentParent = currentParent.getParent();
@@ -98,37 +107,18 @@ public class CommandContainer {
 		childCommands.add(child);
 	}
 	
-	public Set<CommandContainer> getChildCommands() {
-		return childCommands;
+	public void execute(CommandContext context, MessageBundle messageBundle, PermissionChecker permissionChecker, Object[] args) {
+		execution.execute(context, messageBundle, permissionChecker, args);
 	}
 	
-	protected void setChildCommands(Set<CommandContainer> childCommands) {
-		this.childCommands = childCommands;
-	}
-	
-	public boolean isPlayerOnly() {
-		return playerOnly;
-	}
-	
-	public CommandContainer getParent() {
-		return parent;
-	}
-	
-	public Object getCommandClassInstance() {
-		return instance;
-	}
-	
-	protected Method getCommandMethod() {
-		return method;
-	}
-	
-	public static Set<CommandContainer> create(Class<?> rootClass, Instantiator instantiator, Logger logger) {
-		return buildHierarchy(new Class<?>[] {rootClass}, instantiator, null, logger);
+	public static Set<CommandContainer> create(Class<?> rootClass, Instantiator instantiator, CommandExecution execution, Logger logger) {
+		return buildHierarchy(new Class<?>[] {rootClass}, instantiator, null, logger, execution);
 	}
 	
 	private static Set<CommandContainer> buildHierarchy(
 			Class<?>[] nestedClasses, Instantiator instantiator,
-			CommandContainer parent, Logger logger) {
+			CommandContainer parent, Logger logger,
+			CommandExecution execution) {
 		Set<CommandContainer> containers = Sets.newHashSet();
 		
 		for (Class<?> clazz : nestedClasses) {
@@ -151,12 +141,12 @@ public class CommandContainer {
 					continue;
 				}
 				
-				CommandContainer container = new CommandContainer(method, instance, command, playerOnly, parent);
+				CommandContainer container = new CommandContainer(method, instance, command, playerOnly, execution, parent);
 				
 				if (method.isAnnotationPresent(NestedCommands.class)) {
 					Class<?>[] nestedCommandClasses = method.getAnnotation(NestedCommands.class).value();
 					
-					childCommands = buildHierarchy(nestedCommandClasses, instantiator, container, logger);
+					childCommands = buildHierarchy(nestedCommandClasses, instantiator, container, logger, execution);
 				}
 				
 				container.setChildCommands(childCommands);

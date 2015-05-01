@@ -1,0 +1,4 @@
+message-player_only: "This command can only be executed by a player!"
+message-no_permission: "You don't have permission to execute this command!"
+message-description_format: "Description: %s"
+message-usage_format: "Usage: %s"

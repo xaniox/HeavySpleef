@@ -24,11 +24,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+import de.matzefratze123.heavyspleef.commands.base.BukkitPermissionChecker;
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
+import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
 import de.matzefratze123.heavyspleef.commands.base.NestedCommands;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -40,36 +42,30 @@ public class SpleefCommandManager implements CommandManager {
 	private final I18N i18n = I18N.getInstance();
 	
 	public SpleefCommandManager(final HeavySpleef plugin) {
-		service = new CommandManagerService(plugin.getPlugin(), plugin.getLogger(), plugin) {
+		service = new CommandManagerService(plugin.getPlugin(), plugin.getLogger(), new MessageProvider() {
 			
 			@Override
-			public boolean checkPermission(CommandSender sender, String permission) {
-				//Use the built-in bukkit permission check
-				return sender.hasPermission(permission);
-			}
-			
-			@Override
-			public String getMessage(String key, String... messageArgs) {
+			public String provide(String key, String[] args) {
 				String message = null;
 				
 				switch (key) {
-				case "message.player_only":
+				case "message-player_only":
 					message = i18n.getString(Messages.Command.PLAYER_ONLY);
 					break;
-				case "message.no_permission":
+				case "message-no_permission":
 					message = i18n.getString(Messages.Command.NO_PERMISSION);
 					break;
-				case "message.description_format":
+				case "message-description_format":
 					message = i18n.getVarString(Messages.Command.DESCRIPTION_FORMAT)
-						.setVariable("description", messageArgs[0])
+						.setVariable("description", args[0])
 						.toString();
 					break;
-				case "message.usage_format":
+				case "message-usage_format":
 					message = i18n.getVarString(Messages.Command.USAGE_FORMAT)
-						.setVariable("usage", messageArgs[0])
+						.setVariable("usage", args[0])
 						.toString();
 					break;
-				case "message.unknown_command":
+				case "message-unknown_command":
 					message = i18n.getString(Messages.Command.UNKNOWN_COMMAND);
 					break;
 				default:
@@ -79,8 +75,7 @@ public class SpleefCommandManager implements CommandManager {
 				
 				return message;
 			}
-			
-		};
+		}, new BukkitPermissionChecker(), plugin);
 		
 		PluginCommand spleefCommand = plugin.getPlugin().getCommand("spleef");
 		spleefCommand.setExecutor(service);
