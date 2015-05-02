@@ -120,34 +120,25 @@ public class Game {
 	private final I18N i18n = I18N.getInstance();
 	
 	private final EditSessionFactory editSessionFactory;
-	@Getter
-	private HeavySpleef heavySpleef;
-	private EventBus eventManager;
+	private @Getter HeavySpleef heavySpleef;
+	private EventBus eventBus;
 	private Set<SpleefPlayer> ingamePlayers;
-	@Getter
-	private List<SpleefPlayer> deadPlayers;
-	@Getter
-	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
+	private @Getter List<SpleefPlayer> deadPlayers;
+	private @Getter BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
 	private Queue<SpleefPlayer> queuedPlayers;
-	@Getter
-	private CountdownTask countdownTask;
-	@Getter
+	private @Getter CountdownTask countdownTask;
 	private StatisticRecorder statisticRecorder;
 	
-	@Getter @Setter(value = AccessLevel.PACKAGE)
+	@Getter @Setter(AccessLevel.PACKAGE)
 	private String name;
-	@Getter
-	private World world;
+	private @Getter World world;
 	private com.sk89q.worldedit.world.World worldEditWorld;
-	@Getter
-	private FlagManager flagManager;
+	private @Getter FlagManager flagManager;
 	private ExtensionManager extensionManager;
-	@Getter
-	private GameState gameState;
+	private @Getter GameState gameState;
 	private Map<String, Floor> floors;
-	@Getter
-	private Map<String, Region> deathzones;
+	private @Getter Map<String, Region> deathzones;
 	
 	public Game(HeavySpleef heavySpleef, String name, World world) {
 		this.heavySpleef = heavySpleef;
@@ -156,17 +147,17 @@ public class Game {
 		this.worldEditWorld = new BukkitWorld(world);
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.deadPlayers = Lists.newArrayList();
-		this.eventManager = new EventBus(heavySpleef.getLogger());
+		this.eventBus = heavySpleef.getGlobalEventBus().newChildBus();
 		this.statisticRecorder = new StatisticRecorder(heavySpleef.getDatabaseHandler(), heavySpleef.getLogger());
 		
-		eventManager.registerListener(statisticRecorder);
+		eventBus.registerListener(statisticRecorder);
 		setGameState(GameState.WAITING);
 		
 		DefaultConfig configuration = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
 		GamePropertyBundle defaults = new DefaultGamePropertyBundle(configuration.getProperties());
 		
 		this.flagManager = new FlagManager(heavySpleef.getPlugin(), defaults);
-		this.extensionManager = heavySpleef.getExtensionRegistry().newManagerInstance(eventManager);
+		this.extensionManager = heavySpleef.getExtensionRegistry().newManagerInstance(eventBus);
 		this.deathzones = Maps.newHashMap();
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
@@ -188,7 +179,7 @@ public class Game {
 	
 	public boolean countdown() {
 		GameCountdownEvent event = new GameCountdownEvent(this);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 		
 		// The player cannot play alone
 		if (ingamePlayers.size() <= 1) {
@@ -283,7 +274,7 @@ public class Game {
 	
 	public void start() {
 		GameStartEvent event = new GameStartEvent(this);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 		
 		setGameState(GameState.INGAME);
 		broadcast(i18n.getVarString(Messages.Broadcast.GAME_STARTED)
@@ -303,7 +294,7 @@ public class Game {
 		resetGame();
 		
 		GameEndEvent event = new GameEndEvent(this);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 		
 		broadcast(i18n.getString(Messages.Broadcast.GAME_STOPPED));
 	}
@@ -321,12 +312,12 @@ public class Game {
 			SpleefPlayer player = queuedPlayers.poll();
 			
 			PlayerQueueFlushEvent event = new PlayerQueueFlushEvent(this, player);
-			eventManager.callEvent(event);
+			eventBus.callEvent(event);
 			
 			FlushResult result = event.getResult();
 			if (result == FlushResult.ALLOW) {				
 				PlayerPreJoinGameEvent joinEvent = new PlayerPreJoinGameEvent(this, player, new String[0]); //TODO Store join args in queue?
-				eventManager.callEvent(joinEvent);
+				eventBus.callEvent(joinEvent);
 				
 				if (joinEvent.getJoinResult() != JoinResult.DENY) {
 					join(player, joinEvent, (String[])null);
@@ -369,7 +360,7 @@ public class Game {
 		setGameState(GameState.DISABLED);
 		
 		GameDisableEvent event = new GameDisableEvent(this);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 	}
 	
 	public void enable() {
@@ -380,7 +371,7 @@ public class Game {
 		setGameState(GameState.WAITING);
 		
 		GameEnableEvent event = new GameEnableEvent(this);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 	}
 	
 	public void join(SpleefPlayer player) {
@@ -400,7 +391,7 @@ public class Game {
 			//Only call this event if the caller didn't give us an event
 			//This event is called before the player joins the game!
 			event = new PlayerPreJoinGameEvent(this, player, args == null ? new String[0] : args);		
-			eventManager.callEvent(event);
+			eventBus.callEvent(event);
 		}
 		
 		if (event.getTeleportationLocation() == null) {
@@ -445,7 +436,7 @@ public class Game {
 		
 		//This event is called when the player actually joins the game
 		PlayerJoinGameEvent joinGameEvent = new PlayerJoinGameEvent(this, player);
-		eventManager.callEvent(joinGameEvent);
+		eventBus.callEvent(joinGameEvent);
 		
 		broadcast(i18n.getVarString(Messages.Broadcast.PLAYER_JOINED_GAME)
 				.setVariable("player", player.getName())
@@ -489,7 +480,7 @@ public class Game {
 		}
 		
 		PlayerLeaveGameEvent event = new PlayerLeaveGameEvent(this, player, killer, cause);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 		
 		if (event.isCancelled()) {
 			//Add the player again...
@@ -595,7 +586,7 @@ public class Game {
 			requestWin(playerLeft);
 		} else if (ingamePlayers.size() == 0) {
 			GameEndEvent event = new GameEndEvent(this);
-			eventManager.callEvent(event);
+			eventBus.callEvent(event);
 			
 			resetGame();
 		}
@@ -613,7 +604,7 @@ public class Game {
 		}
 		
 		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 		
 		resetGame();		
 	}
@@ -635,7 +626,7 @@ public class Game {
 	}
 	
 	public void registerGameListener(SpleefListener listener) {
-		eventManager.registerListener(listener);
+		eventBus.registerListener(listener);
 	}
 	
 	public EditSession newEditSession() {
@@ -646,14 +637,14 @@ public class Game {
 		flag.onFlagAdd(this);
 		flagManager.addFlag(flag);
 		
-		eventManager.registerListener(flag);
+		eventBus.registerListener(flag);
 	}
 	
 	public void removeFlag(String path) {
 		AbstractFlag<?> flag = flagManager.removeFlag(path);
 		flag.onFlagRemove(this);
 		
-		eventManager.unregister(flag);
+		eventBus.unregister(flag);
 	}
 	
 	public boolean isFlagPresent(String path) {
@@ -756,7 +747,7 @@ public class Game {
 		this.gameState = state;
 		
 		GameStateChangeEvent event = new GameStateChangeEvent(this, old);
-		eventManager.callEvent(event);
+		eventBus.callEvent(event);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -838,7 +829,7 @@ public class Game {
 		boolean playBreakEffect = getPropertyValue(GameProperty.PLAY_BLOCK_BREAK);
 		
 		PlayerInteractGameEvent spleefEvent = new PlayerInteractGameEvent(this, player);
-		eventManager.callEvent(spleefEvent);
+		eventBus.callEvent(spleefEvent);
 		
 		if (spleefEvent.isCancelled()) {
 			event.setCancelled(true);
@@ -875,7 +866,7 @@ public class Game {
 		}
 		
 		PlayerBlockBreakEvent spleefEvent = new PlayerBlockBreakEvent(this, player, event.getBlock());
-		eventManager.callEvent(spleefEvent);
+		eventBus.callEvent(spleefEvent);
 		
 		Block block = event.getBlock();
 		
@@ -903,7 +894,7 @@ public class Game {
 	
 	public void onPlayerPlaceBlock(BlockPlaceEvent event, SpleefPlayer player) {
 		PlayerBlockPlaceEvent spleefEvent = new PlayerBlockPlaceEvent(this, player, event.getBlock());
-		eventManager.callEvent(spleefEvent);
+		eventBus.callEvent(spleefEvent);
 		
 		if (spleefEvent.isCancelled()) {
 			event.setCancelled(true);

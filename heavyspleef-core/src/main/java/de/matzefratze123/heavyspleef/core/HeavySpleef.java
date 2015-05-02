@@ -53,6 +53,7 @@ import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.UpdateSection;
 import de.matzefratze123.heavyspleef.core.config.ThrowingConfigurationObject.UnsafeException;
+import de.matzefratze123.heavyspleef.core.event.GlobalEventBus;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.JoinSignExtension;
@@ -72,42 +73,26 @@ public final class HeavySpleef {
 	
 	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "] ";
 	
-	@Getter
-	private final JavaPlugin plugin;
-	@Getter
-	private final Logger logger;
-	
 	private Map<ConfigType, ConfigurationObject> configurations;
-	
 	private ModuleManager moduleManager;
-	
-	@Getter
-	private FlagRegistry flagRegistry;
-	@Getter
-	private ExtensionRegistry extensionRegistry;
-	@Getter
-	@Setter
-	private CommandManager commandManager;
-	@Getter
-	@Setter
-	private AsyncReadWriteHandler databaseHandler;
-
-	@Getter
-	private HookManager hookManager;
-	@Getter
-	private GameManager gameManager;
-	@Getter
-	private PlayerManager playerManager;
-	@Getter
-	private BukkitListener bukkitListener;
-	@Getter
-	private RegionVisualizer regionVisualizer;
 	private File localeDir;
-	@Getter
-	private Updater updater;
 	
-	@Getter
-	private PlayerPostActionHandler postActionHandler;
+	private @Getter final JavaPlugin plugin;
+	private @Getter final Logger logger;
+	
+	private @Getter FlagRegistry flagRegistry;
+	private @Getter ExtensionRegistry extensionRegistry;
+	private @Getter @Setter CommandManager commandManager;
+	private @Getter @Setter AsyncReadWriteHandler databaseHandler;
+
+	private @Getter HookManager hookManager;
+	private @Getter GameManager gameManager;
+	private @Getter PlayerManager playerManager;
+	private @Getter BukkitListener bukkitListener;
+	private @Getter RegionVisualizer regionVisualizer;
+	private @Getter Updater updater;
+	private @Getter PlayerPostActionHandler postActionHandler;
+	private @Getter GlobalEventBus globalEventBus;
 	
 	public HeavySpleef(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -141,8 +126,8 @@ public final class HeavySpleef {
 		hookManager.registerHook(HookReference.WORLDEDIT);
 		
 		postActionHandler = new PlayerPostActionHandler(this);
-		
 		regionVisualizer = new RegionVisualizer(getPlugin());
+		globalEventBus = new GlobalEventBus(logger);
 	}
 	
 	public void enable() {

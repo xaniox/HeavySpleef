@@ -30,7 +30,7 @@ public class EventBus {
 	private final Logger logger;
 	private Set<EventListenerMethod> registeredEventListeners;
 	
-	public EventBus(Logger logger) {
+	protected EventBus(Logger logger) {
 		this.logger = logger;
 		this.registeredEventListeners = Sets.newLinkedHashSet();
 	}
@@ -61,6 +61,10 @@ public class EventBus {
 			
 			methodIterator.remove();
 		}
+	}
+	
+	protected boolean isRegistered(SpleefListener listener) {
+		return registeredEventListeners.contains(listener);
 	}
 	
 	public void callEvent(GameEvent event) {
