@@ -100,6 +100,8 @@ public class JavaAddOnLoader implements AddOnLoader {
 			I18NManager manager = heavySpleef.getI18NManager();
 			manager.registerI18N(i18n);
 			classLoader.setI18N(i18n);
+		} else {
+			classLoader.setI18N(I18NManager.getGlobal());
 		}
 		
 		classLoader.initialize(manager.getHeavySpleef());
