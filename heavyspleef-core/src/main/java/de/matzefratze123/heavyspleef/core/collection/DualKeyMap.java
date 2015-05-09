@@ -24,11 +24,15 @@ public interface DualKeyMap<K1, K2, V> extends Map<DualKeyMap.DualKeyPair<K1, K2
 	
 	public V put(K1 primaryKey, K2 secondaryKey, V value);
 	
+	public Class<K1> getPrimaryKeyClass();
+	
+	public Class<K2> getSecondaryKeyClass();
+	
 	public Set<K1> primaryKeySet();
 	
 	public Set<K2> secondaryKeySet();
 	
-	public static class DualKeyPair<K1, K2> {
+	public static class DualKeyPair<K1, K2> implements Cloneable {
 		
 		private K1 primaryKey;
 		private K2 secondaryKey;
@@ -44,6 +48,11 @@ public interface DualKeyMap<K1, K2, V> extends Map<DualKeyMap.DualKeyPair<K1, K2
 		
 		public K2 getSecondaryKey() {
 			return secondaryKey;
+		}
+		
+		@Override
+		public Object clone() {
+			return new DualKeyPair<K1, K2>(primaryKey, secondaryKey);
 		}
 		
 	}

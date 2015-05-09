@@ -47,6 +47,16 @@ public class DualKeyHashBiMap<K1, K2, V> implements DualKeyBiMap<K1, K2, V> {
 	}
 	
 	@Override
+	public Class<K1> getPrimaryKeyClass() {
+		return primaryKeyClass;
+	}
+	
+	@Override
+	public Class<K2> getSecondaryKeyClass() {
+		return secondaryKeyClass;
+	}
+	
+	@Override
 	public int size() {
 		return primaryDelegate.size();
 	}
