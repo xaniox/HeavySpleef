@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -32,6 +33,13 @@ import de.matzefratze123.heavyspleef.addon.AddOnLoader;
 import de.matzefratze123.heavyspleef.addon.AddOnManager;
 import de.matzefratze123.heavyspleef.addon.AddOnProperties;
 import de.matzefratze123.heavyspleef.addon.InvalidAddOnException;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
+import de.matzefratze123.heavyspleef.core.i18n.I18NBuilder;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 
 public class JavaAddOnLoader implements AddOnLoader {
 	
@@ -52,7 +60,6 @@ public class JavaAddOnLoader implements AddOnLoader {
 		return load(addOnFile, properties);
 	}
 	
-	@SuppressWarnings("resource")
 	public AddOn load(File addOnFile, AddOnProperties properties) throws InvalidAddOnException {
 		File folder = addOnFile.getAbsoluteFile().getParentFile();
 		File dataFolder = new File(folder, properties.getName());
@@ -61,16 +68,41 @@ public class JavaAddOnLoader implements AddOnLoader {
 		}
 		
 		manager.getLogger().info("Loading add-on " + properties.getName() + " v" + properties.getVersion());
-		AddOnClassLoader loader;
+		AddOnClassLoader classLoader;
 		
 		try {
-			loader = new AddOnClassLoader(addOnFile, getClass().getClassLoader(), properties, manager, manager.getClassContext(), dataFolder);
-			loader.initialize(manager.getHeavySpleef());
+			classLoader = new AddOnClassLoader(addOnFile, getClass().getClassLoader(), properties, manager, manager.getClassContext(), dataFolder);
 		} catch (MalformedURLException e) {
 			throw new InvalidAddOnException("Invalid add-on file", e);
 		}
 		
-		BasicAddOn addon = loader.getAddOn();
+		BasicAddOn addon = classLoader.getAddOn();
+		
+		HeavySpleef heavySpleef = manager.getHeavySpleef();
+		DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+		Locale locale = config.getLocalization().getLocale();
+		
+		I18N.LoadingMode loadingMode = properties.getLoadingMode();
+		if (loadingMode != null) {
+			if (loadingMode == LoadingMode.FILE_SYSTEM && !dataFolder.exists()) {
+				dataFolder.mkdir();
+			}
+			
+			I18N i18n = I18NBuilder.builder()
+					.setLoadingMode(loadingMode)
+					.setClassLoader(classLoader)
+					.setLocale(locale)
+					.setFileSystemFolder(dataFolder)
+					.setClasspathFolder("/")
+					.setLogger(addon.getLogger())
+					.build();
+			
+			I18NManager manager = heavySpleef.getI18NManager();
+			manager.registerI18N(i18n);
+			classLoader.setI18N(i18n);
+		}
+		
+		classLoader.initialize(manager.getHeavySpleef());
 		return addon;
 	}
 	

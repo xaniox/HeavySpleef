@@ -24,6 +24,7 @@ import java.net.URLClassLoader;
 import java.util.Map;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.commons.lang.Validate;
 
@@ -33,6 +34,7 @@ import de.matzefratze123.heavyspleef.addon.AddOnManager;
 import de.matzefratze123.heavyspleef.addon.AddOnProperties;
 import de.matzefratze123.heavyspleef.addon.InvalidAddOnException;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 
 public class AddOnClassLoader extends URLClassLoader {
 	
@@ -42,9 +44,11 @@ public class AddOnClassLoader extends URLClassLoader {
 	private final Map<String, Class<?>> classes = Maps.newHashMap();
 	private final File dataFolder;
 	private final File file;
+	private @Setter I18N i18N;
 	private final AddOnManager manager;
 	
-	public AddOnClassLoader(File file, ClassLoader parent, AddOnProperties properties, AddOnManager manager, SharedClassContext ctx, File dataFolder) throws InvalidAddOnException, MalformedURLException {
+	public AddOnClassLoader(File file, ClassLoader parent, AddOnProperties properties, AddOnManager manager, SharedClassContext ctx, File dataFolder)
+			throws InvalidAddOnException, MalformedURLException {
 		super(new URL[] {file.toURI().toURL()}, parent);
 		
 		this.file = file;
@@ -102,7 +106,7 @@ public class AddOnClassLoader extends URLClassLoader {
 					//Register the class in the global class context
 					classContext.registerClass(addOn, clazz);
 					classes.put(name, clazz);
-				}				
+				}
 			}
 		}
 		
@@ -110,7 +114,7 @@ public class AddOnClassLoader extends URLClassLoader {
 	}
 	
 	void initialize(HeavySpleef heavySpleef) {
-		addOn.init(heavySpleef, dataFolder, properties, file, this, manager);
+		addOn.init(heavySpleef, dataFolder, properties, file, this, manager, i18N);
 	}
 
 }

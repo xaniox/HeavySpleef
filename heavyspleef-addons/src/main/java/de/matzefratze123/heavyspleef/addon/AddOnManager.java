@@ -44,6 +44,7 @@ import de.matzefratze123.heavyspleef.addon.java.SharedClassContext;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 
 public final class AddOnManager {
 	
@@ -53,12 +54,9 @@ public final class AddOnManager {
 	private final @Getter SharedClassContext classContext;
 	private final AddOnLoader loader = new JavaAddOnLoader(this);
 	
-	@Getter
-	private final FlagRegistryAccess flagRegistryAccess;
-	@Getter
-	private final ExtensionRegistryAccess extensionRegistryAccess;
-	@Getter
-	private final CommandManagerAccess commandManagerAccess;
+	private final @Getter FlagRegistryAccess flagRegistryAccess;
+	private final @Getter ExtensionRegistryAccess extensionRegistryAccess;
+	private final @Getter CommandManagerAccess commandManagerAccess;
 	
 	public AddOnManager(HeavySpleef heavySpleef) {
 		this.addOnMap = HashBiMap.create();
@@ -154,6 +152,12 @@ public final class AddOnManager {
 			classLoader.close();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Could not properly close the classloader of add-on " + addOn.getName(), e);
+		}
+		
+		if (addOn.getProperties().getLoadingMode() != null) {
+			//Unregister i18n
+			I18NManager i18nManager = heavySpleef.getI18NManager();
+			i18nManager.unregisterI18N(basicAddOn.getI18n());
 		}
 		
 		//Clear class cache

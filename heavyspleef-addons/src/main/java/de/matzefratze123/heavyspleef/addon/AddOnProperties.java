@@ -28,6 +28,9 @@ import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Lists;
 
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
+
 @Getter
 public class AddOnProperties {
 	
@@ -35,6 +38,7 @@ public class AddOnProperties {
 	private String version;
 	private String author;
 	private String mainClass;
+	private I18N.LoadingMode loadingMode;
 	private List<String> contributors;
 	private List<CommandConfiguration> commands;
 	private List<String> flags;
@@ -59,6 +63,15 @@ public class AddOnProperties {
 		
 		if (!yamlMap.containsKey("main")) {
 			throw new InvalidPropertiesException(AddOnLoader.ADD_ON_PROPERTIES_FILE + " does not declare a 'main'");
+		}
+		
+		if (yamlMap.containsKey("i18n")) {
+			String mode = (String) yamlMap.get("i18n");
+			if (mode.equalsIgnoreCase("resource")) {
+				loadingMode = LoadingMode.CLASSPATH;
+			} else if (mode.equalsIgnoreCase("dynamic")) {
+				loadingMode = LoadingMode.FILE_SYSTEM;
+			}
 		}
 		
 		this.mainClass = yamlMap.get("main").toString();

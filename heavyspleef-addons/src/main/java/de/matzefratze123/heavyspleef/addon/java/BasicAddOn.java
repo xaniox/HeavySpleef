@@ -30,6 +30,7 @@ import de.matzefratze123.heavyspleef.addon.access.CommandManagerAccess;
 import de.matzefratze123.heavyspleef.addon.access.ExtensionRegistryAccess;
 import de.matzefratze123.heavyspleef.addon.access.FlagRegistryAccess;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 
 public class BasicAddOn implements AddOn {
 	
@@ -40,6 +41,7 @@ public class BasicAddOn implements AddOn {
 	private @Getter @Setter boolean enabled;
 	private @Getter File file;
 	private @Getter ClassLoader classLoader;
+	private @Getter I18N i18n;
 	private AddOnManager manager;
 	
 	protected BasicAddOn() {}
@@ -70,7 +72,7 @@ public class BasicAddOn implements AddOn {
 		return manager.getCommandManagerAccess();
 	}
 	
-	void init(HeavySpleef heavySpleef, File dataFolder, AddOnProperties properties, File addOnFile, AddOnClassLoader classLoader, AddOnManager manager) {
+	void init(HeavySpleef heavySpleef, File dataFolder, AddOnProperties properties, File addOnFile, AddOnClassLoader classLoader, AddOnManager manager, I18N i18n) {
 		this.heavySpleef = heavySpleef;
 		this.manager = manager;
 		this.dataFolder = dataFolder;
