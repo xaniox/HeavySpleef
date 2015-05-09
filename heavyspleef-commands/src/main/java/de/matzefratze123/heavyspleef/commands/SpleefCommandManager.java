@@ -34,12 +34,13 @@ import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider
 import de.matzefratze123.heavyspleef.commands.base.NestedCommands;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class SpleefCommandManager implements CommandManager {
 	
 	private CommandManagerService service;
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	public SpleefCommandManager(final HeavySpleef plugin) {
 		service = new CommandManagerService(plugin.getPlugin(), plugin.getLogger(), new MessageProvider() {

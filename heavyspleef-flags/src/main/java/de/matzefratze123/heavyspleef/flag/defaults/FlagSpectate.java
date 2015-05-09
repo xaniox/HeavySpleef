@@ -36,14 +36,15 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.SignExtension;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
@@ -62,7 +63,7 @@ public class FlagSpectate extends LocationFlag {
 		Player player = context.getSender();
 		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
 		String gameName = context.getString(0);
-		I18N i18n = I18N.getInstance();
+		final I18N i18n = I18NManager.getGlobal();
 		
 		GameManager manager = heavySpleef.getGameManager();
 		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
@@ -147,7 +148,7 @@ public class FlagSpectate extends LocationFlag {
 	public static class SpectateSignExtension extends SignExtension {
 
 		public static final String IDENTIFIER = "spectate";
-		private final I18N i18n = I18N.getInstance();
+		private final I18N i18n = I18NManager.getGlobal();
 		
 		@SuppressWarnings("unused")
 		private SpectateSignExtension() {}

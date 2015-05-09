@@ -31,7 +31,7 @@ public class YMLResourceBundle extends ResourceBundle {
 	private static final char TRANSLATION_CHAR = '&';
 	private YamlConfiguration config;
 	
-	public YMLResourceBundle(YamlConfiguration config, boolean loadParent) {
+	public YMLResourceBundle(YamlConfiguration config) {
 		this.config = config;
 	}
 	

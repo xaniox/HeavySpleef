@@ -32,6 +32,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandHelp {
@@ -40,7 +41,7 @@ public class CommandHelp {
 	private static final CommandContainerComparator COMPARATOR = new CommandContainerComparator();
 	private static final int RECORDS_PER_PAGE = 10;
 
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "help", permission = "heavyspleef.help",
 			descref = Messages.Help.Description.HELP,

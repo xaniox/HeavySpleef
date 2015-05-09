@@ -24,15 +24,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,73 +57,72 @@ import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage.MessageVariable;
 public class I18N {
 	
 	public static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
-	private static final List<String> CLASSPATH_LOCALE_RESOURCES = Lists.newArrayList("locale_en_US.yml", "locale_de_DE.yml");
+	private static final List<String> DEFAULT_CLASSPATH_LOCALE_RESOURCES = Lists.newArrayList("locale_en_US.yml", "locale_de_DE.yml");
 	private static final String FALLBACK_FILE = "locale_en_US.yml";
-	
+	private static final String FILE_PROTOCOL = "file";
+	private static final String JAR_EXTENSION = ".jar";
+	private static final String JAR_ENTRY_SEPERATOR = "/";
+	private static final String LOCALE_FILE_REGEX = "locale_[a-z]{2}(_[A-Z]{2})?\\.yml";
+	private static final YamlRepresenter YAML_REPRESENTER = new YamlRepresenter();
+	private static final DumperOptions DUMPER_OPTIONS = new DumperOptions();
 	static final Locale FALLBACK_LOCALE = Locale.US;
-	static final String CLASSPATH_DIR = "/i18n/";
 	
-	private static I18N instance;
+	static {
+		DUMPER_OPTIONS.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+		DUMPER_OPTIONS.setAllowUnicode(true);
+		
+		YAML_REPRESENTER.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+	}
 	
-	private final YMLControl defaultControl;
-	private final File localeDir;
-	private final Logger logger;
 	private Locale locale;
+	private ClassLoader classLoader;
+	private final Logger logger;
+	private LoadingMode mode;
+	private final YMLControl defaultControl;
+	private final File fileSystemFolder;
+	private final String classpathFolder;
+	private I18N parent;
 	private ResourceBundle bundle;
 	
-	public static void initialize(Locale locale, File localeDir, Logger logger) {
-		instance = new I18N(locale, localeDir, logger);
-	}
-	
-	public static void setDefaultLocale(Locale locale) {
-		validateInstance();
-		instance.setLocale(locale);
-	}
-	
-	public static I18N getInstance() {
-		validateInstance();
-		return instance;
-	}
-	
-	private static void validateInstance() {
-		if (instance == null) {
-			throw new IllegalStateException("I18N has not been initialized yet");
+	protected I18N(Locale locale, LoadingMode mode, File fileSystemFolder, String classpathFolder, ClassLoader loader, Logger logger) {
+		this.defaultControl = new YMLControl(fileSystemFolder, classpathFolder, mode);
+		this.locale = locale;
+		this.mode = mode;
+		this.fileSystemFolder = fileSystemFolder;
+		
+		if (!classpathFolder.endsWith(String.valueOf(JAR_ENTRY_SEPERATOR))) {
+			classpathFolder += JAR_ENTRY_SEPERATOR;
 		}
-	}
-	
-	private I18N(Locale locale, File localeDir, Logger logger) {
-		this.defaultControl = new YMLControl(localeDir, CLASSPATH_DIR);
-		this.localeDir = localeDir;
+		
+		this.classpathFolder = classpathFolder;
 		this.logger = logger;
 		
-		this.locale = locale;
-		
 		load();
 	}
 	
-	public void reload() {
-		load();
-	}
-	
-	private void load() {
-		try {
-			checkResourcesAndCopy();
-		} catch (IOException e) {
-			// Just inform as the YMLControl is going to load this file from the classpath
-			logger.log(Level.WARNING, "Could not copy locale resource file, using classpath resource", e);
+	public void load() {
+		if (mode == LoadingMode.FILE_SYSTEM) {
+			//Copy those resource files when we're using the file system loading mode
+			try {
+				copyClasspathResources();
+			} catch (IOException e) {
+				// Just inform as the YMLControl is going to load this file from the classpath
+				logger.log(Level.WARNING, "Could not copy locale resource file, using classpath resource", e);
+			}
 		}
 		
 		loadBundle();
 	}
 	
-	private void loadBundle() {
-		try {
+	private void loadBundle() throws MissingResourceException {
+		//try {
 			bundle = ResourceBundle.getBundle("locale", locale, defaultControl);
-		} catch (MissingResourceException mre) {
-			//Locale could not be found try to load from classpath
-			YMLControl classpathControl = new YMLControl(localeDir, CLASSPATH_DIR, true);
-			bundle = ResourceBundle.getBundle("locale", FALLBACK_LOCALE, classpathControl);
-		}
+		/*} catch (MissingResourceException mre) {
+			//Locale could not be found
+			//YMLControl classpathControl = new YMLControl(null, CLASSPATH_DIR, mode);
+			//bundle = ResourceBundle.getBundle("locale", FALLBACK_LOCALE, classpathControl);
+			throw new Mis
+		}*/
 	}
 	
 	public void setLocale(Locale locale) {
@@ -127,22 +131,94 @@ public class I18N {
 		loadBundle();
 	}
 	
-	private void checkResourcesAndCopy() throws IOException {
-		for (String localeRes : CLASSPATH_LOCALE_RESOURCES) {
-			File localeFile = new File(localeDir, localeRes);
+	public void setParent(I18N parent) {
+		this.parent = parent;
+	}
+	
+	public void copyClasspathResources() throws IOException {
+		if (mode != LoadingMode.FILE_SYSTEM) {
+			throw new IllegalStateException("Resource files can only be copied on LoadingMode.FILE_SYSTEM mode");
+		}
+		
+		//Try to find a list of all available resources
+		List<String> classpathResources = Lists.newArrayList();
+		if (classLoader instanceof URLClassLoader) {
+			URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
+			URL[] urls = urlClassLoader.getURLs();
+			
+			//Get a list of all locale resources in this URLClassLoader
+			for (URL url : urls) {
+				if (!url.equals(FILE_PROTOCOL)) {
+					//This url doesn't point to a file
+					continue;
+				}
+				
+				File file;
+				
+				try {
+					file = new File(url.toURI());
+				} catch (URISyntaxException e) {
+					//Shouldn't fire as the classloader should have already
+					//validated the url
+					throw new RuntimeException(e);
+				}
+				
+				if (!file.getName().endsWith(JAR_EXTENSION)) {
+					//This file isn't a jar archive
+					continue;
+				}
+				
+				try (JarFile jar = new JarFile(file)) {
+					Enumeration<JarEntry> entries = jar.entries();
+					
+					while (entries.hasMoreElements()) {
+						JarEntry entry = entries.nextElement();
+						String entryName = entry.getName();
+						
+						String[] nameComponents = entryName.split(JAR_ENTRY_SEPERATOR);
+						StringBuilder folderBuilder = new StringBuilder();
+						for (int i = 0; i < nameComponents.length - 1; i++) {
+							folderBuilder.append(nameComponents[i])
+										.append(JAR_ENTRY_SEPERATOR);
+						}
+						
+						String folder = folderBuilder.toString();
+						
+						if (!folder.equals(classpathFolder)) {
+							//This resource isn't in the right directory
+							continue;
+						}
+						
+						if (!nameComponents[nameComponents.length - 1].matches(LOCALE_FILE_REGEX)) {
+							//This entry isn't a resource entry
+							continue;
+						}
+						
+						//Found a resource file
+						classpathResources.add(entryName);
+					}
+				}
+			}
+		} else {
+			classpathResources.addAll(DEFAULT_CLASSPATH_LOCALE_RESOURCES);
+		}
+		
+		for (String localeRes : classpathResources) {
+			File localeFile = new File(fileSystemFolder, localeRes);
 			
 			if (!localeFile.exists()) {
-				URL localeResourceUrl = getClass().getResource(CLASSPATH_DIR + localeRes);
+				URL localeResourceUrl = getClass().getResource(classpathFolder + localeRes);
 				
 				HeavySpleef.copyResource(localeResourceUrl, localeFile);
 			}
 		}
 		
 		// Check if all messages exist, and add missing messages to the file e.g validate and replace
-		for (File localeFile : localeDir.listFiles()) {
-			URL classpathResource = getClass().getResource(CLASSPATH_DIR + localeFile.getName());
+		for (File localeFile : fileSystemFolder.listFiles()) {
+			//Classpath resources can only exist in one folder, so their name is unique
+			URL classpathResource = getClass().getResource(classpathFolder + localeFile.getName());
 			if (classpathResource == null) {
-				classpathResource = getClass().getResource(CLASSPATH_DIR + FALLBACK_FILE);
+				classpathResource = getClass().getResource(classpathFolder + FALLBACK_FILE);
 			}
 			
 			URLConnection connection = classpathResource.openConnection();
@@ -196,16 +272,9 @@ public class I18N {
 				//configuration API does not provide custom encoding when
 				//the standard charset does not support unicode...
 				final YamlConfigurationOptions options = fileConfig.options();
-				final YamlRepresenter representer = new YamlRepresenter();
-				
-				final DumperOptions dumperOptions = new DumperOptions();
-				dumperOptions.setIndent(options.indent());
-				dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-				dumperOptions.setAllowUnicode(true);
-				
-				representer.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-				
-				final Yaml yaml = new Yaml(new YamlConstructor(), representer, dumperOptions);
+				DUMPER_OPTIONS.setIndent(options.indent());
+
+				final Yaml yaml = new Yaml(new YamlConstructor(), YAML_REPRESENTER, DUMPER_OPTIONS);
 				
 				try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(localeFile), UTF8_CHARSET)) {
 					yaml.dump(fileConfig.getValues(false), writer);
@@ -216,11 +285,16 @@ public class I18N {
 	}
 	
 	public String getString(String key) {
-		return bundle.getString(key);
+		String msg = bundle.getString(key);
+		if (msg == null && parent != null) {
+			msg = parent.getString(key);
+		}
+		
+		return msg;
 	}
 	
 	public ParsedMessage getVarString(String key) {
-		String message = bundle.getString(key);
+		String message = getString(key);
 		
 		try {
 			return ParsedMessage.parseMessage(message);
@@ -235,7 +309,19 @@ public class I18N {
 	}
 	
 	public String[] getStringArray(String key) {
-		return bundle.getStringArray(key);
+		String[] array = bundle.getStringArray(key);
+		if (array == null && parent != null) {
+			array = parent.getStringArray(key);
+		}
+		
+		return array;
+	}
+	
+	public enum LoadingMode {
+		
+		CLASSPATH,
+		FILE_SYSTEM;
+		
 	}
 	
 }

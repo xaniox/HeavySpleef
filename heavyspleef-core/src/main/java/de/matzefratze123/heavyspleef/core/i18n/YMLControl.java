@@ -36,30 +36,20 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.google.common.collect.Lists;
 
+import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
+
 public class YMLControl extends ResourceBundle.Control {
 	
 	private static final String YML_FORMAT = "yml";
 	
 	private File localeDir;
 	private String classpathDir;
-	private boolean classpath;
-	private boolean loadParent;
+	private LoadingMode mode;
 	
-	public YMLControl(File localeDir, String classpathDir) {
+	public YMLControl(File localeDir, String classpathDir, LoadingMode mode) {
 		this.localeDir = localeDir;
 		this.classpathDir = classpathDir;
-	}
-	
-	public YMLControl(File localeDir, String classpathDir, boolean classpath) {
-		this(localeDir, classpathDir);
-		
-		this.classpath = classpath;
-	}
-	
-	public YMLControl(File localeDir, String classpathDir, boolean classpath, boolean loadParent) {
-		this(localeDir, classpathDir, classpath);
-		
-		this.loadParent = loadParent;
+		this.mode = mode;
 	}
 	
 	@Override
@@ -105,9 +95,12 @@ public class YMLControl extends ResourceBundle.Control {
 			
 			URL url = null;
 			
-			if (classpath) {
+			if (mode == LoadingMode.CLASSPATH) {
+				//The mode forces us to load the resource from classpath
 				url = getClass().getResource(classpathDir + resourceName);
-			} else {
+			} else if (mode == LoadingMode.FILE_SYSTEM) {
+				//If we use the file system mode, try to load the resource from file first
+				//and load it from classpath if it fails
 				File resourceFile = new File(localeDir, resourceName);
 				
 				if (resourceFile.exists() && resourceFile.isFile()) {
@@ -146,7 +139,7 @@ public class YMLControl extends ResourceBundle.Control {
 					throw new InstantiationException(e.getMessage());
 				}
 				
-				bundle = new YMLResourceBundle(config, loadParent);
+				bundle = new YMLResourceBundle(config);
 			}
 		} else {
 			bundle = super.newBundle(baseName, locale, format, loader, reload);

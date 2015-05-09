@@ -24,6 +24,7 @@ import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -32,7 +33,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class LeaveSignExtension extends SignExtension {
 
 	public static final String IDENTIFIER = "leave";
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@SuppressWarnings("unused")
 	private LeaveSignExtension() {}

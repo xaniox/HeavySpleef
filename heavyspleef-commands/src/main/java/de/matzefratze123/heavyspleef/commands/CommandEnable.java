@@ -27,11 +27,12 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandEnable {
 
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "enable", minArgs = 1, usage = "/spleef enable <game>",
 			descref = Messages.Help.Description.ENABLE,

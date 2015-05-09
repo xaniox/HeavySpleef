@@ -26,11 +26,14 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandLeave {
 
+	private final I18N i18n = I18NManager.getGlobal();
+	
 	@Command(name = "leave", usage = "/spleef leave",
 			descref = Messages.Help.Description.LEAVE,
 			permission = "heavyspleef.leave")
@@ -41,7 +44,7 @@ public class CommandLeave {
 		GameManager manager = heavySpleef.getGameManager();
 		Game game = manager.getGame(player);
 		
-		CommandValidate.notNull(game, I18N.getInstance().getString(Messages.Command.NOT_INGAME));
+		CommandValidate.notNull(game, i18n.getString(Messages.Command.NOT_INGAME));
 		
 		game.leave(player);
 	}

@@ -30,12 +30,13 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.i18n.Messages.Player;
 
 public class CommandList {
 
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "list", permission = "heavyspleef.list", usage = "/spleef list",
 			descref = Messages.Help.Description.LIST)

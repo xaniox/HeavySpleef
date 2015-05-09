@@ -35,12 +35,13 @@ import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.UpdateSection;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.i18n.Messages.Player;
 
 public class CommandUpdate {
 	
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "update", permission = "heavyspleef.admin.update",
 			usage = "/spleef update", descref = Messages.Help.Description.UPDATE)
@@ -60,7 +61,9 @@ public class CommandUpdate {
 		CommandValidate.notNull(result, i18n.getString(Messages.Command.UPDATER_NOT_FINISHED_YET));
 		CommandValidate.isTrue(result.isUpdateAvailable(), i18n.getString(Messages.Command.NO_UPDATE_AVAILABLE));
 		
-		sender.sendMessage(i18n.getString(Messages.Command.STARTING_UPDATE));
+		sender.sendMessage(i18n.getVarString(Messages.Command.STARTING_UPDATE)
+				.setVariable("new-version", result.getVersion().toString())
+				.toString());
 		updater.update(sender, new FutureCallback<Void>() {
 			
 			@Override

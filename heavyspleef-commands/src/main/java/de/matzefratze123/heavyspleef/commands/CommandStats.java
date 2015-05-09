@@ -35,6 +35,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 
@@ -42,7 +43,7 @@ public class CommandStats {
 	
 	private static final int ROWS_PER_PAGE = 10;
 	private static final DecimalFormat FORMAT = new DecimalFormat("0.##");
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "stats", usage = "/spleef stats [player|top [page]]",
 			descref = Messages.Help.Description.STATS,

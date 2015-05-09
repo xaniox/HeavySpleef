@@ -43,11 +43,12 @@ import de.matzefratze123.heavyspleef.core.hook.Hook;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandFlag {
 	
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "flag", usage = "/spleef flag <game> <flag> [flag-value|remove]", 
 			descref = Messages.Help.Description.FLAG,

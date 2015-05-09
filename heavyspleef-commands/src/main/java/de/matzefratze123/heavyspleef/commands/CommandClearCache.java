@@ -21,12 +21,13 @@ import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 
 public class CommandClearCache {
 
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "clearcache", permission = "heavyspleef.clearcache", 
 			descref = Messages.Help.Description.CLEARCACHE,

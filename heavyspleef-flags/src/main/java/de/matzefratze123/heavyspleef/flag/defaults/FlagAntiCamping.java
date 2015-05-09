@@ -43,11 +43,12 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
@@ -100,7 +101,7 @@ public class FlagAntiCamping extends BooleanFlag {
 	
 		private static final Comparator<Floor> COMPARATOR = new FloorComparator();
 		private final HeavySpleef heavySpleef;
-		private final I18N i18n = I18N.getInstance();
+		private final I18N i18n = I18NManager.getGlobal();
 		private FlagSection flagSection;
 		private GameManager gameManager;
 		private Map<SpleefPlayer, Location> recentLocations = Maps.newHashMap();

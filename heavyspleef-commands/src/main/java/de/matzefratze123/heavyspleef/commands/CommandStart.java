@@ -26,10 +26,13 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandStart {
+	
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "start", usage = "/spleef start [game]",
 			descref = Messages.Help.Description.START,
@@ -43,18 +46,18 @@ public class CommandStart {
 		if (context.argsLength() > 0) {
 			String gameName = context.getString(0);
 			game = manager.getGame(gameName);
-			CommandValidate.notNull(game, I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+			CommandValidate.notNull(game, i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 					.setVariable("game", gameName)
 					.toString());
 		} else {
 			game = manager.getGame(player);
-			CommandValidate.notNull(game, I18N.getInstance().getString(Messages.Command.NOT_INGAME));
+			CommandValidate.notNull(game, i18n.getString(Messages.Command.NOT_INGAME));
 		}
 		
 		boolean success = game.countdown();
 		
 		if (success) {
-			player.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_STARTED)
+			player.sendMessage(i18n.getVarString(Messages.Command.GAME_STARTED)
 					.setVariable("game", game.getName())
 					.toString());
 		}

@@ -38,15 +38,16 @@ import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.SignExtension;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -72,7 +73,7 @@ public class FlagVote extends BooleanFlag {
 		GameManager manager = heavySpleef.getGameManager();
 		Game game = manager.getGame(player);
 		
-		I18N i18n = I18N.getInstance();
+		final I18N i18n = I18NManager.getGlobal();
 		
 		CommandValidate.notNull(game, i18n.getString(Messages.Command.NOT_INGAME));
 		CommandValidate.isTrue(game.isFlagPresent(FLAG_NAME), i18n.getString(Messages.Command.NO_VOTE_ENABLED));
@@ -139,7 +140,7 @@ public class FlagVote extends BooleanFlag {
 	public static class VoteSignExtension extends SignExtension {
 
 		public static final String IDENTIFIER = "vote";
-		private final I18N i18n = I18N.getInstance();
+		private final I18N i18n = I18NManager.getGlobal();
 		
 		@SuppressWarnings("unused")
 		private VoteSignExtension() {}

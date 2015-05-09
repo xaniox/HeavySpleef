@@ -51,8 +51,8 @@ import de.matzefratze123.heavyspleef.core.Updater.Version;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
-import de.matzefratze123.heavyspleef.core.config.UpdateSection;
 import de.matzefratze123.heavyspleef.core.config.ThrowingConfigurationObject.UnsafeException;
+import de.matzefratze123.heavyspleef.core.config.UpdateSection;
 import de.matzefratze123.heavyspleef.core.event.GlobalEventBus;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
@@ -62,7 +62,9 @@ import de.matzefratze123.heavyspleef.core.extension.StartSignExtension;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
-import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NBuilder;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
+import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
 import de.matzefratze123.heavyspleef.core.module.Module;
 import de.matzefratze123.heavyspleef.core.module.ModuleManager;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
@@ -72,6 +74,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public final class HeavySpleef {
 	
 	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "] ";
+	private static final String I18N_CLASSPATH_FOLDER = "/i18n/";
 	
 	private Map<ConfigType, ConfigurationObject> configurations;
 	private ModuleManager moduleManager;
@@ -93,6 +96,7 @@ public final class HeavySpleef {
 	private @Getter Updater updater;
 	private @Getter PlayerPostActionHandler postActionHandler;
 	private @Getter GlobalEventBus globalEventBus;
+	private @Getter I18NManager i18NManager;
 	
 	public HeavySpleef(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -117,7 +121,16 @@ public final class HeavySpleef {
 		moduleManager = new ModuleManager();
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
-		I18N.initialize(defaultConfig.getLocalization().getLocale(), localeDir, logger);
+		Locale locale = defaultConfig.getLocalization().getLocale();
+		I18NBuilder builder = I18NBuilder.builder()
+				.setLoadingMode(LoadingMode.FILE_SYSTEM)
+				.setLocale(locale)
+				.setFileSystemFolder(localeDir)
+				.setClasspathFolder(I18N_CLASSPATH_FOLDER)
+				.setLogger(logger);
+		
+		I18NManager.setGlobalBuilder(builder);
+		i18NManager = new I18NManager();
 		
 		playerManager = new PlayerManager(plugin);
 		hookManager = new HookManager();
@@ -278,8 +291,7 @@ public final class HeavySpleef {
 		DefaultConfig config = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		Locale locale = config.getLocalization().getLocale();
 		
-		I18N.setDefaultLocale(locale);
-		I18N.getInstance().reload();
+		i18NManager.reloadAll(locale);
 		
 		moduleManager.reloadModules();
 	}

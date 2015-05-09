@@ -34,6 +34,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.persistence.OperationBatch;
@@ -42,7 +43,7 @@ import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
 
 public class CommandSave {
 
-	private I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "save", permission = "heavyspleef.admin.save",
 			usage = "/spleef save [games|statistics|all]", descref = Messages.Help.Description.SAVE)
@@ -119,7 +120,7 @@ public class CommandSave {
 		@RequiredArgsConstructor
 		public class SaveOperationCallback<T> implements FutureCallback<T> {
 
-			private final I18N i18n = I18N.getInstance();
+			private final I18N i18n = I18NManager.getGlobal();
 			@NonNull
 			private HeavySpleef heavySpleef;
 			@NonNull

@@ -26,9 +26,12 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandDelete {
+	
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "delete", minArgs = 1, usage = "/spleef delete <name>",
 			descref = Messages.Help.Description.DELETE,
@@ -39,12 +42,12 @@ public class CommandDelete {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		
 		manager.deleteGame(gameName);
-		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_DISCARDED)
+		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_DISCARDED)
 				.setVariable("game", gameName)
 				.toString());
 	}

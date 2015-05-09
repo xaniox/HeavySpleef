@@ -45,6 +45,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.layout.VariableProvider;
@@ -134,7 +135,7 @@ public abstract class SignExtension extends GameExtension {
 	private static class SignChangeListener implements Listener {
 		
 		private final HeavySpleef heavySpleef;
-		private final I18N i18n = I18N.getInstance();
+		private final I18N i18n = I18NManager.getGlobal();
 		
 		public SignChangeListener(HeavySpleef heavySpleef) {
 			this.heavySpleef = heavySpleef;

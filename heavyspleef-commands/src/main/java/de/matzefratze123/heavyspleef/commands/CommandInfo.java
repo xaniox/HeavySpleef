@@ -19,8 +19,8 @@ package de.matzefratze123.heavyspleef.commands;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -43,11 +43,12 @@ import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandInfo {
 	
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "info", minArgs = 1, usage = "/spleef info <game>",
 			descref = Messages.Help.Description.INFO,
@@ -58,7 +59,7 @@ public class CommandInfo {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		Game game = manager.getGame(gameName);

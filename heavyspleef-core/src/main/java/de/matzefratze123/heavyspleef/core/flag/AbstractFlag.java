@@ -32,6 +32,7 @@ import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
 
 public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMarshallable {
@@ -55,9 +56,13 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 	
 	public void onFlagRemove(Game game) {}
 	
+	public void setI18N(I18N i18n) {
+		this.i18n = i18n;
+	}
+	
 	protected I18N getI18N() {
 		if (i18n == null) {
-			i18n = I18N.getInstance();
+			i18n = I18NManager.getGlobal();
 		}
 		
 		return i18n;

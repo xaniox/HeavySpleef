@@ -24,11 +24,12 @@ import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandReload {
 
-	private I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "reload", permission = "heavyspleef.admin.reload",
 			descref = Messages.Help.Description.RELOAD, usage = "/spleef reload")

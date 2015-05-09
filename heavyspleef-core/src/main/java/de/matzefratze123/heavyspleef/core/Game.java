@@ -99,6 +99,7 @@ import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.hook.WorldEditHook;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -117,7 +118,7 @@ public class Game {
 		SPAWNPOINT_GENERATORS.put(Polygonal2DRegion.class, new Polygonal2DSpawnpointGenerator());
 	}
 	
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	private final EditSessionFactory editSessionFactory;
 	private @Getter HeavySpleef heavySpleef;
@@ -128,7 +129,7 @@ public class Game {
 	private KillDetector killDetector;
 	private Queue<SpleefPlayer> queuedPlayers;
 	private @Getter CountdownTask countdownTask;
-	private StatisticRecorder statisticRecorder;
+	private @Getter StatisticRecorder statisticRecorder;
 	
 	@Getter @Setter(AccessLevel.PACKAGE)
 	private String name;

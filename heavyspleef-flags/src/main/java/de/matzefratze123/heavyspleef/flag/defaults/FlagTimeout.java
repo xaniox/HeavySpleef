@@ -25,11 +25,10 @@ import org.bukkit.scheduler.BukkitTask;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
+import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
-import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
-import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
@@ -92,7 +91,7 @@ public class FlagTimeout extends IntegerFlag {
 			int minutes = secondsLeft / 60;
 			int seconds = secondsLeft % 60;
 			
-			String message = I18N.getInstance().getVarString(Messages.Broadcast.GAME_TIMEOUT_COUNTDOWN)
+			String message = getI18N().getVarString(Messages.Broadcast.GAME_TIMEOUT_COUNTDOWN)
 				.setVariable("minutes", String.valueOf(minutes))
 				.setVariable("seconds", String.valueOf(seconds))
 				.toString();

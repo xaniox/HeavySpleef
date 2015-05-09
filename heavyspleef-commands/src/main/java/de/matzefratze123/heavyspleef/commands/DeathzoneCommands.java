@@ -42,12 +42,13 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.RegionVisualizer;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class DeathzoneCommands {
 	
-	private final I18N i18n = I18N.getInstance();
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "adddeathzone", permission = "heavyspleef.adddeathzone", minArgs = 1,
 			descref = Messages.Help.Description.ADDDEATHZONE,
@@ -59,7 +60,7 @@ public class DeathzoneCommands {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		Game game = manager.getGame(gameName);
@@ -148,7 +149,7 @@ public class DeathzoneCommands {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(manager.hasGame(gameName), I18N.getInstance().getVarString(Messages.Command.GAME_DOESNT_EXIST)
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		Game game = manager.getGame(gameName);

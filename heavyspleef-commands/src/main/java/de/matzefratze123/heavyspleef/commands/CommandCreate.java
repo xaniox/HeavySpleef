@@ -28,10 +28,13 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandCreate {
 
+	private final I18N i18n = I18NManager.getGlobal();
+	
 	@Command(name = "create", minArgs = 1, usage = "/spleef create <game>", 
 			descref = Messages.Help.Description.CREATE,
 			permission = "heavyspleef.admin.create")
@@ -42,11 +45,11 @@ public class CommandCreate {
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
-		CommandValidate.isTrue(!manager.hasGame(gameName), I18N.getInstance().getString(Messages.Command.GAME_ALREADY_EXIST));
+		CommandValidate.isTrue(!manager.hasGame(gameName), i18n.getString(Messages.Command.GAME_ALREADY_EXIST));
 		
 		Game game = new Game(heavySpleef, gameName, sender.getWorld());
 		manager.addGame(game);
-		sender.sendMessage(I18N.getInstance().getVarString(Messages.Command.GAME_CREATED)
+		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_CREATED)
 				.setVariable("game", gameName)
 				.toString());
 	}

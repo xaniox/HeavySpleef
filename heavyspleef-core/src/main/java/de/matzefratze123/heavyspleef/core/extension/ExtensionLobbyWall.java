@@ -50,13 +50,14 @@ import de.matzefratze123.heavyspleef.core.PlayerPostActionHandler.PostActionCall
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
-import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.WallValidationException.Cause;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.layout.VariableProvider;
@@ -78,7 +79,7 @@ public class ExtensionLobbyWall extends GameExtension {
 	public static void onAddWallCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		GameManager manager = heavySpleef.getGameManager();
-		final I18N i18n = I18N.getInstance();
+		final I18N i18n = I18NManager.getGlobal();
 		
 		String gameName = context.getString(0);
 		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
@@ -119,7 +120,7 @@ public class ExtensionLobbyWall extends GameExtension {
 	public static void onRemoveWallCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		GameManager manager = heavySpleef.getGameManager();
-		final I18N i18n = I18N.getInstance();
+		final I18N i18n = I18NManager.getGlobal();
 		
 		String gameName = context.getString(0);
 		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
