@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Queue;
 
 import org.apache.commons.lang.Validate;
@@ -31,32 +32,57 @@ import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyHashBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyMap.DualKeyPair;
 import de.matzefratze123.heavyspleef.core.collection.DualMaps;
+import de.matzefratze123.heavyspleef.core.collection.DualMaps.Mapper;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 
 public class FlagRegistry {
 	
 	private static final String FLAG_PATH_SEPERATOR = ":";
 	
+	
 	private final HeavySpleef heavySpleef;
 	
-	private DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> registeredFlagsMap;
+	private final I18NSupplier GLOBAL_SUPPLIER = new I18NSupplier() {
+		
+		@Override
+		public I18N supply() {
+			return I18NManager.getGlobal();
+		}
+	};
+	private final Mapper<FlagClassHolder, Class<? extends AbstractFlag<?>>> valueMapper = new Mapper<FlagRegistry.FlagClassHolder, Class<? extends AbstractFlag<?>>>() {
+
+		@Override
+		public Class<? extends AbstractFlag<?>> map(FlagClassHolder from) {
+			return from.flagClass;
+		}
+	};
+	private DualKeyBiMap<String, Flag, FlagClassHolder> registeredFlagsMap;
 	private Queue<Method> queuedInitMethods;
 	
 	public FlagRegistry(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
-		this.registeredFlagsMap = new DualKeyHashBiMap<String, Flag, Class<? extends AbstractFlag<?>>>(String.class, Flag.class);
+		this.registeredFlagsMap = new DualKeyHashBiMap<String, Flag, FlagClassHolder>(String.class, Flag.class);
 		this.queuedInitMethods = Lists.newLinkedList();
 	}
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz) {
+		registerFlag(clazz, null);
+	}
+	
+	public void registerFlag(Class<? extends AbstractFlag<?>> clazz, I18NSupplier i18nSupplier) {
 		Validate.notNull(clazz, "clazz cannot be null");
-		Validate.isTrue(!registeredFlagsMap.containsValue(clazz), "Cannot register flag twice");
+		Validate.isTrue(!isFlagPresent(clazz), "Cannot register flag twice");
+		
+		if (i18nSupplier == null) {
+			i18nSupplier = GLOBAL_SUPPLIER;
+		}
 		
 		/* Check if the class provides the required Flag annotation */
 		Validate.isTrue(clazz.isAnnotationPresent(Flag.class), "Flag-Class must be annotated with the @Flag annotation");
@@ -86,7 +112,7 @@ public class FlagRegistry {
 		/* Check for name collides */
 		for (String flagPath : registeredFlagsMap.primaryKeySet()) {
 			if (flagPath.equalsIgnoreCase(path)) {
-				throw new IllegalArgumentException("Flag " + clazz.getName() + " collides with " + registeredFlagsMap.get(flagPath).getName());
+				throw new IllegalArgumentException("Flag " + clazz.getName() + " collides with " + registeredFlagsMap.get(flagPath).flagClass.getName());
 			}
 		}
 		
@@ -128,34 +154,43 @@ public class FlagRegistry {
 			}
 		}
 		
-		registeredFlagsMap.put(path, flagAnnotation, clazz);
+		FlagClassHolder holder = new FlagClassHolder();
+		holder.flagClass = clazz;
+		holder.supplier = i18nSupplier;
+		
+		registeredFlagsMap.put(path, flagAnnotation, holder);
 	}
 	
 	public void unregister(Class<? extends AbstractFlag<?>> flagClass) {
-		Iterator<Class<? extends AbstractFlag<?>>> iterator = registeredFlagsMap.values().iterator();
-		while (iterator.hasNext()) {
-			Class<? extends AbstractFlag<?>> clazz = iterator.next();
+		String path = null;
+		
+		for (Entry<DualKeyPair<String, Flag>, FlagClassHolder> entry : registeredFlagsMap.entrySet()) {
+			FlagClassHolder holder = entry.getValue();
 			
-			if (clazz == flagClass) {
-				Unregister.Unregisterer.runUnregisterMethods(clazz, heavySpleef, true, true);
-				
-				Flag annotation = registeredFlagsMap.inverse().get(clazz).getSecondaryKey();
-				if (annotation.hasCommands()) {
-					CommandManager manager = heavySpleef.getCommandManager();
-					manager.unregisterSpleefCommand(clazz);
-				}
-				
-				Iterator<Method> methodIterator = queuedInitMethods.iterator();
-				while (methodIterator.hasNext()) {
-					Method method = methodIterator.next();
-					if (method.getDeclaringClass() == flagClass) {
-						methodIterator.remove();
-					}
-				}
-				
-				iterator.remove();
-				break;
+			if (holder.flagClass != flagClass) {
+				continue;
 			}
+			
+			Flag annotation = entry.getKey().getSecondaryKey();
+			if (annotation.hasCommands()) {
+				CommandManager manager = heavySpleef.getCommandManager();
+				manager.unregisterSpleefCommand(flagClass);
+			}
+			
+			Iterator<Method> methodIterator = queuedInitMethods.iterator();
+			while (methodIterator.hasNext()) {
+				Method method = methodIterator.next();
+				if (method.getDeclaringClass() == flagClass) {
+					methodIterator.remove();
+				}
+			}
+			
+			path = entry.getKey().getPrimaryKey();
+			break;
+		}
+		
+		if (path != null) {
+			registeredFlagsMap.remove(path);
 		}
 	}
 	
@@ -190,42 +225,62 @@ public class FlagRegistry {
 	}
 	
 	public Flag getFlagData(Class<? extends AbstractFlag<?>> clazz) {
-		DualKeyPair<String, Flag> keyPair = registeredFlagsMap.inverse().get(clazz);
-		
-		if (keyPair == null) {
-			return null;
+		for (Entry<FlagClassHolder, DualKeyPair<String, Flag>> entry : registeredFlagsMap.inverse().entrySet()) {
+			FlagClassHolder holder = entry.getKey();
+			if (clazz != holder.flagClass) {
+				continue;
+			}
+			
+			return entry.getValue().getSecondaryKey();
 		}
 		
-		return keyPair.getSecondaryKey();
+		throw new NoSuchFlagException(clazz.getName());
 	}
 	
 	public boolean isFlagPresent(String flagPath) {
 		return getFlagClass(flagPath) != null;
 	}
 	
+	public boolean isFlagPresent(Class<? extends AbstractFlag<?>> flagClass) {
+		for (FlagClassHolder holder : registeredFlagsMap.values()) {
+			if (holder.flagClass == flagClass) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	/* Reverse path lookup */
 	public Class<? extends AbstractFlag<?>> getFlagClass(String flagPath) {
-		return registeredFlagsMap.get(flagPath);
+		FlagClassHolder holder = registeredFlagsMap.get(flagPath);
+		if (holder == null) {
+			return null;
+		}
+		
+		return holder.flagClass;
 	}
 	
 	public DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> getAvailableFlags() {
-		return DualMaps.immutableDualBiMap(registeredFlagsMap);
+		return DualMaps.valueMappedImmutableDualBiMap(registeredFlagsMap, valueMapper);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractFlag<?>> T newFlagInstance(String name, Class<T> expected) {
-		Class<? extends AbstractFlag<?>> clazz = getFlagClass(name);
-		if (clazz == null) {
+		FlagClassHolder holder = registeredFlagsMap.get(name);
+		if (holder == null) {
 			throw new NoSuchFlagException(name);
 		}
 		
-		if (expected == null || !expected.isAssignableFrom(clazz)) {
-			throw new NoSuchFlagException("Expected class " + expected.getName() + " is not compatible with " + clazz.getName());
+		if (expected == null || !expected.isAssignableFrom(holder.flagClass)) {
+			throw new NoSuchFlagException("Expected class " + expected.getName() + " is not compatible with " + holder.flagClass.getName());
 		}
 		
 		try {
-			AbstractFlag<?> flag = clazz.newInstance();
+			AbstractFlag<?> flag = holder.flagClass.newInstance();
 			flag.setHeavySpleef(heavySpleef);
+			flag.setI18N(holder.supplier.supply());
+			
 			return (T) flag;
 		} catch (InstantiationException | IllegalAccessException e) {
 			//This should not happen as we made the constructor
@@ -237,16 +292,38 @@ public class FlagRegistry {
 	}
 	
 	public boolean isChildFlag(Class<? extends AbstractFlag<?>> parent, Class<? extends AbstractFlag<?>> childCandidate) {
-		Validate.notNull(parent, "parent cannot be null");
-		Validate.notNull(childCandidate, "child candidate cannot be null");
+		Validate.notNull(parent, "Parent cannot be null");
+		Validate.notNull(childCandidate, "Child candidate cannot be null");
 		
-		BiMap<Class<? extends AbstractFlag<?>>, DualKeyPair<String, Flag>> inverse = registeredFlagsMap.inverse();
-		Validate.isTrue(inverse.containsKey(childCandidate), "childCandidate flag " + childCandidate.getName() + " has not been registered");
+		BiMap<FlagClassHolder, DualKeyPair<String, Flag>> inverse = registeredFlagsMap.inverse();
+		FlagClassHolder foundHolder = null;
+		
+		for (FlagClassHolder holder : inverse.keySet()) {
+			if (holder.flagClass == childCandidate) {
+				foundHolder = holder;
+				break;
+			}
+		}
+		
+		Validate.isTrue(foundHolder != null, "Child candidate flag " + childCandidate.getName() + " has not been registered");
 		
 		Flag annotation = inverse.get(childCandidate).getSecondaryKey();
 		
-		Validate.isTrue(annotation != null, "childCandidate has not been registered");
+		Validate.isTrue(annotation != null, "ChildCandidate has not been registered");
 		return annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == childCandidate;
+	}
+	
+	public static interface I18NSupplier {
+		
+		public I18N supply();
+		
+	}
+	
+	private class FlagClassHolder {
+		
+		private Class<? extends AbstractFlag<?>> flagClass;
+		private I18NSupplier supplier;
+		
 	}
 	
 }
