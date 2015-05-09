@@ -120,6 +120,16 @@
     </dependency>
     <dependency>
       <groupId>de.matzefratze123</groupId>
+      <artifactId>heavyspleef-commands</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>heavyspleef-command-base</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
       <artifactId>heavyspleef-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
