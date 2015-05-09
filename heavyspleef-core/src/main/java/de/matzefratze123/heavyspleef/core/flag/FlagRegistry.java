@@ -18,17 +18,22 @@
 package de.matzefratze123.heavyspleef.core.flag;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Queue;
+
+import lombok.Getter;
 
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -46,9 +51,7 @@ public class FlagRegistry {
 	
 	private static final String FLAG_PATH_SEPERATOR = ":";
 	
-	
 	private final HeavySpleef heavySpleef;
-	
 	private final I18NSupplier GLOBAL_SUPPLIER = new I18NSupplier() {
 		
 		@Override
@@ -65,11 +68,15 @@ public class FlagRegistry {
 	};
 	private DualKeyBiMap<String, Flag, FlagClassHolder> registeredFlagsMap;
 	private Queue<Method> queuedInitMethods;
+	private Set<Injector<AbstractFlag<?>>> staticInjectors;
+	private Set<Injector<AbstractFlag<?>>> instanceInjectors;
 	
 	public FlagRegistry(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
 		this.registeredFlagsMap = new DualKeyHashBiMap<String, Flag, FlagClassHolder>(String.class, Flag.class);
 		this.queuedInitMethods = Lists.newLinkedList();
+		this.staticInjectors = Sets.newHashSet();
+		this.instanceInjectors = Sets.newHashSet();
 	}
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz) {
@@ -154,9 +161,43 @@ public class FlagRegistry {
 			}
 		}
 		
+		Set<Field> instanceInjectingFields = Sets.newHashSet();
+		Set<Field> staticInjectingFields = Sets.newHashSet();
+		Class<?> currentClass = clazz;
+
+		do {
+			Field[] fields = currentClass.getDeclaredFields();
+			for (Field field : fields) {
+				if (!field.isAnnotationPresent(Inject.class)) {
+					continue;
+				}
+				
+				field.setAccessible(true);
+				
+				if ((field.getModifiers() & Modifier.STATIC) != 0) {
+					staticInjectingFields.add(field);
+				} else {
+					instanceInjectingFields.add(field);
+				}
+			}
+			
+			currentClass = currentClass.getSuperclass();
+		} while (AbstractFlag.class.isAssignableFrom(currentClass));
+		
 		FlagClassHolder holder = new FlagClassHolder();
 		holder.flagClass = clazz;
+		holder.injectingFields = instanceInjectingFields.toArray(new Field[instanceInjectingFields.size()]);
 		holder.supplier = i18nSupplier;
+		
+		//Initialize static injects now
+		Field[] staticInjectingFieldsArray = staticInjectingFields.toArray(new Field[staticInjectingFields.size()]);
+		try {
+			for (Injector<AbstractFlag<?>> injector : staticInjectors) {
+				injector.inject(null, staticInjectingFieldsArray, holder);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		
 		registeredFlagsMap.put(path, flagAnnotation, holder);
 	}
@@ -281,6 +322,10 @@ public class FlagRegistry {
 			flag.setHeavySpleef(heavySpleef);
 			flag.setI18N(holder.supplier.supply());
 			
+			for (Injector<AbstractFlag<?>> injector : instanceInjectors) {
+				injector.inject(flag, holder.injectingFields, holder);
+			}
+			
 			return (T) flag;
 		} catch (InstantiationException | IllegalAccessException e) {
 			//This should not happen as we made the constructor
@@ -313,16 +358,40 @@ public class FlagRegistry {
 		return annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == childCandidate;
 	}
 	
+	public void registerInjector(Injector<AbstractFlag<?>> injector) {
+		staticInjectors.add(injector);
+		instanceInjectors.add(injector);
+	}
+	
+	public void registerInjector(Injector<AbstractFlag<?>> injector, boolean isStatic) {
+		Set<Injector<AbstractFlag<?>>> injectorSet = isStatic ? staticInjectors : instanceInjectors;
+		
+		Validate.isTrue(!injectorSet.contains(injector), "Injector already registered");
+		Validate.notNull(injector, "Injector cannot be null");
+		
+		injectorSet.add(injector);
+	}
+	
+	public void unregisterInjector(Injector<AbstractFlag<?>> injector) {
+		Validate.isTrue(instanceInjectors.contains(injector) || staticInjectors.contains(injector), "Injector has not been registered");
+		
+		instanceInjectors.remove(injector);
+		staticInjectors.remove(injector);
+	}
+	
 	public static interface I18NSupplier {
 		
 		public I18N supply();
 		
 	}
 	
-	private class FlagClassHolder {
+	@Getter
+	public class FlagClassHolder {
 		
 		private Class<? extends AbstractFlag<?>> flagClass;
+		private Field[] injectingFields;
 		private I18NSupplier supplier;
+		private Object cookie;
 		
 	}
 	
