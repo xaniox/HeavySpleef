@@ -185,6 +185,8 @@ public interface Messages {
 		public static final String SIGN_REMOVED = PREFIX + "sign-removed";
 		public static final String ANTICAMPING_WARN = PREFIX + "anticamping-warn";
 		public static final String ANTICAMPING_TELEPORT = PREFIX + "anticamping-teleport";
+
+		public static final String JOIN_INV_TITLE = PREFIX + "join-inv-title";
 		
 	}
 	
