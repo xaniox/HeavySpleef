@@ -19,6 +19,9 @@ package de.matzefratze123.heavyspleef.core.collection;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ForwardingMap;
@@ -32,6 +35,30 @@ public class DualMaps {
 		return new ForwardingImmutableDualKeyBiMap<K1, K2, V>(map);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <K1, K2, V, MV> DualKeyBiMap<K1, K2, MV> valueMappedImmutableDualBiMap(DualKeyBiMap<K1, K2, V> map, Mapper<V, MV> mapper) {
+		Validate.notNull(map, "Map cannot be null");
+		Validate.notNull(mapper, "Mapper cannot be null");
+		
+		Set<Entry<DualKeyPair<K1, K2>, V>> entries = map.entrySet();
+		DualKeyBiMap<K1, K2, MV> mappedMap = new DualKeyHashBiMap<K1, K2, MV>(map.getPrimaryKeyClass(), map.getSecondaryKeyClass());
+		
+		for (Entry<DualKeyPair<K1, K2>, V> entry : entries) {
+			V val = entry.getValue();
+			MV mapped = mapper.map(val);
+			
+			mappedMap.put((DualKeyPair<K1, K2>) entry.getKey().clone(), mapped);
+		}
+		
+		return immutableDualBiMap(mappedMap);
+	}
+	
+	public static interface Mapper<F, T> {
+		
+		public T map(F from);
+		
+	}
+	
 	private static final class ForwardingImmutableDualKeyBiMap<K1, K2, V> extends ForwardingMap<DualKeyPair<K1, K2>, V> implements DualKeyBiMap<K1, K2, V> {
 		
 		private DualKeyBiMap<K1, K2, V> delegate;
@@ -39,6 +66,16 @@ public class DualMaps {
 		
 		public ForwardingImmutableDualKeyBiMap(DualKeyBiMap<K1, K2, V> delegate) {
 			this.delegate = delegate;
+		}
+		
+		@Override
+		public Class<K1> getPrimaryKeyClass() {
+			return delegate.getPrimaryKeyClass();
+		}
+		
+		@Override
+		public Class<K2> getSecondaryKeyClass() {
+			return delegate.getSecondaryKeyClass();
 		}
 
 		@Override
