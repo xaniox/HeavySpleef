@@ -73,6 +73,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.event.EventBus;
+import de.matzefratze123.heavyspleef.core.event.GameCountdownChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
@@ -255,6 +256,9 @@ public class Game {
 				
 				@Override
 				public void onCountdownCount(CountdownTask task) {
+					GameCountdownChangeEvent event = new GameCountdownChangeEvent(Game.this, countdownTask);
+					eventBus.callEvent(event);
+					
 					broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
 						.setVariable("remaining", String.valueOf(task.getRemaining()))
 						.toString());
