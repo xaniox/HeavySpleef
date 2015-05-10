@@ -178,10 +178,11 @@ public class Game {
 	}
 	
 	void setName(String newName) {
-		GameRenameEvent event = new GameRenameEvent(this, newName);
-		eventBus.callEvent(event);
-		
+		String old = this.name;
 		this.name = newName;
+		
+		GameRenameEvent event = new GameRenameEvent(this, old);
+		eventBus.callEvent(event);
 	}
 	
 	public boolean countdown() {

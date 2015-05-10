@@ -4,16 +4,16 @@ import de.matzefratze123.heavyspleef.core.Game;
 
 public class GameRenameEvent extends GameEvent {
 
-	private String newName;
+	private String old;
 	
-	public GameRenameEvent(Game game, String newName) {
+	public GameRenameEvent(Game game, String old) {
 		super(game);
 		
-		this.newName = newName;
+		this.old = old;
 	}
 	
-	public String getNewName() {
-		return newName;
+	public String getOld() {
+		return old;
 	}
 
 }
