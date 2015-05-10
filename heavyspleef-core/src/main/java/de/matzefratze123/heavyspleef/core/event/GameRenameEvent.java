@@ -8,6 +8,8 @@ public class GameRenameEvent extends GameEvent {
 	
 	public GameRenameEvent(Game game, String newName) {
 		super(game);
+		
+		this.newName = newName;
 	}
 	
 	public String getNewName() {
