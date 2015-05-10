@@ -28,9 +28,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -79,6 +77,7 @@ import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
+import de.matzefratze123.heavyspleef.core.event.GameRenameEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
@@ -131,8 +130,7 @@ public class Game {
 	private @Getter CountdownTask countdownTask;
 	private @Getter StatisticRecorder statisticRecorder;
 	
-	@Getter @Setter(AccessLevel.PACKAGE)
-	private String name;
+	private @Getter String name;
 	private @Getter World world;
 	private com.sk89q.worldedit.world.World worldEditWorld;
 	private @Getter FlagManager flagManager;
@@ -176,6 +174,13 @@ public class Game {
 	public void setHeavySpleef(HeavySpleef heavySpleef) {
 		Validate.notNull(heavySpleef, "HeavySpleef instance cannot be null");
 		this.heavySpleef = heavySpleef;
+	}
+	
+	void setName(String newName) {
+		GameRenameEvent event = new GameRenameEvent(this, newName);
+		eventBus.callEvent(event);
+		
+		this.name = newName;
 	}
 	
 	public boolean countdown() {
