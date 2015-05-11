@@ -759,7 +759,7 @@ public class Game implements VariableSuppliable {
 	}
 		
 	@Override
-	public void provide(Set<Variable> vars, Set<String> requested) {
+	public void supply(Set<Variable> vars, Set<String> requested) {
 		String gameStateName = gameState.name().toLowerCase();
 		gameStateName = Character.toUpperCase(gameStateName.charAt(0)) + gameStateName.substring(1);
 		

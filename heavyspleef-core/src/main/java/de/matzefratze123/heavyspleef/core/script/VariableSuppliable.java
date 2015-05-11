@@ -21,6 +21,6 @@ import java.util.Set;
 
 public interface VariableSuppliable {
 
-	public void provide(Set<Variable> vars, Set<String> requested);
+	public void supply(Set<Variable> vars, Set<String> requested);
 
 }

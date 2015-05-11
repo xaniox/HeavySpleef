@@ -22,10 +22,10 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import de.matzefratze123.heavyspleef.core.layout.SignLine.IfStatementFragment;
-import de.matzefratze123.heavyspleef.core.layout.SignLine.LineFragment;
-import de.matzefratze123.heavyspleef.core.layout.SignLine.StringFragment;
-import de.matzefratze123.heavyspleef.core.layout.SignLine.VariableFragment;
+import de.matzefratze123.heavyspleef.core.layout.CustomizableLine.IfStatementFragment;
+import de.matzefratze123.heavyspleef.core.layout.CustomizableLine.LineFragment;
+import de.matzefratze123.heavyspleef.core.layout.CustomizableLine.StringFragment;
+import de.matzefratze123.heavyspleef.core.layout.CustomizableLine.VariableFragment;
 import de.matzefratze123.heavyspleef.core.script.IfStatement;
 import de.matzefratze123.heavyspleef.core.script.ParsePositionException;
 import de.matzefratze123.heavyspleef.core.script.VariableHolder;

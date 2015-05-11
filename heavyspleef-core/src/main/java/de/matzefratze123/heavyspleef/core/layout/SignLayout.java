@@ -35,13 +35,13 @@ public class SignLayout {
 	public static final int LINE_COUNT = 4;
 	private static final char TRANSLATE_CHAR = '&';
 	
-	private List<SignLine> lines;
+	private List<CustomizableLine> lines;
 	
 	public SignLayout(List<String> lines) throws ParseException {
 		this.lines = Lists.newArrayList();
 		
 		for (int i = 0; i < lines.size(); i++) {
-			SignLine line = new SignLine(lines.get(i));
+			CustomizableLine line = new CustomizableLine(lines.get(i));
 			
 			this.lines.add(line);
 		}
@@ -49,7 +49,7 @@ public class SignLayout {
 	
 	public void inflate(Sign sign, Set<Variable> variables) {
 		for (int i = 0; i < lines.size() && i < LINE_COUNT; i++) {
-			SignLine line = lines.get(i);
+			CustomizableLine line = lines.get(i);
 			String lineString = line.generate(variables);
 			
 			sign.setLine(i, lineString);
@@ -70,11 +70,11 @@ public class SignLayout {
 		Set<String> requested = Sets.newHashSet();
 		String[] result = new String[LINE_COUNT];
 		
-		for (SignLine line : lines) {
+		for (CustomizableLine line : lines) {
 			line.getRequestedVariables(requested);
 		}
 		
-		suppliable.provide(vars, requested);
+		suppliable.supply(vars, requested);
 		
 		for (int i = 0; i < lines.size(); i++) {
 			String strLine = lines.get(i).generate(vars);
