@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.extension;
+package de.matzefratze123.heavyspleef.core.script;
 
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -23,10 +23,8 @@ import java.util.StringTokenizer;
 import de.matzefratze123.heavyspleef.core.CountdownTask;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
-import de.matzefratze123.heavyspleef.core.layout.VariableProvider;
-import de.matzefratze123.heavyspleef.core.script.Variable;
 
-public class GameVariableProvider implements VariableProvider<Game> {
+public class GameVariableSupplier implements VariableSupplier<Game> {
 
 	private static final String HAS_FLAG_PREFIX = "has_flag";
 	private static final String FLAG_VALUE_PREFIX = "flag_value";

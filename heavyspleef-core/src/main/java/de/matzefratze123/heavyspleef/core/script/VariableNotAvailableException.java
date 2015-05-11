@@ -15,14 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.layout;
+package de.matzefratze123.heavyspleef.core.script;
 
-import java.util.Set;
+public class VariableNotAvailableException extends RuntimeException {
 
-import de.matzefratze123.heavyspleef.core.script.Variable;
-
-public interface VariableProvider<T> {
-
-	public void provide(Set<Variable> vars, Set<String> requested, T t);
+	private static final long serialVersionUID = 6860633367196015521L;
+	
+	private String var;
+	
+	public VariableNotAvailableException(String var) {
+		this.var = var;
+	}
+	
+	@Override
+	public String getMessage() {
+		return "Variable \"" + var + "\" is not available in this context";
+	}
 
 }

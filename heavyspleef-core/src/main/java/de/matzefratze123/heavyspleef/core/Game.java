@@ -103,6 +103,7 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.core.script.GameVariableSupplier;
 
 public class Game {
 	
@@ -139,6 +140,7 @@ public class Game {
 	private @Getter GameState gameState;
 	private Map<String, Floor> floors;
 	private @Getter Map<String, Region> deathzones;
+	private @Getter GameVariableSupplier varSupplier;
 	
 	public Game(HeavySpleef heavySpleef, String name, World world) {
 		this.heavySpleef = heavySpleef;
@@ -162,6 +164,7 @@ public class Game {
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
 		this.queuedPlayers = new LinkedList<SpleefPlayer>();
+		this.varSupplier = new GameVariableSupplier();
 		
 		//Concurrent map for database schematics
 		this.floors = new ConcurrentHashMap<String, Floor>();

@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.core.script.IfStatement;
 import de.matzefratze123.heavyspleef.core.script.Value;
 import de.matzefratze123.heavyspleef.core.script.Variable;
 import de.matzefratze123.heavyspleef.core.script.VariableHolder;
+import de.matzefratze123.heavyspleef.core.script.VariableNotAvailableException;
 
 public class SignLine {
 	

@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.script.Variable;
+import de.matzefratze123.heavyspleef.core.script.VariableSupplier;
 
 public class SignLayout {
 	
@@ -55,7 +56,7 @@ public class SignLayout {
 		}
 	}
 	
-	public <T> boolean inflate(Sign sign, VariableProvider<T> provider, T obj) {
+	public <T> boolean inflate(Sign sign, VariableSupplier<T> provider, T obj) {
 		String[] result = generate(provider, obj);
 		for (int i = 0; i < result.length; i++) {
 			sign.setLine(i, result[i]);
@@ -64,7 +65,7 @@ public class SignLayout {
 		return sign.update();
 	}
 
-	public <T> String[] generate(VariableProvider<T> provider, T obj) {
+	public <T> String[] generate(VariableSupplier<T> provider, T obj) {
 		Set<Variable> vars = Sets.newHashSet();
 		Set<String> requested = Sets.newHashSet();
 		String[] result = new String[LINE_COUNT];

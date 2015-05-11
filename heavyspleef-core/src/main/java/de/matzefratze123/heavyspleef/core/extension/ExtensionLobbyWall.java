@@ -60,8 +60,8 @@ import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
-import de.matzefratze123.heavyspleef.core.layout.VariableProvider;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.core.script.VariableSupplier;
 
 @Extension(name = "lobby-wall", hasCommands = true)
 public class ExtensionLobbyWall extends GameExtension {
@@ -320,7 +320,7 @@ public class ExtensionLobbyWall extends GameExtension {
 	
 	public void updateWall(final Game game, final boolean reset) {
 		final HeavySpleef heavySpleef = game.getHeavySpleef();
-		final VariableProvider<Game> varProvider = new GameVariableProvider();
+		final VariableSupplier<Game> varSupplier = game.getVarSupplier();
 		
 		final SignLayoutConfiguration joinConfig = heavySpleef.getConfiguration(ConfigType.JOIN_SIGN_LAYOUT_CONFIG);
 		final SignLayoutConfiguration infoConfig = heavySpleef.getConfiguration(ConfigType.INFO_WALL_SIGN_LAYOUT_CONFIG);
@@ -340,10 +340,10 @@ public class ExtensionLobbyWall extends GameExtension {
 			public LoopReturn loop(int index, Sign sign) {
 				if (index == 0) {
 					//First sign is the join sign
-					joinLayout.inflate(sign, varProvider, game);
+					joinLayout.inflate(sign, varSupplier, game);
 				} else if (index == 1) {
 					//Second sign is the informational sign
-					infoLayout.inflate(sign, varProvider, game);
+					infoLayout.inflate(sign, varSupplier, game);
 				} else {
 					boolean breakLoop = false;
 					
