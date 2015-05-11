@@ -19,8 +19,8 @@ package de.matzefratze123.heavyspleef.core.script;
 
 import java.util.Set;
 
-public interface VariableSupplier<T> {
+public interface VariableSuppliable {
 
-	public void provide(Set<Variable> vars, Set<String> requested, T t);
+	public void provide(Set<Variable> vars, Set<String> requested);
 
 }

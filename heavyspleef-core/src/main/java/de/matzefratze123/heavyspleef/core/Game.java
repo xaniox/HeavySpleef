@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Getter;
@@ -103,12 +104,15 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.core.script.GameVariableSupplier;
+import de.matzefratze123.heavyspleef.core.script.Variable;
+import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
 
-public class Game {
+public class Game implements VariableSuppliable {
 	
 	private static final int NO_BLOCK_LIMIT = -1;
 	private static final int DEFAULT_COUNTDOWN = 10;
+	private static final String HAS_FLAG_PREFIX = "has_flag";
+	private static final String FLAG_VALUE_PREFIX = "flag_value";
 	private static final Map<Class<? extends Region>, SpawnpointGenerator<?>> SPAWNPOINT_GENERATORS;
 	
 	static {
@@ -140,7 +144,6 @@ public class Game {
 	private @Getter GameState gameState;
 	private Map<String, Floor> floors;
 	private @Getter Map<String, Region> deathzones;
-	private @Getter GameVariableSupplier varSupplier;
 	
 	public Game(HeavySpleef heavySpleef, String name, World world) {
 		this.heavySpleef = heavySpleef;
@@ -164,7 +167,6 @@ public class Game {
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
 		this.queuedPlayers = new LinkedList<SpleefPlayer>();
-		this.varSupplier = new GameVariableSupplier();
 		
 		//Concurrent map for database schematics
 		this.floors = new ConcurrentHashMap<String, Floor>();
@@ -755,6 +757,44 @@ public class Game {
 	public boolean isDeathzonePresent(String name) {
 		return deathzones.containsKey(name);
 	}
+		
+	@Override
+	public void provide(Set<Variable> vars, Set<String> requested) {
+		String gameStateName = gameState.name().toLowerCase();
+		gameStateName = Character.toUpperCase(gameStateName.charAt(0)) + gameStateName.substring(1);
+		
+		vars.add(new Variable("name", name));
+		vars.add(new Variable("state", gameStateName));
+		vars.add(new Variable("players", ingamePlayers.size()));
+		vars.add(new Variable("dead", deadPlayers.size()));
+		vars.add(new Variable("countdown", countdownTask != null ? countdownTask.getRemaining() : 0));
+		vars.add(new Variable("is_countdown", countdownTask != null));
+		
+		for (String req : requested) {
+			StringTokenizer tokenizer = new StringTokenizer(req, ":");
+			
+			String primaryReq = tokenizer.nextToken();
+			
+			boolean hasFlagRequest = primaryReq.equals(HAS_FLAG_PREFIX);
+			boolean flagValueRequest = primaryReq.equals(FLAG_VALUE_PREFIX);
+			
+			if (hasFlagRequest || flagValueRequest) {
+				if (!tokenizer.hasMoreTokens()) {
+					throw new IllegalStateException("Requested variable '" + req + "' must be followed by a flag name ('<request>:<flagpath>')");
+				}
+				
+				String flagPath = tokenizer.nextToken();
+				
+				if (hasFlagRequest) {
+					vars.add(new Variable(req, isFlagPresent(flagPath)));
+				} else if (flagValueRequest) {
+					AbstractFlag<?> flag = getFlag(flagPath);
+					
+					vars.add(new Variable(req, flag != null ? flag.getValue() : null));
+				}
+			}
+		}
+	}
 	
 	public void setGameState(GameState state) {
 		GameState old = this.gameState;
@@ -971,5 +1011,6 @@ public class Game {
 	public void onPlayerQuit(PlayerQuitEvent event, SpleefPlayer quitter) {
 		leave(quitter, QuitCause.SELF);
 	}
+
 
 }

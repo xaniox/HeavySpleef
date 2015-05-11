@@ -49,7 +49,6 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.core.script.VariableSupplier;
 
 public abstract class SignExtension extends GameExtension {
 	
@@ -84,13 +83,11 @@ public abstract class SignExtension extends GameExtension {
 		}
 		
 		Sign sign = (Sign) block.getState();
-		VariableSupplier<Game> supplier = getGame().getVarSupplier();
-		layout.inflate(sign, supplier, getGame());
+		layout.inflate(sign, getGame());
 	}
 	
 	protected String[] generateLines() {
-		VariableSupplier<Game> supplier = getGame().getVarSupplier();
-		return layout.generate(supplier, getGame());
+		return layout.generate(getGame());
 	}
 	
 	@EventHandler
