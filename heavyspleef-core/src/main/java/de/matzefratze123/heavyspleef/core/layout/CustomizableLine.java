@@ -27,11 +27,11 @@ import de.matzefratze123.heavyspleef.core.script.Variable;
 import de.matzefratze123.heavyspleef.core.script.VariableHolder;
 import de.matzefratze123.heavyspleef.core.script.VariableNotAvailableException;
 
-public class SignLine {
+public class CustomizableLine {
 	
 	private List<LineFragment> fragments;
 	
-	public SignLine(String line) throws ParseException {
+	public CustomizableLine(String line) throws ParseException {
 		SignLineParser parser = new SignLineParser(line);
 		parser.parse();
 		
