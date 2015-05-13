@@ -18,6 +18,13 @@
         <version>2.3</version>
         <configuration>
           <finalName>${addon.final.name}</finalName>
+          <artifactSet>
+            <excludes>
+              <exclude>com.google.guava:guava</exclude>
+              <exclude>dom4j:dom4j</exclude>
+              <exclude>xml-apis:xml-apis</exclude>
+            </excludes>
+          </artifactSet>
         </configuration>
         <executions>
           <execution>
