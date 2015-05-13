@@ -18,11 +18,20 @@
 package de.matzefratze123.heavyspleef.addon.java;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import org.apache.commons.lang.Validate;
+
+import com.google.common.io.Closer;
+
 import de.matzefratze123.heavyspleef.addon.AddOn;
 import de.matzefratze123.heavyspleef.addon.AddOnManager;
 import de.matzefratze123.heavyspleef.addon.AddOnProperties;
@@ -34,7 +43,10 @@ import de.matzefratze123.heavyspleef.core.i18n.I18N;
 
 public class BasicAddOn implements AddOn {
 	
+	private static final int BUFFER_SIZE = 1024;
+	
 	private @Getter HeavySpleef heavySpleef;
+	private @Getter AddOnManager addOnManager;
 	private @Getter File dataFolder;
 	private @Getter AddOnProperties properties;
 	private @Getter AddOnLogger logger;
@@ -42,7 +54,6 @@ public class BasicAddOn implements AddOn {
 	private @Getter File file;
 	private @Getter ClassLoader classLoader;
 	private @Getter I18N i18n;
-	private AddOnManager manager;
 	
 	protected BasicAddOn() {}
 	
@@ -59,22 +70,53 @@ public class BasicAddOn implements AddOn {
 	
 	@Override
 	public FlagRegistryAccess getFlagRegistry() {
-		return manager.getFlagRegistryAccess();
+		return addOnManager.getFlagRegistryAccess();
 	}
 	
 	@Override
 	public ExtensionRegistryAccess getExtensionRegistry() {
-		return manager.getExtensionRegistryAccess();
+		return addOnManager.getExtensionRegistryAccess();
 	}
 	
 	@Override
 	public CommandManagerAccess getCommandManager() {
-		return manager.getCommandManagerAccess();
+		return addOnManager.getCommandManagerAccess();
+	}
+	
+	protected void copyResource(String name, File file) throws IOException {
+		OutputStream out = new FileOutputStream(file);
+		copyResource(name, out);
+	}
+	
+	protected void copyResource(String name, OutputStream out) throws IOException {
+		Closer closer = Closer.create();
+		
+		try {
+			Validate.notNull(name, "Name cannot be null");
+			Validate.notNull(out, "Out cannot be null");
+		
+			closer.register(out);
+			InputStream in = closer.register(classLoader.getResourceAsStream(name));
+			if (in == null) {
+				throw new IOException("Resource with name '" + name + "' does not exist");
+			}			
+			
+			final byte[] buffer = new byte[BUFFER_SIZE];
+			int read;
+			
+			while ((read = in.read(buffer, 0, buffer.length)) > 0) {
+				out.write(buffer, 0, read);
+			}
+		} finally {
+			if (closer != null) {
+				closer.close();
+			}
+		}
 	}
 	
 	void init(HeavySpleef heavySpleef, File dataFolder, AddOnProperties properties, File addOnFile, AddOnClassLoader classLoader, AddOnManager manager, I18N i18n) {
 		this.heavySpleef = heavySpleef;
-		this.manager = manager;
+		this.addOnManager = manager;
 		this.dataFolder = dataFolder;
 		this.properties = properties;
 		this.file = addOnFile;
