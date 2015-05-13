@@ -25,8 +25,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.addon.AddOn;
+import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
+import de.matzefratze123.heavyspleef.core.flag.FlagRegistry.I18NSupplier;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
 
 public class FlagRegistryAccess {
 	
@@ -38,14 +41,20 @@ public class FlagRegistryAccess {
 		this.addOnRegistrations = Maps.newHashMap();
 	}
 	
-	public void registerFlag(Class<? extends AbstractFlag<?>> flagClass, AddOn addOn) {
+	public void registerFlag(Class<? extends AbstractFlag<?>> flagClass, final AddOn addOn) {
 		Set<Class<? extends AbstractFlag<?>>> flags = addOnRegistrations.get(addOn);
 		if (flags == null) {
 			flags = Sets.newHashSet();
 			addOnRegistrations.put(addOn, flags);
 		}
 		
-		registry.registerFlag(flagClass);
+		registry.registerFlag(flagClass, new I18NSupplier() {
+			
+			@Override
+			public I18N supply() {
+				return ((BasicAddOn) addOn).getI18n();
+			}
+		}, addOn);
 		flags.add(flagClass);
 	}
 	

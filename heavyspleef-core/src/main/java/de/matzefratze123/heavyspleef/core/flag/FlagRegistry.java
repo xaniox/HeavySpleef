@@ -80,10 +80,10 @@ public class FlagRegistry {
 	}
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz) {
-		registerFlag(clazz, null);
+		registerFlag(clazz, null, null);
 	}
 	
-	public void registerFlag(Class<? extends AbstractFlag<?>> clazz, I18NSupplier i18nSupplier) {
+	public void registerFlag(Class<? extends AbstractFlag<?>> clazz, I18NSupplier i18nSupplier, Object cookie) {
 		Validate.notNull(clazz, "clazz cannot be null");
 		Validate.isTrue(!isFlagPresent(clazz), "Cannot register flag twice");
 		
@@ -188,6 +188,7 @@ public class FlagRegistry {
 		holder.flagClass = clazz;
 		holder.injectingFields = instanceInjectingFields.toArray(new Field[instanceInjectingFields.size()]);
 		holder.supplier = i18nSupplier;
+		holder.cookie = cookie;
 		
 		//Initialize static injects now
 		Field[] staticInjectingFieldsArray = staticInjectingFields.toArray(new Field[staticInjectingFields.size()]);

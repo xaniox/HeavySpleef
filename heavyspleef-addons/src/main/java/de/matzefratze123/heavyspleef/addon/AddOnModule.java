@@ -41,7 +41,14 @@ public class AddOnModule extends SimpleModule {
 		public void inject(AbstractFlag<?> instance, Field[] injectableFields, Object holderCookie) throws IllegalArgumentException,
 				IllegalAccessException {
 			FlagClassHolder holder = (FlagClassHolder) holderCookie;
+			
 			//Extract the add-on out of the holder
+			Object cookie = holder.getCookie();
+			if (cookie == null) {
+				//Ignore this flag injection request
+				return;
+			}
+			
 			BasicAddOn addOn = (BasicAddOn) holder.getCookie();
 			
 			for (Field field : injectableFields) {

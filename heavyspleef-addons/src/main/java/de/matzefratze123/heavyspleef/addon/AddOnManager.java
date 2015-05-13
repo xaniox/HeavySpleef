@@ -270,6 +270,10 @@ public final class AddOnManager {
 			throw new IllegalStateException("No add-on with the name '" + name + "' has been loaded");
 		}
 		
+		disableAddOn(addOn);
+	}
+	
+	public void disableAddOn(AddOn addOn) {
 		if (!addOn.isEnabled()) {
 			throw new IllegalStateException("Add-On is already disabled");
 		}
