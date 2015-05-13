@@ -1,0 +1,5 @@
+layout:
+  title: '{if ($[state] == Ingame) then \"&a\" else \"&c\"}&lJoin &7$[game]'
+  lore:
+  - "{if ($[state] == Ingame) then \"&a\" else \"&c\"}$[players]&8&l/&a{if (has_flag:max-players) then \"$[flag_value:max-players]\" else \"∞\"}"
+  - "&b&l$[state]"

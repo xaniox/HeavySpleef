@@ -21,6 +21,7 @@
   	<module>heavyspleef-command-base</module>
   	<module>heavyspleef-addons</module>
   	<module>heavyspleef-api</module>
+  	<module>addons</module>
   </modules>
   <developers>
     <developer>
