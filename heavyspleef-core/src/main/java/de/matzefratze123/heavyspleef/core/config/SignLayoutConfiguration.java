@@ -68,7 +68,7 @@ public class SignLayoutConfiguration extends ThrowingConfigurationObject<ParseEx
 			return def;
 		}
 		
-		return ChatColor.translateAlternateColorCodes('&', options.getString(key));
+		return ChatColor.translateAlternateColorCodes('&', options.getString(key, def));
 	}
 
 	@Override
