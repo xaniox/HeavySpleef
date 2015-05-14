@@ -23,14 +23,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Set;
 
 import lombok.Getter;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.plugin.PluginManager;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -133,73 +136,29 @@ public class FlagRegistry {
 			throw new IllegalArgumentException("Flag-Class must provide an empty constructor");
 		}
 		
-		HookManager hookManager = heavySpleef.getHookManager();
-		boolean allHooksPresent = true;
-		for (HookReference ref : flagAnnotation.depend()) {
-			if (!hookManager.getHook(ref).isProvided()) {
-				allHooksPresent = false;
-			}
-		}
+		FlagClassHolder holder = new FlagClassHolder();
+		holder.flagClass = clazz;
+		holder.supplier = i18nSupplier;
+		holder.cookie = cookie;
 		
-		if (allHooksPresent) {
-			for (Method method : clazz.getDeclaredMethods()) {
-				if (!method.isAnnotationPresent(FlagInit.class)) {
-					continue;
-				}
-				
-				if ((method.getModifiers() & Modifier.STATIC) == 0) {
-					throw new IllegalArgumentException("Flag initialization method " + method.getName() + " in type " + clazz.getCanonicalName()
-							+ " is not declared as static");
-				}
-				
-				queuedInitMethods.add(method);
+		Field[] instanceInjectableFields = null;
+		
+		if (checkHooks(flagAnnotation)) {
+			Method[] initMethods = getInitMethods(holder);
+			for (Method method : initMethods) {
+				queuedInitMethods.offer(method);
 			}
 			
 			if (flagAnnotation.hasCommands()) {
 				CommandManager manager = heavySpleef.getCommandManager();
 				manager.registerSpleefCommands(clazz);
 			}
-		}
-		
-		Set<Field> instanceInjectingFields = Sets.newHashSet();
-		Set<Field> staticInjectingFields = Sets.newHashSet();
-		Class<?> currentClass = clazz;
-
-		do {
-			Field[] fields = currentClass.getDeclaredFields();
-			for (Field field : fields) {
-				if (!field.isAnnotationPresent(Inject.class)) {
-					continue;
-				}
-				
-				field.setAccessible(true);
-				
-				if ((field.getModifiers() & Modifier.STATIC) != 0) {
-					staticInjectingFields.add(field);
-				} else {
-					instanceInjectingFields.add(field);
-				}
-			}
 			
-			currentClass = currentClass.getSuperclass();
-		} while (AbstractFlag.class.isAssignableFrom(currentClass));
-		
-		FlagClassHolder holder = new FlagClassHolder();
-		holder.flagClass = clazz;
-		holder.injectingFields = instanceInjectingFields.toArray(new Field[instanceInjectingFields.size()]);
-		holder.supplier = i18nSupplier;
-		holder.cookie = cookie;
-		
-		//Initialize static injects now
-		Field[] staticInjectingFieldsArray = staticInjectingFields.toArray(new Field[staticInjectingFields.size()]);
-		try {
-			for (Injector<AbstractFlag<?>> injector : staticInjectors) {
-				injector.inject(null, staticInjectingFieldsArray, holder);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			inject(holder, null);
+			instanceInjectableFields = getInjectableDeclaredFieldsByFilter(clazz, new FieldFilter(FieldFilter.INSTANCE_MODE));
 		}
 		
+		holder.injectingFields = instanceInjectableFields;
 		registeredFlagsMap.put(path, flagAnnotation, holder);
 	}
 	
@@ -233,36 +192,6 @@ public class FlagRegistry {
 		
 		if (path != null) {
 			registeredFlagsMap.remove(path);
-		}
-	}
-	
-	public void flushAndExecuteInitMethods() {
-		while (!queuedInitMethods.isEmpty()) {
-			Method method = queuedInitMethods.poll();
-			
-			boolean accessible = method.isAccessible();
-			if (!accessible) {
-				method.setAccessible(true);
-			}
-			
-			Class<?>[] parameters = method.getParameterTypes();
-			Object[] args = new Object[parameters.length];
-			
-			for (int i = 0; i < parameters.length; i++) {
-				Class<?> parameter = parameters[i];
-				if (parameter == HeavySpleef.class) {
-					args[i] = heavySpleef;
-				}
-			}
-			
-			try {
-				method.invoke(null, args);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new IllegalArgumentException("Could not invoke flag initialization method " + method.getName() + " of type "
-						+ method.getDeclaringClass().getCanonicalName() + ": ", e);
-			} finally {
-				method.setAccessible(accessible);
-			}
 		}
 	}
 	
@@ -318,14 +247,28 @@ public class FlagRegistry {
 			throw new NoSuchFlagException("Expected class " + expected.getName() + " is not compatible with " + holder.flagClass.getName());
 		}
 		
+		//Do a check on plugin dependencies
+		Flag annotation = registeredFlagsMap.inverse().get(holder).getSecondaryKey();
+		if (!checkHooks(annotation)) {
+			throw new IllegalStateException("Cannot instantiate flag when its plugin dependencies are not available");
+		}
+		
+		if (!holder.staticFieldsInjected) {
+			inject(holder, null);
+			holder.staticFieldsInjected = true;
+		}
+		
+		if (!holder.staticMethodsInitialized) {
+			runInitMethods(holder);
+			holder.staticMethodsInitialized = true;
+		}
+		
 		try {
 			AbstractFlag<?> flag = holder.flagClass.newInstance();
 			flag.setHeavySpleef(heavySpleef);
 			flag.setI18N(holder.supplier.supply());
 			
-			for (Injector<AbstractFlag<?>> injector : instanceInjectors) {
-				injector.inject(flag, holder.injectingFields, holder);
-			}
+			inject(holder, flag);
 			
 			return (T) flag;
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -335,6 +278,131 @@ public class FlagRegistry {
 			//But to be sure throw a RuntimeException
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private boolean checkHooks(Flag annotation) {
+		HookReference[] refs = annotation.depend();
+		String[] pluginDepends = annotation.pluginDepend();
+		
+		HookManager hookManager = heavySpleef.getHookManager();
+		PluginManager pluginManager = heavySpleef.getPlugin().getServer().getPluginManager();
+		boolean hooksPresent = true;
+		
+		for (HookReference ref : refs) {
+			if (!hookManager.getHook(ref).isProvided()) {
+				hooksPresent = false;
+			}
+		}
+		
+		for (String pluginDepend : pluginDepends) {
+			if (!pluginManager.isPluginEnabled(pluginDepend)) {
+				hooksPresent = false;
+			}
+		}
+		
+		return hooksPresent;
+	}
+	
+	private void inject(FlagClassHolder holder, AbstractFlag<?> instance) {
+		Field[] injectingFields;
+		Class<? extends AbstractFlag<?>> clazz = holder.flagClass;
+		
+		if (instance == null) {
+			injectingFields = getInjectableDeclaredFieldsByFilter(clazz, new FieldFilter(FieldFilter.STATIC_MODE));
+		} else {
+			if (holder.injectingFields != null) {
+				injectingFields = holder.injectingFields;
+			} else {
+				injectingFields = getInjectableDeclaredFieldsByFilter(clazz, new FieldFilter(FieldFilter.INSTANCE_MODE));
+			}
+		}
+		
+		for (Injector<AbstractFlag<?>> injector : (instance == null ? staticInjectors : instanceInjectors)) {
+			try {
+				injector.inject(instance, injectingFields, holder);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException("Could not inject fields when running injector '" + injector.getClass().getName() + "'", e);
+			}
+		}
+	}
+	
+	private Field[] getInjectableDeclaredFieldsByFilter(Class<?> clazz, Predicate<Field> predicate) {
+		Set<Field> fieldList = Sets.newHashSet();		
+		Class<?> currentClass = clazz;
+		
+		do {
+			Field[] fields = currentClass.getDeclaredFields();
+			
+			for (Field field : fields) {
+				if (!field.isAnnotationPresent(Inject.class)) {
+					continue;
+				}
+				
+				if (!predicate.apply(field)) {
+					continue;
+				}
+				
+				field.setAccessible(true);
+				fieldList.add(field);
+			}
+			
+			currentClass = currentClass.getSuperclass();
+		} while (AbstractFlag.class.isAssignableFrom(currentClass));
+		
+		return fieldList.toArray(new Field[fieldList.size()]);
+	}
+	
+	public void flushAndExecuteInitMethods() {
+		while (!queuedInitMethods.isEmpty()) {
+			Method method = queuedInitMethods.poll();
+			runInitMethod(method);
+		}
+	}
+	
+	private void runInitMethods(FlagClassHolder holder) {
+		Method[] initMethods = getInitMethods(holder);
+		for (Method method : initMethods) {
+			runInitMethod(method);
+		}
+	}
+	
+	private void runInitMethod(Method method) {
+		Class<?>[] parameters = method.getParameterTypes();
+		Object[] args = new Object[parameters.length];
+		
+		for (int i = 0; i < parameters.length; i++) {
+			Class<?> parameter = parameters[i];
+			if (parameter == HeavySpleef.class) {
+				args[i] = heavySpleef;
+			}
+		}
+		
+		try {
+			method.invoke(null, args);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			throw new IllegalArgumentException("Could not invoke flag initialization method " + method.getName() + " of type "
+					+ method.getDeclaringClass().getCanonicalName() + ": ", e);
+		}
+	}
+	
+	private Method[] getInitMethods(FlagClassHolder holder) {
+		Class<? extends AbstractFlag<?>> clazz = holder.flagClass;
+		List<Method> methods = Lists.newArrayList();
+		
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (!method.isAnnotationPresent(FlagInit.class)) {
+				continue;
+			}
+			
+			if ((method.getModifiers() & Modifier.STATIC) == 0) {
+				continue;
+			}
+			
+			method.setAccessible(true);
+			methods.add(method);
+		}
+		
+		return methods.toArray(new Method[methods.size()]);
 	}
 	
 	public boolean isChildFlag(Class<? extends AbstractFlag<?>> parent, Class<? extends AbstractFlag<?>> childCandidate) {
@@ -386,6 +454,26 @@ public class FlagRegistry {
 		
 	}
 	
+	private class FieldFilter implements Predicate<Field> {
+		
+		public static final int INSTANCE_MODE = 0;
+		public static final int STATIC_MODE = 1;
+		
+		private int mode;
+		
+		public FieldFilter(int mode) {
+			this.mode = mode;
+		}
+		
+		@Override
+		public boolean apply(Field input) {
+			int modifiers = input.getModifiers();
+			int result = (modifiers & Modifier.STATIC);
+			
+			return mode == 0 ? result == 0 : mode == 1 ? result != 0 : true;
+		}
+	};
+	
 	@Getter
 	public class FlagClassHolder {
 		
@@ -393,6 +481,8 @@ public class FlagRegistry {
 		private Field[] injectingFields;
 		private I18NSupplier supplier;
 		private Object cookie;
+		private boolean staticFieldsInjected;
+		private boolean staticMethodsInitialized;
 		
 	}
 	
