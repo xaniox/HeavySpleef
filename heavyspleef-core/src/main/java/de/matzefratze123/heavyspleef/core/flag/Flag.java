@@ -40,4 +40,6 @@ public @interface Flag {
 	
 	HookReference[] depend() default {};
 	
+	String[] pluginDepend() default {};
+	
 }
