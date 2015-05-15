@@ -27,6 +27,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -42,6 +43,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -60,6 +62,7 @@ import de.matzefratze123.heavyspleef.core.extension.JoinSignExtension;
 import de.matzefratze123.heavyspleef.core.extension.LeaveSignExtension;
 import de.matzefratze123.heavyspleef.core.extension.StartSignExtension;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
+import de.matzefratze123.heavyspleef.core.flag.FlagRegistry.InitializationPolicy;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18NBuilder;
@@ -67,6 +70,7 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
 import de.matzefratze123.heavyspleef.core.module.Module;
 import de.matzefratze123.heavyspleef.core.module.ModuleManager;
+import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.PlayerManager;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -74,7 +78,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public final class HeavySpleef {
 	
 	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "] ";
-	private static final String I18N_CLASSPATH_FOLDER = "/i18n/";
+	private static final String I18N_CLASSPATH_FOLDER = "i18n/";
 	
 	private Map<ConfigType, ConfigurationObject> configurations;
 	private ModuleManager moduleManager;
@@ -97,6 +101,8 @@ public final class HeavySpleef {
 	private @Getter PlayerPostActionHandler postActionHandler;
 	private @Getter GlobalEventBus globalEventBus;
 	private @Getter I18NManager i18NManager;
+	private @Getter boolean gamesLoaded;
+	private Set<GamesLoadCallback> gamesLoadCallbacks;
 	
 	public HeavySpleef(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -113,6 +119,7 @@ public final class HeavySpleef {
 		File flagDir = new File(getDataFolder(), "flags");
 		flagDir.mkdirs();
 		
+		gamesLoadCallbacks = Sets.newLinkedHashSet();
 		flagRegistry = new FlagRegistry(this);
 		
 		configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
@@ -153,6 +160,7 @@ public final class HeavySpleef {
 		extensionRegistry.registerExtension(StartSignExtension.class);
 		
 		flagRegistry.flushAndExecuteInitMethods();
+		flagRegistry.setInitializationPolicy(InitializationPolicy.REGISTER);
 		
 		//Load all games
 		databaseHandler.getGames(new FutureCallback<List<Game>>() {
@@ -161,6 +169,11 @@ public final class HeavySpleef {
 			public void onSuccess(List<Game> result) {
 				for (Game game : result) {
 					gameManager.addGame(game, false);
+				}
+				
+				gamesLoaded = true;
+				for (GamesLoadCallback callback : gamesLoadCallbacks) {
+					callback.onGamesLoaded(result);
 				}
 			}
 			
@@ -319,6 +332,20 @@ public final class HeavySpleef {
 	
 	public void registerModule(Module module) {
 		moduleManager.registerModule(module);
+	}
+	
+	public void enableModules(Lifecycle lifecycle) {
+		moduleManager.enableModules(lifecycle);
+	}
+	
+	public void addGamesLoadCallback(GamesLoadCallback callback) {
+		gamesLoadCallbacks.add(callback);
+	}
+	
+	public interface GamesLoadCallback {
+		
+		public void onGamesLoaded(List<Game> games);
+		
 	}
 
 }
