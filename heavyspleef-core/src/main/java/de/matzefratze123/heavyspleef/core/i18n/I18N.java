@@ -90,11 +90,12 @@ public class I18N {
 		this.mode = mode;
 		this.fileSystemFolder = fileSystemFolder;
 		
-		if (!classpathFolder.endsWith(String.valueOf(JAR_ENTRY_SEPERATOR))) {
+		if (!classpathFolder.endsWith(String.valueOf(JAR_ENTRY_SEPERATOR)) && !classpathFolder.isEmpty()) {
 			classpathFolder += JAR_ENTRY_SEPERATOR;
 		}
 		
 		this.classpathFolder = classpathFolder;
+		this.classLoader = loader;
 		this.logger = logger;
 		
 		load();
@@ -148,7 +149,7 @@ public class I18N {
 			
 			//Get a list of all locale resources in this URLClassLoader
 			for (URL url : urls) {
-				if (!url.equals(FILE_PROTOCOL)) {
+				if (!url.getProtocol().equals(FILE_PROTOCOL)) {
 					//This url doesn't point to a file
 					continue;
 				}
@@ -189,13 +190,14 @@ public class I18N {
 							continue;
 						}
 						
-						if (!nameComponents[nameComponents.length - 1].matches(LOCALE_FILE_REGEX)) {
+						String fileName = nameComponents[nameComponents.length - 1];
+						if (!fileName.matches(LOCALE_FILE_REGEX)) {
 							//This entry isn't a resource entry
 							continue;
 						}
 						
 						//Found a resource file
-						classpathResources.add(entryName);
+						classpathResources.add(fileName);
 					}
 				}
 			}
@@ -207,7 +209,7 @@ public class I18N {
 			File localeFile = new File(fileSystemFolder, localeRes);
 			
 			if (!localeFile.exists()) {
-				URL localeResourceUrl = getClass().getResource(classpathFolder + localeRes);
+				URL localeResourceUrl = classLoader.getResource(classpathFolder + localeRes);
 				
 				HeavySpleef.copyResource(localeResourceUrl, localeFile);
 			}
@@ -216,9 +218,9 @@ public class I18N {
 		// Check if all messages exist, and add missing messages to the file e.g validate and replace
 		for (File localeFile : fileSystemFolder.listFiles()) {
 			//Classpath resources can only exist in one folder, so their name is unique
-			URL classpathResource = getClass().getResource(classpathFolder + localeFile.getName());
+			URL classpathResource = classLoader.getResource(classpathFolder + localeFile.getName());
 			if (classpathResource == null) {
-				classpathResource = getClass().getResource(classpathFolder + FALLBACK_FILE);
+				classpathResource = classLoader.getResource(classpathFolder + FALLBACK_FILE);
 			}
 			
 			URLConnection connection = classpathResource.openConnection();

@@ -55,7 +55,7 @@ public class EventBus {
 		Iterator<EventListenerMethod> methodIterator = registeredEventListeners.iterator();
 		while (methodIterator.hasNext()) {
 			EventListenerMethod method = methodIterator.next();
-			if (!method.getDeclaringClass().isInstance(listener)) {
+			if (!method.getMethodClass().isInstance(listener)) {
 				continue;
 			}
 			
@@ -69,14 +69,14 @@ public class EventBus {
 	
 	public void callEvent(GameEvent event) {
 		for (EventListenerMethod method : registeredEventListeners) {
-			if (!method.getDeclaringClass().isInstance(event)) {
+			if (!method.getEventClass().isInstance(event)) {
 				continue;
 			}
 			
 			try {
 				method.invoke(event);
 			} catch (Throwable t) {
-				logger.log(Level.SEVERE, "Could not pass " + event.getClass().getSimpleName() + " of class " + method.getDeclaringClass().getCanonicalName(), t);
+				logger.log(Level.SEVERE, "Could not pass " + event.getClass().getSimpleName() + " in class " + method.getMethodClass().getCanonicalName(), t);
 			}
 		}
 	}

@@ -50,8 +50,12 @@ public class EventListenerMethod {
 		return method.getName();
 	}
 	
-	public Class<? extends GameEvent> getDeclaringClass() {
+	public Class<? extends GameEvent> getEventClass() {
 		return eventClass;
+	}
+	
+	public Class<?> getMethodClass() {
+		return method.getDeclaringClass();
 	}
 	
 	public void invoke(GameEvent event) {

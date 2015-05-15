@@ -40,6 +40,7 @@ import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyHashBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyMap.DualKeyPair;
@@ -73,6 +74,7 @@ public class FlagRegistry {
 	private Queue<Method> queuedInitMethods;
 	private Set<Injector<AbstractFlag<?>>> staticInjectors;
 	private Set<Injector<AbstractFlag<?>>> instanceInjectors;
+	private InitializationPolicy initializationPolicy;
 	
 	public FlagRegistry(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
@@ -80,6 +82,7 @@ public class FlagRegistry {
 		this.queuedInitMethods = Lists.newLinkedList();
 		this.staticInjectors = Sets.newHashSet();
 		this.instanceInjectors = Sets.newHashSet();
+		this.initializationPolicy = InitializationPolicy.COMMIT;
 	}
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz) {
@@ -144,9 +147,16 @@ public class FlagRegistry {
 		Field[] instanceInjectableFields = null;
 		
 		if (checkHooks(flagAnnotation)) {
-			Method[] initMethods = getInitMethods(holder);
-			for (Method method : initMethods) {
-				queuedInitMethods.offer(method);
+			inject(holder, null);
+			instanceInjectableFields = getInjectableDeclaredFieldsByFilter(clazz, new FieldFilter(FieldFilter.INSTANCE_MODE));
+			
+			if (initializationPolicy == InitializationPolicy.COMMIT) {
+				Method[] initMethods = getInitMethods(holder);
+				for (Method method : initMethods) {
+					queuedInitMethods.offer(method);
+				}
+			} else if (initializationPolicy == InitializationPolicy.REGISTER) {
+				runInitMethods(holder);
 			}
 			
 			if (flagAnnotation.hasCommands()) {
@@ -154,8 +164,10 @@ public class FlagRegistry {
 				manager.registerSpleefCommands(clazz);
 			}
 			
-			inject(holder, null);
-			instanceInjectableFields = getInjectableDeclaredFieldsByFilter(clazz, new FieldFilter(FieldFilter.INSTANCE_MODE));
+			
+			
+			holder.staticFieldsInjected = true;
+			holder.staticMethodsInitialized = true;
 		}
 		
 		holder.injectingFields = instanceInjectableFields;
@@ -185,6 +197,8 @@ public class FlagRegistry {
 					methodIterator.remove();
 				}
 			}
+			
+			Unregister.Unregisterer.runUnregisterMethods(flagClass, heavySpleef, true, true);
 			
 			path = entry.getKey().getPrimaryKey();
 			break;
@@ -446,6 +460,17 @@ public class FlagRegistry {
 		
 		instanceInjectors.remove(injector);
 		staticInjectors.remove(injector);
+	}
+	
+	public void setInitializationPolicy(InitializationPolicy policy) {
+		this.initializationPolicy = policy;
+	}
+	
+	public enum InitializationPolicy {
+		
+		REGISTER,
+		COMMIT;
+		
 	}
 	
 	public static interface I18NSupplier {
