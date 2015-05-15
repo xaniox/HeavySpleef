@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.GameRenameEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
@@ -37,14 +38,16 @@ import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
-import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.inventoryguilib.GuiInventory;
 import de.matzefratze123.inventoryguilib.GuiInventorySlot;
 
 public class JoinInventory extends GuiInventory implements SpleefListener {
 	
 	private static final GameNameComparator COMPARATOR = new GameNameComparator();
+	private final HeavySpleef heavySpleef;
 	private final I18N i18n;
 	private final GameManager gameManager;
 	private List<Game> recentRegisteredGames;
@@ -53,15 +56,21 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 	public JoinInventory(JoinGuiAddOn addOn) {
 		super(addOn.getHeavySpleef().getPlugin());
 		
+		this.heavySpleef = addOn.getHeavySpleef();
 		this.i18n = addOn.getI18n();
 		this.gameManager = addOn.getHeavySpleef().getGameManager();
+		this.config = addOn.getInventoryEntryConfig();
+		
+		init(null);
 	}
 	
-	public void init() {
-		List<Game> games = Lists.newArrayList(gameManager.getGames());
-		Collections.sort(games, COMPARATOR);
+	public void init(List<Game> games) {
+		if (games == null) {
+			games = Lists.newArrayList(gameManager.getGames());
+			Collections.sort(games, COMPARATOR);
+		}
 		
-		setTitle(i18n.getString(Messages.Player.JOIN_INV_TITLE));
+		setTitle(i18n.getString(de.matzefratze123.joingui.Messages.INVENTORY_TITLE));
 		setLines((int) Math.ceil(games.size() / 9D));
 		
 		int x = 0;
@@ -102,7 +111,7 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 			//Clear and wipe the entire inventory
 			clearInventory();
 			//Re-initialize it
-			init();
+			init(games);
 		} else {
 			//Nothing has been changed, just update already existant slots
 			for (int x = 0; x < SLOTS_PER_LINE; x++) {
@@ -170,6 +179,37 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 	@Override
 	public void onClick(GuiClickEvent event) {
 		event.setCancelled(true);
+		
+		GuiInventorySlot slot = event.getSlot();
+		Object val = slot.getValue();
+		
+		if (!(val instanceof Game)) {
+			return;
+		}
+		
+		Game game = (Game) val;
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
+		
+		if (!game.getGameState().isGameEnabled()) { 
+			player.sendMessage(i18n.getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
+				.setVariable("game", game.getName())
+				.toString());
+			return;
+		}
+		
+		if (game.getGameState().isGameActive()){
+			player.sendMessage(i18n.getVarString(Messages.Command.GAME_IS_INGAME)
+				.setVariable("game", game.getName())
+				.toString());
+			return;
+		}
+		
+		if (gameManager.getGame(player) != null) {
+			player.sendMessage(i18n.getString(Messages.Command.ALREADY_PLAYING));
+			return;
+		}
+		
+		game.join(player);
 	}
 	
 	private static class GameNameComparator implements Comparator<Game> {
