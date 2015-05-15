@@ -17,12 +17,17 @@
  */
 package de.matzefratze123.heavyspleef;
 
+import java.util.List;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.matzefratze123.heavyspleef.addon.AddOnModule;
 import de.matzefratze123.heavyspleef.commands.CommandModule;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
 import de.matzefratze123.heavyspleef.core.module.Module;
+import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.flag.FlagModule;
 import de.matzefratze123.heavyspleef.persistence.PersistenceModule;
 
@@ -45,7 +50,17 @@ public class HeavySpleefPlugin extends JavaPlugin {
 		heavySpleef.registerModule(persistenceModule);
 		heavySpleef.registerModule(addOnModule);
 		
+		heavySpleef.enableModules(Lifecycle.POST_LOAD);
+		heavySpleef.addGamesLoadCallback(new GamesLoadCallback() {
+			
+			@Override
+			public void onGamesLoaded(List<Game> games) {
+				heavySpleef.enableModules(Lifecycle.POST_GAMES_LOAD);
+			}
+		});
+		
 		heavySpleef.enable();
+		heavySpleef.enableModules(Lifecycle.POST_ENABLE);
 	}
 	
 	@Override

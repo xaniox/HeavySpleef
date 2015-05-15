@@ -17,31 +17,51 @@
  */
 package de.matzefratze123.heavyspleef.core.module;
 
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
+
+import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 
 public class ModuleManager {
 	
-	private Set<Module> modules;
+	private Map<Module, Lifecycle> modules;
 	
 	public ModuleManager() {
-		this.modules = Sets.newLinkedHashSet();
+		this.modules = Maps.newLinkedHashMap();
 	}
 	
 	public void registerModule(Module module) {
-		modules.add(module);
-		module.enable();
+		Lifecycle lifecycle = Lifecycle.POST_LOAD;
+		Class<? extends Module> clazz = module.getClass();
+		
+		if (clazz.isAnnotationPresent(LoadPolicy.class)) {
+			LoadPolicy policy = clazz.getAnnotation(LoadPolicy.class);
+			lifecycle = policy.value();
+		}
+		
+		modules.put(module, lifecycle);
+	}
+	
+	public void enableModules(Lifecycle lifecycle) {
+		for (Entry<Module, Lifecycle> entry : modules.entrySet()) {
+			if (entry.getValue() != lifecycle) {
+				continue;
+			}
+			
+			entry.getKey().enable();
+		}
 	}
 	
 	public void disableModules() {
-		for (Module module : modules) {
+		for (Module module : modules.keySet()) {
 			module.disable();
 		}
 	}
 
 	public void reloadModules() {
-		for (Module module : modules) {
+		for (Module module : modules.keySet()) {
 			module.reload();
 		}
 	}
