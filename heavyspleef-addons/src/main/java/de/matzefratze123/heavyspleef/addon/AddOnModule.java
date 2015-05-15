@@ -25,8 +25,8 @@ import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
-import de.matzefratze123.heavyspleef.core.flag.Injector;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry.FlagClassHolder;
+import de.matzefratze123.heavyspleef.core.flag.Injector;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 
 public class AddOnModule extends SimpleModule {
@@ -35,7 +35,7 @@ public class AddOnModule extends SimpleModule {
 	
 	private File baseDir;
 	private AddOnManager manager;
-	private final Injector<AbstractFlag<?>> injector = new Injector<AbstractFlag<?>>() {
+	private final Injector<AbstractFlag<?>> addOnInjector = new Injector<AbstractFlag<?>>() {
 		
 		@Override
 		public void inject(AbstractFlag<?> instance, Field[] injectableFields, Object holderCookie) throws IllegalArgumentException,
@@ -67,7 +67,7 @@ public class AddOnModule extends SimpleModule {
 	public void enable() {
 		HeavySpleef heavySpleef = getHeavySpleef();
 		FlagRegistry flagRegistry = heavySpleef.getFlagRegistry();
-		flagRegistry.registerInjector(injector);
+		flagRegistry.registerInjector(addOnInjector);
 		
 		File dataFolder = heavySpleef.getDataFolder();
 		
@@ -84,10 +84,6 @@ public class AddOnModule extends SimpleModule {
 
 	@Override
 	public void reload() {
-		HeavySpleef heavySpleef = getHeavySpleef();
-		FlagRegistry flagRegistry = heavySpleef.getFlagRegistry();
-		flagRegistry.unregisterInjector(injector);
-		
 		for (AddOn addOn : manager.getEnabledAddOns()) {
 			manager.disableAddOn(addOn.getName());
 			manager.unloadAddOn(addOn.getName());
@@ -103,6 +99,10 @@ public class AddOnModule extends SimpleModule {
 		for (AddOn addOn : manager.getEnabledAddOns()) {
 			manager.disableAddOn(addOn.getName());
 		}
+		
+		HeavySpleef heavySpleef = getHeavySpleef();
+		FlagRegistry flagRegistry = heavySpleef.getFlagRegistry();
+		flagRegistry.unregisterInjector(addOnInjector);
 	}
 
 }
