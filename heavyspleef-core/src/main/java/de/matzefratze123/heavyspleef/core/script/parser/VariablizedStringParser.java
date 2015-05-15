@@ -51,6 +51,10 @@ public class VariablizedStringParser implements Parser<VariablizedString> {
 			case READ_STRING:
 				if (c != '$') {
 					tmpStr += c;
+					
+					if (position == length - 1) {
+						parts.add(tmpStr);
+					}
 				} else {
 					position--;
 					parts.add(tmpStr);
