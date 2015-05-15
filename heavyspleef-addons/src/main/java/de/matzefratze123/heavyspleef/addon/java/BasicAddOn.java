@@ -124,6 +124,7 @@ public class BasicAddOn implements AddOn {
 		this.logger = new AddOnLogger();
 		this.logger.setParent(heavySpleef.getLogger());
 		this.logger.setUseParentHandlers(true);
+		this.i18n = i18n;
 	}
 	
 	public class AddOnLogger extends Logger {
