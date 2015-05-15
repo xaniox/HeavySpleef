@@ -26,16 +26,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 
-import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class GameManager {
 
-	private AsyncReadWriteHandler databaseHandler;
+	private final HeavySpleef heavySpleef;
 	private Map<String, Game> games;
 	
-	public GameManager(AsyncReadWriteHandler databaseHandler) {
-		this.databaseHandler = databaseHandler;
+	public GameManager(HeavySpleef heavySpleef) {
+		this.heavySpleef = heavySpleef;
 		this.games = Maps.newHashMap();
 	}
 	
@@ -50,14 +49,14 @@ public class GameManager {
 		games.put(game.getName(), game);
 		
 		if (save) {
-			databaseHandler.saveGame(game, null);
+			heavySpleef.getDatabaseHandler().saveGame(game, null);
 		}
 	}
 	
 	public Game deleteGame(String name) {
 		Game game = games.remove(getRealGameName(name));
 		
-		databaseHandler.deleteGame(game, null);
+		heavySpleef.getDatabaseHandler().deleteGame(game, null);
 		return game;
 	}
 	
@@ -70,7 +69,7 @@ public class GameManager {
 		games.remove(oldName);
 		games.put(to, game);
 		
-		databaseHandler.renameGame(game, oldName, to, callback);
+		heavySpleef.getDatabaseHandler().renameGame(game, oldName, to, callback);
 	}
 	
 	public boolean hasGame(String name) {

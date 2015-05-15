@@ -151,7 +151,7 @@ public final class HeavySpleef {
 	}
 	
 	public void enable() {
-		gameManager = new GameManager(databaseHandler);
+		gameManager = new GameManager(this);
 		
 		extensionRegistry = new ExtensionRegistry(this);
 		extensionRegistry.registerExtension(ExtensionLobbyWall.class);
