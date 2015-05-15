@@ -22,11 +22,15 @@ import java.util.List;
 import de.matzefratze123.heavyspleef.commands.SpleefCommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyExecution;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
 import de.matzefratze123.heavyspleef.core.Unregister;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
 
+@Flag(name = "join-item")
 public class FlagJoinItem extends SingleItemStackFlag {
 
 	private static ProxyExecution execution;
@@ -37,17 +41,29 @@ public class FlagJoinItem extends SingleItemStackFlag {
 	private static JoinGuiAddOn addOn;
 	
 	@FlagInit
-	public static void injectCommandProxy(HeavySpleef heavySpleef) {
-		SpleefCommandManager manager = (SpleefCommandManager) heavySpleef.getCommandManager();
-		CommandManagerService service = manager.getService();
+	public static void injectCommandProxy(final HeavySpleef heavySpleef) {
+		GamesLoadCallback callback = new GamesLoadCallback() {
+			
+			@Override
+			public void onGamesLoaded(List<Game> games) {
+				SpleefCommandManager manager = (SpleefCommandManager) heavySpleef.getCommandManager();
+				CommandManagerService service = manager.getService();
+				
+				inventory = new JoinInventory(addOn);
+				heavySpleef.getGlobalEventBus().registerGlobalListener(inventory);
+				
+				proxy = new JoinCommandProxy(inventory);
+				
+				execution = ProxyExecution.inject(service, "spleef/join");
+				execution.attachProxy(proxy);
+			}
+		};
 		
-		inventory = new JoinInventory(addOn);
-		heavySpleef.getGlobalEventBus().registerGlobalListener(inventory);
-		
-		proxy = new JoinCommandProxy(inventory);
-		
-		execution = ProxyExecution.inject(service, "spleef/join");
-		execution.attachProxy(proxy);
+		if (heavySpleef.isGamesLoaded()) {
+			callback.onGamesLoaded(null);
+		} else {
+			heavySpleef.addGamesLoadCallback(callback);
+		}
 	}
 	
 	@Unregister
