@@ -21,6 +21,8 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
+
 import de.matzefratze123.heavyspleef.core.script.IfStatement;
 import de.matzefratze123.heavyspleef.core.script.Value;
 import de.matzefratze123.heavyspleef.core.script.Variable;
@@ -84,6 +86,7 @@ public class CustomizableLine {
 			}
 			
 			String result = fragment.toString();
+			result = ChatColor.translateAlternateColorCodes('&', result);
 			builder.append(result);
 		}
 		
