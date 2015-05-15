@@ -17,8 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
-import org.bukkit.entity.Player;
-
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
@@ -41,7 +39,7 @@ public class CommandJoin {
 			permission = "heavyspleef.join")
 	@PlayerOnly
 	public void onJoinCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		Player player = context.getSender();
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
@@ -58,6 +56,8 @@ public class CommandJoin {
 		CommandValidate.isTrue(!game.getGameState().isGameActive(), i18n.getVarString(Messages.Command.GAME_IS_INGAME)
 				.setVariable("game", gameName)
 				.toString());
+		
+		CommandValidate.isTrue(manager.getGame(player) == null, i18n.getString(Messages.Command.ALREADY_PLAYING));
 		
 		String[] args = new String[context.argsLength() - 1];
 		for (int i = 1, length = context.argsLength(); i < length; i++) {

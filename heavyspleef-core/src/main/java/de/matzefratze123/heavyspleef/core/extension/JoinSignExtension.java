@@ -59,6 +59,11 @@ public class JoinSignExtension extends SignExtension {
 			return;
 		}
 		
+		if (getHeavySpleef().getGameManager().getGame(player) != null) {
+			player.sendMessage(i18n.getString(Messages.Command.ALREADY_PLAYING));
+			return;
+		}
+		
 		game.join(player);
 	}
 	
