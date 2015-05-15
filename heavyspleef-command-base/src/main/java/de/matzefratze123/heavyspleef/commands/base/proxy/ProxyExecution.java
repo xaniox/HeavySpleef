@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.commands.base.proxy;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
@@ -124,7 +125,17 @@ public class ProxyExecution implements CommandExecution {
 	
 	public void unattachProxy(Proxy proxy) {
 		Validate.isTrue(isProxyAttached(proxy), "Proxy is not attached");
-		proxies.remove(proxy);
+		
+		Iterator<ProxyHolder> iterator = proxies.iterator();
+		while (iterator.hasNext()) {
+			ProxyHolder holder = iterator.next();
+			if (holder.proxy != proxy) {
+				continue;
+			}
+			
+			iterator.remove();
+			break;
+		}
 	}
 	
 	private boolean isProxyAttached(Proxy proxy) {
