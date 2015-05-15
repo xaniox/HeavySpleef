@@ -201,6 +201,7 @@ public final class AddOnManager {
 		ClassLoader loader = ((BasicAddOn)addOn).getClassLoader();
 		
 		logger.log(Level.INFO, "Enabling add-on " + properties.getName() + " v" + properties.getVersion());
+		addOn.enable();
 		
 		if (commands != null) {
 			for (CommandConfiguration config : commands) {
@@ -261,7 +262,6 @@ public final class AddOnManager {
 		}
 		
 		addOn.setEnabled(true);
-		addOn.enable();
 	}
 	
 	public void disableAddOn(String name) {
