@@ -100,6 +100,8 @@ command:
   restart-server-to-update: "Bitte starte den Server neu um die neue Version zu aktivieren"
   error-on-updating: "Konnte Plugin nicht herunterladen, bitte prüfe den Log für mehr Details"
   updating-not-enabled: "Das Updaten des Plugins ist in der Konfiguration deaktiviert. Bitte aktiviere es um das Plugin via /spleef update aktualisieren zu können"
+  
+  already-playing: "Du bist bereits in einem Spiel"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

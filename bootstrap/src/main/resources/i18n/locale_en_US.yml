@@ -100,6 +100,8 @@ command:
   restart-server-to-update: "Please restart your server to activate the new version"
   error-on-updating: "Could not download plugin, please check the log for more details"
   updating-not-enabled: "Updating is not enabled in the configuration of HeavySpleef. Please enable it to be able to update to the latest version via /spleef update"
+  
+  already-playing: "You are already in a game"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

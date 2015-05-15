@@ -124,6 +124,8 @@ public interface Messages {
 		public static final String RESTART_SERVER_TO_UPDATE = PREFIX + "restart-server-to-update";
 		public static final String ERROR_ON_UPDATING = PREFIX + "error-on-updating";
 		public static final String UPDATING_NOT_ENABLED = PREFIX + "updating-not-enabled";
+
+		public static final String ALREADY_PLAYING = PREFIX + "already-playing";
 		
 	}
 	
