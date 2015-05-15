@@ -93,7 +93,7 @@ public class JavaAddOnLoader implements AddOnLoader {
 					.setClassLoader(classLoader)
 					.setLocale(locale)
 					.setFileSystemFolder(dataFolder)
-					.setClasspathFolder("/")
+					.setClasspathFolder("")
 					.setLogger(addon.getLogger())
 					.build();
 			
