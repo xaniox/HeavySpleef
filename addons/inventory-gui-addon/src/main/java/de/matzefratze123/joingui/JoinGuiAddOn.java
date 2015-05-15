@@ -27,27 +27,33 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
+import lombok.Getter;
+
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import lombok.Getter;
 import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 
 public class JoinGuiAddOn extends BasicAddOn {
 	
-	private static final String CONFIG_FILE_NAME = "gui-entry-inventory.yml";
+	private static final String CONFIG_FILE_NAME = "gui-entry-layout.yml";
 	private static final String UTF_8 = "UTF-8";
-	
+
 	private @Getter InventoryEntryConfig inventoryEntryConfig;
-	
+
 	@Override
 	public void enable() {
-		final File configFile = new File(getDataFolder(), CONFIG_FILE_NAME);
+		File dataFolder = getDataFolder();
+		if (!dataFolder.exists()) {
+			dataFolder.mkdir();
+		}
+
+		final File configFile = new File(dataFolder, CONFIG_FILE_NAME);
 		InputStream configIn = null;
-		
+				
 		if (!configFile.exists()) {
 			try {
-				copyResource("/" + CONFIG_FILE_NAME, configFile);
+				copyResource(CONFIG_FILE_NAME, configFile);
 				configIn = new FileInputStream(configFile);
 			} catch (IOException e) {
 				getLogger().log(Level.SEVERE, "Could not copy configuration for inventory entries", e);
@@ -58,15 +64,15 @@ public class JoinGuiAddOn extends BasicAddOn {
 			try {
 				configIn = new FileInputStream(configFile);
 			} catch (FileNotFoundException e) {
-				//We checked if this file exists
+				// We checked if this file exists
 				e.printStackTrace();
 			}
 		}
-		
+
 		try {
 			Reader reader = new InputStreamReader(configIn, UTF_8);
 			Configuration config = YamlConfiguration.loadConfiguration(reader);
-			
+
 			inventoryEntryConfig = new InventoryEntryConfig(config);
 		} catch (UnsupportedEncodingException e) {
 			getLogger().log(Level.SEVERE, "It seems like your system does not support UTF8 encoding, unable to read inventory entry layout");
@@ -74,5 +80,5 @@ public class JoinGuiAddOn extends BasicAddOn {
 			getAddOnManager().disableAddOn(this);
 		}
 	}
-	
+
 }
