@@ -327,7 +327,7 @@ public final class HeavySpleef {
 			return playerManager.getSpleefPlayer((UUID)base);
 		}
 		
-		throw new IllegalArgumentException("base must be an instance of Player, String or UUID");
+		throw new IllegalArgumentException("base must be an instance of Player, String or UUID but is '" + base.getClass().getCanonicalName() + "'");
 	}
 	
 	public void registerModule(Module module) {
