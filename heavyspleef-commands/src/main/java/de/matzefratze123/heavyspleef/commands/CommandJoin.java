@@ -64,8 +64,7 @@ public class CommandJoin {
 			args[i - 1] = context.getString(i);
 		}
 		
-		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
-		game.join(spleefPlayer, args);
+		game.join(player, args);
 	}
 	
 }
