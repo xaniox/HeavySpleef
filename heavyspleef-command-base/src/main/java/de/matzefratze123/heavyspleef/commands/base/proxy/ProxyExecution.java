@@ -17,12 +17,13 @@
  */
 package de.matzefratze123.heavyspleef.commands.base.proxy;
 
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.lang.Validate;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
@@ -35,7 +36,7 @@ import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyPriority.Priority;
 public class ProxyExecution implements CommandExecution {
 
 	private CommandExecution delegate;
-	private Set<ProxyHolder> proxies;
+	private List<ProxyHolder> proxies;
 	
 	public static ProxyExecution decorate(CommandExecution execution) {
 		ProxyExecution proxyExecution = new ProxyExecution(execution);
@@ -57,7 +58,7 @@ public class ProxyExecution implements CommandExecution {
 	
 	protected ProxyExecution(CommandExecution delegate) {
 		this.delegate = delegate;
-		this.proxies = Sets.newTreeSet();
+		this.proxies = Lists.newArrayList();
 	}
 	
 	@Override
@@ -121,6 +122,8 @@ public class ProxyExecution implements CommandExecution {
 		holder.filter = filter;
 		
 		proxies.add(holder);
+		//Finally sort the list to get an appropriate order
+		Collections.sort(proxies);
 	}
 	
 	public void unattachProxy(Proxy proxy) {
