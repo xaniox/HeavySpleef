@@ -184,7 +184,8 @@ public final class HeavySpleef {
 		});
 		
 		bukkitListener = new BukkitListener(playerManager, gameManager, plugin);
-		BasicTask loseCheckTask = new LoseCheckerTask(plugin, gameManager);
+		LoseCheckerTask loseCheckTask = new LoseCheckerTask(this);
+		globalEventBus.registerGlobalListener(loseCheckTask);
 		loseCheckTask.start();
 		
 		DefaultConfig config = getConfiguration(ConfigType.DEFAULT_CONFIG);
