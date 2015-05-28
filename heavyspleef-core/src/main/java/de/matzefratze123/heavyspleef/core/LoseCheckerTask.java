@@ -17,29 +17,39 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.block.Block;
+import org.bukkit.util.BlockIterator;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.Region;
 
+import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.SpleefListener;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-public class LoseCheckerTask extends SimpleBasicTask {
+public class LoseCheckerTask extends SimpleBasicTask implements SpleefListener {
 	
 	private static final Set<Material> FLOWING_MATERIALS = Sets.newHashSet(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA);
 	
+	private final HeavySpleef heavySpleef;
 	private final GameManager gameManager;
+	private Map<SpleefPlayer, Location> recentLocations;
 	
-	public LoseCheckerTask(Plugin plugin, GameManager gameManager) {
-		super(plugin, TaskType.SYNC_REPEATING_TASK, 0L, 4L);
+	public LoseCheckerTask(HeavySpleef heavySpleef) {
+		super(heavySpleef.getPlugin(), TaskType.SYNC_REPEATING_TASK, 0L, 4L);
 		
-		this.gameManager = gameManager;
+		this.heavySpleef = heavySpleef;
+		this.gameManager = heavySpleef.getGameManager();
+		this.recentLocations = Maps.newHashMap();
 	}
 
 	@Override
@@ -55,15 +65,17 @@ public class LoseCheckerTask extends SimpleBasicTask {
 			for (SpleefPlayer player : game.getPlayers()) {
 				Location playerLoc = player.getBukkitPlayer().getLocation();
 				
-				boolean isDeathCandidate = false;
-				if (isLiquidDeathzone && FLOWING_MATERIALS.contains(playerLoc.getBlock().getType())) {
-					isDeathCandidate = true;
-				} else {
-					Vector playerPos = BukkitUtil.toVector(playerLoc);
+				boolean isDeathCandidate = isInsideDeathzone(playerLoc, game, isLiquidDeathzone);
+				if (!isDeathCandidate && recentLocations.containsKey(player)) {
+					//Try to check every block the player has passed between the recent location and his location now
+					Location recent = recentLocations.get(player);
+					org.bukkit.util.Vector direction = playerLoc.clone().subtract(recent).toVector();
 					
-					for (Region deathzone : game.getDeathzones().values()) {
-						if (deathzone.contains(playerPos)) {
-							//Player is in deathzone, so take him out
+					BlockIterator iterator = new BlockIterator(game.getWorld(), recent.toVector(), direction, 0D, (int)direction.length());
+					while (iterator.hasNext()) {
+						Block passedBlock = iterator.next();
+						
+						if (isInsideDeathzone(passedBlock.getLocation(), game, isLiquidDeathzone)) {
 							isDeathCandidate = true;
 							break;
 						}
@@ -78,6 +90,8 @@ public class LoseCheckerTask extends SimpleBasicTask {
 					
 					deathCandidates.add(player);
 				}
+				
+				recentLocations.put(player, playerLoc);
 			}
 			
 			if (deathCandidates != null) {
@@ -86,6 +100,31 @@ public class LoseCheckerTask extends SimpleBasicTask {
 				}
 			}
 		}
+	}
+	
+	private boolean isInsideDeathzone(Location location, Game game, boolean useLiquidDeathzone) {
+		boolean result = false;
+		if (useLiquidDeathzone && FLOWING_MATERIALS.contains(location.getBlock().getType())) {
+			result = true;
+		} else {
+			Vector vec = BukkitUtil.toVector(location);
+			
+			for (Region deathzone : game.getDeathzones().values()) {
+				if (deathzone.contains(vec)) {
+					//Location is in deathzone
+					result = true;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	@Subscribe
+	public void onPlayerLeaveGameEvent(PlayerLeaveGameEvent event) {
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(event);
+		recentLocations.remove(player);
 	}
 
 }
