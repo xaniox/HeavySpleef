@@ -147,7 +147,7 @@ public class FlagFreeze extends BooleanFlag {
 				Location now = player.getBukkitPlayer().getLocation();
 				Location freezeLoc = freezeLocations.get(player);
 				
-				if (!now.equals(freezeLoc)) {
+				if (now.getX() != freezeLoc.getX() || now.getY() != freezeLoc.getY() || now.getZ() != freezeLoc.getZ()) {
 					player.teleport(freezeLoc);
 				}
 			}
