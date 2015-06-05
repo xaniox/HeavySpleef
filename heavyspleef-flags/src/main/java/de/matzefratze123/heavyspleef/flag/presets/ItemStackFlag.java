@@ -50,7 +50,7 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 		marshalSerializeable(element, stack);
 	}
 	
-	private void marshalSerializeable(Element baseElement, ConfigurationSerializable serializeable) {
+	static void marshalSerializeable(Element baseElement, ConfigurationSerializable serializeable) {
 		Map<String, Object> serialized = serializeable.serialize();
 		if (serializeable instanceof ItemMeta) {
 			baseElement.addAttribute("itemmeta", String.valueOf(true));
@@ -68,7 +68,7 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 		}
 	}
 	
-	private void serializeObject(Object value, Element element) {
+	static void serializeObject(Object value, Element element) {
 		element.addAttribute("type", value.getClass().getName());
 		
 		if (value instanceof Collection<?>) {
@@ -96,7 +96,7 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void unmarshalElement(Element baseElement, Map<String, Object> map) {
+	static void unmarshalElement(Element baseElement, Map<String, Object> map) {
 		List<Element> childElements = baseElement.elements();
 		
 		for (Element childElement : childElements) {
@@ -142,7 +142,7 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Object deserializeObject(Element element) {
+	static Object deserializeObject(Element element) {
 		String typeName = element.attributeValue("type");
 		Class<?> type;
 		
