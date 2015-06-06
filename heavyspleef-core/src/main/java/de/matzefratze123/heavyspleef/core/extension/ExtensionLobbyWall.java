@@ -591,6 +591,20 @@ public class ExtensionLobbyWall extends GameExtension {
 			this.cause = cause;
 		}
 		
+		@Override
+		public String getMessage() {
+			String message = super.getMessage();
+			if (cause != null) {
+				if (message != null && !message.isEmpty()) {
+					message += " ";
+				}
+				
+				message += "[Cause: " + cause.name() + "]";
+			}
+			
+			return message;
+		}
+		
 		public Cause getExceptionCause() {
 			return cause;
 		}
