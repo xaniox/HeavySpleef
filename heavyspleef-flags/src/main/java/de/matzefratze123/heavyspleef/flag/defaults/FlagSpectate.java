@@ -36,6 +36,7 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
+import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
@@ -74,6 +75,8 @@ public class FlagSpectate extends LocationFlag {
 		FlagSpectate spectateFlag = game.getFlag(FlagSpectate.class);
 		
 		CommandValidate.isTrue(spectateFlag != null, i18n.getString(Messages.Player.NO_SPECTATE_FLAG));
+		CommandValidate.isTrue(game.getFlag(FlagQueueLobby.class) == null || !game.isQueued(spleefPlayer), 
+				i18n.getString(i18n.getString(Messages.Command.CANNOT_SPECTATE_IN_QUEUE_LOBBY)));
 		
 		if (spectateFlag.isSpectating(spleefPlayer)) {			
 			spectateFlag.spectate(spleefPlayer, game);
@@ -118,6 +121,15 @@ public class FlagSpectate extends LocationFlag {
 			player.sendMessage(getI18N().getVarString(Messages.Player.PLAYER_LEAVE_SPECTATE)
 					.setVariable("game", event.getGame().getName())
 					.toString());
+		}
+	}
+	
+	@Subscribe
+	public void onPlayerEnterQueue(PlayerEnterQueueEvent event) {
+		Game game = event.getGame();
+		
+		if (game.getFlag(FlagQueueLobby.class) != null) {
+			event.setCancelled(true);
 		}
 	}
 	
