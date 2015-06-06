@@ -126,6 +126,10 @@ public interface Messages {
 		public static final String UPDATING_NOT_ENABLED = PREFIX + "updating-not-enabled";
 
 		public static final String ALREADY_PLAYING = PREFIX + "already-playing";
+
+		public static final String TEAM_COLOR_NOT_FOUND = PREFIX + "team-color-not-found"; // $[color]
+		public static final String ADDED_TO_QUEUE = PREFIX + "added-to-queue"; // $[game]
+		public static final String REMOVED_FROM_QUEUE = PREFIX + "removed-from-queue"; // $[game]
 		
 	}
 	
@@ -147,6 +151,7 @@ public interface Messages {
 		
 		public static final String TEAM_IS_OUT = PREFIX + "team-is-out"; // $[color]
 		public static final String NEED_FLOORS = PREFIX + "need-floors";
+		public static final String TOO_FEW_PLAYERS_TEAM = PREFIX + "too-few-players-team"; // $[amount]
 		
 	}
 	
@@ -188,7 +193,8 @@ public interface Messages {
 		public static final String ANTICAMPING_WARN = PREFIX + "anticamping-warn";
 		public static final String ANTICAMPING_TELEPORT = PREFIX + "anticamping-teleport";
 
-		public static final String JOIN_INV_TITLE = PREFIX + "join-inv-title";
+		public static final String ITEMREWARD_ITEMS_DROPPED = PREFIX + "itemreward-items-dropped";
+		public static final String CANNOT_TELEPORT_IN_QUEUE = PREFIX + "cannot-teleport-in-queue";
 		
 	}
 	

@@ -102,6 +102,9 @@ command:
   updating-not-enabled: "Updating is not enabled in the configuration of HeavySpleef. Please enable it to be able to update to the latest version via /spleef update"
   
   already-playing: "You are already in a game"
+  team-color-not-found: "The team color $[color] does not exist for this game"
+  added-to-queue: "You have been added to queue for the game $[game]"
+  removed-from-queue: "You have been removed from the queue for the game $[game]"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -117,6 +120,7 @@ broadcast:
   
   team-is-out: "Team $[color] lost and left the game"
   need-floors: "This game needs at least one floor to start"
+  too-few-players-team: "Need at least $[amount] players in each team to start"
 player:
   player-leave: "You left the game."
   player-kick: "You were kicked by $[kicker]: $[message]"
@@ -143,9 +147,11 @@ player:
   
   no-sign-available: "Signtype \"$[identifier]\" is not available"
   sign-removed: "Sign removed"
-  
   anticamping-warn: "Warning: You will be teleported down if you continue to camp"
   anticamping-teleported: "You have been teleported down for camping"
+  
+  itemreward-items-dropped: "Your item reward has been dropped onto the ground as your inventory is full"
+  cannot-teleport-in-queue: "You cannot teleport yourself while you are in the queue for a game\nUse /spleef leave to leave the queue"
 help:
   description:
     clearcache: "Clears the statistic cache"

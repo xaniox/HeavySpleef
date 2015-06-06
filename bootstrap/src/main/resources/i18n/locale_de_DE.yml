@@ -102,6 +102,9 @@ command:
   updating-not-enabled: "Das Updaten des Plugins ist in der Konfiguration deaktiviert. Bitte aktiviere es um das Plugin via /spleef update aktualisieren zu können"
   
   already-playing: "Du bist bereits in einem Spiel"
+  team-color-not-found: "Die Teamfarbe $[color] existiert für dieses Spiel nicht"
+  added-to-queue: "Du wurdest der Warteschlange für das Spiel $[game] hinzugefügt"
+  removed-from-queue: "Du wurdest von der Warteschlange für das Spiel $[game] entfernt"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -117,6 +120,7 @@ broadcast:
   
   team-is-out: "Das Team $[color] hat verloren und ist ausgeschieden"
   need-floors: "Dieses Spiel benötigt mindestens eine Ebene um zu Starten"
+  too-few-players-team: "Es werden mindestens $[amount] Spieler in jedem Team benötigt um das Spiel zu starten"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"
@@ -146,6 +150,9 @@ player:
   
   anticamping-warn: "Warnung: Du wirst nach unten teleportiert, wenn du weiterhin campst"
   anticamping-teleported: "Du wurdest nach unten teleportiert, da du gecampt hast"
+  
+  itemreward-items-dropped: "Dein Item-Preis wurde auf den Boden gespawnt, da dein Inventar voll ist!"
+  cannot-teleport-in-queue: "You cannot teleport yourself while you are in the queue for a game\nUse /spleef leave to leave the queue"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"
