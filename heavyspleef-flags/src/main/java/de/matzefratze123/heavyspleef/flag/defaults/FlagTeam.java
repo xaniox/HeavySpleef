@@ -17,14 +17,18 @@
  */
 package de.matzefratze123.heavyspleef.flag.defaults;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -34,6 +38,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.MaterialData;
+import org.dom4j.Element;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -45,19 +50,22 @@ import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.RatingCompute;
 import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.StatisticRecorder;
+import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
-import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.EnumListFlag;
+import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 import de.matzefratze123.inventoryguilib.GuiInventory;
 import de.matzefratze123.inventoryguilib.GuiInventorySlot;
 
@@ -90,6 +98,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	private Map<SpleefPlayer, TeamColor> players;
 	private Map<SpleefPlayer, TeamColor> deadPlayers;
 	private List<TeamColor> deadTeams;
+	private Map<TeamColor, Location> spawnpoints;
 	private boolean updateInventory;
 	private GuiInventory teamChooser;
 	
@@ -97,6 +106,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		players = Maps.newHashMap();
 		deadPlayers = Maps.newLinkedHashMap();
 		deadTeams = Lists.newArrayList();
+		spawnpoints = Maps.newHashMap();
 		updateInventory = true;
 	}
 	
@@ -133,6 +143,46 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		recorder.setRatingCompute(null);
 	}
 	
+	@Override
+	public void marshal(Element element) {
+		super.marshal(element);
+		
+		for (Entry<TeamColor, Location> entry : spawnpoints.entrySet()) {
+			Element spawnpointElement = element.addElement("spawnpoint");
+			TeamColor color = entry.getKey();
+			Location location = entry.getValue();
+			
+			spawnpointElement.addElement("color").addText(color.name());
+			Element locationElement = spawnpointElement.addElement("location");
+			
+			locationElement.addElement("world").addText(String.valueOf(location.getWorld().getName()));
+			locationElement.addElement("x").addText(String.valueOf(location.getX()));
+			locationElement.addElement("y").addText(String.valueOf(location.getY()));
+			locationElement.addElement("z").addText(String.valueOf(location.getZ()));
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void unmarshal(Element element) {
+		super.unmarshal(element);
+		
+		List<Element> spawnpointElements = element.elements("spawnpoint");
+		for (Element spawnpointElement : spawnpointElements) {
+			TeamColor color = TeamColor.valueOf(spawnpointElement.elementText("color"));
+			
+			Element locationElement = spawnpointElement.element("location");
+			
+			World world = Bukkit.getWorld(locationElement.elementText("world"));
+			double x = Double.parseDouble(locationElement.elementText("x"));
+			double y = Double.parseDouble(locationElement.elementText("y"));
+			double z = Double.parseDouble(locationElement.elementText("z"));
+			
+			Location location = new Location(world, x, y, z);
+			spawnpoints.put(color, location);
+		}
+	}
+	
 	private void updateInventory(Game game) {
 		List<Integer> slots = getInventoryLayout();
 		GuiInventory inventory = new GuiInventory(getHeavySpleef().getPlugin(), 1, getI18N().getString(Messages.Player.TEAM_SELECTOR_TITLE)) {
@@ -166,7 +216,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			ItemMeta meta = teamStack.getItemMeta();
 			
 			meta.setDisplayName(color.getChatColor() + getLocalizedColorName(color));
-			meta.setLore(Lists.newArrayList(ChatColor.YELLOW + "" + size(color) + ChatColor.AQUA + "/" + (maxTeamSizeFlag != null ? maxTeamSizeFlag.getValue() : INFINITY_CHAR)));
+			meta.setLore(Lists.newArrayList(ChatColor.YELLOW + "" + sizeOf(color) + ChatColor.AQUA + "/" + (maxTeamSizeFlag != null ? maxTeamSizeFlag.getValue() : INFINITY_CHAR)));
 			
 			teamStack.setItemMeta(meta);
 			invSlot.setItem(teamStack);
@@ -256,6 +306,67 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	}
 	
 	@Subscribe
+	public void onGameCountdown(GameCountdownEvent event) {
+		class TeamSizeHolder implements Comparable<TeamSizeHolder> {
+
+			private TeamColor color;
+			private int size;
+			
+			@Override
+			public int compareTo(TeamSizeHolder o) {
+				return Integer.valueOf(size).compareTo(o.size);
+			}
+			
+		}
+		
+		List<TeamSizeHolder> teamSizes = Lists.newArrayList();
+		for (TeamColor color : getValue()) {
+			TeamSizeHolder holder = new TeamSizeHolder();
+			holder.color = color;
+			holder.size = sizeOf(color);
+		}
+		
+		Collections.sort(teamSizes);
+		
+		Map<SpleefPlayer, TeamColor> tempTeamAssigns = Maps.newHashMap();
+		for (Entry<SpleefPlayer, TeamColor> entry : players.entrySet()) {
+			TeamColor assignedColor = entry.getValue();
+			SpleefPlayer player = entry.getKey();
+			
+			if (assignedColor == null) {
+				
+				TeamSizeHolder lowestHolder = teamSizes.get(0);
+				assignedColor = lowestHolder.color;
+				
+				lowestHolder.size++;
+				Collections.sort(teamSizes);
+			}
+			
+			tempTeamAssigns.put(player, assignedColor);
+		}
+		
+		//Finally, check if there are enough players to start the game
+		FlagMinTeamSize minSizeFlag = getChildFlag(FlagMinTeamSize.class, event.getGame());
+		if (minSizeFlag != null) {
+			int minSize = minSizeFlag.getValue();
+			
+			for (TeamSizeHolder holder : teamSizes) {
+				if (holder.size < minSize) {
+					//Too few players
+					event.setCancelled(true);
+					event.setErrorBroadcast(getI18N().getVarString(Messages.Broadcast.TOO_FEW_PLAYERS_TEAM)
+							.setVariable("amount", String.valueOf(minSize))
+							.toString());		
+					return;
+				}
+			}
+		}
+		
+		//Enough players to start the game, set the temporary assigns to real ones
+		players = tempTeamAssigns;
+	}
+	
+	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
 			if (!players.containsKey(player)) {
@@ -296,7 +407,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		
 		players.remove(player);
 		deadPlayers.put(player, color);
-		int size = size(color);
+		int size = sizeOf(color);
 		
 		if (size <= 0) {
 			deadTeams.add(color);
@@ -337,7 +448,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		return color.getLocalizedName(localizedArray);
 	}
 	
-	public int size(TeamColor color) {
+	public int sizeOf(TeamColor color) {
 		int count = 0;
 		for (Entry<SpleefPlayer, TeamColor> entry : players.entrySet()) {
 			if (entry.getValue() == color) {
@@ -346,6 +457,38 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 		
 		return count;
+	}
+	
+	@Flag(name = "spawnpoint", parent = FlagTeam.class)
+	public static class FlagTeamSpawnpoint extends LocationFlag {
+		
+		@Override
+		public Location parseInput(Player player, String input) throws InputParseException {
+			//(Ab)using a child flag to set spawnpoints in the parent flag
+			TeamColor color;
+			
+			try {
+				color = TeamColor.valueOf(input);
+			} catch (Exception e) {
+				color = TeamColor.byColorName(getI18N().getStringArray(Messages.Arrays.TEAM_COLOR_ARRAY), input);
+			}
+			
+			if (color == null) {
+				throw new InputParseException(getI18N().getVarString(Messages.Command.TEAM_COLOR_NOT_FOUND)
+						.setVariable("color", input)
+						.toString());
+			}
+			
+			FlagTeam team = (FlagTeam) getParent();
+			team.spawnpoints.put(color, player.getLocation());
+			return player.getLocation();
+		}
+		
+		@Override
+		public void getDescription(List<String> description) {
+			description.add("Sets the spawnpoint for a team");
+		}
+		
 	}
 	
 	public enum TeamColor {
@@ -394,7 +537,9 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 		
 		public static TeamColor byColorName(String[] nameArray, String name) {
-			int index = -1;
+			final int illegalIndex = -1;
+			
+			int index = illegalIndex;
 			for (int i = 0; i < nameArray.length; i++) {
 				if (!nameArray[i].equalsIgnoreCase(name)) {
 					continue;
@@ -402,6 +547,10 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 				
 				index = i;
 				break;
+			}
+			
+			if (index == illegalIndex) {
+				return null;
 			}
 			
 			return values()[index];
