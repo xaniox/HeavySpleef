@@ -39,6 +39,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
@@ -147,7 +148,7 @@ public class FlagRegistry {
 		Field[] instanceInjectableFields = null;
 		
 		if (checkHooks(flagAnnotation)) {
-			inject(holder, null);
+			inject(holder, null, null);
 			instanceInjectableFields = getInjectableDeclaredFieldsByFilter(clazz, new FieldFilter(FieldFilter.INSTANCE_MODE));
 			
 			if (initializationPolicy == InitializationPolicy.COMMIT) {
@@ -250,8 +251,12 @@ public class FlagRegistry {
 		return DualMaps.valueMappedImmutableDualBiMap(registeredFlagsMap, valueMapper);
 	}
 	
+	public <T extends AbstractFlag<?>> T neFlagInstance(String name, Class<T> expected) {
+		return newFlagInstance(name, expected, null);
+	}
+	
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractFlag<?>> T newFlagInstance(String name, Class<T> expected) {
+	public <T extends AbstractFlag<?>> T newFlagInstance(String name, Class<T> expected, Game game) {
 		FlagClassHolder holder = registeredFlagsMap.get(name);
 		if (holder == null) {
 			throw new NoSuchFlagException(name);
@@ -268,7 +273,7 @@ public class FlagRegistry {
 		}
 		
 		if (!holder.staticFieldsInjected) {
-			inject(holder, null);
+			inject(holder, null, null);
 			holder.staticFieldsInjected = true;
 		}
 		
@@ -282,7 +287,7 @@ public class FlagRegistry {
 			flag.setHeavySpleef(heavySpleef);
 			flag.setI18N(holder.supplier.supply());
 			
-			inject(holder, flag);
+			inject(holder, flag, game);
 			
 			return (T) flag;
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -317,7 +322,7 @@ public class FlagRegistry {
 		return hooksPresent;
 	}
 	
-	private void inject(FlagClassHolder holder, AbstractFlag<?> instance) {
+	private void inject(FlagClassHolder holder, AbstractFlag<?> instance, final Game game) {
 		Field[] injectingFields;
 		Class<? extends AbstractFlag<?>> clazz = holder.flagClass;
 		
@@ -328,6 +333,27 @@ public class FlagRegistry {
 				injectingFields = holder.injectingFields;
 			} else {
 				injectingFields = getInjectableDeclaredFieldsByFilter(clazz, new FieldFilter(FieldFilter.INSTANCE_MODE));
+			}
+		}
+		
+		if (instance != null) {
+			Injector<AbstractFlag<?>> baseInjector = new Injector<AbstractFlag<?>>() {
+
+				@Override
+				public void inject(AbstractFlag<?> instance, Field[] injectableFields, Object cookie) throws IllegalArgumentException,
+						IllegalAccessException {
+					for (Field field : injectableFields) {
+						if (field.getType() == Game.class) {
+							field.set(instance, game);
+						}
+					}
+				}
+			};
+			
+			try {
+				baseInjector.inject(instance, injectingFields, holder);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException("Failed to run basic injector", e);
 			}
 		}
 		

@@ -99,7 +99,7 @@ public class CommandFlag {
 			Flag flagData = registry.getFlagData(flagClass);
 			
 			@SuppressWarnings("unchecked")
-			AbstractFlag<Object> flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath, flagClass);
+			AbstractFlag<Object> flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath, flagClass, game);
 			Object value = null;
 			
 			try {

@@ -200,14 +200,14 @@ public class FlagManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void enableFlag(String path, FlagRegistry registry) {
+	public void enableFlag(String path, FlagRegistry registry, Game game) {
 		Validate.isTrue(disabledFlags.contains(path), "Flag is not disabled");
 		
 		AbstractFlag<?> flag = flags.get(path);
-		enableFlag((Class<? extends AbstractFlag<?>>)flag.getClass(), registry);
+		enableFlag((Class<? extends AbstractFlag<?>>)flag.getClass(), registry, game);
 	}
 	
-	public void enableFlag(Class<? extends AbstractFlag<?>> clazz, FlagRegistry registry) {
+	public void enableFlag(Class<? extends AbstractFlag<?>> clazz, FlagRegistry registry, Game game) {
 		Validate.isTrue(!isFlagPresent(clazz));
 		Validate.isTrue(clazz.isAnnotationPresent(Flag.class));
 		
@@ -215,7 +215,7 @@ public class FlagManager {
 		String path = generatePath(flagAnnotation);
 		
 		Validate.isTrue(disabledFlags.contains(path), "Flag is not disabled");
-		AbstractFlag<?> flag = registry.newFlagInstance(path, AbstractFlag.class);
+		AbstractFlag<?> flag = registry.newFlagInstance(path, AbstractFlag.class, game);
 		
 		if (clazz.isAnnotationPresent(BukkitListener.class)) {
 			Bukkit.getPluginManager().registerEvents(flag, plugin);
