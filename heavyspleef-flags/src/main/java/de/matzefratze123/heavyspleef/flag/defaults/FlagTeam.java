@@ -251,7 +251,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			int maxSize = maxSizeFlag.getValue();
 			
 			if (players.size() >= maxSize * size()) {
-				event.setJoinResult(JoinResult.DENY);
+				event.setJoinResult(JoinResult.TEMPORARY_DENY);
 				event.setMessage(getI18N().getString(Messages.Player.TEAM_MAX_PLAYER_COUNT_REACHED));
 				return;
 			}
