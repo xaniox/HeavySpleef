@@ -73,10 +73,16 @@ public class CommandJoin {
 			}
 			
 			//Queue the player
-			game.queue(player);
-			player.sendMessage(i18n.getVarString(Messages.Command.ADDED_TO_QUEUE)
-					.setVariable("game", game.getName())
-					.toString());
+			boolean success = game.queue(player);
+			
+			if (success) {
+				player.sendMessage(i18n.getVarString(Messages.Command.ADDED_TO_QUEUE)
+						.setVariable("game", game.getName())
+						.toString());
+			} else {
+				player.sendMessage(i18n.getString(Messages.Command.COULD_NOT_ADD_TO_QUEUE));
+			}
+			
 		}
 	}
 	
