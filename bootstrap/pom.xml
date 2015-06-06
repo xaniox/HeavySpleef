@@ -179,5 +179,10 @@
       <artifactId>heavyspleef-addons</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>legacy-data-migration</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>
