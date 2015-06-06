@@ -41,7 +41,7 @@ import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 public class StatisticMigrator implements EqualIOMigrator<Connection> {
 
 	private static final String TABLE_NAME = "heavyspleef_statistics";
-	private static final int RECORD_BUFFER = 500;
+	private static final int RECORD_BUFFER_SIZE = 500;
 	private static final int PROFILES_PER_REQUEST = 100;
 	private static final int MAXIMUM_REQUESTS_PER_MINUTE = 600;
 	
@@ -81,14 +81,14 @@ public class StatisticMigrator implements EqualIOMigrator<Connection> {
 			throw new MigrationException(e);
 		}
 		
-		int requests = (int) Math.ceil((double)size / RECORD_BUFFER);
+		int requests = (int) Math.ceil((double)size / RECORD_BUFFER_SIZE);
 		int requestsMade = 0;
 		
 		boolean watchdogThreadDeactivated = false;
 		
 		for (int i = 0; i < requests; i++) {
-			int offset = i * RECORD_BUFFER;
-			int limit = i + 1 < requests ? RECORD_BUFFER : size - ((requests - 1) * RECORD_BUFFER);
+			int offset = i * RECORD_BUFFER_SIZE;
+			int limit = i + 1 < requests ? RECORD_BUFFER_SIZE : size - ((requests - 1) * RECORD_BUFFER_SIZE);
 			
 			final String selectSql = "SELECT * FROM " + TABLE_NAME + " LIMIT " + offset + "," + limit;
 			String[] names = new String[limit];
@@ -164,11 +164,11 @@ public class StatisticMigrator implements EqualIOMigrator<Connection> {
 				}
 			}
 			
-			requestsMade += RECORD_BUFFER / PROFILES_PER_REQUEST;
+			requestsMade += RECORD_BUFFER_SIZE / PROFILES_PER_REQUEST;
 			
 			//Check if we are going to exceed the maximum 
 			//amount of requests we can make to the mojang api
-			if (!Bukkit.getOnlineMode() && requestsMade + RECORD_BUFFER / PROFILES_PER_REQUEST > MAXIMUM_REQUESTS_PER_MINUTE) {
+			if (!Bukkit.getOnlineMode() && requestsMade + RECORD_BUFFER_SIZE / PROFILES_PER_REQUEST > MAXIMUM_REQUESTS_PER_MINUTE) {
 				requestsMade = 0;
 				
 				if (!watchdogThreadDeactivated) {
