@@ -28,9 +28,6 @@ import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 public class FlagMaxTeamSize extends IntegerFlag {
 
 	@Override
-	public void defineGameProperties(Map<GameProperty, Object> properties) {}
-
-	@Override
 	public void getDescription(List<String> description) {
 		description.add("Sets the count of maximum players which are allowed to join a team");
 	}
