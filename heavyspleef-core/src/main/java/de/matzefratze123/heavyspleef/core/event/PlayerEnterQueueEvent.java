@@ -17,11 +17,16 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-public class PlayerEnterQueueEvent extends PlayerGameEvent {
+@Getter @Setter
+public class PlayerEnterQueueEvent extends PlayerGameEvent implements Cancellable {
 
+	private boolean cancelled;
+	
 	public PlayerEnterQueueEvent(Game game, SpleefPlayer player) {
 		super(game, player);
 	}

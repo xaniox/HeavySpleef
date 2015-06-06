@@ -475,11 +475,16 @@ public class Game implements VariableSuppliable {
 		return JoinResult.ALLOW;
 	}
 	
-	public void queue(SpleefPlayer player) {
+	public boolean queue(SpleefPlayer player) {
 		PlayerEnterQueueEvent event = new PlayerEnterQueueEvent(this, player);
 		eventBus.callEvent(event);
 		
+		if (event.isCancelled()) {
+			return false;
+		}
+		
 		queuedPlayers.add(player);
+		return true;
 	}
 	
 	public boolean isQueued(SpleefPlayer player) {
@@ -491,6 +496,10 @@ public class Game implements VariableSuppliable {
 		eventBus.callEvent(event);
 		
 		queuedPlayers.remove(player);
+	}
+	
+	public Queue<SpleefPlayer> getQueuedPlayers() {
+		return queuedPlayers;
 	}
 	
 	public void leave(SpleefPlayer player) {
