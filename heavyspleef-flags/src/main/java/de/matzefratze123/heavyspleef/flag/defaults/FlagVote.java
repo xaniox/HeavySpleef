@@ -20,8 +20,18 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Set;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.material.MaterialData;
 
 import com.google.common.collect.Sets;
 
@@ -57,6 +67,8 @@ import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 public class FlagVote extends BooleanFlag {
 
 	protected static final String FLAG_NAME = "vote";
+	private static Listener listener;
+	
 	private Set<SpleefPlayer> voted;
 	
 	public FlagVote() {
@@ -84,15 +96,20 @@ public class FlagVote extends BooleanFlag {
 	}
 	
 	@FlagInit
-	public static void initVoteSign(HeavySpleef heavySpleef) {
+	public static void initFlag(HeavySpleef heavySpleef) {
 		ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
 		registry.registerExtension(VoteSignExtension.class);
+		
+		listener = new BlockVoteListener(heavySpleef);
+		Bukkit.getPluginManager().registerEvents(listener, heavySpleef.getPlugin());
 	}
 	
 	@Unregister
-	public static void unregisterVoteSign(HeavySpleef heavySpleef) {
+	public static void deinitFlag(HeavySpleef heavySpleef) {
 		ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
 		registry.unregister(VoteSignExtension.class);
+		
+		HandlerList.unregisterAll(listener);
 	}
 
 	@Override
@@ -175,6 +192,43 @@ public class FlagVote extends BooleanFlag {
 		public SignLayout retrieveSignLayout() {
 			SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.VOTE_SIGN_LAYOUT_CONFIG);
 			return config.getLayout();
+		}
+		
+	}
+	
+	@RequiredArgsConstructor
+	private static class BlockVoteListener implements Listener {
+		
+		private I18N i18n = I18NManager.getGlobal();
+		private @NonNull HeavySpleef heavySpleef;
+		
+		@SuppressWarnings("deprecation")
+		@EventHandler
+		public void onPlayerInteract(PlayerInteractEvent event) {
+			SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
+			GameManager manager = heavySpleef.getGameManager();
+			
+			Game game = manager.getGame(player);
+			if (game == null) {
+				return;
+			}
+			
+			if (!game.isFlagPresent(FlagVote.class)) {
+				return;
+			}
+			
+			DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+			FlagSection section = config.getFlagSection();
+			MaterialData readyBlock = section.getReadyBlock();
+			
+			Block clickedBlock = event.getClickedBlock();
+			if (clickedBlock == null || clickedBlock.getType() != readyBlock.getItemType() || clickedBlock.getData() != readyBlock.getData()) {
+				return;
+			}
+			
+			FlagVote flag = game.getFlag(FlagVote.class);
+			boolean success = flag.vote(player, game);
+			player.sendMessage(i18n.getString(success ? Messages.Command.SUCCESSFULLY_VOTED : Messages.Command.ALREADY_VOTED));
 		}
 		
 	}

@@ -20,6 +20,9 @@ package de.matzefratze123.heavyspleef.core.config;
 import lombok.Getter;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.material.MaterialData;
+
+import de.matzefratze123.heavyspleef.core.MaterialDataMatcher;
 
 @Getter
 public class FlagSection {
@@ -28,12 +31,19 @@ public class FlagSection {
 	private int anticampingWarn;
 	private boolean anticampingDoWarn;
 	private int anticampingTeleport;
+	private MaterialData readyBlock;
 	
 	public FlagSection(ConfigurationSection section) {
 		this.autostartVote = section.getInt("autostart-vote", 75);
 		this.anticampingWarn = section.getInt("anticamping-warn", 3);
 		this.anticampingDoWarn = section.getBoolean("anticamping-do-warn", true);
 		this.anticampingTeleport = section.getInt("anticamping-teleported", 6);
+		
+		String readyBlockStr = section.getString("ready-block");
+		MaterialDataMatcher matcher = MaterialDataMatcher.newMatcher(readyBlockStr);
+		matcher.match();
+		
+		readyBlock = matcher.result();
 	}
 
 }
