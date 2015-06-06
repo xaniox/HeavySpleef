@@ -45,6 +45,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.RatingCompute;
@@ -56,7 +57,6 @@ import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
