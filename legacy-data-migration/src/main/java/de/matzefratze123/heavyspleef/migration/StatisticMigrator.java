@@ -17,13 +17,217 @@
  */
 package de.matzefratze123.heavyspleef.migration;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-public class StatisticMigrator implements Migrator<Connection, Connection> {
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+import org.bukkit.Bukkit;
+
+import com.google.common.collect.Lists;
+
+import de.matzefratze123.heavyspleef.core.uuid.GameProfile;
+import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
+
+public class StatisticMigrator implements EqualIOMigrator<Connection> {
+
+	private static final String TABLE_NAME = "heavyspleef_statistics";
+	private static final int RECORD_BUFFER = 500;
+	private static final int PROFILES_PER_REQUEST = 100;
+	private static final int MAXIMUM_REQUESTS_PER_MINUTE = 600;
+	
+	private final UUIDManager uuidManager = new UUIDManager();
+	private long watchdogTimeoutTime;
+	private boolean watchdogRestart;
+	private Method watchdogDoStartMethod;
+	
 	@Override
-	public void migrate(Connection inputSource, Connection outputSource) {
-		// TODO Auto-generated method stub
+	public void migrate(Connection inputSource, Connection outputSource) throws MigrationException {
+		String createSql = "CREATE TABLE " + TABLE_NAME + " ("
+				+ "id INT NOT NULL PRIMARY KEY AUTOINCREMENT, "
+				+ "uuid CHAR(36) UNIQUE, "
+				+ "wins INT, "
+				+ "losses INT, "
+				+ "knockouts INT, "
+				+ "games_played INT, "
+				+ "blocks_broken INT, "
+				+ "time_played BIGINT, "
+				+ "rating DOUBLE)";
+		
+		try (Statement createStatement = outputSource.createStatement()) { 
+			createStatement.executeUpdate(createSql);
+		} catch (SQLException e) {
+			throw new MigrationException(e);
+		}
+		
+		final String sizeSql = "SELECT count(*) AS count FROM " + TABLE_NAME;
+		int size;
+		
+		try (Statement sizeStatement = inputSource.createStatement();
+			ResultSet sizeResult = sizeStatement.executeQuery(sizeSql)) {
+			
+			sizeResult.next();
+			size = sizeResult.getInt("count");
+		} catch (SQLException e) {
+			throw new MigrationException(e);
+		}
+		
+		int requests = (int) Math.ceil((double)size / RECORD_BUFFER);
+		int requestsMade = 0;
+		
+		boolean watchdogThreadDeactivated = false;
+		
+		for (int i = 0; i < requests; i++) {
+			int offset = i * RECORD_BUFFER;
+			int limit = i + 1 < requests ? RECORD_BUFFER : size - ((requests - 1) * RECORD_BUFFER);
+			
+			final String selectSql = "SELECT * FROM " + TABLE_NAME + " LIMIT " + offset + "," + limit;
+			String[] names = new String[limit];
+			List<LegacyStatisticProfile> profiles = Lists.newLinkedList();
+			
+			try (Statement selectStatement = inputSource.createStatement();
+					ResultSet result = selectStatement.executeQuery(selectSql)) {
+				int index = 0;
+				
+				while (result.next()) {
+					String name = result.getString("owner");
+					int wins = result.getInt("wins");
+					int losses = result.getInt("losses");
+					int knockouts = result.getInt("knockouts");
+					int gamesPlayed = result.getInt("games");
+					
+					LegacyStatisticProfile profile = new LegacyStatisticProfile(name, wins, losses, knockouts, gamesPlayed);
+					profiles.add(profile);
+					names[index++] = name;
+				}
+			} catch (SQLException e) {
+				throw new MigrationException(e);
+			}
+			
+			List<GameProfile> gameProfiles;
+			
+			try {
+				gameProfiles = uuidManager.getProfiles(names);
+			} catch (ExecutionException e) {
+				throw new MigrationException(e);
+			}
+			
+			final String insertSql = "INSERT INTO " + TABLE_NAME + " (uuid, wins, losses, knockouts, games_played, blocks_broken, time_played, rating)"
+					+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			
+			PreparedStatement insertStatement = null;
+			
+			try {
+				outputSource.setAutoCommit(false);
+				insertStatement = outputSource.prepareStatement(insertSql);
+				
+				for (LegacyStatisticProfile profile : profiles) {
+					GameProfile foundGameProfile = null;
+					for (GameProfile gameProfile : gameProfiles) {
+						if (gameProfile.getName().equalsIgnoreCase(profile.getOwner())) {
+							foundGameProfile = gameProfile;
+							break;
+						}
+					}
+					
+					insertStatement.setString(1, foundGameProfile.getUniqueIdentifier().toString());
+					insertStatement.setInt(2, profile.getWins());
+					insertStatement.setInt(3, profile.getLosses());
+					insertStatement.setInt(4, profile.getKnockouts());
+					insertStatement.setInt(5, profile.getGamesPlayed());
+					insertStatement.setInt(6, 0);
+					insertStatement.setInt(7, 0);
+					insertStatement.setDouble(8, 1000D);
+					insertStatement.addBatch();
+				}
+				
+				insertStatement.executeBatch();
+				outputSource.commit();
+			} catch (SQLException e) {
+				try {
+					outputSource.rollback();
+				} catch (SQLException e1) {}
+			} finally {
+				if (insertStatement != null) {
+					try {
+						insertStatement.close();
+					} catch (SQLException e) {}
+				}
+			}
+			
+			requestsMade += RECORD_BUFFER / PROFILES_PER_REQUEST;
+			
+			//Check if we are going to exceed the maximum 
+			//amount of requests we can make to the mojang api
+			if (!Bukkit.getOnlineMode() && requestsMade + RECORD_BUFFER / PROFILES_PER_REQUEST > MAXIMUM_REQUESTS_PER_MINUTE) {
+				requestsMade = 0;
+				
+				if (!watchdogThreadDeactivated) {
+					try {
+						Class<?> clazz = Class.forName("org.spigotmc.WatchdogThread");
+						Field instanceField = clazz.getDeclaredField("instance");
+						Field timeoutTimeField = clazz.getDeclaredField("timeoutTime");
+						Field restartField = clazz.getDeclaredField("restart");
+						Method doStopMethod = clazz.getMethod("doStop");
+						watchdogDoStartMethod = clazz.getMethod("doStart", int.class, boolean.class);
+								
+						instanceField.setAccessible(true);
+						timeoutTimeField.setAccessible(true);
+						restartField.setAccessible(true);
+						
+						Object watchdogThread = instanceField.get(null);
+						watchdogTimeoutTime = (long) timeoutTimeField.get(watchdogThread);
+						watchdogRestart = (boolean) restartField.get(watchdogThread);
+						
+						doStopMethod.invoke(null);
+						watchdogThreadDeactivated = true;
+					} catch (ClassNotFoundException e) {
+						//Do nothing when the class does not exist
+						//as it does not seem like we're running
+						//on Spigot
+					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException
+							| InvocationTargetException e) {
+						//TODO: Handle
+					}
+				}
+				
+				try {
+					//Waiting one minute before requesting again
+					Thread.sleep(1000L * 60L);
+				} catch (InterruptedException e) {
+					throw new MigrationException(e);
+				}
+			}
+		}
+		
+		if (watchdogThreadDeactivated) {
+			//Re-activate the watchdog thread
+			try {
+				watchdogDoStartMethod.invoke(null, watchdogTimeoutTime, watchdogRestart);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				//TODO: Handle
+			}
+		}
+	}
+	
+	@Data
+	@AllArgsConstructor
+	private static class LegacyStatisticProfile {
+		
+		private String owner;
+		private int wins;
+		private int losses;
+		private int knockouts;
+		private int gamesPlayed;
 		
 	}
 
