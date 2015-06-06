@@ -29,6 +29,7 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
 import de.matzefratze123.heavyspleef.core.module.Module;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.flag.FlagModule;
+import de.matzefratze123.heavyspleef.migration.MigrationModule;
 import de.matzefratze123.heavyspleef.persistence.PersistenceModule;
 
 public class HeavySpleefPlugin extends JavaPlugin {
@@ -44,7 +45,9 @@ public class HeavySpleefPlugin extends JavaPlugin {
 		Module commandModule = new CommandModule(heavySpleef);
 		Module persistenceModule = new PersistenceModule(heavySpleef);
 		Module addOnModule = new AddOnModule(heavySpleef);
+		Module legacyModule = new MigrationModule(heavySpleef);
 		
+		heavySpleef.registerModule(legacyModule);
 		heavySpleef.registerModule(flagModule);
 		heavySpleef.registerModule(commandModule);
 		heavySpleef.registerModule(persistenceModule);
