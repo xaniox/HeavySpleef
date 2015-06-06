@@ -22,6 +22,7 @@
   	<module>heavyspleef-addons</module>
   	<module>heavyspleef-api</module>
   	<module>addons</module>
+  	<module>legacy-data-migration</module>
   </modules>
   <developers>
     <developer>
