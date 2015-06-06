@@ -84,11 +84,12 @@ import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerLeaveQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
@@ -193,6 +194,10 @@ public class Game implements VariableSuppliable {
 	public boolean countdown() {
 		GameCountdownEvent event = new GameCountdownEvent(this);
 		eventBus.callEvent(event);
+		
+		if (event.isCancelled()) {
+			return false;
+		}
 		
 		// The player cannot play alone
 		if (ingamePlayers.size() <= 1) {
@@ -332,10 +337,10 @@ public class Game implements VariableSuppliable {
 			
 			FlushResult result = event.getResult();
 			if (result == FlushResult.ALLOW) {				
-				PlayerPreJoinGameEvent joinEvent = new PlayerPreJoinGameEvent(this, player, new String[0]); //TODO Store join args in queue?
+				PlayerPreJoinGameEvent joinEvent = new PlayerPreJoinGameEvent(this, player, new String[0]);
 				eventBus.callEvent(joinEvent);
 				
-				if (joinEvent.getJoinResult() != JoinResult.DENY) {
+				if (joinEvent.getJoinResult() != JoinResult.TEMPORARY_DENY) {
 					join(player, joinEvent, (String[])null);
 					continue;
 				}
@@ -390,17 +395,17 @@ public class Game implements VariableSuppliable {
 		eventBus.callEvent(event);
 	}
 	
-	public void join(SpleefPlayer player) {
-		join(player, (String[]) null);
+	public JoinResult join(SpleefPlayer player) {
+		return join(player, (String[]) null);
 	}
 	
-	public void join(SpleefPlayer player, String... args) {
-		join(player, null, args);
+	public JoinResult join(SpleefPlayer player, String... args) {
+		return join(player, null, args);
 	}
 	
-	private void join(SpleefPlayer player, PlayerPreJoinGameEvent event, String... args) {
+	private JoinResult join(SpleefPlayer player, PlayerPreJoinGameEvent event, String... args) {
 		if (ingamePlayers.contains(player)) {
-			return;
+			return JoinResult.PERMANENT_DENY;
 		}
 		
 		if (event == null) {
@@ -412,7 +417,7 @@ public class Game implements VariableSuppliable {
 		
 		if (event.getTeleportationLocation() == null) {
 			player.sendMessage(i18n.getString(Messages.Player.ERROR_NO_LOBBY_POINT_SET));
-			return;
+			return JoinResult.PERMANENT_DENY;
 		}
 		
 		JoinResult result = event.getJoinResult();
@@ -420,17 +425,18 @@ public class Game implements VariableSuppliable {
 		case ALLOW:
 			//Go through
 			break;
-		case DENY:
+		case PERMANENT_DENY:
+		case TEMPORARY_DENY:
 			String denyMessage = event.getMessage();
 			if (denyMessage != null) {
 				player.sendMessage(PREFIX + denyMessage);
 			}
 			
-			return;
+			return result;
 		case NOT_SPECIFIED:
 			//Do a state check
 			if (gameState == GameState.INGAME) {
-				return;
+				return JoinResult.TEMPORARY_DENY;
 			}
 			break;
 		default:
@@ -465,13 +471,25 @@ public class Game implements VariableSuppliable {
 		if (joinGameEvent.getStartGame()) {
 			countdown();
 		}
+		
+		return JoinResult.ALLOW;
 	}
 	
 	public void queue(SpleefPlayer player) {
+		PlayerEnterQueueEvent event = new PlayerEnterQueueEvent(this, player);
+		eventBus.callEvent(event);
+		
 		queuedPlayers.add(player);
 	}
 	
+	public boolean isQueued(SpleefPlayer player) {
+		return queuedPlayers.contains(player);
+	}
+	
 	public void unqueue(SpleefPlayer player) {
+		PlayerLeaveQueueEvent event = new PlayerLeaveQueueEvent(this, player);
+		eventBus.callEvent(event);
+		
 		queuedPlayers.remove(player);
 	}
 	
@@ -1011,6 +1029,14 @@ public class Game implements VariableSuppliable {
 	public void onPlayerQuit(PlayerQuitEvent event, SpleefPlayer quitter) {
 		leave(quitter, QuitCause.SELF);
 	}
-
+	
+	public enum JoinResult {
+		
+		TEMPORARY_DENY,
+		PERMANENT_DENY,
+		NOT_SPECIFIED,
+		ALLOW;
+		
+	}
 
 }

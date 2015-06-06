@@ -44,9 +44,28 @@ public class CommandLeave {
 		GameManager manager = heavySpleef.getGameManager();
 		Game game = manager.getGame(player);
 		
-		CommandValidate.notNull(game, i18n.getString(Messages.Command.NOT_INGAME));
-		
-		game.leave(player);
+		if (game != null) {
+			game.leave(player);
+		} else {
+			Game gameUnqueued = null;
+			for (Game otherGame : manager.getGames()) {
+				if (!otherGame.isQueued(player)) {
+					continue;
+				}
+				
+				otherGame.unqueue(player);
+				gameUnqueued = otherGame;
+				break;
+			}
+			
+			if (gameUnqueued != null) {
+				player.sendMessage(i18n.getVarString(Messages.Command.REMOVED_FROM_QUEUE)
+						.setVariable("game", gameUnqueued.getName())
+						.toString());
+			} else {
+				throw new CommandException(i18n.getString(Messages.Command.NOT_INGAME));
+			}
+		}
 	}
 	
 }

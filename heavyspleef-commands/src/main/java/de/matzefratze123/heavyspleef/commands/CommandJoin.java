@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -64,7 +65,19 @@ public class CommandJoin {
 			args[i - 1] = context.getString(i);
 		}
 		
-		game.join(player, args);
+		JoinResult result = game.join(player, args);
+		if (result == JoinResult.TEMPORARY_DENY) {
+			//Remove the player from all other queues
+			for (Game otherGame : manager.getGames()) {
+				otherGame.unqueue(player);
+			}
+			
+			//Queue the player
+			game.queue(player);
+			player.sendMessage(i18n.getVarString(Messages.Command.ADDED_TO_QUEUE)
+					.setVariable("game", game.getName())
+					.toString());
+		}
 	}
 	
 }
