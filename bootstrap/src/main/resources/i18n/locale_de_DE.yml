@@ -105,6 +105,9 @@ command:
   team-color-not-found: "Die Teamfarbe $[color] existiert für dieses Spiel nicht"
   added-to-queue: "Du wurdest der Warteschlange für das Spiel $[game] hinzugefügt"
   removed-from-queue: "Du wurdest von der Warteschlange für das Spiel $[game] entfernt"
+  
+  cannot-spectate-in-queue: "Du kannst ein Spiel nicht beobachten wenn du in der Warteschlangen-Lobby bist"
+  could-not-add-to-queue: "Du konntest nicht zur Warteschlange hinzugefügt werden"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

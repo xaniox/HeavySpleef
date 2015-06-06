@@ -130,6 +130,8 @@ public interface Messages {
 		public static final String TEAM_COLOR_NOT_FOUND = PREFIX + "team-color-not-found"; // $[color]
 		public static final String ADDED_TO_QUEUE = PREFIX + "added-to-queue"; // $[game]
 		public static final String REMOVED_FROM_QUEUE = PREFIX + "removed-from-queue"; // $[game]
+		public static final String CANNOT_SPECTATE_IN_QUEUE_LOBBY = PREFIX + "cannot-spectate-in-queue";
+		public static final String COULD_NOT_ADD_TO_QUEUE = PREFIX + "could-not-add-to-queue";
 		
 	}
 	

@@ -105,6 +105,9 @@ command:
   team-color-not-found: "The team color $[color] does not exist for this game"
   added-to-queue: "You have been added to queue for the game $[game]"
   removed-from-queue: "You have been removed from the queue for the game $[game]"
+  
+  cannot-spectate-in-queue: "You cannot spectate a game when you are in the queue lobby"
+  could-not-add-to-queue: "Could not add you to the game queue"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
