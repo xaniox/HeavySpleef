@@ -38,7 +38,7 @@ import com.google.common.collect.Lists;
 import de.matzefratze123.heavyspleef.core.uuid.GameProfile;
 import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 
-public class StatisticMigrator implements EqualIOMigrator<Connection> {
+public class StatisticMigrator implements Migrator<Connection, Connection> {
 
 	private static final String TABLE_NAME = "heavyspleef_statistics";
 	private static final int RECORD_BUFFER_SIZE = 500;
