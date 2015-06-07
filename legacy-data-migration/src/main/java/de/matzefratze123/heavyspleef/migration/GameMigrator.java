@@ -236,7 +236,7 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				//Queuelobby?!?
 				if (flagKey.equals("team")) {
 					//The team flag is the only flag that must be handled seperately
-					enableTeamGames = extractFlagValue(legacyValueString, Boolean.class, null);
+					enableTeamGames = extractFlagValue(legacyValueString, Boolean.class, null).booleanValue();
 					continue;
 				}
 				
