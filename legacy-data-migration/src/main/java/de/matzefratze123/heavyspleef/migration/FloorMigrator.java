@@ -1,0 +1,76 @@
+package de.matzefratze123.heavyspleef.migration;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.schematic.SchematicFormat;
+
+import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
+import de.matzefratze123.heavyspleef.persistence.schematic.FloorAccessor;
+
+@SuppressWarnings("deprecation")
+public class FloorMigrator implements Migrator<File, OutputStream> {
+
+	private final SchematicFormat mceditFormat = SchematicFormat.MCEDIT;
+	private final FloorAccessor accessor = new FloorAccessor();
+	
+	@Override
+	public void migrate(File inputSource, OutputStream outputSource) throws MigrationException {
+		CuboidClipboard legacyClipboard;
+		
+		try {
+			legacyClipboard = mceditFormat.load(inputSource);
+		} catch (DataException | IOException e) {
+			throw new MigrationException(e);
+		}
+		
+		int width = legacyClipboard.getWidth();
+		int height = legacyClipboard.getHeight();
+		int length = legacyClipboard.getLength();
+		
+		String fileName = inputSource.getName();
+		String floorName = "floor_" + fileName.substring(0, fileName.lastIndexOf('.'));
+		
+		Vector pos1 = legacyClipboard.getOrigin();
+		Vector pos2 = pos1.add(legacyClipboard.getSize());
+		
+		Region region = new CuboidRegion(pos1, pos2);
+		Clipboard clipboard = new BlockArrayClipboard(region);
+		
+		//Manually copy the blocks as the legacy clipboard is not an extent
+		try {
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					for (int z = 0; z < length; z++) {
+						Vector pos = new Vector(x, y, z);
+						
+						BaseBlock block = legacyClipboard.getBlock(pos);
+						clipboard.setBlock(pos, block);
+					}
+				}
+			}
+		} catch (WorldEditException e) {
+			throw new MigrationException(e);
+		}
+		
+		Floor floor = new SimpleClipboardFloor(floorName, clipboard);
+		
+		try {
+			accessor.write(outputSource, floor);
+		} catch (IOException e) {
+			throw new MigrationException(e);
+		}
+	}
+
+}
