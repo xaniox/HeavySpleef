@@ -45,16 +45,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.module.LoadPolicy;
+import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 import de.schlichtherle.io.FileOutputStream;
 
+@LoadPolicy(Lifecycle.PRE_LOAD)
 public class MigrationModule extends SimpleModule {
 
 	private static final int NO_CONFIG_VERSION = -1;
 	private static final int LEGACY_CONFIG_VERSION = 3;
 	private static final String LEGACY_SQLITE_DATABASE_PATH = "statistic/statistic.db";
 	
-	private final Charset charset = Charset.forName("UTf-8");
+	private final Charset charset = Charset.forName("UTF-8");
 	private final StatisticMigrator statisticMigrator = new StatisticMigrator();
 	private final FloorMigrator floorMigrator = new FloorMigrator();
 	private GameMigrator gameMigrator;
