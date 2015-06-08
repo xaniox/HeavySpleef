@@ -190,11 +190,15 @@ public class MigrationModule extends SimpleModule {
 		}
 		
 		//Delete the entire legacy games directory
-		Path path = legacyGameFolder.toPath();
+		Path legacyGameFolderPath = legacyGameFolder.toPath();
+		Path languageFolderPath = dataFolder.toPath().resolve("language");
+		
 		try {
-			Files.walkFileTree(path, FILE_DELETER);
+			Files.walkFileTree(legacyGameFolderPath, FILE_DELETER);
+			Files.walkFileTree(languageFolderPath, FILE_DELETER);
+			Files.delete(configFile.toPath());
 		} catch (IOException e) {
-			getLogger().log(Level.SEVERE, "Could not delete legacy game folder", e);
+			getLogger().log(Level.SEVERE, "Could not delete legacy folders and files", e);
 		}
 	}
 	
