@@ -41,9 +41,20 @@ import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 public class StatisticMigrator implements Migrator<Connection, Connection> {
 
 	private static final String TABLE_NAME = "heavyspleef_statistics";
+	private static final String TEMP_TABLE_NAME = "heavyspleef_statistics_temp";
 	private static final int RECORD_BUFFER_SIZE = 500;
 	private static final int PROFILES_PER_REQUEST = 100;
 	private static final int MAXIMUM_REQUESTS_PER_MINUTE = 600;
+	private static final String CREATE_TABLE_SQL = "CREATE TABLE %s ("
+			+ "id INT NOT NULL PRIMARY KEY AUTOINCREMENT, "
+			+ "uuid CHAR(36) UNIQUE, "
+			+ "wins INT, "
+			+ "losses INT, "
+			+ "knockouts INT, "
+			+ "games_played INT, "
+			+ "blocks_broken INT, "
+			+ "time_played BIGINT, "
+			+ "rating DOUBLE)";
 	
 	private final UUIDManager uuidManager = new UUIDManager();
 	private long watchdogTimeoutTime;
@@ -52,19 +63,12 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 	
 	@Override
 	public void migrate(Connection inputSource, Connection outputSource) throws MigrationException {
-		String createSql = "CREATE TABLE " + TABLE_NAME + " ("
-				+ "id INT NOT NULL PRIMARY KEY AUTOINCREMENT, "
-				+ "uuid CHAR(36) UNIQUE, "
-				+ "wins INT, "
-				+ "losses INT, "
-				+ "knockouts INT, "
-				+ "games_played INT, "
-				+ "blocks_broken INT, "
-				+ "time_played BIGINT, "
-				+ "rating DOUBLE)";
+		boolean sameConnection = inputSource == outputSource;
+		String currentTableName = sameConnection ? TEMP_TABLE_NAME : TABLE_NAME;
 		
+		//Create the table
 		try (Statement createStatement = outputSource.createStatement()) { 
-			createStatement.executeUpdate(createSql);
+			createStatement.executeUpdate(String.format(CREATE_TABLE_SQL, currentTableName));
 		} catch (SQLException e) {
 			throw new MigrationException(e);
 		}
@@ -121,7 +125,7 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 				throw new MigrationException(e);
 			}
 			
-			final String insertSql = "INSERT INTO " + TABLE_NAME + " (uuid, wins, losses, knockouts, games_played, blocks_broken, time_played, rating)"
+			final String insertSql = "INSERT INTO " + currentTableName + " (uuid, wins, losses, knockouts, games_played, blocks_broken, time_played, rating)"
 					+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement insertStatement = null;
@@ -157,11 +161,13 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 					outputSource.rollback();
 				} catch (SQLException e1) {}
 			} finally {
-				if (insertStatement != null) {
-					try {
+				try {
+					if (insertStatement != null) {
 						insertStatement.close();
-					} catch (SQLException e) {}
-				}
+					}
+					
+					outputSource.setAutoCommit(true);
+				} catch (SQLException e) {}
 			}
 			
 			requestsMade += RECORD_BUFFER_SIZE / PROFILES_PER_REQUEST;
@@ -206,6 +212,19 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 				} catch (InterruptedException e) {
 					throw new MigrationException(e);
 				}
+			}
+		}
+		
+		if (sameConnection) {
+			//Drop the old table and rename the temp table
+			try (Statement statement = inputSource.createStatement()) {
+				statement.addBatch("DROP TABLE " + TABLE_NAME);
+				statement.addBatch("ALTER TABLE " + TEMP_TABLE_NAME
+						+ " RENAME TO " + TABLE_NAME);
+				
+				statement.executeBatch();
+			} catch (SQLException e) {
+				throw new MigrationException(e);
 			}
 		}
 		
