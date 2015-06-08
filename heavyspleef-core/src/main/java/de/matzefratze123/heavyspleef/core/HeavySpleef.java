@@ -107,6 +107,7 @@ public final class HeavySpleef {
 	public HeavySpleef(JavaPlugin plugin) {
 		this.plugin = plugin;
 		this.logger = plugin.getLogger();
+		this.moduleManager = new ModuleManager();
 	}
 	
 	public void load() {
@@ -124,8 +125,6 @@ public final class HeavySpleef {
 		
 		configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
 		loadConfigurations();
-		
-		moduleManager = new ModuleManager();
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		Locale locale = defaultConfig.getLocalization().getLocale();
