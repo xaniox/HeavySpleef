@@ -39,7 +39,6 @@ public class HeavySpleefPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		heavySpleef = new HeavySpleef(this);
-		heavySpleef.load();
 		
 		Module flagModule = new FlagModule(heavySpleef);
 		Module commandModule = new CommandModule(heavySpleef);
@@ -52,6 +51,9 @@ public class HeavySpleefPlugin extends JavaPlugin {
 		heavySpleef.registerModule(commandModule);
 		heavySpleef.registerModule(persistenceModule);
 		heavySpleef.registerModule(addOnModule);
+		heavySpleef.enableModules(Lifecycle.PRE_LOAD);
+		
+		heavySpleef.load();
 		
 		heavySpleef.enableModules(Lifecycle.POST_LOAD);
 		heavySpleef.addGamesLoadCallback(new GamesLoadCallback() {

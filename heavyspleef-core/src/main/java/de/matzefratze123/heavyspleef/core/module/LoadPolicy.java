@@ -30,6 +30,7 @@ public @interface LoadPolicy {
 	
 	public enum Lifecycle {
 		
+		PRE_LOAD,
 		POST_LOAD,
 		POST_ENABLE, 
 		POST_GAMES_LOAD;
