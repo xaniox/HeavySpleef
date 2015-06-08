@@ -17,31 +17,269 @@
  */
 package de.matzefratze123.heavyspleef.migration;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.google.common.collect.Maps;
+
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
+import de.schlichtherle.io.FileOutputStream;
 
 public class MigrationModule extends SimpleModule {
 
+	private static final int NO_CONFIG_VERSION = -1;
+	private static final int LEGACY_CONFIG_VERSION = 3;
+	private static final String LEGACY_SQLITE_DATABASE_PATH = "statistic/statistic.db";
+	
+	private final Charset charset = Charset.forName("UTf-8");
+	private final StatisticMigrator statisticMigrator = new StatisticMigrator();
+	private final FloorMigrator floorMigrator = new FloorMigrator();
+	private GameMigrator gameMigrator;
+	private final FileVisitor<Path> FILE_DELETER = new SimpleFileVisitor<Path>() {
+		
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			Files.delete(file);
+			return FileVisitResult.CONTINUE;
+		}
+		
+		@Override
+		public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+			if (exc == null) {
+				Files.delete(dir);
+				return FileVisitResult.CONTINUE;
+			} else {
+				throw exc;
+			}
+		};
+		
+	};
+	
 	public MigrationModule(HeavySpleef heavySpleef) {
 		super(heavySpleef);
 	}
 
 	@Override
 	public void enable() {
-		// TODO Auto-generated method stub
+		HeavySpleef heavySpleef = getHeavySpleef();
+		File dataFolder = heavySpleef.getDataFolder();
+		if (!dataFolder.exists()) {
+			dataFolder.mkdir();
+		}
 		
+		File configFile = new File(dataFolder, "config.yml");
+		if (!configFile.exists()) {
+			//This is a completely new installation of HeavySpleef
+			return;
+		}
+		
+		Configuration configuration = YamlConfiguration.loadConfiguration(configFile);
+		int configVersion = configuration.getInt("config-version", NO_CONFIG_VERSION);
+		if (configVersion > LEGACY_CONFIG_VERSION || configVersion == NO_CONFIG_VERSION) {
+			//This is not a legacy installation
+			return;
+		}
+		
+		File persistenceFolder = new File(dataFolder, "persistence");
+		if (!persistenceFolder.exists()) {
+			persistenceFolder.mkdir();
+		}
+		
+		try {
+			//Migrate all legacy data
+			migrateStatisticData(dataFolder, configuration);
+			
+			//Migration successful, delete old sqlite file
+			File sqliteFile = new File(dataFolder, LEGACY_SQLITE_DATABASE_PATH);
+			if (sqliteFile.exists()) {
+				sqliteFile.delete();
+			}
+			
+			File sqliteFilePath = sqliteFile.getParentFile();
+			if (sqliteFilePath.exists()) {
+				sqliteFilePath.delete();
+			}
+		} catch (MigrationException e) {
+			getLogger().log(Level.SEVERE, "Could not migrate statistic data", e);
+		}
+		
+		File legacyGameFolder = new File(dataFolder, "games");
+		File legacyGameYmlFile = new File(legacyGameFolder, "games.yml");
+		
+		File gameFolder = new File(persistenceFolder, "games");
+		if (!gameFolder.exists()) {
+			gameFolder.mkdir();
+		}
+		
+		File xmlFolder = new File(gameFolder, "xml");
+		if (!xmlFolder.exists()) {
+			xmlFolder.mkdir();
+		}
+		
+		if (legacyGameYmlFile.exists()) {
+			gameMigrator = new GameMigrator(heavySpleef);
+			
+			try {
+				migrateGames(legacyGameYmlFile, xmlFolder);
+			} catch (MigrationException e) {
+				getLogger().log(Level.SEVERE, "Could not migrate games", e);
+			}
+		}
+		
+		File schematicFolder = new File(gameFolder, "schematic");
+		if (!schematicFolder.exists()) {
+			schematicFolder.mkdir();
+		}
+		
+		for (File legacyFloorFolder : legacyGameFolder.listFiles()) {
+			if (!legacyFloorFolder.isDirectory()) {
+				continue;
+			}
+			
+			String game = legacyFloorFolder.getName();
+			File floorFolder = new File(schematicFolder, game);
+			if (!floorFolder.exists()) {
+				floorFolder.mkdir();
+			}
+			
+			for (File legacyFloorFile : legacyFloorFolder.listFiles()) {
+				String floorName = legacyFloorFile.getName();
+				
+				if (!floorName.toLowerCase().endsWith(".schematic")) {
+					continue;
+				}
+				
+				File floorFile = new File(floorFolder, "r." + floorName.substring(0, floorName.lastIndexOf('.')) + ".floor");
+				
+				try {
+					if (!floorFile.exists()) {
+						floorFile.createNewFile();
+					}
+					
+					OutputStream out = new FileOutputStream(floorFile);
+					floorMigrator.migrate(legacyFloorFile, out);
+				} catch (IOException e) {
+					getLogger().log(Level.SEVERE, "Could not create floor file \"" + floorFile.getPath() + "\"", e);
+				} catch (MigrationException e) {
+					getLogger().log(Level.SEVERE, "Could not migrate legacy floor to file \"" + floorFile.getPath() + "\"", e);
+				}
+			}
+		}
+		
+		//Delete the entire legacy games directory
+		Path path = legacyGameFolder.toPath();
+		try {
+			Files.walkFileTree(path, FILE_DELETER);
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Could not delete legacy game folder", e);
+		}
+	}
+	
+	private void migrateStatisticData(File dataFolder, Configuration legacyConfig) throws MigrationException {
+		//Check statistic database details
+		ConfigurationSection statisticSection = legacyConfig.getConfigurationSection("statistic");
+		String dbType = statisticSection.getString("dbType");
+		
+		String inputUrl;
+		String outputUrl;
+		String user = null;
+		String password = null;
+		
+		InputStream databaseConfigIn = getClass().getResourceAsStream("/database-config.yml");
+		Reader reader = new InputStreamReader(databaseConfigIn, charset);
+		
+		Configuration databaseConfig = YamlConfiguration.loadConfiguration(reader);
+		
+		if (dbType.equalsIgnoreCase("mysql")) {
+			//MySQL
+			String host = statisticSection.getString("host", "localhost");
+			int port = statisticSection.getInt("port", 3306);
+			String databaseName = statisticSection.getString("databaseName");
+			
+			user = statisticSection.getString("user");
+			password = statisticSection.getString("password");
+			
+			String url = "jdbc:mysql://" + host + ":" + port + "/" + databaseName;
+			
+			inputUrl = url;
+			outputUrl = url;
+		} else {
+			//SQLite
+			String baseUrl = "jdbc:sqlite:" + dataFolder.getPath();
+			
+			inputUrl = baseUrl + "/" + LEGACY_SQLITE_DATABASE_PATH;
+			outputUrl = databaseConfig.getString("persistence-connection.sql.url").replace("{basedir}", dataFolder.getPath());
+		}
+		
+		Connection inputConnection;
+		Connection outputConnection;
+		
+		try {
+			inputConnection = DriverManager.getConnection(inputUrl, user, password);
+			outputConnection = inputUrl.equals(outputUrl) ? inputConnection : DriverManager.getConnection(outputUrl, user, password);
+		} catch (SQLException e) {
+			throw new MigrationException(e);
+		}
+		
+		statisticMigrator.migrate(inputConnection, outputConnection);
+		
+		if (dbType.equalsIgnoreCase("mysql")) {
+			// Copy the database config to the data folder and 
+			// change/transfer the connection details to mysql
+			Map<String, String> variables = Maps.newHashMap();
+			variables.put("url", inputUrl);
+			variables.put("authenticate", String.valueOf(user != null && !user.isEmpty()));
+			variables.put("user", user);
+			variables.put("password", password);
+			
+			try {
+				InputStream templateIn = getClass().getResourceAsStream("/mysql-database-config-template.yml");
+				Reader templateReader = new InputStreamReader(templateIn, charset);
+				TemplatedDocument document = new TemplatedDocument(templateReader, variables);
+				
+				File outFile = new File(dataFolder, "database-config.yml");
+				OutputStream out = new FileOutputStream(outFile);
+				Writer writer = new OutputStreamWriter(out, charset);
+				
+				document.writeDocument(writer);
+			} catch (IOException e) {
+				throw new MigrationException(e);
+			}
+		}
+	}
+	
+	private void migrateGames(File legacyGameFile, File outputFolder) throws MigrationException {
+		Configuration legacyGameConfig = YamlConfiguration.loadConfiguration(legacyGameFile);
+		gameMigrator.migrate(legacyGameConfig, outputFolder);
 	}
 
 	@Override
-	public void reload() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void reload() {}
 
 	@Override
-	public void disable() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void disable() {}
 
 }
