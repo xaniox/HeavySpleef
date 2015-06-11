@@ -25,13 +25,16 @@ import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.world.World;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
 import de.matzefratze123.heavyspleef.persistence.schematic.FloorAccessor;
@@ -43,7 +46,13 @@ public class FloorMigrator implements Migrator<File, OutputStream> {
 	private final FloorAccessor accessor = new FloorAccessor();
 	
 	@Override
-	public void migrate(File inputSource, OutputStream outputSource) throws MigrationException {
+	public void migrate(File inputSource, OutputStream outputSource, Object cookie) throws MigrationException {
+		if (cookie == null || !(cookie instanceof Game)) {
+			throw new MigrationException("Cookie must be the instance of a Game");
+		}
+		
+		Game game = (Game) cookie;
+		
 		CuboidClipboard legacyClipboard;
 		
 		try {
@@ -63,6 +72,9 @@ public class FloorMigrator implements Migrator<File, OutputStream> {
 		Vector pos2 = pos1.add(legacyClipboard.getSize());
 		
 		Region region = new CuboidRegion(pos1, pos2);
+		World world = new BukkitWorld(game.getWorld());
+		region.setWorld(world);
+		
 		Clipboard clipboard = new BlockArrayClipboard(region);
 		
 		//Manually copy the blocks as the legacy clipboard is not an extent

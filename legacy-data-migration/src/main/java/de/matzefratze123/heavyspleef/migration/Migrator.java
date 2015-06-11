@@ -19,6 +19,6 @@ package de.matzefratze123.heavyspleef.migration;
 
 public interface Migrator<I, O> {
 	
-	public void migrate(I inputSource, O outputSource) throws MigrationException;
+	public void migrate(I inputSource, O outputSource, Object cookie) throws MigrationException;
 
 }

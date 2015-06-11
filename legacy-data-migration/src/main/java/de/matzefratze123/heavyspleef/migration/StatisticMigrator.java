@@ -46,29 +46,34 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 	private static final int PROFILES_PER_REQUEST = 100;
 	private static final int MAXIMUM_REQUESTS_PER_MINUTE = 600;
 	private static final String CREATE_TABLE_SQL = "CREATE TABLE %s ("
-			+ "id INT NOT NULL PRIMARY KEY AUTOINCREMENT, "
+			+ "id INTEGER NOT NULL PRIMARY KEY %s, "
 			+ "uuid CHAR(36) UNIQUE, "
-			+ "wins INT, "
-			+ "losses INT, "
-			+ "knockouts INT, "
-			+ "games_played INT, "
-			+ "blocks_broken INT, "
+			+ "wins INTEGER, "
+			+ "losses INTEGER, "
+			+ "knockouts INTEGER, "
+			+ "games_played INTEGER, "
+			+ "blocks_broken INTEGER, "
 			+ "time_played BIGINT, "
 			+ "rating DOUBLE)";
 	
 	private final UUIDManager uuidManager = new UUIDManager();
+	private final String db;
 	private long watchdogTimeoutTime;
 	private boolean watchdogRestart;
 	private Method watchdogDoStartMethod;
 	
+	public StatisticMigrator(String db) {
+		this.db = db;
+	}
+	
 	@Override
-	public void migrate(Connection inputSource, Connection outputSource) throws MigrationException {
+	public void migrate(Connection inputSource, Connection outputSource, Object cookie) throws MigrationException {
 		boolean sameConnection = inputSource == outputSource;
 		String currentTableName = sameConnection ? TEMP_TABLE_NAME : TABLE_NAME;
 		
 		//Create the table
 		try (Statement createStatement = outputSource.createStatement()) { 
-			createStatement.executeUpdate(String.format(CREATE_TABLE_SQL, currentTableName));
+			createStatement.executeUpdate(String.format(CREATE_TABLE_SQL, currentTableName, db.equalsIgnoreCase("mysql") ? "AUTO_INCREMENT" : "AUTOINCREMENT"));
 		} catch (SQLException e) {
 			throw new MigrationException(e);
 		}
@@ -105,7 +110,7 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 				while (result.next()) {
 					String name = result.getString("owner");
 					int wins = result.getInt("wins");
-					int losses = result.getInt("losses");
+					int losses = result.getInt("loses");
 					int knockouts = result.getInt("knockouts");
 					int gamesPlayed = result.getInt("games");
 					
@@ -160,6 +165,8 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 				try {
 					outputSource.rollback();
 				} catch (SQLException e1) {}
+				
+				throw new MigrationException(e);
 			} finally {
 				try {
 					if (insertStatement != null) {

@@ -26,10 +26,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.Set;
-
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -74,15 +72,22 @@ import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAntiCamping;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagAutostart;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagBowspleef;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagCountdown;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagEntryFee;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagItemReward;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagLeavepoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagLobby;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagLosePoint;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagMaxPlayers;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagMaxTeamSize;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagMinPlayers;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagMinTeamSize;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagMultiSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagQueueLobby;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagRegen;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagReward;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagShears;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagShovels;
@@ -90,8 +95,9 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSplegg;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam;
-import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamColor;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 import de.matzefratze123.heavyspleef.flag.presets.ItemStackFlag;
@@ -100,7 +106,6 @@ import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationListFlag;
 import de.matzefratze123.heavyspleef.persistence.xml.GameAccessor;
 
-@RequiredArgsConstructor
 public class GameMigrator implements Migrator<Configuration, File> {
 
 	private static final String FILE_EXTENSION = ".xml";
@@ -123,23 +128,36 @@ public class GameMigrator implements Migrator<Configuration, File> {
 		LEGACY_TO_FLAG_MAPPING.put("leavepoint", FlagLeavepoint.class);
 		LEGACY_TO_FLAG_MAPPING.put("nextspawnpoint", FlagMultiSpawnpoint.class);
 		LEGACY_TO_FLAG_MAPPING.put("itemreward", FlagItemReward.class);
-		LEGACY_TO_FLAG_MAPPING.put("minplayers", FlagShovels.class);
-		LEGACY_TO_FLAG_MAPPING.put("maxplayers", FlagShovels.class);
-		LEGACY_TO_FLAG_MAPPING.put("autostart", FlagShovels.class);
-		LEGACY_TO_FLAG_MAPPING.put("countdown", FlagShovels.class);
-		LEGACY_TO_FLAG_MAPPING.put("entryfee", FlagShovels.class);
-		LEGACY_TO_FLAG_MAPPING.put("reward", FlagShovels.class);
-		LEGACY_TO_FLAG_MAPPING.put("timeout", FlagShovels.class);
-		LEGACY_TO_FLAG_MAPPING.put("regen", FlagShovels.class);
+		LEGACY_TO_FLAG_MAPPING.put("minplayers", FlagMinPlayers.class);
+		LEGACY_TO_FLAG_MAPPING.put("maxplayers", FlagMaxPlayers.class);
+		LEGACY_TO_FLAG_MAPPING.put("autostart", FlagAutostart.class);
+		LEGACY_TO_FLAG_MAPPING.put("countdown", FlagCountdown.class);
+		LEGACY_TO_FLAG_MAPPING.put("entryfee", FlagEntryFee.class);
+		LEGACY_TO_FLAG_MAPPING.put("reward", FlagReward.class);
+		LEGACY_TO_FLAG_MAPPING.put("timeout", FlagTimeout.class);
+		LEGACY_TO_FLAG_MAPPING.put("regen", FlagRegen.class);
 	}
 	
 	private final OutputFormat outputFormat = OutputFormat.createPrettyPrint();
 	private final JDeserialize jdeserialize = new JDeserialize();
-	private @NonNull HeavySpleef heavySpleef;
+	private final SafeGameCreator gameCreator;
+	private HeavySpleef heavySpleef;
 	
+	public GameMigrator(HeavySpleef heavySpleef) {
+		this.heavySpleef = heavySpleef;
+		this.gameCreator = new SafeGameCreator(heavySpleef);
+	}
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public void migrate(Configuration inputSource, File outputFolder) throws MigrationException {
-		Set<String> gameNames = inputSource.getKeys(false);
+	public void migrate(Configuration inputSource, File outputFolder, Object cookie) throws MigrationException {
+		if (cookie == null || !(cookie instanceof List<?>)) {
+			throw new MigrationException("Cookie must be a game of lists");
+		}
+		
+		List<Game> gameList = (List<Game>) cookie;
+		Set<String> gameNames = inputSource.getKeys(false);	
+		
 		for (String name : gameNames) {
 			ConfigurationSection section = inputSource.getConfigurationSection(name);
 			
@@ -158,7 +176,9 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				Document document = DocumentHelper.createDocument();
 				Element rootElement = document.addElement("game");
 				
-				migrateGame(section, accessor, rootElement);
+				Game game = migrateGame(section, rootElement);
+				accessor.write(game, rootElement);
+				gameList.add(game);
 				
 				OutputStream out = new FileOutputStream(xmlFile);
 				writer = new XMLWriter(out, outputFormat);
@@ -175,10 +195,11 @@ public class GameMigrator implements Migrator<Configuration, File> {
 		}
 	}
 	
-	private void migrateGame(ConfigurationSection in, GameAccessor accessor, Element element) throws MigrationException {
+	private Game migrateGame(ConfigurationSection in, Element element) throws MigrationException {
 		String name = in.getName();
 		World world = legacyStringToLocation(in.getString("first")).getWorld();
-		Game game = new Game(null, name, world);
+		//Create the game safely without calling the constructor
+		Game game = gameCreator.createSafeGame(name, world);
 		
 		ConfigurationSection floorsSection = in.getConfigurationSection("floors");
 		
@@ -230,10 +251,9 @@ public class GameMigrator implements Migrator<Configuration, File> {
 		
 		if (flagsSection != null) {
 			for (String flagKey : flagsSection.getKeys(false)) {
-				ConfigurationSection flagSection = losezonesSection.getConfigurationSection(flagKey);
+				ConfigurationSection flagSection = flagsSection.getConfigurationSection(flagKey);
 				String legacyValueString = flagSection.getString("value");
 				
-				//Queuelobby?!?
 				if (flagKey.equals("team")) {
 					//The team flag is the only flag that must be handled seperately
 					enableTeamGames = extractFlagValue(legacyValueString, Boolean.class, null).booleanValue();
@@ -241,6 +261,14 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				}
 				
 				AbstractFlag<?> flag = getFlag(flagKey, legacyValueString);
+				if (flag == null) {
+					heavySpleef.getLogger()
+							.log(Level.WARNING,
+									"Cannot migrate flag \"" + flagKey + "\" for game \"" + game.getName() + "\""
+											+ " as this flag is no longer available in this version");
+					continue;
+				}
+				
 				game.addFlag(flag);
 			}
 		}
@@ -311,6 +339,8 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				game.addExtension(wall);
 			}
 		}
+		
+		return game;
 	}
 	
 	private Location legacyStringToLocation(String legacyString) {
@@ -339,6 +369,11 @@ public class GameMigrator implements Migrator<Configuration, File> {
 	@SuppressWarnings("unchecked")
 	private <T> AbstractFlag<?> getFlag(String legacyFlagName, String legacyValue) throws MigrationException {
 		Class<? extends AbstractFlag<T>> flagClazz = (Class<? extends AbstractFlag<T>>) LEGACY_TO_FLAG_MAPPING.get(legacyFlagName);
+		if (flagClazz == null) {
+			//This flag could not be found so just return null
+			return null;
+		}
+		
 		T result = null;
 		
 		if (BooleanFlag.class.isAssignableFrom(flagClazz)) {
@@ -443,12 +478,12 @@ public class GameMigrator implements Migrator<Configuration, File> {
 							Object fieldValue = entry.getValue();
 							
 							//Let's hope oracle doesn't change the array's field name in the future
-							if (!(fieldValue instanceof ArrayObject) || !field.name.equals("a")) {
+							if (fieldValue instanceof ArrayObject && field.name.equals("a")) {
 								ArrayObject array = (ArrayObject) fieldValue;
 								ArrayCollection collection = array.data;
 								
 								for (Object collectionValue : collection) {
-									String loreLine = (String) collectionValue;
+									String loreLine = ((StringObject) collectionValue).value;
 									lore.add(loreLine);
 								}
 							}

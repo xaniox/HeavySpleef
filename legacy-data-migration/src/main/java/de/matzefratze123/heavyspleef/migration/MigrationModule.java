@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.migration;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,6 +36,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -42,13 +44,14 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
-import de.schlichtherle.io.FileOutputStream;
 
 @LoadPolicy(Lifecycle.PRE_LOAD)
 public class MigrationModule extends SimpleModule {
@@ -58,7 +61,6 @@ public class MigrationModule extends SimpleModule {
 	private static final String LEGACY_SQLITE_DATABASE_PATH = "statistic/statistic.db";
 	
 	private final Charset charset = Charset.forName("UTF-8");
-	private final StatisticMigrator statisticMigrator = new StatisticMigrator();
 	private final FloorMigrator floorMigrator = new FloorMigrator();
 	private GameMigrator gameMigrator;
 	private final FileVisitor<Path> FILE_DELETER = new SimpleFileVisitor<Path>() {
@@ -111,20 +113,11 @@ public class MigrationModule extends SimpleModule {
 			persistenceFolder.mkdir();
 		}
 		
+		boolean statisticMigrationSuccess = false;
 		try {
 			//Migrate all legacy data
 			migrateStatisticData(dataFolder, configuration);
-			
-			//Migration successful, delete old sqlite file
-			File sqliteFile = new File(dataFolder, LEGACY_SQLITE_DATABASE_PATH);
-			if (sqliteFile.exists()) {
-				sqliteFile.delete();
-			}
-			
-			File sqliteFilePath = sqliteFile.getParentFile();
-			if (sqliteFilePath.exists()) {
-				sqliteFilePath.delete();
-			}
+			statisticMigrationSuccess = true;
 		} catch (MigrationException e) {
 			getLogger().log(Level.SEVERE, "Could not migrate statistic data", e);
 		}
@@ -142,11 +135,16 @@ public class MigrationModule extends SimpleModule {
 			xmlFolder.mkdir();
 		}
 		
+		List<Game> games = Lists.newArrayList();
+		
+		boolean gamesMigrationSuccess = false;
 		if (legacyGameYmlFile.exists()) {
 			gameMigrator = new GameMigrator(heavySpleef);
 			
 			try {
-				migrateGames(legacyGameYmlFile, xmlFolder);
+				Configuration legacyGameConfig = YamlConfiguration.loadConfiguration(legacyGameYmlFile);
+				gameMigrator.migrate(legacyGameConfig, xmlFolder, games);
+				gamesMigrationSuccess = true;
 			} catch (MigrationException e) {
 				getLogger().log(Level.SEVERE, "Could not migrate games", e);
 			}
@@ -157,37 +155,47 @@ public class MigrationModule extends SimpleModule {
 			schematicFolder.mkdir();
 		}
 		
-		for (File legacyFloorFolder : legacyGameFolder.listFiles()) {
-			if (!legacyFloorFolder.isDirectory()) {
-				continue;
-			}
-			
-			String game = legacyFloorFolder.getName();
-			File floorFolder = new File(schematicFolder, game);
-			if (!floorFolder.exists()) {
-				floorFolder.mkdir();
-			}
-			
-			for (File legacyFloorFile : legacyFloorFolder.listFiles()) {
-				String floorName = legacyFloorFile.getName();
-				
-				if (!floorName.toLowerCase().endsWith(".schematic")) {
+		if (gamesMigrationSuccess) {
+			for (File legacyFloorFolder : legacyGameFolder.listFiles()) {
+				if (!legacyFloorFolder.isDirectory()) {
 					continue;
 				}
 				
-				File floorFile = new File(floorFolder, "r." + floorName.substring(0, floorName.lastIndexOf('.')) + ".floor");
+				String gameName = legacyFloorFolder.getName();
+				Game game = null;
+				for (Game listGame : games) {
+					if (listGame.getName().equalsIgnoreCase(gameName)) {
+						game = listGame;
+						break;
+					}
+				}
 				
-				try {
-					if (!floorFile.exists()) {
-						floorFile.createNewFile();
+				File floorFolder = new File(schematicFolder, gameName);
+				if (!floorFolder.exists()) {
+					floorFolder.mkdir();
+				}
+				
+				for (File legacyFloorFile : legacyFloorFolder.listFiles()) {
+					String floorName = legacyFloorFile.getName();
+					
+					if (!floorName.toLowerCase().endsWith(".schematic")) {
+						continue;
 					}
 					
-					OutputStream out = new FileOutputStream(floorFile);
-					floorMigrator.migrate(legacyFloorFile, out);
-				} catch (IOException e) {
-					getLogger().log(Level.SEVERE, "Could not create floor file \"" + floorFile.getPath() + "\"", e);
-				} catch (MigrationException e) {
-					getLogger().log(Level.SEVERE, "Could not migrate legacy floor to file \"" + floorFile.getPath() + "\"", e);
+					File floorFile = new File(floorFolder, "r.floor_" + floorName.substring(0, floorName.lastIndexOf('.')) + ".floor");
+					
+					try {
+						if (!floorFile.exists()) {
+							floorFile.createNewFile();
+						}
+						
+						OutputStream out = new FileOutputStream(floorFile);
+						floorMigrator.migrate(legacyFloorFile, out, game);
+					} catch (IOException e) {
+						getLogger().log(Level.SEVERE, "Could not create floor file \"" + floorFile.getPath() + "\"", e);
+					} catch (MigrationException e) {
+						getLogger().log(Level.SEVERE, "Could not migrate legacy floor to file \"" + floorFile.getPath() + "\"", e);
+					}
 				}
 			}
 		}
@@ -195,9 +203,17 @@ public class MigrationModule extends SimpleModule {
 		//Delete the entire legacy games directory
 		Path legacyGameFolderPath = legacyGameFolder.toPath();
 		Path languageFolderPath = dataFolder.toPath().resolve("language");
+		Path statisticFolderPath = dataFolder.toPath().resolve("statistic");
 		
 		try {
-			Files.walkFileTree(legacyGameFolderPath, FILE_DELETER);
+			if (gamesMigrationSuccess) {
+				Files.walkFileTree(legacyGameFolderPath, FILE_DELETER);
+			}
+			
+			if (statisticMigrationSuccess) {
+				Files.walkFileTree(statisticFolderPath, FILE_DELETER);
+			}
+			
 			Files.walkFileTree(languageFolderPath, FILE_DELETER);
 			Files.delete(configFile.toPath());
 		} catch (IOException e) {
@@ -214,6 +230,7 @@ public class MigrationModule extends SimpleModule {
 		String outputUrl;
 		String user = null;
 		String password = null;
+		String driver;
 		
 		InputStream databaseConfigIn = getClass().getResourceAsStream("/database-config.yml");
 		Reader reader = new InputStreamReader(databaseConfigIn, charset);
@@ -233,41 +250,65 @@ public class MigrationModule extends SimpleModule {
 			
 			inputUrl = url;
 			outputUrl = url;
+			driver = "com.mysql.jdbc.Driver";
 		} else {
 			//SQLite
 			String baseUrl = "jdbc:sqlite:" + dataFolder.getPath();
 			
 			inputUrl = baseUrl + "/" + LEGACY_SQLITE_DATABASE_PATH;
 			outputUrl = databaseConfig.getString("persistence-connection.sql.url").replace("{basedir}", dataFolder.getPath());
+			driver = "org.sqlite.JDBC";
 		}
 		
-		Connection inputConnection;
-		Connection outputConnection;
+		Connection inputConnection = null;
+		Connection outputConnection = null;
+		
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+			throw new MigrationException(e);
+		}
 		
 		try {
 			inputConnection = DriverManager.getConnection(inputUrl, user, password);
 			outputConnection = inputUrl.equals(outputUrl) ? inputConnection : DriverManager.getConnection(outputUrl, user, password);
+			
+			StatisticMigrator statisticMigrator = new StatisticMigrator(dbType);
+			statisticMigrator.migrate(inputConnection, outputConnection, null);
 		} catch (SQLException e) {
 			throw new MigrationException(e);
+		} finally {
+			try {
+				if (inputConnection != null) {
+					inputConnection.close();
+				}
+				
+				if (outputConnection != null) {
+					outputConnection.close();
+				}
+			} catch (SQLException e) {}
 		}
-		
-		statisticMigrator.migrate(inputConnection, outputConnection);
 		
 		if (dbType.equalsIgnoreCase("mysql")) {
 			// Copy the database config to the data folder and 
 			// change/transfer the connection details to mysql
 			Map<String, String> variables = Maps.newHashMap();
+			variables.put("driver", driver);
 			variables.put("url", inputUrl);
 			variables.put("authenticate", String.valueOf(user != null && !user.isEmpty()));
 			variables.put("user", user);
 			variables.put("password", password);
 			
 			try {
-				InputStream templateIn = getClass().getResourceAsStream("/mysql-database-config-template.yml");
+				InputStream templateIn = getClass().getResourceAsStream("/database-config-template.yml");
 				Reader templateReader = new InputStreamReader(templateIn, charset);
 				TemplatedDocument document = new TemplatedDocument(templateReader, variables);
 				
 				File outFile = new File(dataFolder, "database-config.yml");
+				if (!outFile.exists()) {
+					outFile.createNewFile();
+				}
+				
 				OutputStream out = new FileOutputStream(outFile);
 				Writer writer = new OutputStreamWriter(out, charset);
 				
@@ -276,11 +317,6 @@ public class MigrationModule extends SimpleModule {
 				throw new MigrationException(e);
 			}
 		}
-	}
-	
-	private void migrateGames(File legacyGameFile, File outputFolder) throws MigrationException {
-		Configuration legacyGameConfig = YamlConfiguration.loadConfiguration(legacyGameFile);
-		gameMigrator.migrate(legacyGameConfig, outputFolder);
 	}
 
 	@Override
