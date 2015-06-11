@@ -31,6 +31,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 
 import com.google.common.collect.Maps;
@@ -40,10 +41,10 @@ import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.FlagManager;
-import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameProperty;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
@@ -88,6 +89,9 @@ public class GameAccessor extends XMLAccessor<Game> {
 		try {
 			element.addAttribute("name", game.getName());
 			element.addAttribute("world", game.getWorld().getName());
+			if (game.getGameState() == GameState.DISABLED) {
+				element.addAttribute("disabled", String.valueOf(true));
+			}
 			
 			FlagManager flagManager = game.getFlagManager();
 			Map<String, AbstractFlag<?>> flags = flagManager.getPresentFlags();
@@ -99,7 +103,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 				entry.getValue().marshal(flagElement);
 			}
 			
-			GamePropertyBundle defaultBundle = flagManager.getDefaultPropertyBundle();
+			/*GamePropertyBundle defaultBundle = flagManager.getDefaultPropertyBundle();
 			Element propertiesElement = element.addElement("properties");
 			
 			for (Entry<GameProperty, Object> propertyEntry : defaultBundle.entrySet()) {
@@ -107,7 +111,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 				propertyElement.addAttribute("key", propertyEntry.getKey().name().toLowerCase());
 				propertyElement.addAttribute("class", propertyEntry.getValue().getClass().getName());
 				propertyElement.addText(propertyEntry.getValue().toString());
-			}
+			}*/
 			
 			Collection<Floor> floors = game.getFloors();
 			Element floorsElement = element.addElement("floors");
@@ -116,12 +120,13 @@ public class GameAccessor extends XMLAccessor<Game> {
 				floorElement.addAttribute("name", floor.getName());
 			}
 			
-			ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
 			Collection<GameExtension> extensions = game.getExtensions();
 			Element extensionsElement = element.addElement("extensions");
 			for (GameExtension extension : extensions) {
 				Element extensionElement = extensionsElement.addElement("extension");
-				extensionElement.addAttribute("name", extRegistry.getExtensionName(extension.getClass()));
+				Extension extensionAnnotation = extension.getClass().getAnnotation(Extension.class);
+				
+				extensionElement.addAttribute("name", extensionAnnotation.name());
 				extension.marshal(extensionElement);
 			}
 			
@@ -144,7 +149,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 		}
 	}
 	
-	private static Object getPropertyValue(String type, String valueString) {
+	/*private static Object getPropertyValue(String type, String valueString) {
 		Class<?> clazz;
 		
 		try {
@@ -162,7 +167,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 		}
 		
 		return valueString;
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -199,6 +204,11 @@ public class GameAccessor extends XMLAccessor<Game> {
 			}
 			
 			game = new Game(heavySpleef, name, world);
+			
+			Attribute disabledAttribute = element.attribute("disabled");
+			if (disabledAttribute != null) {
+				game.setGameState(GameState.DISABLED);
+			}
 			
 			Element flagsElement = element.element("flags");
 			List<Element> flagElementsList = flagsElement.elements("flag");
@@ -247,7 +257,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 				game.addExtension(extension);
 			}
 			
-			Element propertiesElement = element.element("properties");
+			/*Element propertiesElement = element.element("properties");
 			List<Element> propertiesElementList = propertiesElement.elements("property");
 			
 			for (Element propertyElement : propertiesElementList) {
@@ -258,7 +268,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 				Object value = getPropertyValue(className, propertyElement.getText());
 				
 				game.requestProperty(property, value);
-			}
+			}*/
 			
 			Element deathzonesElement = element.element("deathzones");
 			List<Element> deathzoneElementList = deathzonesElement.elements("deathzone");
