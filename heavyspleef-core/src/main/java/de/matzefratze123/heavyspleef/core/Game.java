@@ -971,6 +971,8 @@ public class Game implements VariableSuppliable {
 			event.setCancelled(true);
 		} else {
 			addBlockBroken(player, block);
+			//Prevent drops
+			block.setType(Material.AIR);
 		}
 	}
 	
