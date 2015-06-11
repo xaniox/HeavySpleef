@@ -117,8 +117,6 @@ public final class HeavySpleef {
 		localeDir.mkdirs();
 		File layoutDir = new File(dataFolder, "layout");
 		layoutDir.mkdirs();
-		File flagDir = new File(getDataFolder(), "flags");
-		flagDir.mkdirs();
 		
 		gamesLoadCallbacks = Sets.newLinkedHashSet();
 		flagRegistry = new FlagRegistry(this);
