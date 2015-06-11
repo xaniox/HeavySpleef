@@ -36,6 +36,7 @@ import org.bukkit.material.MaterialData;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.blocks.ItemType;
 
@@ -172,15 +173,9 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 			return text;
 		} else if (Boolean.class.isAssignableFrom(type)) {
 			return Boolean.parseBoolean(text);
-		} else if (Collection.class.isAssignableFrom(type)) {
+		} else if (List.class.isAssignableFrom(type)) {
 			List<Element> entries = element.elements("entry");
-			Collection<Object> collection;
-			
-			try {
-				collection = type.asSubclass(Collection.class).newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Cannot instantiate collection class '" + type.getName() + "'", e);
-			}
+			List<Object> collection = Lists.newArrayList();
 			
 			for (Element entryElement : entries) {
 				Object deserialized = deserializeObject(entryElement);
