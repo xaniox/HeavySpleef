@@ -92,7 +92,7 @@ public class FlagRegistry {
 	
 	public void registerFlag(Class<? extends AbstractFlag<?>> clazz, I18NSupplier i18nSupplier, Object cookie) {
 		Validate.notNull(clazz, "clazz cannot be null");
-		Validate.isTrue(!isFlagPresent(clazz), "Cannot register flag twice");
+		Validate.isTrue(!isFlagPresent(clazz), "Cannot register flag twice: " + clazz.getName());
 		
 		if (i18nSupplier == null) {
 			i18nSupplier = GLOBAL_SUPPLIER;
