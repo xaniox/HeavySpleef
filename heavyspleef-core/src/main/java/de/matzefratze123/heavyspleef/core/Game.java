@@ -124,7 +124,7 @@ public class Game implements VariableSuppliable {
 		SPAWNPOINT_GENERATORS.put(Polygonal2DRegion.class, new Polygonal2DSpawnpointGenerator());
 	}
 	
-	private final I18N i18n = I18NManager.getGlobal();
+	private final I18N i18n;
 	
 	private final EditSessionFactory editSessionFactory;
 	private @Getter HeavySpleef heavySpleef;
@@ -151,6 +151,7 @@ public class Game implements VariableSuppliable {
 		this.name = name;
 		this.world = world;
 		this.worldEditWorld = new BukkitWorld(world);
+		this.i18n = I18NManager.getGlobal();
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.deadPlayers = Lists.newArrayList();
 		this.eventBus = heavySpleef.getGlobalEventBus().newChildBus();
