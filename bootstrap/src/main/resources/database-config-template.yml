@@ -39,7 +39,7 @@ persistence-connection:
     # Default available drivers:
     #   - MySQL: com.mysql.jdbc.Driver
     #   - SQLite: org.sqlite.JDBC
-    driver: com.mysql.jdbc.Driver
+    driver: %driver%
     
     # Database connection url
     #
