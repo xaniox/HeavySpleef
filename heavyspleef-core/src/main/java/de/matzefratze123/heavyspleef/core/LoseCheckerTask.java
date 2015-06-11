@@ -40,14 +40,12 @@ public class LoseCheckerTask extends SimpleBasicTask implements SpleefListener {
 	
 	private static final Set<Material> FLOWING_MATERIALS = Sets.newHashSet(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA);
 	
-	private final HeavySpleef heavySpleef;
 	private final GameManager gameManager;
 	private Map<SpleefPlayer, Location> recentLocations;
 	
 	public LoseCheckerTask(HeavySpleef heavySpleef) {
 		super(heavySpleef.getPlugin(), TaskType.SYNC_REPEATING_TASK, 0L, 4L);
 		
-		this.heavySpleef = heavySpleef;
 		this.gameManager = heavySpleef.getGameManager();
 		this.recentLocations = Maps.newHashMap();
 	}
@@ -126,7 +124,7 @@ public class LoseCheckerTask extends SimpleBasicTask implements SpleefListener {
 	
 	@Subscribe
 	public void onPlayerLeaveGameEvent(PlayerLeaveGameEvent event) {
-		SpleefPlayer player = heavySpleef.getSpleefPlayer(event);
+		SpleefPlayer player = event.getPlayer();
 		recentLocations.remove(player);
 	}
 
