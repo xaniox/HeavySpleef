@@ -89,7 +89,9 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		
 		if (useAuthentication) {
 			dataSource.setUser(properties.getProperty("user"));
-			dataSource.setPassword(properties.getProperty("password"));
+			
+			Object pass = properties.get("password");
+			dataSource.setPassword(String.valueOf(pass));
 		}
 		
 		int maxSize = (int) properties.get("pool-size-max");
