@@ -57,7 +57,7 @@ public class MaterialDataMatcher {
 			}
 		}
 		
-		if (components.length > 0) {
+		if (components.length > 1) {
 			try {
 				data = Byte.parseByte(components[1]);
 			} catch (NumberFormatException nfe) {
