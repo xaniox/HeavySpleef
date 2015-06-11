@@ -70,14 +70,17 @@ public class LoseCheckerTask extends SimpleBasicTask implements SpleefListener {
 					//Try to check every block the player has passed between the recent location and his location now
 					Location recent = recentLocations.get(player);
 					org.bukkit.util.Vector direction = playerLoc.clone().subtract(recent).toVector();
+					int directionLength = (int) direction.length();
 					
-					BlockIterator iterator = new BlockIterator(game.getWorld(), recent.toVector(), direction, 0D, (int)direction.length());
-					while (iterator.hasNext()) {
-						Block passedBlock = iterator.next();
-						
-						if (isInsideDeathzone(passedBlock.getLocation(), game, isLiquidDeathzone)) {
-							isDeathCandidate = true;
-							break;
+					if (directionLength > 0) {
+						BlockIterator iterator = new BlockIterator(game.getWorld(), recent.toVector(), direction, 0D, directionLength);
+						while (iterator.hasNext()) {
+							Block passedBlock = iterator.next();
+							
+							if (isInsideDeathzone(passedBlock.getLocation(), game, isLiquidDeathzone)) {
+								isDeathCandidate = true;
+								break;
+							}
 						}
 					}
 				}
