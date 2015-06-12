@@ -287,9 +287,16 @@ public class I18N {
 	}
 	
 	public String getString(String key) {
-		String msg = bundle.getString(key);
-		if (msg == null && parent != null) {
-			msg = parent.getString(key);
+		String msg;
+		
+		try {
+			msg = bundle.getString(key);
+		} catch (MissingResourceException e) {
+			if (parent != null) {
+				msg = parent.getString(key);
+			} else {
+				throw e;
+			}
 		}
 		
 		return msg;
@@ -311,9 +318,16 @@ public class I18N {
 	}
 	
 	public String[] getStringArray(String key) {
-		String[] array = bundle.getStringArray(key);
-		if (array == null && parent != null) {
-			array = parent.getStringArray(key);
+		String[] array;
+		
+		try {
+			array = bundle.getStringArray(key);
+		} catch (MissingResourceException e) {
+			if (parent != null) {
+				array = parent.getStringArray(key);
+			} else {
+				throw e;
+			}
 		}
 		
 		return array;
