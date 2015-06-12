@@ -216,7 +216,7 @@ public class MigrationModule extends SimpleModule {
 				}
 			}
 			
-			getLogger().info("Migrated " + count + " floors");
+			getLogger().info("Successfully migrated " + count + " floors");
 		}
 		
 		//Delete the entire legacy games directory
