@@ -19,6 +19,8 @@ package de.matzefratze123.joingui;
 
 import java.util.List;
 
+import org.bukkit.inventory.ItemStack;
+
 import de.matzefratze123.heavyspleef.commands.SpleefCommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyExecution;
@@ -75,6 +77,15 @@ public class FlagJoinItem extends SingleItemStackFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Sets the item displayed in the join gui for a game");
+	}
+	
+	@Override
+	public void setValue(ItemStack value) {
+		super.setValue(value);
+		
+		if (inventory != null) {
+			inventory.update();
+		}
 	}
 
 }
