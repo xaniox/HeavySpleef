@@ -48,6 +48,7 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSplegg;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagVote;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
 
 public class FlagModule extends SimpleModule {
@@ -93,6 +94,7 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagTeam.class);
 		registry.registerFlag(FlagTimeout.class);
 		registry.registerFlag(FlagWinPoint.class);
+		registry.registerFlag(FlagVote.class);
 	}
 	
 	@Override
