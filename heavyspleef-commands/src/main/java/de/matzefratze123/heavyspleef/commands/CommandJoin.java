@@ -60,12 +60,7 @@ public class CommandJoin {
 		
 		CommandValidate.isTrue(manager.getGame(player) == null, i18n.getString(Messages.Command.ALREADY_PLAYING));
 		
-		String[] args = new String[context.argsLength() - 1];
-		for (int i = 1, length = context.argsLength(); i < length; i++) {
-			args[i - 1] = context.getString(i);
-		}
-		
-		JoinResult result = game.join(player, args);
+		JoinResult result = game.join(player);
 		if (result == JoinResult.TEMPORARY_DENY) {
 			//Remove the player from all other queues
 			for (Game otherGame : manager.getGames()) {
