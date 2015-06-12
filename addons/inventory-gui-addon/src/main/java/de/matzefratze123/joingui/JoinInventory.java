@@ -81,8 +81,13 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 		while (iterator.hasNext()) {
 			Game game = iterator.next();
 			
-			GuiInventorySlot slot = getSlot(x, y);
+			GuiInventorySlot slot = getSlot(x++, y);
 			placeGame(slot, game);
+			
+			if (x >= SLOTS_PER_LINE) {
+				x = 0;
+				++y;
+			}
 		}
 	}
 	
@@ -113,6 +118,8 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 			clearInventory();
 			//Re-initialize it
 			init(games);
+			
+			recentRegisteredGames = games;
 		} else {
 			//Nothing has been changed, just update already existent slots
 			for (int x = 0; x < SLOTS_PER_LINE; x++) {
