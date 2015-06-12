@@ -81,6 +81,14 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 		builder.append(location.getBlockY());
 		builder.append(',');
 		builder.append(location.getBlockZ());
+		
+		if (location.getYaw() != 0f || location.getPitch() != 0f) {
+			builder.append(",");
+			builder.append(location.getYaw());
+			builder.append(",");
+			builder.append(location.getPitch());
+		}
+		
 		builder.append(')');
 		
 		return builder.toString();
@@ -100,6 +108,13 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 		xElement.addText(String.valueOf(value.getX()));
 		yElement.addText(String.valueOf(value.getY()));
 		zElement.addText(String.valueOf(value.getZ()));
+		
+		if (value.getYaw() != 0f) {
+			element.addElement("yaw").addText(String.valueOf(value.getYaw()));
+		}
+		if (value.getPitch() != 0f) {
+			element.addElement("pitch").addText(String.valueOf(value.getPitch()));
+		}
 	}
 	
 	@Override
@@ -108,13 +123,24 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 		Element xElement = element.element("x");
 		Element yElement = element.element("y");
 		Element zElement = element.element("z");
+		Element yawElement = element.element("yaw");
+		Element pitchElement = element.element("pitch");
 		
 		World world = Bukkit.getWorld(worldElement.getText());
 		double x = Double.parseDouble(xElement.getText());
 		double y = Double.parseDouble(yElement.getText());
 		double z = Double.parseDouble(zElement.getText());
+		float yaw = 0f;
+		float pitch = 0f;
 		
-		Location location = new Location(world, x, y, z);
+		if (yawElement != null) {
+			yaw = Float.parseFloat(yawElement.getText());
+		}
+		if (pitchElement != null) {
+			pitch = Float.parseFloat(pitchElement.getText());
+		}
+		
+		Location location = new Location(world, x, y, z, yaw, pitch);
 		setValue(location);
 	}
 	

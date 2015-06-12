@@ -45,6 +45,13 @@ public abstract class LocationListFlag extends ListFlag<Location> {
 		xElement.addText(String.valueOf(item.getX()));
 		yElement.addText(String.valueOf(item.getY()));
 		zElement.addText(String.valueOf(item.getZ()));
+		
+		if (item.getYaw() != 0f) {
+			element.addElement("yaw").addText(String.valueOf(item.getYaw()));
+		}
+		if (item.getPitch() != 0f) {
+			element.addElement("pitch").addText(String.valueOf(item.getPitch()));
+		}
 	}
 
 	@Override
@@ -53,13 +60,24 @@ public abstract class LocationListFlag extends ListFlag<Location> {
 		Element xElement = element.element("x");
 		Element yElement = element.element("y");
 		Element zElement = element.element("z");
+		Element yawElement = element.element("yaw");
+		Element pitchElement = element.element("pitch");
 		
 		World world = Bukkit.getWorld(worldElement.getText());
 		double x = Double.parseDouble(xElement.getText());
 		double y = Double.parseDouble(yElement.getText());
 		double z = Double.parseDouble(zElement.getText());
+		float yaw = 0f;
+		float pitch = 0f;
 		
-		Location location = new Location(world, x, y, z);
+		if (yawElement != null) {
+			yaw = Float.parseFloat(yawElement.getText());
+		}
+		if (pitchElement != null) {
+			pitch = Float.parseFloat(pitchElement.getText());
+		}
+		
+		Location location = new Location(world, x, y, z, yaw, pitch);
 		return location;
 	}
 	
