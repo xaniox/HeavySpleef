@@ -28,6 +28,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Attachable;
 import org.bukkit.util.BlockIterator;
@@ -70,6 +71,8 @@ public class ExtensionLobbyWall extends GameExtension {
 	
 	private static final String DEFAULT_INGAME_PLAYER_PREFIX = "";
 	private static final String DEFAULT_DEAD_PLAYER_PREFIX = ChatColor.GRAY.toString();
+	
+	private final I18N i18n = I18NManager.getGlobal(); 
 	
 	@Command(name = "addwall", permission = "heavyspleef.addwall",
 			descref = Messages.Help.Description.ADDWALL,
@@ -315,6 +318,42 @@ public class ExtensionLobbyWall extends GameExtension {
 	public void onGameEnd(GameEndEvent event) {
 		Game game = event.getGame();
 		updateWall(game, true);
+	}
+	
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
+		Block clicked = event.getClickedBlock();
+		if (clicked == null || (clicked.getType() != Material.WALL_SIGN && clicked.getType() != Material.SIGN_POST)) {
+			return;
+		}
+		
+		if (!clicked.getLocation().equals(start)) {
+			return;
+		}
+		
+		Game game = getGame();
+		
+		if (!game.getGameState().isGameEnabled()) { 
+			player.sendMessage(i18n.getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
+				.setVariable("game", game.getName())
+				.toString());
+			return;
+		}
+		
+		if (game.getGameState().isGameActive()){
+			player.sendMessage(i18n.getVarString(Messages.Command.GAME_IS_INGAME)
+				.setVariable("game", game.getName())
+				.toString());
+			return;
+		}
+		
+		if (getHeavySpleef().getGameManager().getGame(player) != null) {
+			player.sendMessage(i18n.getString(Messages.Command.ALREADY_PLAYING));
+			return;
+		}
+		
+		game.join(player);
 	}
 	
 	public void updateWall(final Game game, final boolean reset) {
