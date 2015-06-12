@@ -709,10 +709,12 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void addExtension(GameExtension extension) {
+		extension.setGame(this);
 		extensionManager.addExtension(extension);
 	}
 	
 	public void removeExtension(GameExtension extension) {
+		extension.setGame(null);
 		extensionManager.removeExtension(extension);
 	}
 	
