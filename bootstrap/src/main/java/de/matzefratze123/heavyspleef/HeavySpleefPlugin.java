@@ -47,8 +47,8 @@ public class HeavySpleefPlugin extends JavaPlugin {
 		Module legacyModule = new MigrationModule(heavySpleef);
 		
 		heavySpleef.registerModule(legacyModule);
-		heavySpleef.registerModule(flagModule);
 		heavySpleef.registerModule(commandModule);
+		heavySpleef.registerModule(flagModule);
 		heavySpleef.registerModule(persistenceModule);
 		heavySpleef.registerModule(addOnModule);
 		heavySpleef.enableModules(Lifecycle.PRE_LOAD);
