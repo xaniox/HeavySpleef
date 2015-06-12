@@ -78,12 +78,13 @@ public class I18NManager {
 	public void registerI18N(I18N i18n) {
 		Validate.isTrue(!registered.contains(i18n), "I18N instance already registered");
 		
+		i18n.setParent(global);
 		registered.add(i18n);
 	}
 	
 	public I18N registerI18N(I18NBuilder builder) {
 		I18N i18n = builder.build();
-		registered.add(i18n);
+		registerI18N(i18n);
 		
 		return i18n;
 	}
