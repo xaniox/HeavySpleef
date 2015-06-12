@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Lists;
@@ -113,7 +114,7 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 			//Re-initialize it
 			init(games);
 		} else {
-			//Nothing has been changed, just update already existant slots
+			//Nothing has been changed, just update already existent slots
 			for (int x = 0; x < SLOTS_PER_LINE; x++) {
 				for (int y = 0; y < getLines(); y++) {
 					GuiInventorySlot slot = getSlot(x, y);
@@ -130,6 +131,13 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void open(Player player) {
+		update();
+		
+		super.open(player);
 	}
 	
 	private void updateSlot(GuiInventorySlot slot, Game game) {
