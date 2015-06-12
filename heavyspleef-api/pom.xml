@@ -31,16 +31,21 @@
               <exclude>xml-apis:xml-apis</exclude>
               <exclude>com.google.code.gson:gson</exclude>
               <exclude>org.poly2tri:poly2tri</exclude>
+              <exclude>org.unsynchronized:jdeserialize</exclude>
             </excludes>
           </artifactSet>
           <relocations>
+            <relocation>
+              <pattern>mkremins.fanciful</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.fanciful</shadedPattern>
+            </relocation>
             <relocation>
               <pattern>org.dom4j</pattern>
               <shadedPattern>de.matzefratze123.heavyspleef.lib.dom4j</shadedPattern>
             </relocation>
             <relocation>
-              <pattern>com</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.com</shadedPattern>
+              <pattern>com.google</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.com.google</shadedPattern>
             </relocation>
           </relocations>
           <transformers>
