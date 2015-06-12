@@ -108,6 +108,9 @@ command:
   
   cannot-spectate-in-queue: "You cannot spectate a game when you are in the queue lobby"
   could-not-add-to-queue: "Could not add you to the game queue"
+  join: "Join"
+  admin-info: "Admin Info"
+  show-admin-info: "Show Admin Info"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

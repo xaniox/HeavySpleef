@@ -23,6 +23,7 @@ import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
@@ -32,7 +33,6 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
-import de.matzefratze123.heavyspleef.core.i18n.Messages.Player;
 
 public class CommandList {
 
@@ -49,14 +49,22 @@ public class CommandList {
 			FancyMessage message = new FancyMessage("");
 			
 			if (sender instanceof Player) {
-				message.then(ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + "Join" + ChatColor.DARK_GRAY + "]")
+				message.then(ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + i18n.getString(Messages.Command.JOIN) + ChatColor.DARK_GRAY + "]")
 					.command("/spleef join " + game.getName())
 					.tooltip(i18n.getVarString(Messages.Command.CLICK_TO_JOIN)
 							.setVariable("game", game.getName())
 							.toString());
+				message.then(" ");
+				
+				if (sender.hasPermission(CommandInfo.PERMISSION)) {
+					message.then(ChatColor.DARK_GRAY + "[" + ChatColor.RED + i18n.getString(Messages.Command.ADMIN_INFO) + ChatColor.DARK_GRAY + "]")
+						.command("/spleef info " + game.getName())
+						.tooltip(i18n.getString(Messages.Command.SHOW_ADMIN_INFO));
+					message.then(" ");
+				}
 			}
 			
-			message.then(" " + ChatColor.GRAY + game.getName());
+			message.then(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + game.getName());
 			message.send(sender);
 		}
 	}

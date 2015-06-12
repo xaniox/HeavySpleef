@@ -108,6 +108,9 @@ command:
   
   cannot-spectate-in-queue: "Du kannst ein Spiel nicht beobachten wenn du in der Warteschlangen-Lobby bist"
   could-not-add-to-queue: "Du konntest nicht zur Warteschlange hinzugefügt werden"
+  join: "Beitreten"
+  admin-info: "Admin Info"
+  show-admin-info: "Zeige Admin Info"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

@@ -48,11 +48,12 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandInfo {
 	
+	public static final String PERMISSION = "heavyspleef.admin.info";
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "info", minArgs = 1, usage = "/spleef info <game>",
 			descref = Messages.Help.Description.INFO,
-			permission = "heavyspleef.admin.info")
+			permission = PERMISSION)
 	public void onInfoCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		

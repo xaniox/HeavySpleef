@@ -132,6 +132,9 @@ public interface Messages {
 		public static final String REMOVED_FROM_QUEUE = PREFIX + "removed-from-queue"; // $[game]
 		public static final String CANNOT_SPECTATE_IN_QUEUE_LOBBY = PREFIX + "cannot-spectate-in-queue";
 		public static final String COULD_NOT_ADD_TO_QUEUE = PREFIX + "could-not-add-to-queue";
+		public static final String JOIN = PREFIX + "join";
+		public static final String ADMIN_INFO = PREFIX + "admin-info";
+		public static final String SHOW_ADMIN_INFO = PREFIX + "show-admin-info";
 		
 	}
 	
