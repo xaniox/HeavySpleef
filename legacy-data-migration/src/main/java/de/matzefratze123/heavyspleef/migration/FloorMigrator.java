@@ -69,7 +69,7 @@ public class FloorMigrator implements Migrator<File, OutputStream> {
 		String floorName = "floor_" + fileName.substring(0, fileName.lastIndexOf('.'));
 		
 		Vector pos1 = legacyClipboard.getOrigin();
-		Vector pos2 = pos1.add(legacyClipboard.getSize());
+		Vector pos2 = pos1.add(legacyClipboard.getSize()).subtract(1, 1, 1);
 		
 		Region region = new CuboidRegion(pos1, pos2);
 		World world = new BukkitWorld(game.getWorld());
@@ -85,7 +85,7 @@ public class FloorMigrator implements Migrator<File, OutputStream> {
 						Vector pos = new Vector(x, y, z);
 						
 						BaseBlock block = legacyClipboard.getBlock(pos);
-						clipboard.setBlock(pos, block);
+						clipboard.setBlock(pos.add(pos1), block);
 					}
 				}
 			}
