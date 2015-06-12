@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
 import org.bukkit.Bukkit;
 
@@ -61,6 +62,7 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 	private long watchdogTimeoutTime;
 	private boolean watchdogRestart;
 	private Method watchdogDoStartMethod;
+	private @Getter int countMigrated;
 	
 	public StatisticMigrator(String db) {
 		this.db = db;
@@ -243,6 +245,8 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 				//TODO: Handle
 			}
 		}
+		
+		countMigrated = size;
 	}
 	
 	@Data

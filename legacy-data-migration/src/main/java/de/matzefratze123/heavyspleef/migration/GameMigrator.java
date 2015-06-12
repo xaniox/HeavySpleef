@@ -29,6 +29,8 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.Set;
 
+import lombok.Getter;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -142,6 +144,7 @@ public class GameMigrator implements Migrator<Configuration, File> {
 	private final JDeserialize jdeserialize = new JDeserialize();
 	private final SafeGameCreator gameCreator;
 	private HeavySpleef heavySpleef;
+	private @Getter int countMigrated;
 	
 	public GameMigrator(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
@@ -154,6 +157,8 @@ public class GameMigrator implements Migrator<Configuration, File> {
 		if (cookie == null || !(cookie instanceof List<?>)) {
 			throw new MigrationException("Cookie must be a game of lists");
 		}
+		
+		countMigrated = 0;
 		
 		List<Game> gameList = (List<Game>) cookie;
 		Set<String> gameNames = inputSource.getKeys(false);	
@@ -183,6 +188,7 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				OutputStream out = new FileOutputStream(xmlFile);
 				writer = new XMLWriter(out, outputFormat);
 				writer.write(document);
+				++countMigrated;
 			} catch (IOException e) {
 				throw new MigrationException(e);
 			} finally {

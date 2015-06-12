@@ -63,6 +63,7 @@ public class MigrationModule extends SimpleModule {
 	private final Charset charset = Charset.forName("UTF-8");
 	private final FloorMigrator floorMigrator = new FloorMigrator();
 	private GameMigrator gameMigrator;
+	private StatisticMigrator statisticMigrator;
 	private final FileVisitor<Path> FILE_DELETER = new SimpleFileVisitor<Path>() {
 		
 		@Override
@@ -108,16 +109,24 @@ public class MigrationModule extends SimpleModule {
 			return;
 		}
 		
+		getLogger().info("Detected old configurations and databases!");
+		getLogger().info("Migrating data to a newer version for use by HeavySpleef!");
+		
 		File persistenceFolder = new File(dataFolder, "persistence");
 		if (!persistenceFolder.exists()) {
 			persistenceFolder.mkdir();
 		}
 		
+		getLogger().info("Migrating statistic data...");
 		boolean statisticMigrationSuccess = false;
+		
 		try {
 			//Migrate all legacy data
 			migrateStatisticData(dataFolder, configuration);
 			statisticMigrationSuccess = true;
+			int statisticsMigrated = statisticMigrator.getCountMigrated();
+			
+			getLogger().info("Successfully migrated " + statisticsMigrated + " statistics");
 		} catch (MigrationException e) {
 			getLogger().log(Level.SEVERE, "Could not migrate statistic data", e);
 		}
@@ -137,6 +146,7 @@ public class MigrationModule extends SimpleModule {
 		
 		List<Game> games = Lists.newArrayList();
 		
+		getLogger().info("Migrating game data...");
 		boolean gamesMigrationSuccess = false;
 		if (legacyGameYmlFile.exists()) {
 			gameMigrator = new GameMigrator(heavySpleef);
@@ -145,6 +155,9 @@ public class MigrationModule extends SimpleModule {
 				Configuration legacyGameConfig = YamlConfiguration.loadConfiguration(legacyGameYmlFile);
 				gameMigrator.migrate(legacyGameConfig, xmlFolder, games);
 				gamesMigrationSuccess = true;
+				
+				int gamesMigrated = gameMigrator.getCountMigrated();
+				getLogger().info("Successfully migrated " + gamesMigrated + " games");
 			} catch (MigrationException e) {
 				getLogger().log(Level.SEVERE, "Could not migrate games", e);
 			}
@@ -156,6 +169,9 @@ public class MigrationModule extends SimpleModule {
 		}
 		
 		if (gamesMigrationSuccess) {
+			getLogger().info("Migrating floor data...");
+			int count = 0;
+			
 			for (File legacyFloorFolder : legacyGameFolder.listFiles()) {
 				if (!legacyFloorFolder.isDirectory()) {
 					continue;
@@ -191,6 +207,7 @@ public class MigrationModule extends SimpleModule {
 						
 						OutputStream out = new FileOutputStream(floorFile);
 						floorMigrator.migrate(legacyFloorFile, out, game);
+						++count;
 					} catch (IOException e) {
 						getLogger().log(Level.SEVERE, "Could not create floor file \"" + floorFile.getPath() + "\"", e);
 					} catch (MigrationException e) {
@@ -198,9 +215,12 @@ public class MigrationModule extends SimpleModule {
 					}
 				}
 			}
+			
+			getLogger().info("Migrated " + count + " floors");
 		}
 		
 		//Delete the entire legacy games directory
+		getLogger().info("Deleting old data...");
 		Path legacyGameFolderPath = legacyGameFolder.toPath();
 		Path languageFolderPath = dataFolder.toPath().resolve("language");
 		Path statisticFolderPath = dataFolder.toPath().resolve("statistic");
@@ -219,6 +239,9 @@ public class MigrationModule extends SimpleModule {
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Could not delete legacy folders and files", e);
 		}
+		
+		getLogger().info("Migration successfully finished!");
+		getLogger().info("Starting new version of HeavySpleef...");
 	}
 	
 	private void migrateStatisticData(File dataFolder, Configuration legacyConfig) throws MigrationException {
@@ -273,7 +296,7 @@ public class MigrationModule extends SimpleModule {
 			inputConnection = DriverManager.getConnection(inputUrl, user, password);
 			outputConnection = inputUrl.equals(outputUrl) ? inputConnection : DriverManager.getConnection(outputUrl, user, password);
 			
-			StatisticMigrator statisticMigrator = new StatisticMigrator(dbType);
+			statisticMigrator = new StatisticMigrator(dbType);
 			statisticMigrator.migrate(inputConnection, outputConnection, null);
 		} catch (SQLException e) {
 			throw new MigrationException(e);
