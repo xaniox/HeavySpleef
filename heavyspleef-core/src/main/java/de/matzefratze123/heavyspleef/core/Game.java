@@ -338,11 +338,11 @@ public class Game implements VariableSuppliable {
 			
 			FlushResult result = event.getResult();
 			if (result == FlushResult.ALLOW) {				
-				PlayerPreJoinGameEvent joinEvent = new PlayerPreJoinGameEvent(this, player, new String[0]);
+				PlayerPreJoinGameEvent joinEvent = new PlayerPreJoinGameEvent(this, player);
 				eventBus.callEvent(joinEvent);
 				
 				if (joinEvent.getJoinResult() != JoinResult.TEMPORARY_DENY) {
-					join(player, joinEvent, (String[])null);
+					join(player, joinEvent);
 					continue;
 				}
 			}
@@ -397,14 +397,10 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public JoinResult join(SpleefPlayer player) {
-		return join(player, (String[]) null);
+		return join(player, null);
 	}
 	
-	public JoinResult join(SpleefPlayer player, String... args) {
-		return join(player, null, args);
-	}
-	
-	private JoinResult join(SpleefPlayer player, PlayerPreJoinGameEvent event, String... args) {
+	private JoinResult join(SpleefPlayer player, PlayerPreJoinGameEvent event) {
 		if (ingamePlayers.contains(player)) {
 			return JoinResult.PERMANENT_DENY;
 		}
@@ -412,7 +408,7 @@ public class Game implements VariableSuppliable {
 		if (event == null) {
 			//Only call this event if the caller didn't give us an event
 			//This event is called before the player joins the game!
-			event = new PlayerPreJoinGameEvent(this, player, args == null ? new String[0] : args);		
+			event = new PlayerPreJoinGameEvent(this, player);		
 			eventBus.callEvent(event);
 		}
 		

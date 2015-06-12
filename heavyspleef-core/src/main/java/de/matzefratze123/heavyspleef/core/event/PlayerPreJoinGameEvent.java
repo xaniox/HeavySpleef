@@ -33,7 +33,7 @@ public class PlayerPreJoinGameEvent extends PlayerGameEvent {
 	private Location teleportationLocation;
 	private JoinResult joinResult;
 	
-	public PlayerPreJoinGameEvent(Game game, SpleefPlayer player, String[] joinArgs) {
+	public PlayerPreJoinGameEvent(Game game, SpleefPlayer player) {
 		super(game, player);
 		
 		this.joinResult = JoinResult.ALLOW;
