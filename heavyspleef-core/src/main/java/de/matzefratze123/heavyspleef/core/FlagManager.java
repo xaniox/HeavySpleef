@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
@@ -41,6 +42,7 @@ import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
+import de.matzefratze123.heavyspleef.core.flag.NullFlag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
 
 public class FlagManager {
@@ -94,6 +96,11 @@ public class FlagManager {
 					propertyBundles.add(properties);
 				}
 			}
+			
+			if (flagAnnotation.parent() != NullFlag.class) {
+				AbstractFlag<?> parent = getFlag(flagAnnotation.parent());
+				flag.setParent(parent);
+			}
 		}
 	}
 	
@@ -143,6 +150,25 @@ public class FlagManager {
 		}
 		
 		return flag;
+	}
+	
+	public AbstractFlag<?> removeFlag(Class<? extends AbstractFlag<?>> flagClass) {
+		String path = null;
+		
+		for (Entry<String, AbstractFlag<?>> entry : flags.entrySet()) {
+			AbstractFlag<?> flag = entry.getValue();
+			if (flag.getClass() != flagClass) {
+				continue;
+			}
+			
+			path = entry.getKey();
+		}
+		
+		if (path == null) {
+			return null;
+		}
+		
+		return removeFlag(path); 
 	}
 	
 	public boolean isFlagPresent(String path) {
@@ -229,6 +255,11 @@ public class FlagManager {
 				GamePropertyBundle properties = new GamePropertyBundle(flag, flagGamePropertiesMap);
 				propertyBundles.add(properties);
 			}
+		}
+		
+		if (flagAnnotation.parent() != NullFlag.class) {
+			AbstractFlag<?> parent = getFlag(flagAnnotation.parent());
+			flag.setParent(parent);
 		}
 		
 		flags.put(path, flag);
