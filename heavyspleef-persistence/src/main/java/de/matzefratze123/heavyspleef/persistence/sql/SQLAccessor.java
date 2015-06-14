@@ -108,7 +108,7 @@ public abstract class SQLAccessor<T, K> implements ObjectDatabaseAccessor<T> {
 		public enum Type {
 			
 			/* Numeric types */
-			INT,
+			INTEGER,
 			TINYINT,
 			SMALLINT,
 			MEDIUMINT,

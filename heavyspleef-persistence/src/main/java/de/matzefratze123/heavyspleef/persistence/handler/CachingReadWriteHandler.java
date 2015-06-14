@@ -65,6 +65,7 @@ import de.matzefratze123.heavyspleef.core.uuid.GameProfile;
 import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 import de.matzefratze123.heavyspleef.persistence.schematic.FloorAccessor;
 import de.matzefratze123.heavyspleef.persistence.schematic.SchematicContext;
+import de.matzefratze123.heavyspleef.persistence.sql.DatabaseUpgrader;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLDatabaseContext;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLDatabaseContext.SQLImplementation;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLQueryOptionsBuilder;
@@ -143,7 +144,8 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		boolean statisticsEnabled = (boolean) properties.get("statistic.enabled");
 		if (statisticsEnabled) {
 			StatisticAccessor statisticAccessor = new StatisticAccessor();
-			sqlContext = new SQLDatabaseContext(properties, statisticAccessor);
+			DatabaseUpgrader upgrader = new HeavySpleefDatabaseUpgrader();
+			sqlContext = new SQLDatabaseContext(properties, upgrader, statisticAccessor);
 			
 			int maxCacheSize = (int) properties.get("statistic.max_cache_size");
 			

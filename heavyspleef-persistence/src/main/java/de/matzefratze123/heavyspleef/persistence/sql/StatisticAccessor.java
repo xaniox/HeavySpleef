@@ -47,13 +47,13 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 	@Override
 	public Map<String, Field> defineSchema() {
 		Map<String, Field> schema = Maps.newLinkedHashMap();
-		schema.put(ColumnContract.ID, new Field(Type.INT).primaryKey().autoIncrement());
+		schema.put(ColumnContract.ID, new Field(Type.INTEGER).primaryKey().autoIncrement());
 		schema.put(ColumnContract.UUID, new Field(Type.CHAR).length(36).unique());
-		schema.put(ColumnContract.WINS, new Field(Type.INT));
-		schema.put(ColumnContract.LOSSES, new Field(Type.INT));
-		schema.put(ColumnContract.KNOCKOUTS, new Field(Type.INT));
-		schema.put(ColumnContract.GAMES_PLAYED, new Field(Type.INT));
-		schema.put(ColumnContract.BLOCKS_BROKEN, new Field(Type.INT));
+		schema.put(ColumnContract.WINS, new Field(Type.INTEGER));
+		schema.put(ColumnContract.LOSSES, new Field(Type.INTEGER));
+		schema.put(ColumnContract.KNOCKOUTS, new Field(Type.INTEGER));
+		schema.put(ColumnContract.GAMES_PLAYED, new Field(Type.INTEGER));
+		schema.put(ColumnContract.BLOCKS_BROKEN, new Field(Type.INTEGER));
 		schema.put(ColumnContract.TIME_PLAYED, new Field(Type.BIGINT));
 		schema.put(ColumnContract.RATING, new Field(Type.DOUBLE));
 		
@@ -114,7 +114,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 			updateSql.append(" WHERE " + ColumnContract.UUID + "=?");
 			
 			try (PreparedStatement updateStatement = connection.prepareStatement(updateSql.toString())) {
-				setValues(updateStatement, object, false, 1);
+				setValues(updateStatement, object, true, 1);
 
 				updateStatement.setString(9, object.getUniqueIdentifier().toString());
 				updateStatement.executeUpdate();

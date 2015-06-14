@@ -38,22 +38,25 @@ import de.matzefratze123.heavyspleef.persistence.sql.SQLAccessor.Field;
 
 public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 	
+	private static final int DATABASE_VERSION = 0;
+	private static final String DATABASE_VERSION_TABLE = "heavyspleef_database_version";
+	
 	private SQLImplementation implementationType;
 	private DBPoolDataSource dataSource;
+	private DatabaseUpgrader upgrader;
 	
-	public SQLDatabaseContext(Properties properties, SQLAccessor<?, ?>... accessors) {
-		super(accessors);
+	public SQLDatabaseContext(Properties properties, DatabaseUpgrader upgrader, SQLAccessor<?, ?>... accessor) throws SQLException  {
+		super(accessor);
 		
+		this.upgrader = upgrader;
 		setupConnection(properties);
 	}
 	
-	public SQLDatabaseContext(Properties properties, Set<SQLAccessor<?, ?>> accessors) {
-		super(accessors);
-		
-		setupConnection(properties);
+	public SQLDatabaseContext(Properties properties, DatabaseUpgrader upgrader, Set<SQLAccessor<?, ?>> accessors) throws SQLException {
+		this(properties, upgrader, accessors.toArray(new SQLAccessor[accessors.size()]));
 	}
 	
-	private void setupConnection(Properties properties) {
+	private void setupConnection(Properties properties) throws SQLException {
 		this.implementationType = SQLImplementation.forClassName(properties.getProperty("driver"));
 		
 		if (implementationType == null) {
@@ -99,6 +102,47 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		dataSource.setMaxPool(maxSize);
 		dataSource.setMaxSize(maxSize);
 		dataSource.setIdleTimeout((int)properties.get("idle-timeout"));
+		checkDatabaseVersionTable();
+	}
+	
+	private void checkDatabaseVersionTable() throws SQLException {
+		try (Connection connection = getConnectionFromPool()) {
+			DatabaseMetaData metadata = connection.getMetaData();
+			boolean exists;
+			
+			try (ResultSet result = metadata.getTables(null, null, DATABASE_VERSION_TABLE, null)) {
+				exists = result.next();
+			}
+			
+			if (!exists) {
+				final String createSql = "CREATE TABLE " + DATABASE_VERSION_TABLE + " ("
+						+ "version INT NOT NULL)";
+				
+				try (Statement createStatement = connection.createStatement()) {
+					createStatement.executeUpdate(createSql);
+				}
+			}
+			
+			try (Statement queryStatement = connection.createStatement();
+					ResultSet result = queryStatement.executeQuery("SELECT version FROM " + DATABASE_VERSION_TABLE + " LIMIT 1")) {
+				if (!result.next()) {
+					//Just insert the id, no upgrade
+					try (Statement insertStatement = connection.createStatement()) {
+						insertStatement.executeUpdate("INSERT INTO " + DATABASE_VERSION_TABLE + " (version) VALUES (" + DATABASE_VERSION + ")");
+					}
+				} else {
+					//There is an existing version saved
+					int oldVersion = result.getInt("version");
+					if (oldVersion < DATABASE_VERSION && upgrader != null) {
+						upgrader.upgrade(connection, oldVersion, DATABASE_VERSION);
+					}
+					
+					try (Statement updateStatement = connection.createStatement()) {
+						updateStatement.executeUpdate("UPDATE " + DATABASE_VERSION_TABLE + " SET version = " + DATABASE_VERSION);
+					}
+				}
+			}
+		}
 	}
 	
 	public void release() {
@@ -152,7 +196,7 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		Class<T> clazz = (Class<T>) object.getClass();
 		SQLAccessor<T, ?> accessor = (SQLAccessor<T, ?>) searchAccessor(clazz);
 		
-		try (Connection connection = getConnectionFromPool()) {
+ 		try (Connection connection = getConnectionFromPool()) {
 			checkAccessorTable(accessor, connection);
 			
 			accessor.write(object, connection);
