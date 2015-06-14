@@ -171,7 +171,9 @@ player:
   anticamping-teleported: "Du wurdest nach unten teleportiert, da du gecampt hast"
   
   itemreward-items-dropped: "Dein Item-Preis wurde auf den Boden gespawnt, da dein Inventar voll ist!"
-  cannot-teleport-in-queue: "You cannot teleport yourself while you are in the queue for a game\nUse /spleef leave to leave the queue"
+  cannot-teleport-in-queue: "Du kannst dich nicht teleportieren während du in der Warteschlange eines Spiels bist\nBenutze /spleef leave um die Warteschlange zu verlassen"
+  
+  command-not-allowed: "Du kannst diesen Befehl nicht ausführen während du in einem Spiel bist!"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"

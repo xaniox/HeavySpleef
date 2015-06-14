@@ -74,6 +74,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.GeneralSection;
 import de.matzefratze123.heavyspleef.core.event.EventBus;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
@@ -1067,8 +1068,28 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		// TODO Auto-generated method stub
+		boolean blockCommands = getPropertyValue(GameProperty.BLOCK_COMMANDS); 
+		if (!blockCommands) {
+			return;
+		}
 		
+		String message = event.getMessage();
+		String[] components = message.split(" ");
+		
+		String command = components[0];
+		command = command.substring(1);
+		
+		DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+		GeneralSection section = config.getGeneralSection();
+		
+		List<String> whitelistedCommands = section.getWhitelistedCommands();
+		if (whitelistedCommands.contains(command)) {
+			return;
+		}
+		
+		//Block this command
+		event.setCancelled(true);
+		event.getPlayer().sendMessage(i18n.getString(Messages.Player.COMMAND_NOT_ALLOWED));
 	}
 	
 	public enum JoinResult {

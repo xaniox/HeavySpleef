@@ -36,6 +36,7 @@ public class DefaultConfig extends ConfigurationObject {
 	
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
 	private Map<GameProperty, Object> defaultGameProperties;
+	private @Getter GeneralSection generalSection;
 	private @Getter Localization localization;
 	private @Getter FlagSection flagSection;
 	private @Getter UpdateSection updateSection;
@@ -46,6 +47,9 @@ public class DefaultConfig extends ConfigurationObject {
 
 	@Override
 	public void inflate(Configuration config, Object... args) {
+		ConfigurationSection generalSection = config.getConfigurationSection("general");
+		this.generalSection = new GeneralSection(generalSection);
+		
 		defaultGameProperties = new EnumMap<GameProperty, Object>(GameProperty.class);
 		ConfigurationSection propsSection = config.getConfigurationSection("default-game-properties");
 		Set<String> keys = propsSection.getKeys(false);

@@ -211,6 +211,8 @@ public interface Messages {
 
 		public static final String ITEMREWARD_ITEMS_DROPPED = PREFIX + "itemreward-items-dropped";
 		public static final String CANNOT_TELEPORT_IN_QUEUE = PREFIX + "cannot-teleport-in-queue";
+
+		public static final String COMMAND_NOT_ALLOWED = PREFIX + "command-not-allowed";
 		
 	}
 	

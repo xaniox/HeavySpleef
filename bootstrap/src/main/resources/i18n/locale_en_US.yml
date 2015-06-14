@@ -171,6 +171,8 @@ player:
   
   itemreward-items-dropped: "Your item reward has been dropped onto the ground as your inventory is full"
   cannot-teleport-in-queue: "You cannot teleport yourself while you are in the queue for a game\nUse /spleef leave to leave the queue"
+  
+  command-not-allowed: "You cannot execute this command while playing a spleef game!"
 help:
   description:
     clearcache: "Clears the statistic cache"
