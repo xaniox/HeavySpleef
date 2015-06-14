@@ -1,5 +1,20 @@
 # Configuration file for HeavySpleef
 
+general:
+  spleef-prefix: '&8[&6&lSpleef&8]'
+  command-whitelist:
+  - spleef
+  - money
+  - msg
+  - tell
+  vip-prefix: '&4'
+  vip-join-full: true
+  pvp-timer: 0
+  
+queues:
+  use-queues: true
+  commands-in-queues: false
+
 default-game-properties:
   instant-break: true
   play-block-break: true
@@ -12,6 +27,7 @@ default-game-properties:
   disable-build: true
   use-liquid-deathzone: true
   disable-floor-break: false
+  block-commands: true
   broadcast-radius: 30
   
 localization:
@@ -30,3 +46,5 @@ flags:
 update:
   enable-update-check: true
   enable-update-command: true
+  
+config-version: 4
