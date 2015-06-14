@@ -39,6 +39,7 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.hook.Hook;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
@@ -50,6 +51,7 @@ public class CommandFlag {
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	
+	@SuppressWarnings("unchecked")
 	@Command(name = "flag", usage = "/spleef flag <game> <flag> [flag-value|remove]", 
 			descref = Messages.Help.Description.FLAG,
 			permission = "heavyspleef.flag")
@@ -98,13 +100,20 @@ public class CommandFlag {
 			Class<? extends AbstractFlag<?>> flagClass = registry.getFlagClass(flagPath);
 			Flag flagData = registry.getFlagData(flagClass);
 			
-			@SuppressWarnings("unchecked")
-			AbstractFlag<Object> flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath, flagClass, game);
+			AbstractFlag<Object> flag;
+			
+			if (game.isFlagPresent(flagClass)) {
+				flag = (AbstractFlag<Object>) game.getFlag(flagClass);
+			} else {
+				flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath, flagClass, game);
+			}
+			
 			Object value = null;
 			String extraMessage = null;
 			
 			try {
 				value = flag.parseInput(player, inputBuilder.toString());
+				flag.validateInput(value);
 			} catch (InputParseException e) {
 				String message = e.getMessage();
 				
@@ -116,6 +125,8 @@ public class CommandFlag {
 				} else if (!e.getMessage().isEmpty()){
 					extraMessage = message;
 				}
+			} catch (ValidationException e) {
+				throw new CommandException(e.getMessage());
 			}
 			
 			HookReference[] references = flagData.depend();

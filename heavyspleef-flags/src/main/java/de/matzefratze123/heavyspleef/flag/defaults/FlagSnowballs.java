@@ -40,6 +40,8 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
@@ -50,6 +52,13 @@ public class FlagSnowballs extends IntegerFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Gives players a certain amount of snowballs to use when they break blocks");
+	}
+	
+	@Override
+	public void validateInput(Integer input) throws ValidationException {
+		if (input <= 1) {
+			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_SNOWBALL_AMOUNT));
+		}
 	}
 	
 	@Subscribe

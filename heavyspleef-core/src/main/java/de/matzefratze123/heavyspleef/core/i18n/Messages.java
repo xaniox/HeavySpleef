@@ -136,6 +136,17 @@ public interface Messages {
 		public static final String ADMIN_INFO = PREFIX + "admin-info";
 		public static final String SHOW_ADMIN_INFO = PREFIX + "show-admin-info";
 		
+		public static final String INVALID_REGEN_INTERVAL = PREFIX + "invalid-regen-interval";
+		public static final String INVALID_AUTOSTART = PREFIX + "invalid-autostart";
+		public static final String INVALID_COUNTDOWN = PREFIX + "invalid-countdown";
+		public static final String INVALID_ENTRY_FEE = PREFIX + "invalid-entry-fee";
+		public static final String INVALID_MAX_PLAYERS = PREFIX + "invalid-max-players";
+		public static final String INVALID_TEAM_MAX_SIZE = PREFIX + "invalid-team-max-size";
+		public static final String INVALID_MIN_PLAYERS = PREFIX + "invalid-min-players";
+		public static final String INVALID_TEAM_MIN_SIZE = PREFIX + "invalid-team-min-size";
+		public static final String INVALID_SNOWBALL_AMOUNT = PREFIX + "invalid-snowball-amount";
+		public static final String INVALID_TIMEOUT = PREFIX + "invalid-timeout";
+		
 	}
 	
 	public interface Broadcast {

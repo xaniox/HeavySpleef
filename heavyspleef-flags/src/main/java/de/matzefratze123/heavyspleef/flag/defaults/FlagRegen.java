@@ -27,7 +27,9 @@ import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "regen")
@@ -38,6 +40,13 @@ public class FlagRegen extends IntegerFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Regenerates all floors of the game in a specified interval");
+	}
+	
+	@Override
+	public void validateInput(Integer input) throws ValidationException {
+		if (input <= 0) {
+			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_REGEN_INTERVAL));
+		}
 	}
 	
 	@Subscribe

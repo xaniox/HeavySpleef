@@ -22,6 +22,8 @@ import java.util.List;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "countdown")
@@ -30,6 +32,13 @@ public class FlagCountdown extends IntegerFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Defines the countdown length");
+	}
+	
+	@Override
+	public void validateInput(Integer input) throws ValidationException {
+		if (input <= 1) {
+			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_COUNTDOWN));
+		}
 	}
 	
 	@Subscribe

@@ -111,6 +111,19 @@ command:
   join: "Beitreten"
   admin-info: "Admin Info"
   show-admin-info: "Zeige Admin Info"
+  
+  # Nachrichten, wenn ungültige Werte für Flags angegeben werden
+  # wie zum Beispiel null für den Countdown
+  invalid-regen-interval: "Ebenen-Regenerationsintervall muss größer als 0 sein"
+  invalid-autostart: "Autostart Anzahl an Spielern muss größer als 1 sein"
+  invalid-countdown: "Die Countdown Länge muss größer als 0 sein"
+  invalid-entry-fee: "Die Spielgebühr muss größer als 0 sein"
+  invalid-max-players: "Die maximale Spieleranzahl muss größer als 1 sein"
+  invalid-team-max-size: "Die maximale Teamgröße muss größer als 1 sein"
+  invalid-min-players: "Die minimale Spieleranzahl muss größer als 1 sein"
+  invalid-team-min-size: "Die minimale Teamgröße muss größer als 1 sein"
+  invalid-snowball-amount: "Die Anzahl an Schneebällen muss größer als 0 sein"
+  invalid-timeout: "Der Timeout muss größer als 0 sein"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

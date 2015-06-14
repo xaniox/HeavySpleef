@@ -20,11 +20,20 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "max-players", parent = FlagTeam.class)
 public class FlagMaxTeamSize extends IntegerFlag {
 
+	@Override
+	public void validateInput(Integer input) throws ValidationException {
+		if (input <= 1) {
+			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_TEAM_MAX_SIZE));
+		}
+	}
+	
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Sets the count of maximum players which are allowed to join a team");

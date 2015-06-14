@@ -23,6 +23,8 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "min-players")
@@ -31,6 +33,13 @@ public class FlagMinPlayers extends IntegerFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Defines the minimum count of players required to start a game");
+	}
+	
+	@Override
+	public void validateInput(Integer input) throws ValidationException {
+		if (input <= 1) {
+			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_MIN_PLAYERS));
+		}
 	}
 	
 	@Subscribe(priority = Priority.HIGH)

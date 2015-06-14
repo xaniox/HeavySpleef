@@ -23,6 +23,7 @@ import net.milkbowl.vault.economy.Economy;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -37,6 +38,13 @@ public class FlagEntryFee extends DoubleFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Defines a fee that every player has to pay in order to play a Spleef game");
+	}
+	
+	@Override
+	public void validateInput(Double input) throws ValidationException {
+		if (input <= 0d) {
+			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_ENTRY_FEE));
+		}
 	}
 
 	public Economy getEconomy() {

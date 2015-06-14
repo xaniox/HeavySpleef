@@ -111,6 +111,19 @@ command:
   join: "Join"
   admin-info: "Admin Info"
   show-admin-info: "Show Admin Info"
+  
+  # Messages when setting an invalid value for a flag
+  # for instance when setting the countdown to zero.
+  invalid-regen-interval: "Floor regeneration interval must be greater than 0"
+  invalid-autostart: "Autostart players amount must be greater than 1"
+  invalid-countdown: "Countdown length must be greater than 0"
+  invalid-entry-fee: "Entry fee must be greater than 0"
+  invalid-max-players: "Max player amount must be greater than 1"
+  invalid-team-max-size: "Max team size must be greater than 1"
+  invalid-min-players: "Min player amount must be greater than 1"
+  invalid-team-min-size: "Min team size must be greater than 1"
+  invalid-snowball-amount: "Snowball amount must be greater than 0"
+  invalid-timeout: "Timeout value must be greater than 0"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

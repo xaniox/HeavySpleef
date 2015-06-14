@@ -29,6 +29,7 @@ import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
@@ -46,6 +47,13 @@ public class FlagTimeout extends IntegerFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Defines a timeout for a Spleef game to stop");
+	}
+	
+	@Override
+	public void validateInput(Integer input) throws ValidationException {
+		if (input <= 0) {
+			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_TIMEOUT));
+		}
 	}
 	
 	@Subscribe(priority = Priority.HIGHEST)
