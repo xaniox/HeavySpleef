@@ -27,9 +27,11 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Lists;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -99,10 +101,15 @@ public class FlagItemReward extends ItemStackListFlag {
 	@Flag(name = "add", parent = FlagItemReward.class)
 	public static class FlagAddItemReward extends ItemStackFlag {
 		
+		@Inject
+		private Game game;
+		
 		@Override
 		public void setValue(ItemStack value) {
 			FlagItemReward parent = (FlagItemReward) getParent();
 			parent.add(value);
+			
+			game.removeFlag(getClass());
 		}
 
 		@Override
@@ -115,12 +122,17 @@ public class FlagItemReward extends ItemStackListFlag {
 	@Flag(name = "remove", parent = FlagItemReward.class)
 	public static class FlagRemoveItemReward extends NullFlag {
 		
+		@Inject
+		private Game game;
+		
 		@Override
 		public void setValue(Void value) {
 			FlagItemReward parent = (FlagItemReward) getParent();
 			int lastIndex = parent.size() - 1;
 			
 			parent.remove(lastIndex);
+			
+			game.removeFlag(getClass());
 		}
 		
 		@Override

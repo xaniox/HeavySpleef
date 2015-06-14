@@ -24,9 +24,12 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
@@ -50,7 +53,8 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 		description.add("Defines multiple spawnpoints for players");
 	}
 	
-	@Subscribe
+	//Override the spawnpoint flag by setting the event's priority to high
+	@Subscribe(priority = Priority.HIGH)
 	public void onGameCountdown(GameCountdownEvent event) {
 		List<Location> list = getValue();
 		event.setSpawnLocations(list);
@@ -58,11 +62,16 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 	
 	@Flag(name = "add", parent = FlagMultiSpawnpoint.class)
 	public static class FlagAddSpawnpoint extends LocationFlag {
+
+		@Inject
+		private Game game;
 		
 		@Override
 		public void setValue(Location value) {
 			FlagMultiSpawnpoint parent = (FlagMultiSpawnpoint) getParent();
 			parent.add(value);
+			
+			game.removeFlag(getClass());
 		}
 
 		@Override
@@ -75,12 +84,16 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 	@Flag(name = "remove", parent = FlagMultiSpawnpoint.class)
 	public static class FlagRemoveSpawnpoint extends NullFlag {
 		
+		@Inject
+		private Game game;
+		
 		@Override
 		public void setValue(Void value) {
 			FlagMultiSpawnpoint parent = (FlagMultiSpawnpoint) getParent();
 			int lastIndex = parent.size() - 1;
 			
 			parent.remove(lastIndex);
+			game.removeFlag(getClass());
 		}
 		
 		@Override
