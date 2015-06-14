@@ -48,6 +48,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -288,6 +289,11 @@ public class Game implements VariableSuppliable {
 				}
 			});
 			
+			for (SpleefPlayer player : ingamePlayers) {
+				player.getBukkitPlayer().setLevel(countdownLength);
+				player.getBukkitPlayer().setExp(1.0f);
+			}
+			
 			countdownTask.start();
 		} else {
 			//Countdown is not enabled so just start the game
@@ -329,7 +335,9 @@ public class Game implements VariableSuppliable {
 		GameEndEvent event = new GameEndEvent(this);
 		eventBus.callEvent(event);
 		
-		broadcast(i18n.getString(Messages.Broadcast.GAME_STOPPED));
+		broadcast(i18n.getVarString(Messages.Broadcast.GAME_STOPPED)
+				.setVariable("game", name)
+				.toString());
 	}
 	
 	private void resetGame() {
@@ -1056,6 +1064,11 @@ public class Game implements VariableSuppliable {
 	
 	public void onPlayerQuit(PlayerQuitEvent event, SpleefPlayer quitter) {
 		leave(quitter, QuitCause.SELF);
+	}
+	
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public enum JoinResult {

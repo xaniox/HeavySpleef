@@ -30,6 +30,7 @@ public enum GameProperty {
 	DISABLE_BUILD(true),
 	USE_LIQUID_DEATHZONE(true),
 	DISABLE_FLOOR_BREAK(false),
+	BLOCK_COMMANDS(true),
 	BROADCAST_RADIUS(30);
 	
 	private Object defaultValue;
