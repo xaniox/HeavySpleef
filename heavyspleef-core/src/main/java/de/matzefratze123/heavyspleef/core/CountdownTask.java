@@ -17,22 +17,22 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import lombok.Getter;
+
 import org.bukkit.plugin.Plugin;
 
 public class CountdownTask extends SimpleBasicTask {
 	
-	private int remaining;
+	private @Getter final int length;
+	private @Getter int remaining;
 	private CountdownCallback callback;
 	
-	public CountdownTask(Plugin plugin, int remaining, CountdownCallback callback) {
+	public CountdownTask(Plugin plugin, int length, CountdownCallback callback) {
 		super(plugin, TaskType.SYNC_REPEATING_TASK, 0L, 20L);
 		
-		this.remaining = remaining;
+		this.length = length;
+		this.remaining = length;
 		this.callback = callback;
-	}
-	
-	public int getRemaining() {
-		return remaining;
 	}
 	
 	@Override
