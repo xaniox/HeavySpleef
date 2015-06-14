@@ -7,7 +7,7 @@ general:
   - money
   - msg
   - tell
-  vip-prefix: '&4'
+  vip-prefix: '&c'
   vip-join-full: true
   pvp-timer: 0
   
