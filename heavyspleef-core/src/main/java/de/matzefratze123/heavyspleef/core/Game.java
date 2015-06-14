@@ -261,6 +261,11 @@ public class Game implements VariableSuppliable {
 				
 				@Override
 				public void onCountdownFinish(CountdownTask task) {
+					for (SpleefPlayer player : ingamePlayers) {
+						player.getBukkitPlayer().setLevel(0);
+						player.getBukkitPlayer().setExp(0f);
+					}
+					
 					start();
 					
 					countdownTask = null;
@@ -270,6 +275,12 @@ public class Game implements VariableSuppliable {
 				public void onCountdownCount(CountdownTask task) {
 					GameCountdownChangeEvent event = new GameCountdownChangeEvent(Game.this, countdownTask);
 					eventBus.callEvent(event);
+					
+					float percent = (float)task.getRemaining() / task.getLength();
+					for (SpleefPlayer player : ingamePlayers) {
+						player.getBukkitPlayer().setLevel(task.getRemaining());
+						player.getBukkitPlayer().setExp(percent);
+					}
 					
 					broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
 						.setVariable("remaining", String.valueOf(task.getRemaining()))
@@ -682,6 +693,13 @@ public class Game implements VariableSuppliable {
 	
 	public void removeFlag(String path) {
 		AbstractFlag<?> flag = flagManager.removeFlag(path);
+		flag.onFlagRemove(this);
+		
+		eventBus.unregister(flag);
+	}
+	
+	public void removeFlag(Class<? extends AbstractFlag<?>> flagClass) {
+		AbstractFlag<?> flag = flagManager.removeFlag(flagClass);
 		flag.onFlagRemove(this);
 		
 		eventBus.unregister(flag);
