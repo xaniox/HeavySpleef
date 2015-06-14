@@ -101,15 +101,20 @@ public class CommandFlag {
 			@SuppressWarnings("unchecked")
 			AbstractFlag<Object> flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath, flagClass, game);
 			Object value = null;
+			String extraMessage = null;
 			
 			try {
 				value = flag.parseInput(player, inputBuilder.toString());
-			} catch (InputParseException e) {			
+			} catch (InputParseException e) {
+				String message = e.getMessage();
+				
 				if (!flagData.ignoreParseException()) {
 					String malformedInput = e.getMalformedInput();
-					String message = e.getMessage() != null ? e.getMessage() : i18n.getString(Messages.Command.INVALID_FLAG_INPUT);
+					message = message != null ? message : i18n.getString(Messages.Command.INVALID_FLAG_INPUT);
 					
 					throw new CommandException(message + (malformedInput != null ? ": " + malformedInput : ""));
+				} else if (!e.getMessage().isEmpty()){
+					extraMessage = message;
 				}
 			}
 			
@@ -125,15 +130,19 @@ public class CommandFlag {
 			}
 			
 			validateFlagParents(flagData, game);
+			game.addFlag(flag);
 			
-			if (value != null) {
+			if (value != null || NullFlag.class.isAssignableFrom(flagClass)) {
 				flag.setValue(value);
 			}
 			
-			game.addFlag(flag);
 			player.sendMessage(i18n.getVarString(Messages.Command.FLAG_SET)
 					.setVariable("flag", flagData.name())
 					.toString());
+			
+			if (extraMessage != null) {
+				player.sendMessage(extraMessage);
+			}
 		}
 		
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
