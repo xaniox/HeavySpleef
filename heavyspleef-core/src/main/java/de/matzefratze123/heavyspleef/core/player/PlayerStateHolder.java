@@ -21,6 +21,8 @@ import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.Data;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -31,6 +33,7 @@ import org.bukkit.potion.PotionEffect;
 
 import com.google.common.collect.Lists;
 
+@Data
 public class PlayerStateHolder {
 	
 	/* Saving the inventory and the armor contents */
@@ -42,6 +45,7 @@ public class PlayerStateHolder {
 	private GameMode gamemode;
 	private double health;
 	private int foodLevel;
+	private int level;
 	private float experience;
 	private boolean allowFlight;
 	private boolean isFlying;
@@ -73,6 +77,7 @@ public class PlayerStateHolder {
 		stateHolder.setGamemode(player.getGameMode());
 		stateHolder.setHealth(player.getHealth());
 		stateHolder.setFoodLevel(player.getFoodLevel());
+		stateHolder.setLevel(player.getLevel());
 		stateHolder.setExperience(player.getExp());
 		stateHolder.setAllowFlight(player.getAllowFlight());
 		stateHolder.setFlying(player.isFlying());
@@ -118,7 +123,8 @@ public class PlayerStateHolder {
 		player.setHealth(20.0);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setFoodLevel(20);
-		player.setExp(0);
+		player.setLevel(0);
+		player.setExp(0f);
 		player.setAllowFlight(false);
 		player.setFlying(false);
 		player.getActivePotionEffects().clear();
@@ -155,7 +161,8 @@ public class PlayerStateHolder {
 		player.setGameMode(gamemode);
 		player.setHealth(health);
 		player.setFoodLevel(foodLevel);
-		player.setExhaustion(experience);
+		player.setLevel(level);
+		player.setExp(experience);
 		player.setAllowFlight(allowFlight);
 		player.setFlying(isFlying);
 		
@@ -186,118 +193,6 @@ public class PlayerStateHolder {
 			
 			player.hidePlayer(cantSeePlayer);
 		}
-	}
-	
-	public ItemStack[] getInventory() {
-		return inventory;
-	}
-
-	public void setInventory(ItemStack[] inventory) {
-		this.inventory = inventory;
-	}
-
-	public GameMode getGamemode() {
-		return gamemode;
-	}
-
-	public void setGamemode(GameMode gamemode) {
-		this.gamemode = gamemode;
-	}
-
-	public double getHealth() {
-		return health;
-	}
-
-	public void setHealth(double health) {
-		this.health = health;
-	}
-
-	public int getFoodLevel() {
-		return foodLevel;
-	}
-
-	public void setFoodLevel(int foodLevel) {
-		this.foodLevel = foodLevel;
-	}
-
-	public float getExperience() {
-		return experience;
-	}
-
-	public void setExperience(float experience) {
-		this.experience = experience;
-	}
-
-	public boolean isAllowFlight() {
-		return allowFlight;
-	}
-
-	public void setAllowFlight(boolean allowFlight) {
-		this.allowFlight = allowFlight;
-	}
-
-	public boolean isFlying() {
-		return isFlying;
-	}
-
-	public void setFlying(boolean isFlying) {
-		this.isFlying = isFlying;
-	}
-
-	public Collection<PotionEffect> getActiveEffects() {
-		return activeEffects;
-	}
-
-	public void setActiveEffects(Collection<PotionEffect> activeEffects) {
-		this.activeEffects = activeEffects;
-	}
-
-	public float getExhaustion() {
-		return exhaustion;
-	}
-
-	public void setExhaustion(float exhaustion) {
-		this.exhaustion = exhaustion;
-	}
-
-	public float getSaturation() {
-		return saturation;
-	}
-
-	public void setSaturation(float saturation) {
-		this.saturation = saturation;
-	}
-
-	public float getFallDistance() {
-		return fallDistance;
-	}
-
-	public void setFallDistance(float fallDistance) {
-		this.fallDistance = fallDistance;
-	}
-
-	public int getFireTicks() {
-		return fireTicks;
-	}
-
-	public void setFireTicks(int fireTicks) {
-		this.fireTicks = fireTicks;
-	}
-
-	public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-	
-	public List<WeakReference<Player>> getCantSee() {
-		return cantSee;
-	}
-	
-	public void setCantSee(List<WeakReference<Player>> cantSee) {
-		this.cantSee = cantSee;
 	}
 	
 }
