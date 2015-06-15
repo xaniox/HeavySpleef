@@ -101,9 +101,11 @@ public class CommandFlag {
 			Flag flagData = registry.getFlagData(flagClass);
 			
 			AbstractFlag<Object> flag;
+			boolean existingFlag = false;
 			
 			if (game.isFlagPresent(flagClass)) {
 				flag = (AbstractFlag<Object>) game.getFlag(flagClass);
+				existingFlag = true;
 			} else {
 				flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath, flagClass, game);
 			}
@@ -141,7 +143,10 @@ public class CommandFlag {
 			}
 			
 			validateFlagParents(flagData, game);
-			game.addFlag(flag);
+			
+			if (!existingFlag) {
+				game.addFlag(flag);
+			}
 			
 			if (value != null || NullFlag.class.isAssignableFrom(flagClass)) {
 				flag.setValue(value);
