@@ -34,6 +34,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -116,6 +117,11 @@ public class BukkitListener implements Listener {
 	}
 	
 	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event) {
+		handlePlayerEvent(event.getPlayer(), event);
+	}
+	
+	@EventHandler
 	public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		handlePlayerEvent(event.getPlayer(), event);
 	}
@@ -154,6 +160,8 @@ public class BukkitListener implements Listener {
 				game.onEntityTargetLivingEntity((EntityTargetLivingEntityEvent) event, player);
 			} else if (event instanceof PlayerQuitEvent) {
 				game.onPlayerQuit((PlayerQuitEvent) event, player);
+			} else if (event instanceof PlayerKickEvent) {
+				game.onPlayerKick((PlayerKickEvent)event, player);
 			} else if (event instanceof PlayerCommandPreprocessEvent) {
 				game.onPlayerCommandPreprocess((PlayerCommandPreprocessEvent)event);
 			}
