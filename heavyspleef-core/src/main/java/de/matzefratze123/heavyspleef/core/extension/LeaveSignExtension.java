@@ -21,6 +21,7 @@ import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -52,7 +53,7 @@ public class LeaveSignExtension extends SignExtension {
 			return;
 		}
 		
-		game.leave(player);
+		game.requestLose(player, QuitCause.SELF);
 	}
 	
 	@Override

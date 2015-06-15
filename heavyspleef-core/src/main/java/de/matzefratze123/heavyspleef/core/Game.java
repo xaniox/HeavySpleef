@@ -51,6 +51,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -631,26 +632,34 @@ public class Game implements VariableSuppliable {
 		player.sendMessage(playerMessage);
 	}
 	
-	public void requestLose(SpleefPlayer player) {
-		requestLose(player, true);
+	public void requestLose(SpleefPlayer player, QuitCause cause) {
+		Object[] args = null;
+		
+		if (cause == QuitCause.KICK) {
+			final SpleefPlayer killer = killDetector.detectKiller(this, player);
+			args = new Object[] { killer };
+		}
+		
+		requestLose(player, true, cause, args);
 	}
 	
-	private void requestLose(SpleefPlayer player, boolean checkWin) {
+	private void requestLose(SpleefPlayer player, boolean checkWin, QuitCause cause, Object... args) {
 		if (!ingamePlayers.contains(player)) {
 			return;
 		}
 		
-		final SpleefPlayer killer = killDetector.detectKiller(this, player);
-		leave(player, QuitCause.LOSE, killer);
+		leave(player, cause == null ? QuitCause.LOSE : cause, args);
 		
-		if (ingamePlayers.size() == 1 && checkWin) {
-			SpleefPlayer playerLeft = ingamePlayers.iterator().next();
-			requestWin(playerLeft);
-		} else if (ingamePlayers.size() == 0) {
-			GameEndEvent event = new GameEndEvent(this);
-			eventBus.callEvent(event);
-			
-			resetGame();
+		if (gameState == GameState.STARTING || gameState == GameState.INGAME) {
+			if (ingamePlayers.size() == 1 && checkWin) {
+				SpleefPlayer playerLeft = ingamePlayers.iterator().next();
+				requestWin(playerLeft);
+			} else if (ingamePlayers.size() == 0) {
+				GameEndEvent event = new GameEndEvent(this);
+				eventBus.callEvent(event);
+				
+				resetGame();
+			}
 		}
 	}
 	
@@ -660,7 +669,7 @@ public class Game implements VariableSuppliable {
 				if (ingamePlayer == player) {
 					leave(player, QuitCause.WIN);
 				} else {
-					requestLose(player, false);
+					requestLose(player, false, QuitCause.LOSE);
 				}
 			}
 		}
@@ -676,7 +685,7 @@ public class Game implements VariableSuppliable {
 			throw new IllegalArgumentException("Player must be in game to kick");
 		}
 		
-		leave(player, QuitCause.KICK, sender, message);
+		requestLose(player, true, QuitCause.KICK, sender, message);
 	}
 	
 	public Set<SpleefPlayer> getPlayers() {
@@ -993,8 +1002,9 @@ public class Game implements VariableSuppliable {
 		}
 		
 		boolean disableBuild = getPropertyValue(GameProperty.DISABLE_BUILD);
+		boolean disableFloorBreak = getPropertyValue(GameProperty.DISABLE_FLOOR_BREAK);
 		
-		if (!onFloor && disableBuild) {
+		if ((!onFloor && disableBuild) || disableFloorBreak) {
 			event.setCancelled(true);
 		} else {
 			addBlockBroken(player, block);
@@ -1066,7 +1076,11 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void onPlayerQuit(PlayerQuitEvent event, SpleefPlayer quitter) {
-		leave(quitter, QuitCause.SELF);
+		requestLose(quitter, QuitCause.SELF);
+	}
+	
+	public void onPlayerKick(PlayerKickEvent event, SpleefPlayer quitter) {
+		requestLose(quitter, QuitCause.SELF);
 	}
 	
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {

@@ -24,6 +24,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -44,7 +45,7 @@ public class CommandLeave {
 		Game game = manager.getGame(player);
 		
 		if (game != null) {
-			game.leave(player);
+			game.requestLose(player, QuitCause.SELF);
 		} else {
 			Game gameUnqueued = null;
 			for (Game otherGame : manager.getGames()) {

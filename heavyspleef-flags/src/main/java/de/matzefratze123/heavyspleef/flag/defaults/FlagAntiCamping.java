@@ -40,6 +40,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
@@ -209,7 +210,7 @@ public class FlagAntiCamping extends BooleanFlag {
 				// Check if the player is at the last floor
 				if (nearestFloor == floor) {
 					if (i == 0) {
-						game.requestLose(player);
+						game.requestLose(player, QuitCause.LOSE);
 					} else {
 						Region region = floors.get(i - 1).getRegion();
 						int maxY = region.getMaximumPoint().getBlockY();

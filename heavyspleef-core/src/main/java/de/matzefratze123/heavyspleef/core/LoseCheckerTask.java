@@ -97,7 +97,7 @@ public class LoseCheckerTask extends SimpleBasicTask implements SpleefListener {
 			
 			if (deathCandidates != null) {
 				for (SpleefPlayer deathCandidate : deathCandidates) {
-					game.requestLose(deathCandidate);
+					game.requestLose(deathCandidate, null);
 				}
 			}
 		}
