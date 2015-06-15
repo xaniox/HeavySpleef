@@ -284,9 +284,11 @@ public class Game implements VariableSuppliable {
 						player.getBukkitPlayer().setExp(percent);
 					}
 					
-					broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
-						.setVariable("remaining", String.valueOf(task.getRemaining()))
-						.toString());
+					if (task.getRemaining() % 10 == 0 || task.getRemaining() <= 5) {
+						broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
+							.setVariable("remaining", String.valueOf(task.getRemaining()))
+							.toString());
+					}
 				}
 			});
 			

@@ -43,7 +43,7 @@ public class CountdownTask extends SimpleBasicTask {
 			}
 			
 			cancel();
-		} else if (remaining % 10 != 0 || remaining <= 5) {
+		} else {
 			if (callback != null) {
 				callback.onCountdownCount(this);
 			}
