@@ -70,6 +70,7 @@ public class FlagBowspleef extends BooleanFlag {
 	
 	@Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {
+		properties.put(GameProperty.INSTANT_BREAK, false);
 		properties.put(GameProperty.DISABLE_FLOOR_BREAK, true);
 	}
 
