@@ -21,30 +21,40 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
+
+import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -57,6 +67,7 @@ public class FlagBowspleef extends BooleanFlag {
 	private static final String BOW_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef-Bow";
 	private static final ItemStack BOW_ITEMSTACK;
 	private static final String BOWSPLEEF_METADATA_KEY = "bowspleef";
+	private static final double BLOCK_PADDING = 0.4;
 	
 	static {
 		BOW_ITEMSTACK = new ItemStack(Material.BOW);
@@ -95,7 +106,6 @@ public class FlagBowspleef extends BooleanFlag {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent event) {
 		if (!getValue()) {
@@ -120,9 +130,11 @@ public class FlagBowspleef extends BooleanFlag {
 			return;
 		}
 		
+		Location location = projectile.getLocation();
+		
 		// Use a BlockIterator to determine where the arrow has hit the ground
 		BlockIterator blockIter = new BlockIterator(projectile.getWorld(), 
-				projectile.getLocation().toVector(), 
+				location.toVector(), 
 				projectile.getVelocity().normalize(), 
 				0, 4);
 		
@@ -136,23 +148,82 @@ public class FlagBowspleef extends BooleanFlag {
 			}
 		}
 		
-		if (!game.canSpleef(blockHit)) {
+		if (blockHit == null || !game.canSpleef(blockHit)) {
 			//Cannot remove this block
 			return;
 		}
 		
-		projectile.remove();
-		game.addBlockBroken(shooter, blockHit);
+		double xc = location.getX() - (int) location.getX();
+		double zc = location.getZ() - (int) location.getZ();
 		
-		if (blockHit.getType() == Material.TNT) {
-			return;
+		location.setX(blockHit.getX() + xc);
+		location.setY(blockHit.getY());
+		location.setZ(blockHit.getZ() + zc);
+		
+		int modX = 0;
+		int modZ = 0;
+		
+		if (xc < BLOCK_PADDING) {
+			modX = -1;
+		} else if (xc > 1 - BLOCK_PADDING) {
+			modX = 1;
 		}
 		
-		// Play an animation
-		FallingBlock block = projectile.getWorld().spawnFallingBlock(blockHit.getLocation(), blockHit.getType(), blockHit.getData());
-		block.setMetadata(BOWSPLEEF_METADATA_KEY, new FixedMetadataValue(getHeavySpleef().getPlugin(), true));
+		if (zc < BLOCK_PADDING) {
+			modZ = -1;
+		} else if (zc > 1 - BLOCK_PADDING) {
+			modZ = 1;
+		}
 		
-		blockHit.setType(Material.AIR);
+		float yaw = location.getYaw();
+		ArrowDirection[] dirs = ArrowDirection.getDirections(yaw, modX, modZ);
+		
+		List<Block> blocks = Lists.newArrayList();
+		blocks.add(blockHit);
+		
+		Vector v1 = null;
+		Vector v2 = null;
+		
+		if (dirs[0] != null) {
+			v1 = new Vector(0, 0, modZ);
+			blocks.add(location.clone().add(v1).getBlock());
+		}
+		
+		if (dirs[1] != null) {
+			v2 = new Vector(modX, 0, 0);
+			blocks.add(location.clone().add(v2).getBlock());
+		}
+		
+		if (v1 != null && v2 != null) {
+			v1.add(v2);
+			blocks.add(location.clone().add(v1).getBlock());
+		}
+		
+		projectile.remove();
+		
+		for (Block block : blocks) {
+			game.addBlockBroken(shooter, block);
+			
+			// Play an animation
+			dropBlock(block);
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void dropBlock(Block block) {
+		Plugin plugin = getHeavySpleef().getPlugin();
+		Location location = block.getLocation();
+		World world = location.getWorld();
+		
+		if (block.getType() == Material.TNT) {
+			TNTPrimed tntEntity = (TNTPrimed) world.spawnEntity(location, EntityType.PRIMED_TNT);
+			tntEntity.setMetadata(BOWSPLEEF_METADATA_KEY, new FixedMetadataValue(plugin, true));
+		} else {
+			FallingBlock fallingBlock = block.getWorld().spawnFallingBlock(location, block.getType(), block.getData());
+			fallingBlock.setMetadata(BOWSPLEEF_METADATA_KEY, new FixedMetadataValue(plugin, true));
+		}
+		
+		block.setType(Material.AIR);
 	}
 	
 	@EventHandler
@@ -162,6 +233,20 @@ public class FlagBowspleef extends BooleanFlag {
 			return;
 		}
 		
+		cancelBowSpleefEntityEvent(entity, event);
+	}
+	
+	@EventHandler
+	public void onEntityExplode(EntityExplodeEvent event) {
+		Entity entity = event.getEntity();
+		if (!(entity instanceof TNTPrimed)) {
+			return;
+		}
+		
+		cancelBowSpleefEntityEvent(entity, event);
+	}
+	
+	private void cancelBowSpleefEntityEvent(Entity entity, Cancellable cancellable) {
 		boolean isBowspleefEntity = false;
 		List<MetadataValue> metadatas = entity.getMetadata(BOWSPLEEF_METADATA_KEY);
 		for (MetadataValue value : metadatas) {
@@ -174,8 +259,56 @@ public class FlagBowspleef extends BooleanFlag {
 		
 		if (isBowspleefEntity) {
 			entity.remove();
-			event.setCancelled(true);
+			cancellable.setCancelled(true);
 		}
+	}
+	
+	private enum ArrowDirection {
+		
+		NORTH(90f, 180f, -180f, -90f, 0, -1),
+		SOUTH(-90f, 0f, 0f, 90f, 0, 1),
+		WEST(-180f, -90f, -90f, 0, -1, 0),
+		EAST(0f, 90f, 90f, 180f, 1, 0);
+		
+		private float firstFrom;
+		private float firstTo;
+		private float secondFrom;
+		private float secondTo;
+		private int modX;
+		private int modZ;
+		
+		private ArrowDirection(float firstFrom, float firstTo, float secondFrom, float secondTo, int modX, int modZ) {
+			this.firstFrom = firstFrom;
+			this.firstTo = firstTo;
+			this.secondFrom = secondFrom;
+			this.secondTo = secondTo;
+			this.modX = modX;
+			this.modZ = modZ;
+		}
+		
+		static ArrowDirection[] getDirections(float yaw, int modX, int modZ) {
+			ArrowDirection[] dirs = new ArrowDirection[2];
+			
+			for (ArrowDirection dir : values()) {
+				boolean matches = false;
+				
+				if ((yaw > dir.firstFrom && yaw < dir.firstTo) || (yaw > dir.secondFrom && yaw < dir.secondTo)) {
+					matches = true;
+				}
+				
+				if ((dir.modX != 0 && dir.modX != modX) || dir.modZ != 0 && dir.modZ != modZ) {
+					matches = false;
+				}
+				
+				if (matches) {
+					int index = dir == WEST || dir == EAST ? 1 : 0;
+					dirs[index] = dir;
+				}
+			}
+			
+			return dirs;
+		}
+		
 	}
 	
 }
