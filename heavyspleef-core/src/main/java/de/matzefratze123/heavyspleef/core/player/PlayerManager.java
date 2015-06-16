@@ -111,8 +111,10 @@ public class PlayerManager implements Listener {
 	private void handlePlayerLeave(Player player) {
 		SpleefPlayer spleefPlayer = getSpleefPlayer(player);
 		
-		spleefPlayer.setOnline(false);
-		onlineSpleefPlayers.remove(spleefPlayer);
+		if (spleefPlayer != null) {
+			spleefPlayer.setOnline(false);
+			onlineSpleefPlayers.remove(spleefPlayer);
+		}
 	}
 	
 }
