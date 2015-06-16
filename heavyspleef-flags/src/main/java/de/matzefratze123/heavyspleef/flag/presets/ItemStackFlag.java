@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
@@ -45,6 +46,9 @@ import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 
 public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 
+	private static final String HELP_STRING = "Syntax: <item[:data]> [<amount> [\"<item-name>\" [\"<lore-line>\" [\"<lore-line-2>\"] ...]]]";
+	private static final char TRANSLATE_CHAR = '&';
+	
 	@Override
 	public void marshal(Element element) {
 		ItemStack stack = getValue();
@@ -190,10 +194,10 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 
 	@Override
 	public ItemStack parseInput(Player player, String input) throws InputParseException {
-		String components[] = input.split(" ");
+		String components[] = splitWithQuotes(input, " ");
 
 		if (components.length == 0) {
-			throw new InputParseException("No value was given for this itemstack flag");
+			throw new InputParseException("No value was given for this itemstack flag\n" + HELP_STRING);
 		}
 
 		int amount = 1;
@@ -203,19 +207,71 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 			try {
 				amount = Integer.parseInt(components[1]);
 			} catch (NumberFormatException e) {
-				throw new InputParseException("Invalid amount '" + components[1] + "' given");
+				throw new InputParseException("Invalid amount '" + components[1] + "' given\n" + HELP_STRING);
 			}
 		}
 
 		ItemStack stack = data.toItemStack(amount);
+		if (components.length > 2) {
+			String displayName = ChatColor.translateAlternateColorCodes(TRANSLATE_CHAR, components[2]);
+			ItemMeta meta = stack.getItemMeta();
+			
+			meta.setDisplayName(displayName);
+			
+			if (components.length > 3) {
+				List<String> lore = Lists.newArrayList();
+				for (int i = 3; i < components.length; i++) {
+					String loreLine = components[i];
+					loreLine = ChatColor.translateAlternateColorCodes(TRANSLATE_CHAR, loreLine);
+					
+					lore.add(loreLine);
+				}
+				
+				meta.setLore(lore);
+			}
+			
+			stack.setItemMeta(meta);
+		}
+		
 		return stack;
+	}
+	
+	private String[] splitWithQuotes(String input, String regex) {
+		List<String> components = Lists.newArrayList();
+		String[] splitParts = input.split(regex);
+		String current = "";
+		boolean readingWithQuotes = false;
+		
+		for (int i = 0; i < splitParts.length; i++) {
+			String part = splitParts[i];
+			
+			if (part.startsWith("\"")) {
+				readingWithQuotes = true;
+				current += part.substring(1);
+			} else if (readingWithQuotes) {
+				current += " ";
+				
+				if (part.endsWith("\"")) {
+					current += part.substring(0, part.length() - 1);
+					components.add(current);
+					current = "";
+					readingWithQuotes = false;
+				} else {
+					current += part;
+				}
+			} else {
+				components.add(part);
+			}
+		}
+		
+		return components.toArray(new String[components.size()]);
 	}
 	
 	@SuppressWarnings("deprecation")
 	protected MaterialData parseMaterial(String str) throws InputParseException {
 		String[] parts = str.split(":");
 		if (parts.length == 0) {
-			throw new InputParseException("No item material and data given");
+			throw new InputParseException("No item material and data given\n" + HELP_STRING);
 		}
 
 		Material material = getMaterialByName(parts[0]);
@@ -225,7 +281,7 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 			try {
 				data = Byte.parseByte(parts[1]);
 			} catch (NumberFormatException nfe) {
-				throw new InputParseException("Invalid data for item: '" + parts[1] + "'");
+				throw new InputParseException("Invalid data for item: '" + parts[1] + "'\n" + HELP_STRING);
 			}
 		}
 
@@ -246,7 +302,7 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 				id = ItemType.lookup(str).getID();
 			} catch (Exception e1) {
 				// Failed again, no suitable material found
-				throw new InputParseException("Invalid item material '" + str + "'");
+				throw new InputParseException("Invalid item material '" + str + "'\n" + HELP_STRING);
 			}
 		}
 
