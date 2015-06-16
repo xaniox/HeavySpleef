@@ -100,6 +100,17 @@ public class CommandFlag {
 			Class<? extends AbstractFlag<?>> flagClass = registry.getFlagClass(flagPath);
 			Flag flagData = registry.getFlagData(flagClass);
 			
+			HookReference[] references = flagData.depend();
+			HookManager hookManager = heavySpleef.getHookManager();
+			
+			for (HookReference ref : references) {
+				Hook hook = hookManager.getHook(ref);
+				
+				CommandValidate.isTrue(hook.isProvided(), i18n.getVarString(Messages.Command.FLAG_REQUIRES_HOOK)
+						.setVariable("hook", hook.getName())
+						.toString());
+			}
+			
 			AbstractFlag<Object> flag;
 			boolean existingFlag = false;
 			
@@ -129,17 +140,6 @@ public class CommandFlag {
 				}
 			} catch (ValidationException e) {
 				throw new CommandException(e.getMessage());
-			}
-			
-			HookReference[] references = flagData.depend();
-			HookManager hookManager = heavySpleef.getHookManager();
-			
-			for (HookReference ref : references) {
-				Hook hook = hookManager.getHook(ref);
-				
-				CommandValidate.isTrue(hook.isProvided(), i18n.getVarString(Messages.Command.FLAG_REQUIRES_HOOK)
-						.setVariable("hook", hook.getName())
-						.toString());
 			}
 			
 			validateFlagParents(flagData, game);
