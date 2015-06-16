@@ -948,15 +948,10 @@ public class Game implements VariableSuppliable {
 	/* Event hooks */
 	@SuppressWarnings("deprecation")
 	public void onPlayerInteract(PlayerInteractEvent event, SpleefPlayer player) {
-		if (gameState != GameState.INGAME) {
-			return;
-		}
-		
+		Block block = event.getClickedBlock();
 		Action action = event.getAction();
-		boolean isInstantBreak = getPropertyValue(GameProperty.INSTANT_BREAK);
-		boolean playBreakEffect = getPropertyValue(GameProperty.PLAY_BLOCK_BREAK);
 		
-		PlayerInteractGameEvent spleefEvent = new PlayerInteractGameEvent(this, player);
+		PlayerInteractGameEvent spleefEvent = new PlayerInteractGameEvent(this, player, block, action);
 		eventBus.callEvent(spleefEvent);
 		
 		if (spleefEvent.isCancelled()) {
@@ -964,8 +959,14 @@ public class Game implements VariableSuppliable {
 			return;
 		}
 		
+		if (gameState != GameState.INGAME) {
+			return;
+		}
+		
+		boolean isInstantBreak = getPropertyValue(GameProperty.INSTANT_BREAK);
+		boolean playBreakEffect = getPropertyValue(GameProperty.PLAY_BLOCK_BREAK);
+		
 		if (action == Action.LEFT_CLICK_BLOCK && isInstantBreak) {
-			Block block = event.getClickedBlock();
 			boolean breakBlock = false;
 			
 			for (Floor floor : floors.values()) {
@@ -976,6 +977,13 @@ public class Game implements VariableSuppliable {
 			}
 			
 			if (breakBlock) {
+				PlayerBlockBreakEvent breakEvent = new PlayerBlockBreakEvent(this, player, block);
+				eventBus.callEvent(breakEvent);
+				
+				if (breakEvent.isCancelled()) {
+					return;
+				}
+				
 				Material blockMaterial = block.getType();
 				block.setType(Material.AIR);
 				
@@ -993,15 +1001,7 @@ public class Game implements VariableSuppliable {
 			return;
 		}
 		
-		PlayerBlockBreakEvent spleefEvent = new PlayerBlockBreakEvent(this, player, event.getBlock());
-		eventBus.callEvent(spleefEvent);
-		
 		Block block = event.getBlock();
-		
-		if (spleefEvent.isCancelled()) {
-			event.setCancelled(true);
-			return;
-		}
 		
 		boolean onFloor = false;
 		for (Floor floor : floors.values()) {
@@ -1017,6 +1017,15 @@ public class Game implements VariableSuppliable {
 		if ((!onFloor && disableBuild) || disableFloorBreak) {
 			event.setCancelled(true);
 		} else {
+			PlayerBlockBreakEvent spleefEvent = new PlayerBlockBreakEvent(this, player, event.getBlock());
+			eventBus.callEvent(spleefEvent);
+			
+			
+			if (spleefEvent.isCancelled()) {
+				event.setCancelled(true);
+				return;
+			}
+			
 			addBlockBroken(player, block);
 			//Prevent drops
 			block.setType(Material.AIR);
@@ -1127,6 +1136,7 @@ public class Game implements VariableSuppliable {
 			return;
 		}
 		
+		killedPlayers.remove(respawning);
 		Bukkit.getScheduler().scheduleSyncDelayedTask(heavySpleef.getPlugin(), new Runnable() {
 			
 			@Override

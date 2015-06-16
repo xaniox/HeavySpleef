@@ -17,15 +17,25 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
+import lombok.Getter;
+
+import org.bukkit.block.Block;
+import org.bukkit.event.block.Action;
+
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class PlayerInteractGameEvent extends PlayerGameEvent implements Cancellable {
 
 	private boolean cancel;
+	private @Getter Block block;
+	private @Getter Action action;
 	
-	public PlayerInteractGameEvent(Game game, SpleefPlayer player) {
+	public PlayerInteractGameEvent(Game game, SpleefPlayer player, Block block, Action action) {
 		super(game, player);
+		
+		this.block = block;
+		this.action = action;
 	}
 
 	@Override
