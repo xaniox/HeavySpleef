@@ -76,13 +76,18 @@ public class CommandFlag {
 		Game game = manager.getGame(gameName);
 		String flagPath = context.getString(1);
 		String removeIdentifier = context.getStringSafely(2);
+		Class<? extends AbstractFlag<?>> flagClass = registry.getFlagClass(flagPath);
+		
+		CommandValidate.notNull(flagClass, i18n.getVarString(Messages.Command.FLAG_DOESNT_EXIST)
+				.setVariable("flag", flagPath)
+				.toString());
 		
 		if (context.argsLength() > 2 && (removeIdentifier.equalsIgnoreCase("remove") || removeIdentifier.equalsIgnoreCase("clear"))) {
 			CommandValidate.isTrue(game.isFlagPresent(flagPath), i18n.getVarString(Messages.Command.FLAG_NOT_PRESENT)
 					.setVariable("flag", flagPath)
 					.toString());
 			
-			game.removeFlag(flagPath);
+			game.removeFlag(flagClass);
 			player.sendMessage(i18n.getVarString(Messages.Command.FLAG_REMOVED)
 					.setVariable("flag", flagPath)
 					.toString());
@@ -97,7 +102,6 @@ public class CommandFlag {
 				}
 			}
 			
-			Class<? extends AbstractFlag<?>> flagClass = registry.getFlagClass(flagPath);
 			Flag flagData = registry.getFlagData(flagClass);
 			
 			HookReference[] references = flagData.depend();
