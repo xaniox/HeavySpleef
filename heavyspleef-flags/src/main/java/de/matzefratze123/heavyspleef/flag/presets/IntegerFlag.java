@@ -32,7 +32,7 @@ public abstract class IntegerFlag extends AbstractFlag<Integer> {
 		try {
 			result = Integer.parseInt(input);
 		} catch (NumberFormatException nfe) {
-			throw new InputParseException(input);
+			throw new InputParseException("Did not receive a number: " + input);
 		}
 		
 		return result;
