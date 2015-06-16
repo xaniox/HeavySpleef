@@ -148,6 +148,7 @@ public interface Messages {
 		public static final String INVALID_TIMEOUT = PREFIX + "invalid-timeout";
 
 		public static final String UNSUFFICIENT_FUNDS = PREFIX + "unsufficient-funds";
+		public static final String FLAG_DOESNT_EXIST = PREFIX + "flag-doesnt-exist";
 		
 	}
 	
@@ -170,6 +171,8 @@ public interface Messages {
 		public static final String TEAM_IS_OUT = PREFIX + "team-is-out"; // $[color]
 		public static final String NEED_FLOORS = PREFIX + "need-floors";
 		public static final String TOO_FEW_PLAYERS_TEAM = PREFIX + "too-few-players-team"; // $[amount]
+
+		public static final String FLOORS_REGENERATED = PREFIX + "floors-regenerated";
 		
 	}
 	

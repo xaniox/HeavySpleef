@@ -61,7 +61,7 @@ public class FlagRegen extends IntegerFlag {
 			task.cancel();
 		}
 		
-		task.run();
+		task.start();
 	}
 	
 	@Subscribe
@@ -77,6 +77,8 @@ public class FlagRegen extends IntegerFlag {
 		
 		public RegenerationTask(Game game, int interval) {
 			super(getHeavySpleef().getPlugin(), TaskType.SYNC_REPEATING_TASK, interval * 20L, interval * 20L);
+			
+			this.game = game;
 		}
 
 		@Override
@@ -86,6 +88,8 @@ public class FlagRegen extends IntegerFlag {
 			for (Floor floor : game.getFloors()) {
 				floor.generate(session);
 			}
+			
+			game.broadcast(getI18N().getString(Messages.Broadcast.FLOORS_REGENERATED));
 		}
 		
 	}

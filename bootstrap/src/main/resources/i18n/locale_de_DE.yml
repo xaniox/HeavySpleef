@@ -126,6 +126,7 @@ command:
   invalid-timeout: "Der Timeout muss größer als 0 sein"
   
   unsufficient-funds: "Du benötigst mindestens [$amount] um diesem Spiel beitreten zu können!"
+  flag-doesnt-exist: "Diese Flag existiert nicht!"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -142,6 +143,8 @@ broadcast:
   team-is-out: "Das Team $[color] hat verloren und ist ausgeschieden"
   need-floors: "Dieses Spiel benötigt mindestens eine Ebene um zu Starten"
   too-few-players-team: "Es werden mindestens $[amount] Spieler in jedem Team benötigt um das Spiel zu starten"
+  
+  floors-regenerated: "Alle Ebenen wurden regeneriert"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"
