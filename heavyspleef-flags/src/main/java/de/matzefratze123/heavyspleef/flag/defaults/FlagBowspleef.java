@@ -202,6 +202,11 @@ public class FlagBowspleef extends BooleanFlag {
 		projectile.remove();
 		
 		for (Block block : blocks) {
+			if (!game.canSpleef(blockHit)) {
+				//Cannot remove this block
+				continue;
+			}
+			
 			game.addBlockBroken(shooter, block);
 			
 			// Play an animation
