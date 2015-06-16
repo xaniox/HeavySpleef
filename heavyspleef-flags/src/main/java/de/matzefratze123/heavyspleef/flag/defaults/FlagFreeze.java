@@ -87,13 +87,13 @@ public class FlagFreeze extends BooleanFlag {
 	
 	@Subscribe
 	public void onPlayerLeaveGame(PlayerLeaveGameEvent event) {
-		task.removeFrozenPlayer(event.getPlayer());
+		unfreezePlayer(event.getPlayer());
 		
 		checkTaskNeed();
 	}
 	
 	private void checkTaskNeed() {
-		if (!task.hasPlayersLeft()) {
+		if (!task.hasPlayersLeft() && task.isRunning()) {
 			task.cancel();
 		}
 	}
