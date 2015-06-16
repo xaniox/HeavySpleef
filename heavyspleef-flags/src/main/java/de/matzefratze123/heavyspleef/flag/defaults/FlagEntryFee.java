@@ -20,8 +20,10 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import net.milkbowl.vault.economy.Economy;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
@@ -58,13 +60,32 @@ public class FlagEntryFee extends DoubleFlag {
 	}
 	
 	@Subscribe
+	public void onPlayerPreJoinGame(PlayerPreJoinGameEvent event) {
+		//Check if the player has sufficient funds
+		SpleefPlayer player = event.getPlayer();
+		double amount = getValue();
+		
+		Economy economy = getEconomy();
+		if (economy.has(player.getBukkitPlayer(), amount)) {
+			return;
+		}
+		
+		//Don't let this player join
+		event.setJoinResult(JoinResult.PERMANENT_DENY);
+		event.setMessage(getI18N().getVarString(Messages.Command.UNSUFFICIENT_FUNDS)
+				.setVariable("amount", economy.format(amount))
+				.toString());
+	}
+	
+	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		double fee = getValue();
+		Economy economy = getEconomy();
 		
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
-			getEconomy().withdrawPlayer(player.getBukkitPlayer(), fee);
+			economy.withdrawPlayer(player.getBukkitPlayer(), fee);
 			player.sendMessage(getI18N().getVarString(Messages.Player.PAID_ENTRY_FEE)
-					.setVariable("amount", getEconomy().format(fee))
+					.setVariable("amount", economy.format(fee))
 					.toString());
 		}
 	}

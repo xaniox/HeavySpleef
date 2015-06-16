@@ -146,6 +146,8 @@ public interface Messages {
 		public static final String INVALID_TEAM_MIN_SIZE = PREFIX + "invalid-team-min-size";
 		public static final String INVALID_SNOWBALL_AMOUNT = PREFIX + "invalid-snowball-amount";
 		public static final String INVALID_TIMEOUT = PREFIX + "invalid-timeout";
+
+		public static final String UNSUFFICIENT_FUNDS = PREFIX + "unsufficient-funds";
 		
 	}
 	

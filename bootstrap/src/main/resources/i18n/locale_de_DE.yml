@@ -124,6 +124,8 @@ command:
   invalid-team-min-size: "Die minimale Teamgröße muss größer als 1 sein"
   invalid-snowball-amount: "Die Anzahl an Schneebällen muss größer als 0 sein"
   invalid-timeout: "Der Timeout muss größer als 0 sein"
+  
+  unsufficient-funds: "Du benötigst mindestens [$amount] um diesem Spiel beitreten zu können!"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
