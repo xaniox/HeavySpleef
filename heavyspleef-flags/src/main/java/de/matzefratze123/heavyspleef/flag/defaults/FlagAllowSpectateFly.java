@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,12 +26,23 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
 @Flag(name = "allow-fly", parent = FlagSpectate.class)
 public class FlagAllowSpectateFly extends BooleanFlag {
+	
+	@Override
+	public void onFlagRemove(Game game) {
+		FlagSpectate flag = (FlagSpectate) getParent();
+		Set<SpleefPlayer> spectators = flag.getSpectators();
+		
+		for (SpleefPlayer player : spectators) {
+			handleQuit(player);
+		}
+	}
 	
 	@Override
 	public void getDescription(List<String> description) {
@@ -58,7 +70,10 @@ public class FlagAllowSpectateFly extends BooleanFlag {
 	
 	private void handleQuit(PlayerEvent event) {
 		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
-		
+		handleQuit(player);
+	}
+	
+	private void handleQuit(SpleefPlayer player) {
 		FlagSpectate parent = (FlagSpectate) getParent();
 		if (parent.isSpectating(player)) {
 			Player bukkitPlayer = player.getBukkitPlayer();
