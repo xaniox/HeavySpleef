@@ -461,10 +461,10 @@ public class FlagRegistry {
 		
 		Validate.isTrue(foundHolder != null, "Child candidate flag " + childCandidate.getName() + " has not been registered");
 		
-		Flag annotation = inverse.get(childCandidate).getSecondaryKey();
+		Flag annotation = inverse.get(foundHolder).getSecondaryKey();
 		
 		Validate.isTrue(annotation != null, "ChildCandidate has not been registered");
-		return annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == childCandidate;
+		return annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == parent;
 	}
 	
 	public void registerInjector(Injector<AbstractFlag<?>> injector) {
