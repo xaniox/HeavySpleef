@@ -45,12 +45,12 @@ import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 @Flag(name = "freeze")
 public class FlagFreeze extends BooleanFlag {
 	
-	private static final int POTION_AMPLIFIER = 127;
+	private static final int POTION_AMPLIFIER = 128;
 	private static final float DEFAULT_WALK_SPEED = 0.2f;
 	private static MovementCheckTask task;
 	
 	@FlagInit
-	public void initMovementCheckTask(HeavySpleef heavySpleef) {
+	public static void initMovementCheckTask(HeavySpleef heavySpleef) {
 		//Instantiate the task class but do not start the task
 		task = new MovementCheckTask(heavySpleef);
 	}
@@ -165,7 +165,11 @@ public class FlagFreeze extends BooleanFlag {
 				Location freezeLoc = freezeLocations.get(player);
 				
 				if (now.getX() != freezeLoc.getX() || now.getY() != freezeLoc.getY() || now.getZ() != freezeLoc.getZ()) {
-					player.teleport(freezeLoc);
+					Location tpLocation = freezeLoc.clone();
+					tpLocation.setYaw(now.getYaw());
+					tpLocation.setPitch(now.getPitch());
+					
+					player.teleport(tpLocation);
 				}
 			}
 		}
