@@ -21,10 +21,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.Command;
@@ -55,34 +62,60 @@ import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 
-@Flag(name = "spectate")
+@Flag(name = "spectate", hasCommands = true)
 @BukkitListener
 public class FlagSpectate extends LocationFlag {
 	
 	private Set<SpleefPlayer> spectators;
+	private Set<SpleefPlayer> deadPlayers;
 	
-	@Command(name = "spectate", description = "Spectates a spleef game", minArgs = 1, 
-			usage = "/spleef spectate <game>", permission = "heavyspleef.spectate")
+	@Command(name = "spectate", description = "Spectates a spleef game", 
+			usage = "/spleef spectate [game]", permission = "heavyspleef.spectate")
 	@PlayerOnly
 	public static void onSpectateCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player player = context.getSender();
 		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
-		String gameName = context.getString(0);
+		String gameName = context.getStringSafely(0);
 		final I18N i18n = I18NManager.getGlobal();
 		
 		GameManager manager = heavySpleef.getGameManager();
-		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
-				.setVariable("game", gameName)
-				.toString());
 		
-		Game game = manager.getGame(gameName);
-		FlagSpectate spectateFlag = game.getFlag(FlagSpectate.class);
+		Game game = null;
+		FlagSpectate spectateFlag = null;
 		
-		CommandValidate.isTrue(spectateFlag != null, i18n.getString(Messages.Player.NO_SPECTATE_FLAG));
+		for (Game otherGame : manager.getGames()) {
+			if (!otherGame.isFlagPresent(FlagSpectate.class)) {
+				continue;
+			}
+			
+			FlagSpectate flag = otherGame.getFlag(FlagSpectate.class);
+			if (!flag.isSpectating(spleefPlayer)) {
+				continue;
+			}
+			
+			game = otherGame;
+			spectateFlag = flag;
+			break;
+		}
+		
+		if (game == null) {
+			CommandValidate.isTrue(!gameName.isEmpty(), i18n.getVarString(Messages.Command.USAGE_FORMAT)
+					.setVariable("usage", context.getCommand().getUsage())
+					.toString());
+			CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
+					.setVariable("game", gameName)
+					.toString());
+			
+			game = manager.getGame(gameName);
+			
+			spectateFlag = game.getFlag(FlagSpectate.class);
+			CommandValidate.notNull(spectateFlag, i18n.getString(Messages.Player.NO_SPECTATE_FLAG));
+		}
+		
 		CommandValidate.isTrue(game.getFlag(FlagQueueLobby.class) == null || !game.isQueued(spleefPlayer), 
-				i18n.getString(i18n.getString(Messages.Command.CANNOT_SPECTATE_IN_QUEUE_LOBBY)));
+				i18n.getString(Messages.Command.CANNOT_SPECTATE_IN_QUEUE_LOBBY));
 		
-		if (spectateFlag.isSpectating(spleefPlayer)) {			
+		if (!spectateFlag.isSpectating(spleefPlayer)) {			
 			spectateFlag.spectate(spleefPlayer, game);
 			spleefPlayer.sendMessage(i18n.getVarString(Messages.Player.PLAYER_SPECTATE)
 					.setVariable("game", game.getName())
@@ -109,6 +142,7 @@ public class FlagSpectate extends LocationFlag {
 	
 	public FlagSpectate() {
 		this.spectators = Sets.newHashSet();
+		this.deadPlayers = Sets.newHashSet();
 	}
 	
 	@Override
@@ -144,7 +178,58 @@ public class FlagSpectate extends LocationFlag {
 			return;
 		}
 		
+		deadPlayers.add(player);
+	}
+	
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+		if (!deadPlayers.contains(player)) {
+			return;
+		}
+		
+		deadPlayers.remove(player);
 		leave(player);
+	}
+	
+	@EventHandler
+	public void onFoodLevelChange(FoodLevelChangeEvent event) {
+		HumanEntity entity = event.getEntity();
+		if (!(entity instanceof Player)) {
+			return;
+		}
+		
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(entity);
+		if (!isSpectating(player)) {
+			return;
+		}
+		
+		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onPlayerBreakBlock(BlockBreakEvent event) {
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+		if (!isSpectating(player)) {
+			return;
+		}
+		
+		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event) {
+		Entity entity = event.getEntity();
+		if (!(entity instanceof Player)) {
+			return;
+		}
+		
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(entity);
+		if (!isSpectating(player)) {
+			return;
+		}
+		
+		event.setCancelled(true);
 	}
 	
 	public void spectate(SpleefPlayer player, Game game) {
@@ -162,12 +247,23 @@ public class FlagSpectate extends LocationFlag {
 	
 	public void leave(SpleefPlayer player) {
 		PlayerStateHolder state = player.getPlayerState(this);
+		if (state != null) {
+			state.apply(player.getBukkitPlayer(), true);
+		} else {
+			//Ugh, something went wrong
+			player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+		}
+		
 		state.apply(player.getBukkitPlayer(), false);
 		spectators.remove(player);
 	}
 	
 	public boolean isSpectating(SpleefPlayer player) {
 		return spectators.contains(player);
+	}
+	
+	public Set<SpleefPlayer> getSpectators() {
+		return ImmutableSet.copyOf(spectators);
 	}
 	
 	@Extension(name = "spectate-sign")
