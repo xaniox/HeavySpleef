@@ -48,12 +48,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -134,6 +136,7 @@ public class Game implements VariableSuppliable {
 	private EventBus eventBus;
 	private Set<SpleefPlayer> ingamePlayers;
 	private @Getter List<SpleefPlayer> deadPlayers;
+	private List<SpleefPlayer> killedPlayers;
 	private @Getter BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
 	private Queue<SpleefPlayer> queuedPlayers;
@@ -159,6 +162,7 @@ public class Game implements VariableSuppliable {
 		this.deadPlayers = Lists.newArrayList();
 		this.eventBus = heavySpleef.getGlobalEventBus().newChildBus();
 		this.statisticRecorder = new StatisticRecorder(heavySpleef.getDatabaseHandler(), heavySpleef.getLogger());
+		this.killedPlayers = Lists.newArrayList();
 		
 		eventBus.registerListener(statisticRecorder);
 		setGameState(GameState.WAITING);
@@ -538,7 +542,7 @@ public class Game implements VariableSuppliable {
 		}
 		
 		SpleefPlayer killer = null;
-		if (cause == QuitCause.LOSE && args.length > 0 && args[0] != null && args[0] instanceof SpleefPlayer) {
+		if (cause == QuitCause.LOSE && args != null && args.length > 0 && args[0] != null && args[0] instanceof SpleefPlayer) {
 			killer = (SpleefPlayer) args[0];
 		}
 		
@@ -555,12 +559,18 @@ public class Game implements VariableSuppliable {
 		Location tpLoc = event.getTeleportationLocation();
 		
 		//Receive the state back
-		PlayerStateHolder playerState = player.getPlayerState(this);
-		if (playerState != null) {
-			playerState.apply(player.getBukkitPlayer(), tpLoc == null);
+		if (!player.getBukkitPlayer().isDead()) {
+			PlayerStateHolder playerState = player.getPlayerState(this);
+			if (playerState != null) {
+				playerState.apply(player.getBukkitPlayer(), tpLoc == null);
+			} else {
+				//Ugh, something went wrong
+				player.sendMessage(i18n.getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+			}
 		} else {
-			//Ugh, something went wrong
-			player.sendMessage(i18n.getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+			//Keep track of this dead player to restore
+			//his inventory on respawn
+			killedPlayers.add(player);
 		}
 		
 		if (tpLoc != null) {
@@ -582,13 +592,13 @@ public class Game implements VariableSuppliable {
 			String message = null;
 			
 			int messageIndex = 0;
-			if (args.length > 0 && args[0] instanceof CommandSender) {
+			if (args != null && args.length > 0 && args[0] instanceof CommandSender) {
 				// Caller gave us a client player
 				clientPlayer = (CommandSender) args[0];
 				messageIndex = 1;
 			}
 			
-			if (args.length > messageIndex && args[messageIndex] instanceof String) {
+			if (args != null && args.length > messageIndex && args[messageIndex] instanceof String) {
 				// Caller gave us a kick message
 				message = (String) args[1];
 			}
@@ -1083,7 +1093,7 @@ public class Game implements VariableSuppliable {
 		requestLose(quitter, QuitCause.SELF);
 	}
 	
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event, SpleefPlayer typing) {
 		boolean blockCommands = getPropertyValue(GameProperty.BLOCK_COMMANDS); 
 		if (!blockCommands) {
 			return;
@@ -1106,6 +1116,32 @@ public class Game implements VariableSuppliable {
 		//Block this command
 		event.setCancelled(true);
 		event.getPlayer().sendMessage(i18n.getString(Messages.Player.COMMAND_NOT_ALLOWED));
+	}
+	
+	public void onPlayerDeath(PlayerDeathEvent event, SpleefPlayer dead) {
+		requestLose(dead, QuitCause.SELF);
+	}
+
+	public void onPlayerRespawn(PlayerRespawnEvent event, final SpleefPlayer respawning) {
+		if (!killedPlayers.contains(respawning)) {
+			return;
+		}
+		
+		Bukkit.getScheduler().scheduleSyncDelayedTask(heavySpleef.getPlugin(), new Runnable() {
+			
+			@Override
+			public void run() {
+				if (respawning.isOnline()) {
+					PlayerStateHolder playerState = respawning.getPlayerState(this);
+					if (playerState != null) {
+						playerState.apply(respawning.getBukkitPlayer(), true);
+					} else {
+						//Ugh, something went wrong
+						respawning.sendMessage(i18n.getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+					}
+				}
+			}
+		}, 10L);
 	}
 	
 	public enum JoinResult {
