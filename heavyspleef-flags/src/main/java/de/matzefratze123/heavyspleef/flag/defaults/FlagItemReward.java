@@ -92,10 +92,10 @@ public class FlagItemReward extends ItemStackListFlag {
 				continue;
 			}
 			
-			return true;
+			return false;
 		}
 		
-		return false;
+		return true;
 	}
 	
 	@Flag(name = "add", parent = FlagItemReward.class)
