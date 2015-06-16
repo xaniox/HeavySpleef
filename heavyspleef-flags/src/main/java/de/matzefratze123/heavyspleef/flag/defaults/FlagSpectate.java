@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.google.common.collect.Sets;
 
@@ -42,6 +44,7 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.SignExtension;
+import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -53,6 +56,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 
 @Flag(name = "spectate")
+@BukkitListener
 public class FlagSpectate extends LocationFlag {
 	
 	private Set<SpleefPlayer> spectators;
@@ -131,6 +135,16 @@ public class FlagSpectate extends LocationFlag {
 		if (game.getFlag(FlagQueueLobby.class) != null) {
 			event.setCancelled(true);
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent event) {
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getEntity());
+		if (!isSpectating(player)) {
+			return;
+		}
+		
+		leave(player);
 	}
 	
 	public void spectate(SpleefPlayer player, Game game) {
