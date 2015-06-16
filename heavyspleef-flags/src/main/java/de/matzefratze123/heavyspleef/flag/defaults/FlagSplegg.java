@@ -22,11 +22,14 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -37,10 +40,13 @@ import org.bukkit.util.BlockIterator;
 import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -85,6 +91,33 @@ public class FlagSplegg extends BooleanFlag {
 			
 			player.getBukkitPlayer().updateInventory();
 		}
+	}
+	
+	@Subscribe
+	public void onPlayerInteractGame(PlayerInteractGameEvent event) {
+		HeavySpleef heavySpleef = getHeavySpleef();
+		SpleefPlayer player = event.getPlayer();
+		
+		Action action = event.getAction();
+		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+		
+		GameManager manager = heavySpleef.getGameManager();
+		Game game = manager.getGame(player);
+		
+		if (game == null || game.getGameState() != GameState.INGAME) { 
+			return;
+		}
+		
+		Player bukkitPlayer = player.getBukkitPlayer();
+		ItemStack inHand = bukkitPlayer.getItemInHand();
+		if (inHand.getType() != SPLEGG_LAUNCHER_ITEMSTACK.getType()) {
+			return;
+		}
+		
+		bukkitPlayer.launchProjectile(Arrow.class);
+		bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.GHAST_FIREBALL, 0.4f, 2f);
 	}
 	
 	@EventHandler
