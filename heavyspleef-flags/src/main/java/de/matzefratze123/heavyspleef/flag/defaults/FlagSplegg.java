@@ -24,7 +24,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -116,7 +115,7 @@ public class FlagSplegg extends BooleanFlag {
 			return;
 		}
 		
-		bukkitPlayer.launchProjectile(Arrow.class);
+		bukkitPlayer.launchProjectile(Egg.class);
 		bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.GHAST_FIREBALL, 0.4f, 2f);
 	}
 	
