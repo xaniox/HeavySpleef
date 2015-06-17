@@ -46,14 +46,15 @@ public class DefaultCommandExecution implements CommandExecution {
 	public void execute(CommandContext context, MessageBundle bundle, PermissionChecker checker, Object[] executionArgs) {
 		CommandContainer command = context.getCommand();
 		CommandSender sender = context.getSender();
+		String prefix = this.prefix != null ? this.prefix : "";
 		
 		if (!(sender instanceof Player) && command.isPlayerOnly()) {
-			sender.sendMessage(bundle.getMessage("message-player_only"));
+			sender.sendMessage(prefix + bundle.getMessage("message-player_only"));
 			return;
 		}
 		
 		if (!command.getPermission().isEmpty() && !checker.checkPermission(sender, command.getPermission())) {
-			sender.sendMessage(bundle.getMessage("message-no_permission"));
+			sender.sendMessage(prefix + bundle.getMessage("message-no_permission"));
 			return;
 		}
 		
@@ -64,12 +65,12 @@ public class DefaultCommandExecution implements CommandExecution {
 				description = bundle.getMessage(command.getDescriptionRef());
 			}
 			
-			sender.sendMessage(bundle.getMessage("message-description_format", command.getDescription()));
+			sender.sendMessage(prefix + bundle.getMessage("message-description_format", command.getDescription()));
 			return;
 		}
 		
 		if (context.argsLength() < command.getMinArgs()) {
-			sender.sendMessage(bundle.getMessage("message-usage_format", command.getUsage()));
+			sender.sendMessage(prefix + bundle.getMessage("message-usage_format", command.getUsage()));
 			return;
 		}
 		
