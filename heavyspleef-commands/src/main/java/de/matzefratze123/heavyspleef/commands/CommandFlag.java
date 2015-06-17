@@ -62,7 +62,7 @@ public class CommandFlag {
 		
 		if (context.argsLength() < 2) {
 			//Print some fancy information about available flags
-			printAvailableFlags(registry, player);
+			printAvailableFlags(registry, player, heavySpleef.getSpleefPrefix());
 			return;
 		}
 		
@@ -168,7 +168,7 @@ public class CommandFlag {
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
 	
-	private void printAvailableFlags(FlagRegistry registry, CommandSender sender) {
+	private void printAvailableFlags(FlagRegistry registry, CommandSender sender, String prefix) {
 		DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> flags = registry.getAvailableFlags();
 		Set<String> flagNames = Sets.newTreeSet();
 		
@@ -189,7 +189,7 @@ public class CommandFlag {
 			}
 		}
 		
-		sender.sendMessage(i18n.getVarString(Messages.Player.AVAILABLE_FLAGS)
+		sender.sendMessage(prefix + i18n.getVarString(Messages.Player.AVAILABLE_FLAGS)
 				.setVariable("flags", builder.toString())
 				.toString());
 	}
