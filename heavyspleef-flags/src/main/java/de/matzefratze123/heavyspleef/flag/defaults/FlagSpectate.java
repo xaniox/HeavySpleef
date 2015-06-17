@@ -29,6 +29,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.google.common.collect.ImmutableSet;
@@ -44,6 +45,8 @@ import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.GeneralSection;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
 import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
@@ -65,6 +68,8 @@ import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 @Flag(name = "spectate", hasCommands = true)
 @BukkitListener
 public class FlagSpectate extends LocationFlag {
+	
+	private static final String SPLEEF_COMMAND = "spleef";
 	
 	private Set<SpleefPlayer> spectators;
 	private Set<SpleefPlayer> deadPlayers;
@@ -230,6 +235,32 @@ public class FlagSpectate extends LocationFlag {
 		}
 		
 		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+		if (!isSpectating(player)) {
+			return;
+		}
+		
+		String message = event.getMessage();
+		String[] components = message.split(" ");
+		
+		String command = components[0];
+		command = command.substring(1);
+		
+		DefaultConfig config = getHeavySpleef().getConfiguration(ConfigType.DEFAULT_CONFIG);
+		GeneralSection section = config.getGeneralSection();
+		
+		List<String> whitelistedCommands = section.getWhitelistedCommands();
+		if (whitelistedCommands.contains(command) || command.equalsIgnoreCase(SPLEEF_COMMAND)) {
+			return;
+		}
+		
+		//Block this command
+		event.setCancelled(true);
+		event.getPlayer().sendMessage(getI18N().getString(Messages.Player.COMMAND_NOT_ALLOWED));
 	}
 	
 	public void spectate(SpleefPlayer player, Game game) {
