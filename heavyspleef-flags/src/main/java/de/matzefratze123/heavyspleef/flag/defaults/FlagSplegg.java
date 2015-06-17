@@ -20,6 +20,9 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -28,8 +31,11 @@ import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -43,11 +49,13 @@ import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
@@ -58,6 +66,7 @@ public class FlagSplegg extends BooleanFlag {
 	private static final String SPLEGG_LAUNCHER_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Splegg Launcher";
 	private static final List<String> SPLEGG_LAUNCHER_LORE = Lists.newArrayList(ChatColor.GRAY + "Right-Click to launch an egg");
 	private static final ItemStack SPLEGG_LAUNCHER_ITEMSTACK;
+	private static Listener listener;
 	
 	static {
 		SPLEGG_LAUNCHER_ITEMSTACK = new ItemStack(Material.IRON_SPADE);
@@ -69,8 +78,20 @@ public class FlagSplegg extends BooleanFlag {
 		SPLEGG_LAUNCHER_ITEMSTACK.setItemMeta(meta);
 	}
 	
+	@FlagInit
+	public static void initListener(HeavySpleef heavySpleef) {
+		listener = new CancelHatchingListener(heavySpleef);
+		Bukkit.getPluginManager().registerEvents(listener, heavySpleef.getPlugin());
+	}
+	
+	@Unregister
+	public static void unregisterListener() {
+		HandlerList.unregisterAll(listener);
+	}
+	
 	@Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {
+		properties.put(GameProperty.INSTANT_BREAK, false);
 		properties.put(GameProperty.DISABLE_FLOOR_BREAK, true);
 	}
 
@@ -138,6 +159,7 @@ public class FlagSplegg extends BooleanFlag {
 		
 		SpleefPlayer shooter = getHeavySpleef().getSpleefPlayer(source);
 		Game game = getHeavySpleef().getGameManager().getGame(shooter);
+		projectile.remove();
 		
 		if (game == null || game.getGameState() != GameState.INGAME) {
 			return;
@@ -164,10 +186,29 @@ public class FlagSplegg extends BooleanFlag {
 			return;
 		}
 		
-		projectile.remove();
 		game.addBlockBroken(shooter, blockHit);
-		
+		projectile.getWorld().playSound(blockHit.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 0.7f);
 		blockHit.setType(Material.AIR);
+	}
+	
+	@AllArgsConstructor
+	private static class CancelHatchingListener implements Listener {
+		
+		private HeavySpleef heavySpleef;
+		
+		@EventHandler
+		public void onPlayerEggThrow(PlayerEggThrowEvent event) {
+			SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
+			GameManager manager = heavySpleef.getGameManager();
+			
+			Game game = manager.getGame(player);
+			if (game == null || !game.isFlagPresent(FlagSplegg.class)) {
+				return;
+			}
+			
+			event.setHatching(false);
+		}
+		
 	}
 	
 }
