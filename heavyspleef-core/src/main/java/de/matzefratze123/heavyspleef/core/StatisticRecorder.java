@@ -39,14 +39,14 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class StatisticRecorder implements SpleefListener {
 
-	private final AsyncReadWriteHandler databaseHandler;
+	private final HeavySpleef heavySpleef;
 	private final Logger logger;
 	private RatingCompute ratingCompute;
 	private Map<String, Statistic> loadedStatistics;
 	private long gameStartedAt;
 	
-	public StatisticRecorder(AsyncReadWriteHandler databaseHandler, Logger logger) {
-		this.databaseHandler = databaseHandler;
+	public StatisticRecorder(HeavySpleef heavySpleef, Logger logger) {
+		this.heavySpleef = heavySpleef;
 		this.logger = logger;
 		this.ratingCompute = new DefaultRatingCompute();
 	}
@@ -72,6 +72,7 @@ public class StatisticRecorder implements SpleefListener {
 			playerNames[i++] = player.getName();
 		}
 		
+		AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();
 		databaseHandler.getStatistics(playerNames, new FutureCallback<Map<String, Statistic>>() {
 
 			@Override
@@ -94,6 +95,7 @@ public class StatisticRecorder implements SpleefListener {
 			return;
 		}
 		
+		final AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();
 		final SpleefPlayer player = event.getPlayer();
 		databaseHandler.getStatistic(player.getName(), new FutureCallback<Statistic>() {
 
@@ -129,6 +131,7 @@ public class StatisticRecorder implements SpleefListener {
 			statistic.setRating(newRating.get(name));
 		}
 		
+		AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();
 		databaseHandler.saveStatistics(loadedStatistics.values(), null);
 	}
 	
@@ -184,6 +187,7 @@ public class StatisticRecorder implements SpleefListener {
 			executeAction(statistic);
 			
 			if (save) {
+				AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();
 				databaseHandler.saveStatistic(statistic, null);
 			}
 		}

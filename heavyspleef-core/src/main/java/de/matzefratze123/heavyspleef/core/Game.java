@@ -17,8 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
-import static de.matzefratze123.heavyspleef.core.HeavySpleef.PREFIX;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -115,6 +113,7 @@ import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
 
 public class Game implements VariableSuppliable {
 	
+	private static final String SPLEEF_COMMAND = "spleef";
 	private static final int NO_BLOCK_LIMIT = -1;
 	private static final int DEFAULT_COUNTDOWN = 10;
 	private static final String HAS_FLAG_PREFIX = "has_flag";
@@ -161,7 +160,7 @@ public class Game implements VariableSuppliable {
 		this.ingamePlayers = Sets.newLinkedHashSet();
 		this.deadPlayers = Lists.newArrayList();
 		this.eventBus = heavySpleef.getGlobalEventBus().newChildBus();
-		this.statisticRecorder = new StatisticRecorder(heavySpleef.getDatabaseHandler(), heavySpleef.getLogger());
+		this.statisticRecorder = new StatisticRecorder(heavySpleef, heavySpleef.getLogger());
 		this.killedPlayers = Lists.newArrayList();
 		
 		eventBus.registerListener(statisticRecorder);
@@ -453,7 +452,7 @@ public class Game implements VariableSuppliable {
 		case TEMPORARY_DENY:
 			String denyMessage = event.getMessage();
 			if (denyMessage != null) {
-				player.sendMessage(PREFIX + denyMessage);
+				player.sendMessage(denyMessage);
 			}
 			
 			return result;
@@ -489,7 +488,7 @@ public class Game implements VariableSuppliable {
 				.toString());
 		
 		if (event.getMessage() != null) {
-			player.sendMessage(PREFIX + event.getMessage());
+			player.sendMessage(event.getMessage());
 		}
 		
 		if (joinGameEvent.getStartGame()) {
@@ -924,7 +923,7 @@ public class Game implements VariableSuppliable {
 					
 					double distanceSq = center.distanceSq(playerVec);
 					if (distanceSq <= Math.pow(broadcastRadius, 2)) {
-						player.sendMessage(PREFIX + message);
+						player.sendMessage(heavySpleef.getSpleefPrefix() + message);
 					}
 				}
 				
@@ -933,7 +932,7 @@ public class Game implements VariableSuppliable {
 			
 			//$FALL-THROUGH$
 		case GLOBAL:
-			Bukkit.broadcastMessage(PREFIX + message);
+			Bukkit.broadcastMessage(heavySpleef.getSpleefPrefix() + message);
 			break;
 		case INGAME:
 			for (SpleefPlayer player : ingamePlayers) {
@@ -1118,7 +1117,7 @@ public class Game implements VariableSuppliable {
 		GeneralSection section = config.getGeneralSection();
 		
 		List<String> whitelistedCommands = section.getWhitelistedCommands();
-		if (whitelistedCommands.contains(command)) {
+		if (whitelistedCommands.contains(command) || command.equalsIgnoreCase(SPLEEF_COMMAND)) {
 			return;
 		}
 		
