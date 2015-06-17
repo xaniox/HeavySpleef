@@ -36,14 +36,16 @@ public class SpleefPlayer {
 	private WeakReference<Player> bukkitPlayerRef;
 	private String name;
 	private boolean online;
+	private final HeavySpleef heavySpleef;
 	
 	private Map<Object, PlayerStateHolder> playerStates;
 	
-	public SpleefPlayer(Player bukkitPlayer) {
+	public SpleefPlayer(Player bukkitPlayer, HeavySpleef heavySpleef) {
 		this.bukkitPlayerRef = new WeakReference<Player>(bukkitPlayer);
 		this.online = bukkitPlayer.isOnline();
 		this.playerStates = Maps.newHashMap();
 		this.name = bukkitPlayer.getName();
+		this.heavySpleef = heavySpleef;
 	}
 	
 	public Player getBukkitPlayer() {
@@ -69,7 +71,7 @@ public class SpleefPlayer {
 	
 	public void sendMessage(String message) {
 		Validate.isTrue(isOnline(), "Player is not online");
-		getBukkitPlayer().sendMessage(HeavySpleef.PREFIX + message);
+		getBukkitPlayer().sendMessage(heavySpleef.getSpleefPrefix() + message);
 	}
 	
 	public void teleport(Location location) {

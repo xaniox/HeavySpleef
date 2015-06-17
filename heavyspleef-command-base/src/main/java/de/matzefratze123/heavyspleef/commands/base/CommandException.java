@@ -36,11 +36,11 @@ public class CommandException extends Exception {
 		super(message, cause);
 	}
 	
-	public void sendToPlayer(CommandSender sender) {
+	public void sendToPlayer(String prefix, CommandSender sender) {
 		String message = getMessage();
 		
 		if (message != null) {
-			sender.sendMessage(ChatColor.RED + message);
+			sender.sendMessage((prefix != null ? prefix : "") + ChatColor.RED + message);
 		}
 	}
 

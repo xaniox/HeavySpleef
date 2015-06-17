@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -48,11 +47,14 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
+import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
+import de.matzefratze123.heavyspleef.commands.base.DefaultCommandExecution;
 import de.matzefratze123.heavyspleef.core.Updater.CheckResult;
 import de.matzefratze123.heavyspleef.core.Updater.Version;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.ConfigurationObject;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.GeneralSection;
 import de.matzefratze123.heavyspleef.core.config.ThrowingConfigurationObject.UnsafeException;
 import de.matzefratze123.heavyspleef.core.config.UpdateSection;
 import de.matzefratze123.heavyspleef.core.event.GlobalEventBus;
@@ -65,19 +67,18 @@ import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry.InitializationPolicy;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
+import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
 import de.matzefratze123.heavyspleef.core.i18n.I18NBuilder;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
-import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
+import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.core.module.Module;
 import de.matzefratze123.heavyspleef.core.module.ModuleManager;
-import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.PlayerManager;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public final class HeavySpleef {
 	
-	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + ChatColor.BOLD + "Spleef" + ChatColor.DARK_GRAY + "] ";
 	private static final String I18N_CLASSPATH_FOLDER = "i18n/";
 	
 	private Map<ConfigType, ConfigurationObject> configurations;
@@ -87,6 +88,7 @@ public final class HeavySpleef {
 	private @Getter final JavaPlugin plugin;
 	private @Getter final Logger logger;
 	
+	private @Getter String spleefPrefix;
 	private @Getter FlagRegistry flagRegistry;
 	private @Getter ExtensionRegistry extensionRegistry;
 	private @Getter @Setter CommandManager commandManager;
@@ -136,7 +138,7 @@ public final class HeavySpleef {
 		I18NManager.setGlobalBuilder(builder);
 		i18NManager = new I18NManager();
 		
-		playerManager = new PlayerManager(plugin);
+		playerManager = new PlayerManager(this);
 		hookManager = new HookManager();
 		
 		hookManager.registerHook(HookReference.VAULT);
@@ -186,7 +188,13 @@ public final class HeavySpleef {
 		loseCheckTask.start();
 		
 		DefaultConfig config = getConfiguration(ConfigType.DEFAULT_CONFIG);
+		GeneralSection generalSection = config.getGeneralSection();
 		UpdateSection updateSection = config.getUpdateSection();
+		
+		CommandManagerService service = commandManager.getService();
+		DefaultCommandExecution execution = service.getExecution();
+		spleefPrefix = generalSection.getSpleefPrefix();
+		execution.setPrefix(spleefPrefix);
 		
 		//Only check for updates when the user hasn't
 		//disabled it in the configuration
@@ -303,8 +311,14 @@ public final class HeavySpleef {
 		Locale locale = config.getLocalization().getLocale();
 		
 		i18NManager.reloadAll(locale);
-		
 		moduleManager.reloadModules();
+		
+		GeneralSection generalSection = config.getGeneralSection();
+		CommandManagerService service = commandManager.getService();
+		DefaultCommandExecution execution = service.getExecution();
+		spleefPrefix = generalSection.getSpleefPrefix();
+		
+		execution.setPrefix(spleefPrefix);
 	}
 	
 	@SuppressWarnings("unchecked")

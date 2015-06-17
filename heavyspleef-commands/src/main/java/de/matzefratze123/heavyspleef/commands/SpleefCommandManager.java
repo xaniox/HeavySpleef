@@ -102,6 +102,7 @@ public class SpleefCommandManager implements CommandManager {
 		service.unregisterCommands(clazz, spleefCommand);
 	}
 	
+	@Override
 	public CommandManagerService getService() {
 		return service;
 	}

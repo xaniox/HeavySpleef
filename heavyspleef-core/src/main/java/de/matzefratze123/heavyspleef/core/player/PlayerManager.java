@@ -29,19 +29,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+
 public class PlayerManager implements Listener {
 	
-	private Set<SpleefPlayer> onlineSpleefPlayers;
+	private final HeavySpleef heavySpleef;
+	private final Set<SpleefPlayer> onlineSpleefPlayers;
 	
-	public PlayerManager(JavaPlugin plugin) {
-		onlineSpleefPlayers = Sets.newLinkedHashSet();
+	public PlayerManager(HeavySpleef heavySpleef) {
+		this.onlineSpleefPlayers = Sets.newLinkedHashSet();
+		this.heavySpleef = heavySpleef;
 		
-		Bukkit.getPluginManager().registerEvents(this, plugin);
+		Bukkit.getPluginManager().registerEvents(this, heavySpleef.getPlugin());
 	}
 	
 	public SpleefPlayer getSpleefPlayer(final Player bukkitPlayer) {
@@ -94,7 +97,7 @@ public class PlayerManager implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
 		
-		SpleefPlayer spleefPlayer = new SpleefPlayer(player);
+		SpleefPlayer spleefPlayer = new SpleefPlayer(player, heavySpleef);
 		onlineSpleefPlayers.add(spleefPlayer);
 	}
 	

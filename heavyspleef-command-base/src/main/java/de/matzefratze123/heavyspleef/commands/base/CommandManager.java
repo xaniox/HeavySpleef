@@ -22,5 +22,7 @@ public interface CommandManager {
 	public void registerSpleefCommands(Class<?> clazz);
 
 	public void unregisterSpleefCommand(Class<?> clazz);
+	
+	public CommandManagerService getService();
 
 }

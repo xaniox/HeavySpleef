@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import lombok.Getter;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -41,7 +43,7 @@ public class CommandManagerService implements CommandExecutor {
 	
 	private final JavaPlugin plugin;
 	private final Logger logger;
-	private final DefaultCommandExecution execution;
+	private final @Getter DefaultCommandExecution execution;
 	private Object[] args;
 	private Instantiator instantiator;
 	private MessageBundle messageBundle;
@@ -58,7 +60,7 @@ public class CommandManagerService implements CommandExecutor {
 		InputStream defaultMessagesStream = getClass().getResourceAsStream("/command_messages.yml");
 		this.messageBundle = new MessageBundle(messageProvider, defaultMessagesStream);
 		this.permissionChecker = permissionChecker;
-		this.execution = new DefaultCommandExecution(plugin);
+		this.execution = new DefaultCommandExecution(plugin, null);
 	}
 	
 	public static <T> void registerTransformer(Class<T> returnType, Transformer<T> transformer) {

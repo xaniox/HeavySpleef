@@ -22,6 +22,8 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.Setter;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -30,12 +32,14 @@ public class DefaultCommandExecution implements CommandExecution {
 
 	private static final String[] HELP_IDENTIFIERS = {"?", "help"};
 	
+	private @Setter String prefix;
 	private Plugin plugin;
 	private Logger logger;
 	
-	public DefaultCommandExecution(Plugin plugin) {
+	public DefaultCommandExecution(Plugin plugin, String prefix) {
 		this.plugin = plugin;
 		this.logger = plugin.getLogger();
+		this.prefix = prefix;
 	}
 	
 	@Override
@@ -115,7 +119,7 @@ public class DefaultCommandExecution implements CommandExecution {
 			Throwable cause = e.getCause();
 			
 			if (cause instanceof CommandException) {
-				((CommandException) cause).sendToPlayer(context.getSender());
+				((CommandException) cause).sendToPlayer(prefix, context.getSender());
 			} else {
 				logger.log(Level.SEVERE, "Unhandled exception executing command \"" + context.getCommand().getName() + "\"", cause);
 			}
