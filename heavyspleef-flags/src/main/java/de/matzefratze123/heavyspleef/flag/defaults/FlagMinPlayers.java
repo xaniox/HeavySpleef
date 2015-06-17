@@ -19,6 +19,8 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
@@ -44,10 +46,23 @@ public class FlagMinPlayers extends IntegerFlag {
 	
 	@Subscribe(priority = Priority.HIGH)
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
-		int playersNow = event.getGame().getPlayers().size();
-		if (playersNow < getValue()) {
+		Game game = event.getGame();
+		if (!isStartAllowed(game)) {
 			event.setStartGame(false);
 		}
+	}
+	
+	@Subscribe
+	public void onGameCountdown(GameCountdownEvent event) {
+		Game game = event.getGame();
+		if (!isStartAllowed(game)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	private boolean isStartAllowed(Game game) {
+		int playersNow = game.getPlayers().size();
+		return playersNow >= getValue();
 	}
 
 }
