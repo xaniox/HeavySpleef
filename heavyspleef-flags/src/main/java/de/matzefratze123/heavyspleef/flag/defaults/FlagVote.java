@@ -48,9 +48,11 @@ import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
-import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
+import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.SignExtension;
@@ -126,8 +128,13 @@ public class FlagVote extends BooleanFlag {
 		}
 	}
 	
-	@Subscribe
-	public void onGameEnd(PlayerGameEvent event) {
+	@Subscribe(priority = Priority.MONITOR)
+	public void onPlayerJoin(PlayerJoinGameEvent event) {
+		checkVotes(event.getGame());
+	}
+	
+	@Subscribe(priority = Priority.MONITOR)
+	public void onGameCountdown(GameCountdownEvent event) {
 		voted.clear();
 	}
 	
@@ -149,7 +156,10 @@ public class FlagVote extends BooleanFlag {
 		double percentageVoted = (double)voted.size() / game.getPlayers().size();
 		
 		if (percentageVoted * 100 >= autostartVote) {
-			game.countdown();
+			boolean success = game.countdown();
+			if (success) {
+				voted.clear();
+			}
 		}
 	}
 	
