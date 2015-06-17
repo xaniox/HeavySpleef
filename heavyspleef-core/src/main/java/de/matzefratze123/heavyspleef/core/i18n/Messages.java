@@ -265,9 +265,10 @@ public interface Messages {
 	
 	public interface Arrays {
 		
-		public static final String PREFIX = "arrays";
+		public static final String PREFIX = "arrays.";
 		
 		public static final String TEAM_COLOR_ARRAY = PREFIX + "team-color-array";
+		public static final String TIME_UNIT_ARRAY = PREFIX + "time-unit-array";
 		
 	}
 	

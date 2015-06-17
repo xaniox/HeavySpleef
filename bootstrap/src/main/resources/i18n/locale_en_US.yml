@@ -131,14 +131,14 @@ broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
   game-stopped: "The game $[game] was stopped"
-  game-countdown-message: "Game is starts in $[remaining] seconds..."
+  game-countdown-message: "Game starts in $[remaining] seconds..."
   player-joined-game: "$[player] joined the game"
   player-lost-game: "$[player] was knocked out by $[killer] and is out of the game"
   player-lost-game-unknown-killer: "$[player] fell out of the arena and lost the game"
   player-won-game: "$[player] won the game"
   
-  game-timed-out: "Game has timed out!"
-  game-timedout-countdown: "Game times out in $[minutes]:$[seconds] minutes"
+  game-timeout: "Game has timed out!"
+  game-timeout-countdown: "Game times out in $[timeout]"
   
   team-is-out: "Team $[color] lost and left the game"
   need-floors: "This game needs at least one floor to start"
@@ -218,3 +218,7 @@ arrays:
   - "Gray"
   - "Blue"
   - "Red"
+  time-unit-array:
+  - "seconds"
+  - "minutes"
+  - "hours"

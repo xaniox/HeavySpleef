@@ -137,8 +137,8 @@ broadcast:
   player-lost-game-unknown-killer: "$[player] ist aus der Arena gefallen und hat das Spiel verloren"
   player-won-game: "$[player] hat das Spiel gewonnen"
   
-  game-timed-out: "Spielzeit ist abgelaufen!"
-  game-timedout-countdown: "Spiel endet in $[minutes]:$[seconds] Minuten"
+  game-timeout: "Spielzeit ist abgelaufen!"
+  game-timeout-countdown: "Das Spiel endet in $[timeout]"
   
   team-is-out: "Das Team $[color] hat verloren und ist ausgeschieden"
   need-floors: "Dieses Spiel benötigt mindestens eine Ebene um zu Starten"
@@ -219,3 +219,7 @@ arrays:
   - "Grau"
   - "Blau"
   - "Rot"
+  time-unit-array:
+  - "Sekunden"
+  - "Minuten"
+  - "Stunden"
