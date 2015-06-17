@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -31,6 +32,8 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "timeout")
@@ -75,21 +78,31 @@ public class FlagTimeout extends IntegerFlag {
 
 		private Game game;
 		private int secondsLeft;
+		private final int length;
 		
 		public TimeoutRunnable(Game game) {
 			this.game = game;
-			this.secondsLeft = getValue();
+			this.length = getValue();
+			this.secondsLeft = length;
 		}
 		
 		@Override
 		public void run() {
+			float exp = (float) secondsLeft / length;
+			
 			if (secondsLeft <= 0) {
 				game.broadcast(getI18N().getString(Messages.Broadcast.GAME_TIMED_OUT));
 				game.stop();
 				task.cancel();
-			} else if (secondsLeft % 30 == 0 || secondsLeft <= 10) {
+			} else if ((secondsLeft > 60 && secondsLeft % 60 == 0) || (secondsLeft <= 60 && secondsLeft % 30 == 0) || secondsLeft <= 5) {
 				String message = getTimeString();
 				game.broadcast(message);
+			}
+			
+			for (SpleefPlayer player : game.getPlayers()) {
+				Player bukkitPlayer = player.getBukkitPlayer();
+				bukkitPlayer.setExp(exp);
+				bukkitPlayer.setLevel(secondsLeft);
 			}
 			
 			secondsLeft--;
@@ -99,12 +112,18 @@ public class FlagTimeout extends IntegerFlag {
 			int minutes = secondsLeft / 60;
 			int seconds = secondsLeft % 60;
 			
-			String message = getI18N().getVarString(Messages.Broadcast.GAME_TIMEOUT_COUNTDOWN)
-				.setVariable("minutes", String.valueOf(minutes))
-				.setVariable("seconds", String.valueOf(seconds))
-				.toString();
+			ParsedMessage parsedMessage = getI18N().getVarString(Messages.Broadcast.GAME_TIMEOUT_COUNTDOWN);
 			
-			return message;
+			//Indexes: 0 = seconds, 1 = minutes, 2 = hours
+			String[] timeUnitStrings = getI18N().getStringArray(Messages.Arrays.TIME_UNIT_ARRAY);
+			
+			if (minutes == 0) {
+				parsedMessage.setVariable("timeout", seconds + " " + timeUnitStrings[0]);
+			} else {
+				parsedMessage.setVariable("timeout", minutes + ":" + seconds + " " + timeUnitStrings[1]);
+			}
+			
+			return parsedMessage.toString();
 		}
 		
 	}
