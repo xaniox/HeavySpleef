@@ -46,10 +46,10 @@ public class FlagScoreboard extends BooleanFlag {
 	private static final String SCOREBOARD_NAME = "heavyspleef";
 	private static final String SCOREBOARD_CRITERIA = "dummy";
 	
-	private static final String OBJECTIVE_NAME = ChatColor.GOLD + "Knockouts";
+	private static final String OBJECTIVE_NAME = ChatColor.GOLD + "Kills";
 	
-	private static final String IS_ALIVE_SYMBOL = ChatColor.GREEN + "\u2714 " + ChatColor.WHITE;
-	private static final String IS_DEAD_SYMBOL = ChatColor.RED + "\u2718 " + ChatColor.GRAY;
+	private static final String IS_ALIVE_SYMBOL = ChatColor.GREEN + "✔  " + ChatColor.WHITE;
+	private static final String IS_DEAD_SYMBOL = ChatColor.RED + "✘  " + ChatColor.GRAY;
 	
 	private final ScoreboardManager manager;
 	private Scoreboard scoreboard;
@@ -101,7 +101,6 @@ public class FlagScoreboard extends BooleanFlag {
 		}
 		
 		//Note: Scoreboard restoring is managed by the PlayerState
-		
 		SpleefPlayer killer = event.getKiller();
 		if (killer != null) {
 			Score killerScore = objective.getScore(killer.getName());
@@ -109,6 +108,9 @@ public class FlagScoreboard extends BooleanFlag {
 			
 			killerScore.setScore(++previousScore);
 		}
+		
+		Scoreboard mainBoard = Bukkit.getScoreboardManager().getMainScoreboard();
+		player.getBukkitPlayer().setScoreboard(mainBoard);
 	}
 	
 	@Subscribe
