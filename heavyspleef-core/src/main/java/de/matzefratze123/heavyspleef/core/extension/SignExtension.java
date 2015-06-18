@@ -33,7 +33,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -163,7 +162,10 @@ public abstract class SignExtension extends GameExtension {
 				return;
 			}
 			
-			Player player = event.getPlayer();
+			SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
+			if (!player.hasPermission("heavyspleef.admin.createsign")) {
+				return;
+			}
 			
 			ExtensionRegistry registry = heavySpleef.getExtensionRegistry();
 			Set<Class<? extends SignExtension>> classes = registry.getExtensionsByType(SignExtension.class);
