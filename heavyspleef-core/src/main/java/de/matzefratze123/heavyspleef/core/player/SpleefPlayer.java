@@ -65,22 +65,26 @@ public class SpleefPlayer {
 	}
 	
 	public UUID getUniqueId() {
-		Validate.isTrue(isOnline(), "Player is not online");
+		validateOnline();
 		return getBukkitPlayer().getUniqueId();
 	}
 	
+	public boolean hasPermission(String permission) {
+		return getBukkitPlayer().hasPermission(permission);
+	}
+	
 	public void sendMessage(String message) {
-		Validate.isTrue(isOnline(), "Player is not online");
+		validateOnline();
 		getBukkitPlayer().sendMessage(heavySpleef.getSpleefPrefix() + message);
 	}
 	
 	public void teleport(Location location) {
-		Validate.isTrue(isOnline(), "Player is not online");
+		validateOnline();
 		getBukkitPlayer().teleport(location);
 	}
 	
 	public void savePlayerState(Object key) {
-		Validate.isTrue(isOnline(), "Player is not online");
+		validateOnline();
 		
 		PlayerStateHolder holder = PlayerStateHolder.create(getBukkitPlayer());
 		playerStates.put(key, holder);
@@ -88,6 +92,10 @@ public class SpleefPlayer {
 	
 	public PlayerStateHolder getPlayerState(Object key) {
 		return playerStates.get(key);
+	}
+	
+	private void validateOnline() {
+		Validate.isTrue(isOnline(), "Player is not online");
 	}
 	
 }
