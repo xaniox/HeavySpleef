@@ -644,7 +644,7 @@ public class Game implements VariableSuppliable {
 	public void requestLose(SpleefPlayer player, QuitCause cause) {
 		Object[] args = null;
 		
-		if (cause == QuitCause.KICK) {
+		if (cause == QuitCause.LOSE) {
 			final SpleefPlayer killer = killDetector.detectKiller(this, player);
 			args = new Object[] { killer };
 		}
