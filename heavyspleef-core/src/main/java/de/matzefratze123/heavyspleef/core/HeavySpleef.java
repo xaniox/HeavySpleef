@@ -193,7 +193,7 @@ public final class HeavySpleef {
 		
 		CommandManagerService service = commandManager.getService();
 		DefaultCommandExecution execution = service.getExecution();
-		spleefPrefix = generalSection.getSpleefPrefix();
+		spleefPrefix = generalSection.getSpleefPrefix() + " ";
 		execution.setPrefix(spleefPrefix);
 		
 		//Only check for updates when the user hasn't
@@ -316,7 +316,7 @@ public final class HeavySpleef {
 		GeneralSection generalSection = config.getGeneralSection();
 		CommandManagerService service = commandManager.getService();
 		DefaultCommandExecution execution = service.getExecution();
-		spleefPrefix = generalSection.getSpleefPrefix();
+		spleefPrefix = generalSection.getSpleefPrefix() + " ";
 		
 		execution.setPrefix(spleefPrefix);
 	}
