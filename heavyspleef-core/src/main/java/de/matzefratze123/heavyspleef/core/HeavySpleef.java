@@ -41,6 +41,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
@@ -219,6 +220,13 @@ public final class HeavySpleef {
 					getLogger().log(Level.WARNING, "Could not check for latest updates: " + t);
 				}
 			});
+		}
+		
+		try {
+			Metrics metrics = new Metrics(getPlugin());
+			metrics.start();
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Failed to start metrics: " + e);
 		}
 	}
 	

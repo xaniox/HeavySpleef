@@ -65,6 +65,10 @@
               <pattern>org.poly2tri</pattern>
               <shadedPattern>de.matzefratze123.heavyspleef.lib.org.poly2tri</shadedPattern>
             </relocation>
+            <reloaction>
+              <pattern>org.mcstats</pattern>
+              <shadedPattern>de.matzefratze123.heavyspleef.lib.org.mcstats</shadedPattern>
+            </reloaction>
           </relocations>
           <transformers>
             <transformer implementation="de.matzefratze123.resource.RenameResourceTransformer">

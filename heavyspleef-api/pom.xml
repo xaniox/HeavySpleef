@@ -32,6 +32,7 @@
               <exclude>com.google.code.gson:gson</exclude>
               <exclude>org.poly2tri:poly2tri</exclude>
               <exclude>org.unsynchronized:jdeserialize</exclude>
+              <exclude>org.mcstats.*:*</exclude>
             </excludes>
           </artifactSet>
           <relocations>
