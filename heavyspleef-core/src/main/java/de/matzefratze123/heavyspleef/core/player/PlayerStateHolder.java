@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scoreboard.Scoreboard;
 
 import com.google.common.collect.Lists;
 
@@ -55,6 +56,7 @@ public class PlayerStateHolder {
 	private float fallDistance;
 	private int fireTicks;
 	private List<WeakReference<Player>> cantSee;
+	private Scoreboard scoreboard;
 	
 	private Location location;
 	
@@ -87,6 +89,7 @@ public class PlayerStateHolder {
 		stateHolder.setFallDistance(player.getFallDistance());
 		stateHolder.setFireTicks(player.getFireTicks());
 		stateHolder.setLocation(player.getLocation());
+		stateHolder.setScoreboard(player.getScoreboard());
 		
 		List<WeakReference<Player>> cantSee = Lists.newArrayList();
 		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -174,6 +177,15 @@ public class PlayerStateHolder {
 		player.setSaturation(saturation);
 		player.setFallDistance(fallDistance);
 		player.setFireTicks(fireTicks);
+		
+		if (scoreboard != player.getScoreboard()) {
+			Scoreboard showBoard = scoreboard;
+			if (scoreboard == null) {
+				showBoard = Bukkit.getScoreboardManager().getMainScoreboard();
+			}
+			
+			player.setScoreboard(showBoard);
+		}
 		
 		if (teleport) {
 			player.teleport(location);
