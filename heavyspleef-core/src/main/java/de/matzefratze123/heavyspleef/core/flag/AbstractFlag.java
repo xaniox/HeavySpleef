@@ -38,8 +38,7 @@ import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
 public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMarshallable {
 	
 	private @Getter @Setter T value;
-	@Getter(value = AccessLevel.PROTECTED) @Setter
-	private AbstractFlag<?> parent;
+	private @Getter @Setter AbstractFlag<?> parent;
 	@Getter(value = AccessLevel.PROTECTED) @Setter(value = AccessLevel.PROTECTED)
 	private HeavySpleef heavySpleef;
 	private I18N i18n;
