@@ -22,10 +22,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Set;
+import java.util.logging.Level;
 
 import lombok.Getter;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -35,6 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -63,7 +66,6 @@ public abstract class SignExtension extends GameExtension {
 	
 	public SignExtension(Location location) {
 		this.location = location;
-		this.layout = retrieveSignLayout();
 	}
 	
 	@ExtensionInit
@@ -83,11 +85,19 @@ public abstract class SignExtension extends GameExtension {
 		}
 		
 		Sign sign = (Sign) block.getState();
-		layout.inflate(sign, getGame());
+		getSignLayout().inflate(sign, getGame());
 	}
 	
 	protected String[] generateLines() {
-		return layout.generate(getGame());
+		return getSignLayout().generate(getGame());
+	}
+	
+	private SignLayout getSignLayout() {
+		if (layout == null) {
+			layout = retrieveSignLayout();
+		}
+		
+		return layout;
 	}
 	
 	@EventHandler
@@ -107,6 +117,12 @@ public abstract class SignExtension extends GameExtension {
 		}
 		
 		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+		
+		Action action = event.getAction();
+		if (action == Action.LEFT_CLICK_BLOCK && player.getBukkitPlayer().getGameMode() == GameMode.CREATIVE) {
+			return;
+		}
+		
 		onSignClick(player);
 	}
 	
@@ -209,6 +225,7 @@ public abstract class SignExtension extends GameExtension {
 				Constructor<? extends SignExtension> constructor = found.getConstructor(Location.class);
 				extension = constructor.newInstance(event.getBlock().getLocation());
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				heavySpleef.getLogger().log(Level.WARNING, "Could not create sign: " + e);
 				player.sendMessage(i18n.getVarString(Messages.Player.NO_SIGN_AVAILABLE)
 						.setVariable("identifier", identifier)
 						.toString());
@@ -258,8 +275,13 @@ public abstract class SignExtension extends GameExtension {
 				return;
 			}
 			
+			SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
+			if (!player.hasPermission("heavyspleef.admin.removesign")) {
+				return;
+			}
+			
 			gameFound.removeExtension(found);
-			event.getPlayer().sendMessage(i18n.getVarString(Messages.Player.SIGN_REMOVED)
+			player.sendMessage(i18n.getVarString(Messages.Player.SIGN_REMOVED)
 					.setVariable("game", gameFound.getName())
 					.toString());
 			
