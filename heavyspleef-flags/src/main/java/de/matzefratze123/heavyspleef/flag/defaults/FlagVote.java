@@ -135,6 +135,10 @@ public class FlagVote extends BooleanFlag {
 	
 	@Subscribe(priority = Priority.MONITOR)
 	public void onGameCountdown(GameCountdownEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
 		voted.clear();
 	}
 	
@@ -152,10 +156,12 @@ public class FlagVote extends BooleanFlag {
 		DefaultConfig config = getHeavySpleef().getConfiguration(ConfigType.DEFAULT_CONFIG);
 		FlagSection section = config.getFlagSection();
 		
-		int autostartVote = section.getAutostartVote();
-		double percentageVoted = (double)voted.size() / game.getPlayers().size();
+		Set<SpleefPlayer> players = game.getPlayers();
 		
-		if (percentageVoted * 100 >= autostartVote) {
+		int autostartVote = section.getAutostartVote();
+		double percentageVoted = (double)voted.size() / players.size();
+		
+		if (percentageVoted * 100 >= autostartVote && players.size() >= 2) {
 			boolean success = game.countdown();
 			if (success) {
 				voted.clear();
