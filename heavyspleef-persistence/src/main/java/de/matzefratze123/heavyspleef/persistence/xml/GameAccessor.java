@@ -222,6 +222,9 @@ public class GameAccessor extends XMLAccessor<Game> {
 				game.addFlag(flag);
 			}
 			
+			FlagManager flagManager = game.getFlagManager();
+			flagManager.revalidateParents();
+			
 			ExtensionRegistry extRegistry = heavySpleef.getExtensionRegistry();
 			Element extensionsElement = element.element("extensions");
 			List<Element> extensionElementsList = extensionsElement.elements("extension");

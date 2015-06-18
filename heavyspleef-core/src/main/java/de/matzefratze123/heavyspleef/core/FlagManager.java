@@ -104,6 +104,22 @@ public class FlagManager {
 		}
 	}
 	
+	public void revalidateParents() {
+		for (AbstractFlag<?> flag : flags.values()) {
+			Flag annotation = flag.getClass().getAnnotation(Flag.class);
+			if (annotation.parent() == NullFlag.class || flag.getParent() != null) {
+				continue;
+			}
+			
+			AbstractFlag<?> parent = getFlag(annotation.parent());
+			if (parent == null) {
+				throw new IllegalStateException("Parent of flag " + flag.getClass().getSimpleName() + " is not available!");
+			}
+			
+			flag.setParent(parent);
+		}
+	}
+	
 	private String generatePath(Flag flagAnnotation) {
 		//Generate the full path
 		StringBuilder pathBuilder = new StringBuilder();
