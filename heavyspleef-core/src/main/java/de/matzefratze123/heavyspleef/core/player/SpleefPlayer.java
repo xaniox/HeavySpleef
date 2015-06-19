@@ -19,18 +19,25 @@ package de.matzefratze123.heavyspleef.core.player;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.plugin.Plugin;
 
 import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
 
-public class SpleefPlayer {
+public class SpleefPlayer implements CommandSender {
 	
 	/* Only keep a weak reference to avoid memory leaks.
 	 * Reference should be actually hold by Bukkit itself */
@@ -106,6 +113,90 @@ public class SpleefPlayer {
 	
 	private void validateOnline() {
 		Validate.isTrue(isOnline(), "Player is not online");
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin) {
+		validateOnline();
+		return getBukkitPlayer().addAttachment(plugin);
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin, int ticks) {
+		validateOnline();
+		return getBukkitPlayer().addAttachment(plugin, ticks);
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) {
+		validateOnline();
+		return getBukkitPlayer().addAttachment(plugin, name, value);
+	}
+
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) {
+		validateOnline();
+		return getBukkitPlayer().addAttachment(plugin, name, value, ticks);
+	}
+
+	@Override
+	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+		validateOnline();
+		return getBukkitPlayer().getEffectivePermissions();
+	}
+
+	@Override
+	public boolean hasPermission(Permission perm) {
+		validateOnline();
+		return getBukkitPlayer().hasPermission(perm);
+	}
+
+	@Override
+	public boolean isPermissionSet(String name) {
+		validateOnline();
+		return getBukkitPlayer().isPermissionSet(name);
+	}
+
+	@Override
+	public boolean isPermissionSet(Permission perm) {
+		validateOnline();
+		return getBukkitPlayer().isPermissionSet(perm);
+	}
+
+	@Override
+	public void recalculatePermissions() {
+		validateOnline();
+		getBukkitPlayer().recalculatePermissions();
+	}
+
+	@Override
+	public void removeAttachment(PermissionAttachment attachment) {
+		validateOnline();
+		getBukkitPlayer().removeAttachment(attachment);
+	}
+
+	@Override
+	public boolean isOp() {
+		validateOnline();
+		return getBukkitPlayer().isOp();
+	}
+
+	@Override
+	public void setOp(boolean op) {
+		validateOnline();
+		getBukkitPlayer().setOp(op);
+	}
+
+	@Override
+	public Server getServer() {
+		validateOnline();
+		return getBukkitPlayer().getServer();
+	}
+
+	@Override
+	public void sendMessage(String[] messages) {
+		validateOnline();
+		getBukkitPlayer().sendMessage(messages);
 	}
 	
 }
