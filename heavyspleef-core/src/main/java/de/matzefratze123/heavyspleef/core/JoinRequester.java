@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -216,7 +217,7 @@ public class JoinRequester {
 				return;
 			}
 			
-			handleFail(player, FailCause.DEATH);
+			handleFail(player, FailCause.DEATH, null);
 		}
 		
 		@EventHandler
@@ -231,7 +232,7 @@ public class JoinRequester {
 				return;
 			}
 			
-			handleFail(player, FailCause.DAMAGE);
+			handleFail(player, FailCause.DAMAGE, null);
 		}
 		
 		@EventHandler
@@ -250,18 +251,22 @@ public class JoinRequester {
 				return;
 			}
 			
-			handleFail(player, FailCause.QUIT);
+			handleFail(player, FailCause.QUIT, null);
 		}
 		
-		private void handleFail(SpleefPlayer player, FailCause cause) {
+		private void handleFail(SpleefPlayer player, FailCause cause, Iterator<?> iterator) {
 			Holder holder = checking.get(player);
 			PvPTimerCallback callback = holder.callback;
 			callback.onFail(player, cause);
-			removePlayer(player);
+			removePlayer(player, iterator);
 		}
 		
-		private void removePlayer(SpleefPlayer player) {
-			checking.remove(player);
+		private void removePlayer(SpleefPlayer player, Iterator<?> iterator) {
+			if (iterator == null) {
+				checking.remove(player);
+			} else {
+				iterator.remove();
+			}
 			
 			if (checking.isEmpty() && checkTask != null) {
 				checkTask.cancel();
@@ -284,7 +289,11 @@ public class JoinRequester {
 
 			@Override
 			public void run() {
-				for (Entry<SpleefPlayer, Holder> entry : checking.entrySet()) {
+				Iterator<Entry<SpleefPlayer, Holder>> iterator = checking.entrySet().iterator();
+				
+				while (iterator.hasNext()) {
+					Entry<SpleefPlayer, Holder> entry = iterator.next();
+					
 					SpleefPlayer player = entry.getKey();
 					Holder holder = entry.getValue();
 					
@@ -295,14 +304,14 @@ public class JoinRequester {
 					Location previous = holder.location;
 					
 					if (!now.equals(previous)) {
-						handleFail(player, FailCause.MOVE);
+						handleFail(player, FailCause.MOVE, iterator);
 					} else {
 						holder.currentTicks += getTaskArgument(1);
 						
 						if (holder.currentTicks >= ticksNeeded) {
 							PvPTimerCallback callback = holder.callback;
 							callback.onSuccess(player);
-							removePlayer(player);
+							removePlayer(player, iterator);
 						}
 					}
 				}
