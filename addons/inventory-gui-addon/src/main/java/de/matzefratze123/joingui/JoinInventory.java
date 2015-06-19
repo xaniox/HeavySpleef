@@ -42,6 +42,7 @@ import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.inventoryguilib.GuiInventory;
 import de.matzefratze123.inventoryguilib.GuiInventorySlot;
@@ -207,7 +208,12 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
 		
 		try {
-			game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
+			long timer = game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
+			if (timer > 0) {
+				player.sendMessage(i18n.getVarString(Messages.Command.JOIN_TIMER_STARTED)
+						.setVariable("timer", String.valueOf(timer))
+						.toString());
+			}
 		} catch (JoinValidationException e) {
 			player.sendMessage(e.getMessage());
 		}
