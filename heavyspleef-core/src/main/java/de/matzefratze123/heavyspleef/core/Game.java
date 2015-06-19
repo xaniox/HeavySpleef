@@ -175,7 +175,6 @@ public class Game implements VariableSuppliable {
 		this.deathzones = Maps.newHashMap();
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
-		this.joinRequester = new JoinRequester(this);
 		this.queuedPlayers = new LinkedList<SpleefPlayer>();
 		
 		//Concurrent map for database schematics
@@ -185,6 +184,10 @@ public class Game implements VariableSuppliable {
 		WorldEdit worldEdit = hook.getWorldEdit();
 		
 		this.editSessionFactory = worldEdit.getEditSessionFactory();
+		
+		GeneralSection generalSection = configuration.getGeneralSection();
+		this.joinRequester = new JoinRequester(this, heavySpleef.getPvpTimerManager());
+		this.joinRequester.setPvpTimerMode(generalSection.getPvpTimer() > 0);
 	}
 	
 	public void setHeavySpleef(HeavySpleef heavySpleef) {
@@ -486,7 +489,7 @@ public class Game implements VariableSuppliable {
 		eventBus.callEvent(joinGameEvent);
 		
 		broadcast(i18n.getVarString(Messages.Broadcast.PLAYER_JOINED_GAME)
-				.setVariable("player", player.getName())
+				.setVariable("player", player.getDisplayName())
 				.toString());
 		
 		if (event.getMessage() != null) {
@@ -583,7 +586,7 @@ public class Game implements VariableSuppliable {
 		}
 		
 		String broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LEFT_GAME)
-				.setVariable("player", player.getName())
+				.setVariable("player", player.getDisplayName())
 				.toString();
 		String playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
 		
@@ -618,12 +621,12 @@ public class Game implements VariableSuppliable {
 		case LOSE:
 			if (killer != null) {
 				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
-						.setVariable("player", player.getName())
-						.setVariable("killer", killer.getName())
+						.setVariable("player", player.getDisplayName())
+						.setVariable("killer", killer.getDisplayName())
 						.toString();
 			} else {
 				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME_UNKNOWN_KILLER)
-						.setVariable("player", player.getName())
+						.setVariable("player", player.getDisplayName())
 						.toString();
 			}
 			
@@ -631,7 +634,7 @@ public class Game implements VariableSuppliable {
 			break;
 		case WIN:
 			broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_WON_GAME)
-					.setVariable("player", player.getName())
+					.setVariable("player", player.getDisplayName())
 					.toString();
 			
 			playerMessage = i18n.getString(Messages.Player.PLAYER_WIN);

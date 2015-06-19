@@ -20,11 +20,15 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import de.matzefratze123.heavyspleef.core.Game.JoinResult;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.GeneralSection;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "max-players")
@@ -44,13 +48,20 @@ public class FlagMaxPlayers extends IntegerFlag {
 	
 	@Subscribe
 	public void onPlayerJoinGame(PlayerPreJoinGameEvent event) {
+		DefaultConfig config = getHeavySpleef().getConfiguration(ConfigType.DEFAULT_CONFIG);
+		GeneralSection section = config.getGeneralSection();
+		
+		SpleefPlayer player = event.getPlayer();
+		
 		int playersCount = event.getGame().getPlayers().size();
-		if (playersCount >= getValue()) {
-			event.setJoinResult(JoinResult.TEMPORARY_DENY);
-			event.setMessage(getI18N().getVarString(Messages.Player.MAX_PLAYER_COUNT_REACHED)
-					.setVariable("max", String.valueOf(getValue()))
-					.toString());
+		if (playersCount < getValue() || (section.isVipJoinFull() && player.isVip())) {
+			return;
 		}
+		
+		event.setJoinResult(JoinResult.TEMPORARY_DENY);
+		event.setMessage(getI18N().getVarString(Messages.Player.MAX_PLAYER_COUNT_REACHED)
+				.setVariable("max", String.valueOf(getValue()))
+				.toString());
 	}
 	
 }

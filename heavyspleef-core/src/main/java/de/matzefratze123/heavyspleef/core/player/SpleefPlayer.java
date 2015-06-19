@@ -61,6 +61,10 @@ public class SpleefPlayer {
 		this.online = online;
 	}
 	
+	public String getDisplayName() {
+		return (isVip() ? heavySpleef.getVipPrefix() : "") + getName();
+	}
+	
 	public String getName() {
 		return bukkitPlayerRef.get() != null ? getBukkitPlayer().getName() : name;
 	}

@@ -77,7 +77,7 @@ public class FlagScoreboard extends BooleanFlag {
 		
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
 			Team team = scoreboard.registerNewTeam(player.getName());
-			team.setPrefix(IS_ALIVE_SYMBOL);
+			team.setPrefix(IS_ALIVE_SYMBOL + (player.isVip() ? getHeavySpleef().getVipPrefix() : ""));
 			team.addPlayer(player.getBukkitPlayer());
 			
 			Score score = objective.getScore(player.getName());
@@ -91,6 +91,10 @@ public class FlagScoreboard extends BooleanFlag {
 	public void onPlayerLeave(PlayerLeaveGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		Game game = event.getGame();
+		
+		if (scoreboard == null) {
+			return;
+		}
 		
 		Team team = scoreboard.getTeam(player.getName());
 				

@@ -50,6 +50,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.commands.base.DefaultCommandExecution;
+import de.matzefratze123.heavyspleef.core.JoinRequester.PvPTimerManager;
 import de.matzefratze123.heavyspleef.core.Updater.CheckResult;
 import de.matzefratze123.heavyspleef.core.Updater.Version;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
@@ -90,6 +91,7 @@ public final class HeavySpleef {
 	private @Getter final Logger logger;
 	
 	private @Getter String spleefPrefix;
+	private @Getter String vipPrefix;
 	private @Getter FlagRegistry flagRegistry;
 	private @Getter ExtensionRegistry extensionRegistry;
 	private @Getter @Setter CommandManager commandManager;
@@ -105,6 +107,7 @@ public final class HeavySpleef {
 	private @Getter GlobalEventBus globalEventBus;
 	private @Getter I18NManager i18NManager;
 	private @Getter boolean gamesLoaded;
+	private @Getter PvPTimerManager pvpTimerManager;
 	private Set<GamesLoadCallback> gamesLoadCallbacks;
 	
 	public HeavySpleef(JavaPlugin plugin) {
@@ -196,6 +199,10 @@ public final class HeavySpleef {
 		DefaultCommandExecution execution = service.getExecution();
 		spleefPrefix = generalSection.getSpleefPrefix() + " ";
 		execution.setPrefix(spleefPrefix);
+		vipPrefix = generalSection.getVipPrefix();
+		
+		pvpTimerManager = new PvPTimerManager(this);
+		pvpTimerManager.setTicksNeeded(generalSection.getPvpTimer() * 20L);
 		
 		//Only check for updates when the user hasn't
 		//disabled it in the configuration
@@ -325,8 +332,17 @@ public final class HeavySpleef {
 		CommandManagerService service = commandManager.getService();
 		DefaultCommandExecution execution = service.getExecution();
 		spleefPrefix = generalSection.getSpleefPrefix() + " ";
+		vipPrefix = generalSection.getVipPrefix();
 		
 		execution.setPrefix(spleefPrefix);
+		
+		int pvpTimer = generalSection.getPvpTimer();
+		pvpTimerManager.setTicksNeeded(pvpTimer * 20L);
+		
+		for (Game game : gameManager.getGames()) {
+			JoinRequester requester = game.getJoinRequester();
+			requester.setPvpTimerMode(pvpTimer > 0);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
