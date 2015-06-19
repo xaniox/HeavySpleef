@@ -47,6 +47,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.JoinRequester;
 import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.PlayerPostActionHandler.PostActionCallback;
@@ -73,6 +74,8 @@ public class ExtensionLobbyWall extends GameExtension {
 	
 	private static final String DEFAULT_INGAME_PLAYER_PREFIX = "";
 	private static final String DEFAULT_DEAD_PLAYER_PREFIX = ChatColor.GRAY.toString();
+	
+	private static final int MAX_SIGN_CHARS = 16;
 		
 	@Command(name = "addwall", permission = Permissions.PERMISSION_ADD_WALL,
 			descref = Messages.Help.Description.ADDWALL,
@@ -232,6 +235,8 @@ public class ExtensionLobbyWall extends GameExtension {
 		return sign.getBlock().getRelative(attachingBlockFace);
 	}
 	
+	/* An instance of the global i18n */
+	private final I18N i18n = I18NManager.getGlobal();
 	/* The world this wall is in */
 	private World world;
 	/* The start location of this wall */
@@ -335,7 +340,12 @@ public class ExtensionLobbyWall extends GameExtension {
 		Game game = getGame();
 		
 		try {
-			game.getJoinRequester().request(player);
+			long timer = game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
+			if (timer > 0) {
+				player.sendMessage(i18n.getVarString(Messages.Command.JOIN_TIMER_STARTED)
+						.setVariable("timer", String.valueOf(timer))
+						.toString());
+			}
 		} catch (JoinValidationException e) {
 			player.sendMessage(e.getMessage());
 		}
@@ -379,8 +389,9 @@ public class ExtensionLobbyWall extends GameExtension {
 						String prefix = null;
 						
 						if (currentIterator.hasNext()) {
-							player = currentIterator.next().getName();
-							prefix = ingamePlayers ? ingamePrefix : deadPrefix;
+							SpleefPlayer spleefPlayer = currentIterator.next();
+							player = spleefPlayer.getName();
+							prefix = ingamePlayers ? ingamePrefix + (spleefPlayer.isVip() ? heavySpleef.getVipPrefix() : "") : deadPrefix;
 						} else {
 							if (ingamePlayers) {
 								currentIterator = game.getDeadPlayers().iterator();
@@ -399,7 +410,12 @@ public class ExtensionLobbyWall extends GameExtension {
 							}
 						}
 						
-						sign.setLine(i, prefix + player);
+						String line = prefix + player;
+						if (line.length() > MAX_SIGN_CHARS) {
+							line = line.substring(0, MAX_SIGN_CHARS);
+						}
+						
+						sign.setLine(i, line);
 					}
 					
 					sign.update();

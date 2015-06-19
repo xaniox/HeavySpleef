@@ -127,6 +127,7 @@ command:
   
   unsufficient-funds: "You need at least $[amount] in order to join this game!"
   flag-doesnt-exist: "This flag does not exist!"
+  join-timer-started: "Teleportation commences in $[timer] seconds.\nPlease do not move!"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -178,6 +179,9 @@ player:
   cannot-teleport-in-queue: "You cannot teleport yourself while you are in the queue for a game\nUse /spleef leave to leave the queue"
   
   command-not-allowed: "You cannot execute this command while playing a spleef game!"
+  join-cancelled-moved: "Teleportation has been cancelled because you moved!"
+  join-cancelled-damage: "Teleportation has been cancelled because you took damage!"
+  join-cancelled-death: "Teleportation has been cancelled because you died!"
 help:
   description:
     clearcache: "Clears the statistic cache"

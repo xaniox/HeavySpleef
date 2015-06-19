@@ -127,6 +127,7 @@ command:
   
   unsufficient-funds: "Du benötigst mindestens [$amount] um diesem Spiel beitreten zu können!"
   flag-doesnt-exist: "Diese Flag existiert nicht!"
+  join-timer-started: "Du wirst in $[timer] Sekunden teleportiert.\nBitte bewege dich nicht!"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -179,6 +180,9 @@ player:
   cannot-teleport-in-queue: "Du kannst dich nicht teleportieren während du in der Warteschlange eines Spiels bist\nBenutze /spleef leave um die Warteschlange zu verlassen"
   
   command-not-allowed: "Du kannst diesen Befehl nicht ausführen während du in einem Spiel bist!"
+  join-cancelled-moved: "Die Teleportation wurde abgebrochen da du dich bewegt hast!"
+  join-cancelled-damage: "Die Teleportation wurde abgebrochen da du Schaden genommen hast!"
+  join-cancelled-death: "Die Teleportation wurde abgebrochen da du gestorben bist!"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"

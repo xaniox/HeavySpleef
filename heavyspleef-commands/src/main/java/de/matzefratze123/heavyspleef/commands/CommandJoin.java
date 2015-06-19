@@ -25,9 +25,9 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.JoinRequester;
 import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.Permissions;
-import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -52,31 +52,15 @@ public class CommandJoin {
 				.toString());
 		Game game = manager.getGame(gameName);
 		
-		JoinResult result;
-		
 		try {
-			result = game.getJoinRequester().request(player);
+			long timer = game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
+			if (timer > 0) {
+				player.sendMessage(i18n.getVarString(Messages.Command.JOIN_TIMER_STARTED)
+						.setVariable("timer", String.valueOf(timer))
+						.toString());
+			}
 		} catch (JoinValidationException e) {
 			throw new CommandException(e.getMessage());
-		}
-		
-		if (result == JoinResult.TEMPORARY_DENY) {
-			//Remove the player from all other queues
-			for (Game otherGame : manager.getGames()) {
-				otherGame.unqueue(player);
-			}
-			
-			//Queue the player
-			boolean success = game.queue(player);
-			
-			if (success) {
-				player.sendMessage(i18n.getVarString(Messages.Command.ADDED_TO_QUEUE)
-						.setVariable("game", game.getName())
-						.toString());
-			} else {
-				player.sendMessage(i18n.getString(Messages.Command.COULD_NOT_ADD_TO_QUEUE));
-			}
-			
 		}
 	}
 	

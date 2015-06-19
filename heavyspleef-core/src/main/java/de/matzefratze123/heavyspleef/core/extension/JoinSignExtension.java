@@ -20,9 +20,13 @@ package de.matzefratze123.heavyspleef.core.extension;
 import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.JoinRequester;
 import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
@@ -30,6 +34,8 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class JoinSignExtension extends SignExtension {
 
 	public static final String IDENTIFIER = "join";
+	
+	private final I18N i18n = I18NManager.getGlobal();
 	
 	@SuppressWarnings("unused")
 	private JoinSignExtension() {}
@@ -43,7 +49,12 @@ public class JoinSignExtension extends SignExtension {
 		Game game = getGame();
 		
 		try {
-			game.getJoinRequester().request(player);
+			long timer = game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
+			if (timer > 0) {
+				player.sendMessage(i18n.getVarString(Messages.Command.JOIN_TIMER_STARTED)
+						.setVariable("timer", String.valueOf(timer))
+						.toString());
+			}
 		} catch (JoinValidationException e) {
 			player.sendMessage(e.getMessage());
 		}		

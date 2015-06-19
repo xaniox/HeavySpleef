@@ -149,6 +149,7 @@ public interface Messages {
 
 		public static final String UNSUFFICIENT_FUNDS = PREFIX + "unsufficient-funds";
 		public static final String FLAG_DOESNT_EXIST = PREFIX + "flag-doesnt-exist";
+		public static final String JOIN_TIMER_STARTED = PREFIX + "join-timer-started";
 		
 	}
 	
@@ -218,6 +219,9 @@ public interface Messages {
 		public static final String CANNOT_TELEPORT_IN_QUEUE = PREFIX + "cannot-teleport-in-queue";
 
 		public static final String COMMAND_NOT_ALLOWED = PREFIX + "command-not-allowed";
+		public static final String JOIN_CANCELLED_MOVED = PREFIX + "join-cancelled-moved";
+		public static final String JOIN_CANCELLED_DAMAGE = PREFIX + "join-cancelled-damage";
+		public static final String JOIN_CANCELLED_DEATH = PREFIX + "join-cancelled-death";
 		
 	}
 	
