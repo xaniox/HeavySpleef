@@ -31,6 +31,8 @@ import com.google.common.collect.Lists;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.JoinRequester;
+import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.GameRenameEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
@@ -39,7 +41,6 @@ import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
-import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.inventoryguilib.GuiInventory;
@@ -205,26 +206,11 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 		Game game = (Game) val;
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
 		
-		if (!game.getGameState().isGameEnabled()) { 
-			player.sendMessage(i18n.getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
-				.setVariable("game", game.getName())
-				.toString());
-			return;
+		try {
+			game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
+		} catch (JoinValidationException e) {
+			player.sendMessage(e.getMessage());
 		}
-		
-		if (game.getGameState().isGameActive()){
-			player.sendMessage(i18n.getVarString(Messages.Command.GAME_IS_INGAME)
-				.setVariable("game", game.getName())
-				.toString());
-			return;
-		}
-		
-		if (gameManager.getGame(player) != null) {
-			player.sendMessage(i18n.getString(Messages.Command.ALREADY_PLAYING));
-			return;
-		}
-		
-		game.join(player);
 	}
 	
 	private static class GameNameComparator implements Comparator<Game> {
