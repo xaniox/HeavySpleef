@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.commands;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.google.common.util.concurrent.FutureCallback;
 
@@ -41,7 +42,9 @@ public class CommandRename {
 			permission = Permissions.PERMISSION_RENAME, minArgs = 2,
 			usage = "/spleef rename <game> <to>")
 	public void onRenameCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		final CommandSender sender = context.getSender();
+		final CommandSender sender = context.getSender() instanceof Player ? 
+				heavySpleef.getSpleefPlayer(context.getSender()) : context.getSender();
+		
 		final String from = context.getString(0);
 		final String to = context.getString(1);
 		

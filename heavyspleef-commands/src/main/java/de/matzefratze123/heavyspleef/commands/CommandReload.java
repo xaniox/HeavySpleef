@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.commands;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import de.matzefratze123.heavyspleef.commands.base.Command;
@@ -36,6 +37,9 @@ public class CommandReload {
 			descref = Messages.Help.Description.RELOAD, usage = "/spleef reload")
 	public void onReloadCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
 		
 		long timeBefore = System.currentTimeMillis();
 		heavySpleef.reload();

@@ -42,6 +42,10 @@ public class CommandStop {
 			permission = Permissions.PERMISSION_STOP)
 	public void onStopCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
 		GameManager manager = heavySpleef.getGameManager();
 		
 		Game game;

@@ -140,6 +140,9 @@ public class FloorCommands {
 			usage = "/spleef removefloor <Game> <Floorname>")
 	public void onCommandRemoveFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
@@ -166,6 +169,7 @@ public class FloorCommands {
 	@Command(name = "showfloor", permission = Permissions.PERMISSION_SHOW_FLOOR, minArgs = 2,
 			descref = Messages.Help.Description.SHOWFLOOR,
 			usage = "/spleef showfloor <Game> <Floorname>")
+	@PlayerOnly
 	public void onCommandShowFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player player = context.getSender();
 		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);

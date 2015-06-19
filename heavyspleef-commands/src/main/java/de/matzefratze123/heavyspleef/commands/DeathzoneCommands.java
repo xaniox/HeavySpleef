@@ -117,6 +117,9 @@ public class DeathzoneCommands {
 			usage = "/spleef removedeathzone <Game> <Deathzone-Name>")
 	public void onCommandRemoveDeathzone(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
@@ -143,6 +146,7 @@ public class DeathzoneCommands {
 	@Command(name = "showdeathzone", permission = Permissions.PERMISSION_SHOW_DEATHZONE, minArgs = 2,
 			descref = Messages.Help.Description.SHOWDEATHZONE,
 			usage = "/spleef showdeathzone <Game> <Deathzone-Name>")
+	@PlayerOnly
 	public void onCommandShowDeathzone(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player player = context.getSender();
 		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);

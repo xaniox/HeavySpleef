@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.commands;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
@@ -41,6 +42,9 @@ public class CommandDisable {
 			permission = Permissions.PERMISSION_DISABLE)
 	public void onDisableCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();

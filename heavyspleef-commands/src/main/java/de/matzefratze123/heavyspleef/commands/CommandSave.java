@@ -24,6 +24,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.google.common.util.concurrent.FutureCallback;
 
@@ -50,6 +51,9 @@ public class CommandSave {
 			usage = "/spleef save [games|statistics|all]", descref = Messages.Help.Description.SAVE)
 	public void onSaveCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
 		
 		SaveOperation operation = SaveOperation.ALL;
 		if (context.argsLength() > 0) {

@@ -43,6 +43,10 @@ public class CommandList {
 			descref = Messages.Help.Description.LIST)
 	public void onListCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
 		GameManager gameManager = heavySpleef.getGameManager();
 		Collection<Game> games = gameManager.getGames();
 		

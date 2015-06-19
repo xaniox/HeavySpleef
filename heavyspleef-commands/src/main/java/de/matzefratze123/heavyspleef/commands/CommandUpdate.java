@@ -47,7 +47,8 @@ public class CommandUpdate {
 	@Command(name = "update", permission = Permissions.PERMISSION_UPDATE,
 			usage = "/spleef update", descref = Messages.Help.Description.UPDATE)
 	public void onUpdateCommand(CommandContext context, final HeavySpleef heavySpleef) throws CommandException {
-		final CommandSender sender = context.getSender();
+		final CommandSender sender = context.getSender() instanceof org.bukkit.entity.Player ? 
+				heavySpleef.getSpleefPlayer(context.getSender()) : context.getSender();
 		
 		DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
 		UpdateSection section = config.getUpdateSection();

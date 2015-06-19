@@ -51,6 +51,10 @@ public class CommandStats {
 			permission = Permissions.PERMISSION_STATS)
 	public void onStatsCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
 		AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();
 		
 		StatisticPrinter printer;

@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
@@ -49,6 +50,10 @@ public class CommandHelp {
 			usage = "/spleef help")
 	public void onHelpCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
 		SpleefCommandManager manager = (SpleefCommandManager) heavySpleef.getCommandManager();
 		CommandManagerService service = manager.getService();
 		

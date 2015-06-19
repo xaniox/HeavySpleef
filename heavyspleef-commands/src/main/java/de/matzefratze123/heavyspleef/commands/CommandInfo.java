@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -56,6 +57,9 @@ public class CommandInfo {
 			permission = Permissions.PERMISSION_INFO)
 	public void onInfoCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();

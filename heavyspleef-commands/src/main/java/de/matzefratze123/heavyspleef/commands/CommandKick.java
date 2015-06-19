@@ -42,6 +42,10 @@ public class CommandKick {
 			permission = Permissions.PERMISSION_KICK)
 	public void onKickCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
 		Player target = context.getPlayer(0);
 		String targetName = context.getString(0);
 		

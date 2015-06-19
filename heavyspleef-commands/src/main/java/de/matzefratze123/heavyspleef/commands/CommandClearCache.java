@@ -17,6 +17,9 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -34,10 +37,15 @@ public class CommandClearCache {
 			descref = Messages.Help.Description.CLEARCACHE,
 			usage = "/spleef clearcache")
 	public void onCommandClearCache(CommandContext context, HeavySpleef heavySpleef) {
+		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
 		AsyncReadWriteHandler handler = heavySpleef.getDatabaseHandler();
 		handler.clearCache();
 		
-		context.getSender().sendMessage(i18n.getString(Messages.Command.STATISTIC_CACHE_CLEARED));
+		sender.sendMessage(i18n.getString(Messages.Command.STATISTIC_CACHE_CLEARED));
 	}
 	
 }
