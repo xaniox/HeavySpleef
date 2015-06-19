@@ -200,8 +200,6 @@ public class JoinRequester {
 			}
 			
 			Location location = player.getBukkitPlayer().getLocation();
-			location.setPitch(0f);
-			location.setYaw(0f);
 			
 			Holder holder = new Holder();
 			holder.callback = callback;
@@ -298,12 +296,9 @@ public class JoinRequester {
 					Holder holder = entry.getValue();
 					
 					Location now = player.getBukkitPlayer().getLocation();
-					now.setPitch(0f);
-					now.setYaw(0f);
-					
 					Location previous = holder.location;
 					
-					if (!now.equals(previous)) {
+					if (now.getBlockX() != previous.getBlockX() || now.getBlockY() != previous.getBlockY() || now.getBlockZ() != previous.getBlockZ()) {
 						handleFail(player, FailCause.MOVE, iterator);
 					} else {
 						holder.currentTicks += getTaskArgument(1);
