@@ -48,6 +48,8 @@ import de.matzefratze123.heavyspleef.flag.presets.LocationListFlag;
 @Flag(name = "fireworks", ignoreParseException = true)
 public class FlagFireworks extends LocationListFlag {
 	
+	private static final int MAX_TRYS = 100;
+	
 	private final Random random = new Random();
 	private final List<Type> typeValues = Collections.unmodifiableList(Arrays.asList(Type.values()));
 	private final List<Color> colorValues = Collections.unmodifiableList(Arrays.asList(new Color[] {
@@ -80,6 +82,7 @@ public class FlagFireworks extends LocationListFlag {
 			for (int i = 0; i < amount; i++) {
 				Location spawn;
 				
+				int trys = 0;
 				do {
 					int x = random.nextInt(8) - 4;
 					int y = random.nextInt(8) - 4;
@@ -92,7 +95,11 @@ public class FlagFireworks extends LocationListFlag {
 						//Do another search
 						spawn = null;
 					}
-				} while (spawn == null);
+				} while (spawn == null && ++trys < MAX_TRYS);
+				
+				if (spawn == null) {
+					continue;
+				}
 				
 				Firework firework = (Firework) spawn.getWorld().spawnEntity(spawn, EntityType.FIREWORK);
 				FireworkMeta meta = firework.getFireworkMeta();
