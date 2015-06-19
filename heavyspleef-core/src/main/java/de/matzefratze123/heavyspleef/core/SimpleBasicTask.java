@@ -38,6 +38,12 @@ public abstract class SimpleBasicTask implements BasicTask {
 		this.taskArgs = taskArgs;
 	}
 	
+	public long getTaskArgument(int index) {
+		Validate.isTrue(index < taskArgs.length, "Index out of bounds");
+		
+		return taskArgs[index];
+	}
+	
 	@Override
 	public TaskType getTaskType() {
 		return taskType;
