@@ -34,6 +34,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -138,6 +139,11 @@ public class BukkitListener implements Listener {
 		handlePlayerEvent(event.getPlayer(), event);
 	}
 	
+	@EventHandler
+	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
+		handlePlayerEvent(event.getPlayer(), event);
+	}
+	
 	private void handleEntityDamageEvent(EntityDamageEvent event) {
 		Entity damagedEntity = event.getEntity();
 		if (!(damagedEntity instanceof Player)) {
@@ -191,6 +197,8 @@ public class BukkitListener implements Listener {
 			game.onPlayerDeath((PlayerDeathEvent)event, player);
 		} else if (event instanceof PlayerRespawnEvent) {
 			game.onPlayerRespawn((PlayerRespawnEvent)event, player);
+		} else if (event instanceof PlayerGameModeChangeEvent) {
+			game.onPlayerGameModeChange((PlayerGameModeChangeEvent)event, player);
 		}
 	}
 	

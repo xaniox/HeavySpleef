@@ -182,6 +182,8 @@ player:
   join-cancelled-moved: "Teleportation has been cancelled because you moved!"
   join-cancelled-damage: "Teleportation has been cancelled because you took damage!"
   join-cancelled-death: "Teleportation has been cancelled because you died!"
+  
+  cannot-change-gamemode: "You cannot change your gamemode while playing spleef!"
 help:
   description:
     clearcache: "Clears the statistic cache"

@@ -183,6 +183,8 @@ player:
   join-cancelled-moved: "Die Teleportation wurde abgebrochen da du dich bewegt hast!"
   join-cancelled-damage: "Die Teleportation wurde abgebrochen da du Schaden genommen hast!"
   join-cancelled-death: "Die Teleportation wurde abgebrochen da du gestorben bist!"
+  
+  cannot-change-gamemode: "Du kannst deinen Spielmodus nicht ändern, während du im Spleef Spiel bist!"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"

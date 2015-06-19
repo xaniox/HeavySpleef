@@ -32,6 +32,7 @@ import lombok.Getter;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -49,6 +50,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -1156,6 +1158,20 @@ public class Game implements VariableSuppliable {
 				}
 			}
 		}, 10L);
+	}
+	
+	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event, SpleefPlayer player) {
+		if (gameState != GameState.INGAME && gameState != GameState.STARTING) {
+			return;
+		}
+		
+		GameMode gameMode = event.getNewGameMode();
+		if (gameMode != GameMode.CREATIVE) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		player.sendMessage(i18n.getString(Messages.Player.CANNOT_CHANGE_GAMEMODE));
 	}
 	
 	public enum JoinResult {
