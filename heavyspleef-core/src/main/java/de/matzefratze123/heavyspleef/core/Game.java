@@ -138,6 +138,7 @@ public class Game implements VariableSuppliable {
 	private List<SpleefPlayer> killedPlayers;
 	private @Getter BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
+	private @Getter JoinRequester joinRequester;
 	private Queue<SpleefPlayer> queuedPlayers;
 	private @Getter CountdownTask countdownTask;
 	private @Getter StatisticRecorder statisticRecorder;
@@ -174,6 +175,7 @@ public class Game implements VariableSuppliable {
 		this.deathzones = Maps.newHashMap();
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
+		this.joinRequester = new JoinRequester(this);
 		this.queuedPlayers = new LinkedList<SpleefPlayer>();
 		
 		//Concurrent map for database schematics

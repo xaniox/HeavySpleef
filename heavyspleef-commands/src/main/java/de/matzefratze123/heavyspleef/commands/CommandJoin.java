@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -51,17 +52,14 @@ public class CommandJoin {
 				.toString());
 		Game game = manager.getGame(gameName);
 		
-		CommandValidate.isTrue(game.getGameState().isGameEnabled(), i18n.getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
-				.setVariable("game", gameName)
-				.toString());
+		JoinResult result;
 		
-		CommandValidate.isTrue(!game.getGameState().isGameActive(), i18n.getVarString(Messages.Command.GAME_IS_INGAME)
-				.setVariable("game", gameName)
-				.toString());
+		try {
+			result = game.getJoinRequester().request(player);
+		} catch (JoinValidationException e) {
+			throw new CommandException(e.getMessage());
+		}
 		
-		CommandValidate.isTrue(manager.getGame(player) == null, i18n.getString(Messages.Command.ALREADY_PLAYING));
-		
-		JoinResult result = game.join(player);
 		if (result == JoinResult.TEMPORARY_DENY) {
 			//Remove the player from all other queues
 			for (Game otherGame : manager.getGames()) {

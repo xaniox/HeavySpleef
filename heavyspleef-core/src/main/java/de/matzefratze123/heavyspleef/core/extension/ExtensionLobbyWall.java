@@ -47,6 +47,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.PlayerPostActionHandler.PostActionCallback;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
@@ -72,9 +73,7 @@ public class ExtensionLobbyWall extends GameExtension {
 	
 	private static final String DEFAULT_INGAME_PLAYER_PREFIX = "";
 	private static final String DEFAULT_DEAD_PLAYER_PREFIX = ChatColor.GRAY.toString();
-	
-	private final I18N i18n = I18NManager.getGlobal(); 
-	
+		
 	@Command(name = "addwall", permission = Permissions.PERMISSION_ADD_WALL,
 			descref = Messages.Help.Description.ADDWALL,
 			usage = "/spleef addwall <game>", minArgs = 1)
@@ -335,26 +334,11 @@ public class ExtensionLobbyWall extends GameExtension {
 		
 		Game game = getGame();
 		
-		if (!game.getGameState().isGameEnabled()) { 
-			player.sendMessage(i18n.getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
-				.setVariable("game", game.getName())
-				.toString());
-			return;
+		try {
+			game.getJoinRequester().request(player);
+		} catch (JoinValidationException e) {
+			player.sendMessage(e.getMessage());
 		}
-		
-		if (game.getGameState().isGameActive()){
-			player.sendMessage(i18n.getVarString(Messages.Command.GAME_IS_INGAME)
-				.setVariable("game", game.getName())
-				.toString());
-			return;
-		}
-		
-		if (getHeavySpleef().getGameManager().getGame(player) != null) {
-			player.sendMessage(i18n.getString(Messages.Command.ALREADY_PLAYING));
-			return;
-		}
-		
-		game.join(player);
 	}
 	
 	public void updateWall(final Game game, final boolean reset) {
