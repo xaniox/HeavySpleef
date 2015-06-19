@@ -34,6 +34,7 @@ import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandList {
 
@@ -53,7 +54,7 @@ public class CommandList {
 		for (Game game : games) {
 			FancyMessage message = new FancyMessage("");
 			
-			if (sender instanceof Player) {
+			if (sender instanceof SpleefPlayer) {
 				message.then(ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + i18n.getString(Messages.Command.JOIN) + ChatColor.DARK_GRAY + "]")
 					.command("/spleef join " + game.getName())
 					.tooltip(i18n.getVarString(Messages.Command.CLICK_TO_JOIN)
