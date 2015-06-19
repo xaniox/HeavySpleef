@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 
 public class SpleefPlayer {
 	
@@ -70,7 +71,12 @@ public class SpleefPlayer {
 	}
 	
 	public boolean hasPermission(String permission) {
+		validateOnline();
 		return getBukkitPlayer().hasPermission(permission);
+	}
+	
+	public boolean isVip() {
+		return hasPermission(Permissions.PERMISSION_VIP);
 	}
 	
 	public void sendMessage(String message) {
