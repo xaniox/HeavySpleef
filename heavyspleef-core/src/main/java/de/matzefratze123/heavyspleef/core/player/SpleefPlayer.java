@@ -72,6 +72,7 @@ public class SpleefPlayer implements CommandSender {
 		return (isVip() ? heavySpleef.getVipPrefix() : "") + getName();
 	}
 	
+	@Override
 	public String getName() {
 		return bukkitPlayerRef.get() != null ? getBukkitPlayer().getName() : name;
 	}
@@ -81,6 +82,7 @@ public class SpleefPlayer implements CommandSender {
 		return getBukkitPlayer().getUniqueId();
 	}
 	
+	@Override
 	public boolean hasPermission(String permission) {
 		validateOnline();
 		return getBukkitPlayer().hasPermission(permission);
@@ -90,6 +92,7 @@ public class SpleefPlayer implements CommandSender {
 		return hasPermission(Permissions.PERMISSION_VIP);
 	}
 	
+	@Override
 	public void sendMessage(String message) {
 		validateOnline();
 		getBukkitPlayer().sendMessage(heavySpleef.getSpleefPrefix() + message);

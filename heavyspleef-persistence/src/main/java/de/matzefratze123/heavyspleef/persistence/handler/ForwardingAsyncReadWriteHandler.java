@@ -338,7 +338,7 @@ public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 		@Override
 		public Void call() throws Exception {
 			voidCall();
-			return (Void) null;
+			return null;
 		}
 		
 		public abstract void voidCall() throws Exception;

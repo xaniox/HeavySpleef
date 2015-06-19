@@ -204,7 +204,7 @@ public class Updater {
 				}
 			}
 			
-			return (Void) null;
+			return null;
 		}
 		
 	}

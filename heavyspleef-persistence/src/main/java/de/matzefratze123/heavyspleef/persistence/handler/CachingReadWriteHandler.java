@@ -539,6 +539,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		release();
 	}
 	
+	@Override
 	public void release() {
 		if (sqlContext != null) {
 			sqlContext.release();

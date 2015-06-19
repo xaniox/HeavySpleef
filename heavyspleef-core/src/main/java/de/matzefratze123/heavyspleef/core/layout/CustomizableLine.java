@@ -95,6 +95,7 @@ public class CustomizableLine {
 	
 	public interface LineFragment {
 		
+		@Override
 		public abstract String toString();
 		
 	}

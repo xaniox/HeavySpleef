@@ -36,6 +36,7 @@ public class JoinCommandProxy implements Proxy {
 		this.inventory = inventory;
 	}
 	
+	@Override
 	public void execute(ProxyContext context, Object[] executionArgs) {
 		//Activate the GUI when the args length is 0
 		if (context.argsLength() == 0 && context.getSender() instanceof Player) {
