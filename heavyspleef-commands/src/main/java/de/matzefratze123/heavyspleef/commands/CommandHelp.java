@@ -31,6 +31,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -43,7 +44,7 @@ public class CommandHelp {
 
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "help", permission = "heavyspleef.help",
+	@Command(name = "help", permission = Permissions.PERMISSION_HELP,
 			descref = Messages.Help.Description.HELP,
 			usage = "/spleef help")
 	public void onHelpCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

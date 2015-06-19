@@ -33,6 +33,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -54,7 +55,7 @@ public class CommandFlag {
 	@SuppressWarnings("unchecked")
 	@Command(name = "flag", usage = "/spleef flag <game> <flag> [flag-value|remove]", 
 			descref = Messages.Help.Description.FLAG,
-			permission = "heavyspleef.flag")
+			permission = Permissions.PERMISSION_FLAG)
 	@PlayerOnly
 	public <T> void onFlagCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player player = context.getSender();

@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -37,7 +38,7 @@ public class CommandDisable {
 	
 	@Command(name = "disable", minArgs = 1, usage = "/spleef disable <game>",
 			descref = Messages.Help.Description.DISABLE,
-			permission = "heavyspleef.admin.disable")
+			permission = Permissions.PERMISSION_DISABLE)
 	public void onDisableCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		

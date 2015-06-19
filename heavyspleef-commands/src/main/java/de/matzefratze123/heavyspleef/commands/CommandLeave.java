@@ -24,6 +24,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
@@ -36,7 +37,7 @@ public class CommandLeave {
 	
 	@Command(name = "leave", usage = "/spleef leave",
 			descref = Messages.Help.Description.LEAVE,
-			permission = "heavyspleef.leave")
+			permission = Permissions.PERMISSION_LEAVE)
 	@PlayerOnly
 	public void onLeaveCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());

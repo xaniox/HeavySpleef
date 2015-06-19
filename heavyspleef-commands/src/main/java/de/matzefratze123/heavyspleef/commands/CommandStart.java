@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -36,7 +37,7 @@ public class CommandStart {
 	
 	@Command(name = "start", usage = "/spleef start [game]",
 			descref = Messages.Help.Description.START,
-			permission = "heavyspleef.admin.start")
+			permission = Permissions.PERMISSION_START)
 	@PlayerOnly
 	public void onStartCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());

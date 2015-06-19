@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -37,7 +38,7 @@ public class CommandCreate {
 	
 	@Command(name = "create", minArgs = 1, usage = "/spleef create <game>", 
 			descref = Messages.Help.Description.CREATE,
-			permission = "heavyspleef.admin.create")
+			permission = Permissions.PERMISSION_DELETE)
 	@PlayerOnly
 	public void onCreateCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player sender = context.getSender();

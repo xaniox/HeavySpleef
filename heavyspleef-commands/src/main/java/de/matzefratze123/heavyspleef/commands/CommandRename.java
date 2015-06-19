@@ -28,6 +28,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -37,7 +38,7 @@ public class CommandRename {
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "rename", descref = Messages.Help.Description.RENAME,
-			permission = "heavyspleef.admin.rename", minArgs = 2,
+			permission = Permissions.PERMISSION_RENAME, minArgs = 2,
 			usage = "/spleef rename <game> <to>")
 	public void onRenameCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		final CommandSender sender = context.getSender();

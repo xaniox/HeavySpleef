@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.commands;
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -29,7 +30,7 @@ public class CommandClearCache {
 
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "clearcache", permission = "heavyspleef.clearcache", 
+	@Command(name = "clearcache", permission = Permissions.PERMISSION_CLEAR_CACHE, 
 			descref = Messages.Help.Description.CLEARCACHE,
 			usage = "/spleef clearcache")
 	public void onCommandClearCache(CommandContext context, HeavySpleef heavySpleef) {

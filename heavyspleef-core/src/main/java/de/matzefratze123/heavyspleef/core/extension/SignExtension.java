@@ -46,6 +46,7 @@ import org.dom4j.Element;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -163,7 +164,7 @@ public abstract class SignExtension extends GameExtension {
 			}
 			
 			SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
-			if (!player.hasPermission("heavyspleef.admin.createsign")) {
+			if (!player.hasPermission(Permissions.PERMISSION_CREATE_SIGN)) {
 				return;
 			}
 			
@@ -278,7 +279,7 @@ public abstract class SignExtension extends GameExtension {
 			}
 			
 			SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
-			if (!player.hasPermission("heavyspleef.admin.removesign")) {
+			if (!player.hasPermission(Permissions.PERMISSION_REMOVE_SIGN)) {
 				return;
 			}
 			

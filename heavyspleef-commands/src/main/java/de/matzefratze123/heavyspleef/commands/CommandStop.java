@@ -27,6 +27,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -38,7 +39,7 @@ public class CommandStop {
 	
 	@Command(name = "stop", usage = "/spleef stop [game]",
 			descref = Messages.Help.Description.STOP,
-			permission = "heavyspleef.admin.stop")
+			permission = Permissions.PERMISSION_STOP)
 	public void onStopCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		GameManager manager = heavySpleef.getGameManager();

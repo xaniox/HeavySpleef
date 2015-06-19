@@ -33,6 +33,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -45,7 +46,7 @@ public class CommandSave {
 
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "save", permission = "heavyspleef.admin.save",
+	@Command(name = "save", permission = Permissions.PERMISSION_SAVE,
 			usage = "/spleef save [games|statistics|all]", descref = Messages.Help.Description.SAVE)
 	public void onSaveCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();

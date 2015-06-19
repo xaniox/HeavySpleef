@@ -33,6 +33,7 @@ import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
@@ -47,7 +48,7 @@ public class CommandStats {
 	
 	@Command(name = "stats", usage = "/spleef stats [player|top [page]]",
 			descref = Messages.Help.Description.STATS,
-			permission = "heavyspleef.stats")
+			permission = Permissions.PERMISSION_STATS)
 	public void onStatsCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();

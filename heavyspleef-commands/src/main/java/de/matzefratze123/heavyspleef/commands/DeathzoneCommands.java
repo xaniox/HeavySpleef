@@ -39,6 +39,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.RegionVisualizer;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -50,7 +51,7 @@ public class DeathzoneCommands {
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "adddeathzone", permission = "heavyspleef.adddeathzone", minArgs = 1,
+	@Command(name = "adddeathzone", permission = Permissions.PERMISSION_ADD_DEATHZONE, minArgs = 1,
 			descref = Messages.Help.Description.ADDDEATHZONE,
 			usage = "/spleef adddeathzone <Game> [Deathzone-Name]")
 	@PlayerOnly
@@ -111,7 +112,7 @@ public class DeathzoneCommands {
 		return prefix + counter;
 	}
 	
-	@Command(name = "removedeathzone", permission = "heavyspleef.removedeathzone", minArgs = 2,
+	@Command(name = "removedeathzone", permission = Permissions.PERMISSION_REMOVE_DEATHZONE, minArgs = 2,
 			descref = Messages.Help.Description.REMOVEDEATHZONE,
 			usage = "/spleef removedeathzone <Game> <Deathzone-Name>")
 	public void onCommandRemoveDeathzone(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
@@ -139,7 +140,7 @@ public class DeathzoneCommands {
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
 	
-	@Command(name = "showdeathzone", permission = "heavyspleef.showdeathzone", minArgs = 2,
+	@Command(name = "showdeathzone", permission = Permissions.PERMISSION_SHOW_DEATHZONE, minArgs = 2,
 			descref = Messages.Help.Description.SHOWDEATHZONE,
 			usage = "/spleef showdeathzone <Game> <Deathzone-Name>")
 	public void onCommandShowDeathzone(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

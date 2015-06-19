@@ -38,6 +38,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
@@ -48,12 +49,11 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 public class CommandInfo {
 	
-	public static final String PERMISSION = "heavyspleef.admin.info";
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "info", minArgs = 1, usage = "/spleef info <game>",
 			descref = Messages.Help.Description.INFO,
-			permission = PERMISSION)
+			permission = Permissions.PERMISSION_INFO)
 	public void onInfoCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		

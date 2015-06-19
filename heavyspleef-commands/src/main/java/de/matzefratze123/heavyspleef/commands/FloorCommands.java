@@ -45,6 +45,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.RegionVisualizer;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
@@ -58,7 +59,7 @@ public class FloorCommands {
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "addfloor", permission = "heavyspleef.addfloor", minArgs = 1,
+	@Command(name = "addfloor", permission = Permissions.PERMISSION_ADD_FLOOR, minArgs = 1,
 			descref = Messages.Help.Description.ADDFLOOR,
 			usage = "/spleef addfloor <Game> [Name]")
 	@PlayerOnly
@@ -134,7 +135,7 @@ public class FloorCommands {
 		return prefix + counter;
 	}
 	
-	@Command(name = "removefloor", permission = "heavyspleef.removefloor", minArgs = 2,
+	@Command(name = "removefloor", permission = Permissions.PERMISSION_REMOVE_FLOOR, minArgs = 2,
 			descref = Messages.Help.Description.REMOVEFLOOR,
 			usage = "/spleef removefloor <Game> <Floorname>")
 	public void onCommandRemoveFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
@@ -162,7 +163,7 @@ public class FloorCommands {
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
 	
-	@Command(name = "showfloor", permission = "heavyspleef.showfloor", minArgs = 2,
+	@Command(name = "showfloor", permission = Permissions.PERMISSION_SHOW_FLOOR, minArgs = 2,
 			descref = Messages.Help.Description.SHOWFLOOR,
 			usage = "/spleef showfloor <Game> <Floorname>")
 	public void onCommandShowFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

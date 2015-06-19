@@ -29,6 +29,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Updater;
 import de.matzefratze123.heavyspleef.core.Updater.CheckResult;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
@@ -43,7 +44,7 @@ public class CommandUpdate {
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "update", permission = "heavyspleef.admin.update",
+	@Command(name = "update", permission = Permissions.PERMISSION_UPDATE,
 			usage = "/spleef update", descref = Messages.Help.Description.UPDATE)
 	public void onUpdateCommand(CommandContext context, final HeavySpleef heavySpleef) throws CommandException {
 		final CommandSender sender = context.getSender();

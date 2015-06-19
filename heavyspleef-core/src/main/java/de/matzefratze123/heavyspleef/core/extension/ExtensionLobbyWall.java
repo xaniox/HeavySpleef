@@ -47,6 +47,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.PlayerPostActionHandler.PostActionCallback;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
@@ -74,7 +75,7 @@ public class ExtensionLobbyWall extends GameExtension {
 	
 	private final I18N i18n = I18NManager.getGlobal(); 
 	
-	@Command(name = "addwall", permission = "heavyspleef.addwall",
+	@Command(name = "addwall", permission = Permissions.PERMISSION_ADD_WALL,
 			descref = Messages.Help.Description.ADDWALL,
 			usage = "/spleef addwall <game>", minArgs = 1)
 	@PlayerOnly
@@ -116,7 +117,7 @@ public class ExtensionLobbyWall extends GameExtension {
 		player.sendMessage(i18n.getString(Messages.Command.CLICK_ON_SIGN_TO_ADD_WALL));
 	}
 	
-	@Command(name = "removewall", permission = "heavyspleef.removewall", minArgs = 1,
+	@Command(name = "removewall", permission = Permissions.PERMISSION_REMOVE_WALL, minArgs = 1,
 			descref = Messages.Help.Description.REMOVEWALL, usage = "/spleef removewall")
 	@PlayerOnly
 	public static void onRemoveWallCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

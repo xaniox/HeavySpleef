@@ -26,6 +26,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -36,7 +37,7 @@ public class CommandEnable {
 	
 	@Command(name = "enable", minArgs = 1, usage = "/spleef enable <game>",
 			descref = Messages.Help.Description.ENABLE,
-			permission = "heavyspleef.admin.enable")
+			permission = Permissions.PERMISSION_ENABLE)
 	public void onEnableCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		String gameName = context.getString(0);

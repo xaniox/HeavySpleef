@@ -30,6 +30,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -38,7 +39,7 @@ public class CommandList {
 
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "list", permission = "heavyspleef.list", usage = "/spleef list",
+	@Command(name = "list", permission = Permissions.PERMISSION_LIST, usage = "/spleef list",
 			descref = Messages.Help.Description.LIST)
 	public void onListCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
@@ -56,7 +57,7 @@ public class CommandList {
 							.toString());
 				message.then(" ");
 				
-				if (sender.hasPermission(CommandInfo.PERMISSION)) {
+				if (sender.hasPermission(Permissions.PERMISSION_INFO)) {
 					message.then(ChatColor.DARK_GRAY + "[" + ChatColor.RED + i18n.getString(Messages.Command.ADMIN_INFO) + ChatColor.DARK_GRAY + "]")
 						.command("/spleef info " + game.getName())
 						.tooltip(i18n.getString(Messages.Command.SHOW_ADMIN_INFO));

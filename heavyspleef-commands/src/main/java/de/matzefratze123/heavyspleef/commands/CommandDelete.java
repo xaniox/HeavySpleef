@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -35,7 +36,7 @@ public class CommandDelete {
 	
 	@Command(name = "delete", minArgs = 1, usage = "/spleef delete <name>",
 			descref = Messages.Help.Description.DELETE,
-			permission = "heavyspleef.admin.delete")
+			permission = Permissions.PERMISSION_DELETE)
 	public void onCommandDelete(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		

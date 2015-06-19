@@ -43,6 +43,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
@@ -75,7 +76,7 @@ public class FlagSpectate extends LocationFlag {
 	private Set<SpleefPlayer> deadPlayers;
 	
 	@Command(name = "spectate", description = "Spectates a spleef game", 
-			usage = "/spleef spectate [game]", permission = "heavyspleef.spectate")
+			usage = "/spleef spectate [game]", permission = Permissions.PERMISSION_SPECTATE)
 	@PlayerOnly
 	public static void onSpectateCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		Player player = context.getSender();

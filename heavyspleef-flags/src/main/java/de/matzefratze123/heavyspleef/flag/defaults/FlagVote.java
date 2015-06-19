@@ -43,6 +43,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
@@ -77,7 +78,7 @@ public class FlagVote extends BooleanFlag {
 		voted = Sets.newHashSet();
 	}
 	
-	@Command(name = "vote", permission = "heavyspleef.vote", 
+	@Command(name = "vote", permission = Permissions.PERMISSION_VOTE, 
 			usage = "/spleef vote", descref = Messages.Help.Description.VOTE)
 	@PlayerOnly
 	public static void onVoteCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {

@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
@@ -37,7 +38,7 @@ public class CommandJoin {
 	
 	@Command(name = "join", minArgs = 1, usage = "/spleef join <game> [args]",
 			descref = Messages.Help.Description.JOIN,
-			permission = "heavyspleef.join")
+			permission = Permissions.PERMISSION_JOIN)
 	@PlayerOnly
 	public void onJoinCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
