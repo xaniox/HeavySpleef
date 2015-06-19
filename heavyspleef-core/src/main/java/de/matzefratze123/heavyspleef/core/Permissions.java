@@ -19,10 +19,11 @@ package de.matzefratze123.heavyspleef.core;
 
 public interface Permissions {
 	
-	public static final String PLAYER_PREFIX = "heavyspleef.player.";
-	public static final String ADMIN_PREFIX = "heavyspleef.admin.";
+	public static final String PREFIX = "heavyspleef.";
+	public static final String PLAYER_PREFIX = PREFIX + "player.";
+	public static final String ADMIN_PREFIX = PREFIX + "admin.";
 	
-	public static final String PERMISSION_VIP = PLAYER_PREFIX + "vip";
+	public static final String PERMISSION_VIP = PREFIX + "vip";
 	public static final String PERMISSION_CLEAR_CACHE = ADMIN_PREFIX + "clearcache";
 	public static final String PERMISSION_CREATE = ADMIN_PREFIX + "create";
 	public static final String PERMISSION_DELETE = ADMIN_PREFIX + "delete";
