@@ -22,15 +22,15 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public abstract class LocationListFlag extends ListFlag<Location> {
 	
 	@Override
-	public List<Location> parseInput(Player player, String input) throws InputParseException {
+	public List<Location> parseInput(SpleefPlayer player, String input) throws InputParseException {
 		throw new InputParseException("Multiple locations cannot be parsed");
 	}
 	

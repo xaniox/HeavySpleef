@@ -30,7 +30,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import com.google.common.collect.Lists;
@@ -42,6 +41,7 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationListFlag;
 
@@ -64,7 +64,7 @@ public class FlagFireworks extends LocationListFlag {
 	}
 	
 	@Override
-	public List<Location> parseInput(Player player, String input) throws InputParseException {
+	public List<Location> parseInput(SpleefPlayer player, String input) throws InputParseException {
 		throw new InputParseException("Use fireworks:add to add a spawn location for fireworks and fireworks:remove to remove recent one");
 	}
 	

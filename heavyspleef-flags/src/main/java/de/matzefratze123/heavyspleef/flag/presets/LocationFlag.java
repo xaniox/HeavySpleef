@@ -21,18 +21,18 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public abstract class LocationFlag extends AbstractFlag<Location> {
 
 	@Override
-	public Location parseInput(Player player, String input) throws InputParseException {
-		Location playerLocation = player.getLocation();
+	public Location parseInput(SpleefPlayer player, String input) throws InputParseException {
+		Location playerLocation = player.getBukkitPlayer().getLocation();
 		
 		double[] coords = new double[3];
 		coords[0] = playerLocation.getX();

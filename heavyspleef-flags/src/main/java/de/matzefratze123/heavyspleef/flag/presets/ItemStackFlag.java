@@ -30,7 +30,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
@@ -43,6 +42,7 @@ import com.sk89q.worldedit.blocks.ItemType;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 
@@ -193,7 +193,7 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 	}
 
 	@Override
-	public ItemStack parseInput(Player player, String input) throws InputParseException {
+	public ItemStack parseInput(SpleefPlayer player, String input) throws InputParseException {
 		String components[] = splitWithQuotes(input, " ");
 
 		if (components.length == 0) {

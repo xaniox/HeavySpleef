@@ -20,7 +20,6 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
@@ -32,6 +31,7 @@ import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationListFlag;
 
@@ -44,7 +44,7 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 	}
 	
 	@Override
-	public List<Location> parseInput(Player player, String input) throws InputParseException {
+	public List<Location> parseInput(SpleefPlayer player, String input) throws InputParseException {
 		throw new InputParseException("Use multi-spawn:add to add a spawnpoint and multi-spawn:remove to remove the recent spawnpoint");
 	}
 	

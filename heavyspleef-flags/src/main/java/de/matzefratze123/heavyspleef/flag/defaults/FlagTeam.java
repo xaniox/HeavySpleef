@@ -463,7 +463,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	public static class FlagTeamSpawnpoint extends LocationFlag {
 		
 		@Override
-		public Location parseInput(Player player, String input) throws InputParseException {
+		public Location parseInput(SpleefPlayer player, String input) throws InputParseException {
 			//(Ab)using a child flag to set spawnpoints in the parent flag
 			TeamColor color;
 			
@@ -480,8 +480,8 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			}
 			
 			FlagTeam team = (FlagTeam) getParent();
-			team.spawnpoints.put(color, player.getLocation());
-			return player.getLocation();
+			team.spawnpoints.put(color, player.getBukkitPlayer().getLocation());
+			return player.getBukkitPlayer().getLocation();
 		}
 		
 		@Override

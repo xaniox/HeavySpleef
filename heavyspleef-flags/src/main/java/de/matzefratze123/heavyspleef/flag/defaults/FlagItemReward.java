@@ -53,7 +53,7 @@ public class FlagItemReward extends ItemStackListFlag {
 	}
 	
 	@Override
-	public List<ItemStack> parseInput(Player player, String input) throws InputParseException {
+	public List<ItemStack> parseInput(SpleefPlayer player, String input) throws InputParseException {
 		throw new InputParseException("Use itemreward:add for adding an item reward and itemreward:remove for removing the recent added item reward");
 	}
 	

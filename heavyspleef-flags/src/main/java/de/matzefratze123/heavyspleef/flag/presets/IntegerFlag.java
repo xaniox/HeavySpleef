@@ -17,16 +17,16 @@
  */
 package de.matzefratze123.heavyspleef.flag.presets;
 
-import org.bukkit.entity.Player;
 import org.dom4j.Element;
 
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public abstract class IntegerFlag extends AbstractFlag<Integer> {
 
 	@Override
-	public Integer parseInput(Player player, String input) throws InputParseException {
+	public Integer parseInput(SpleefPlayer player, String input) throws InputParseException {
 		int result;
 		
 		try {

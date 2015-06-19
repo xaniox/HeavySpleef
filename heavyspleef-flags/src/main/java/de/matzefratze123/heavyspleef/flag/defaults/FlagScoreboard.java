@@ -48,8 +48,8 @@ public class FlagScoreboard extends BooleanFlag {
 	
 	private static final String OBJECTIVE_NAME = ChatColor.GOLD + "Kills";
 	
-	private static final String IS_ALIVE_SYMBOL = ChatColor.GREEN + "✔  " + ChatColor.WHITE;
-	private static final String IS_DEAD_SYMBOL = ChatColor.RED + "✘  " + ChatColor.GRAY;
+	private static final String IS_ALIVE_SYMBOL = ChatColor.GREEN + "✔" + ChatColor.WHITE;
+	private static final String IS_DEAD_SYMBOL = ChatColor.RED + "✘" + ChatColor.GRAY;
 	
 	private final ScoreboardManager manager;
 	private Scoreboard scoreboard;

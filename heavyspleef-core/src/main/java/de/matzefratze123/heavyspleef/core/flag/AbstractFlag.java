@@ -24,7 +24,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import de.matzefratze123.heavyspleef.core.Game;
@@ -34,6 +33,7 @@ import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMarshallable {
 	
@@ -45,7 +45,7 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 	
 	public abstract void getDescription(List<String> description);
 	
-	public abstract T parseInput(Player player, String input) throws InputParseException;
+	public abstract T parseInput(SpleefPlayer player, String input) throws InputParseException;
 	
 	public abstract String getValueAsString();
 	
