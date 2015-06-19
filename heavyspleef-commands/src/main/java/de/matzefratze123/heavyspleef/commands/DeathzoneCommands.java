@@ -56,7 +56,7 @@ public class DeathzoneCommands {
 			usage = "/spleef adddeathzone <Game> [Deathzone-Name]")
 	@PlayerOnly
 	public void onCommandAddDeathzone(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		Player player = context.getSender();
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
@@ -67,8 +67,8 @@ public class DeathzoneCommands {
 		Game game = manager.getGame(gameName);
 		
 		WorldEditPlugin plugin = (WorldEditPlugin) heavySpleef.getHookManager().getHook(HookReference.WORLDEDIT).getPlugin();
-		com.sk89q.worldedit.entity.Player bukkitPlayer = plugin.wrapPlayer(player);
-		World world = new BukkitWorld(player.getWorld());
+		com.sk89q.worldedit.entity.Player bukkitPlayer = plugin.wrapPlayer(player.getBukkitPlayer());
+		World world = new BukkitWorld(player.getBukkitPlayer().getWorld());
 		
 		LocalSession session = plugin.getWorldEdit().getSessionManager().get(bukkitPlayer);
 		RegionSelector selector = session.getRegionSelector(world);
@@ -148,8 +148,7 @@ public class DeathzoneCommands {
 			usage = "/spleef showdeathzone <Game> <Deathzone-Name>")
 	@PlayerOnly
 	public void onCommandShowDeathzone(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		Player player = context.getSender();
-		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
@@ -168,7 +167,7 @@ public class DeathzoneCommands {
 		Region region = game.getDeathzone(deathzoneName);
 		RegionVisualizer visualizer = heavySpleef.getRegionVisualizer();
 		
-		visualizer.visualize(region, spleefPlayer, game.getWorld());
+		visualizer.visualize(region, player, game.getWorld());
 		player.sendMessage(i18n.getString(Messages.Command.REGION_VISUALIZED));
 	}
 	

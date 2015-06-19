@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.google.common.collect.Sets;
 
@@ -47,6 +46,7 @@ import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandFlag {
 	
@@ -58,7 +58,7 @@ public class CommandFlag {
 			permission = Permissions.PERMISSION_FLAG)
 	@PlayerOnly
 	public <T> void onFlagCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		Player player = context.getSender();
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		FlagRegistry registry = heavySpleef.getFlagRegistry();
 		
 		if (context.argsLength() < 2) {

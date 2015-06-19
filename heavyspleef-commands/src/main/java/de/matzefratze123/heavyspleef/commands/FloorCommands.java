@@ -64,7 +64,7 @@ public class FloorCommands {
 			usage = "/spleef addfloor <Game> [Name]")
 	@PlayerOnly
 	public void onCommandAddFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		Player player = context.getSender();
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
@@ -75,8 +75,8 @@ public class FloorCommands {
 		Game game = manager.getGame(gameName);
 		
 		WorldEditPlugin plugin = (WorldEditPlugin) heavySpleef.getHookManager().getHook(HookReference.WORLDEDIT).getPlugin();
-		com.sk89q.worldedit.entity.Player bukkitPlayer = plugin.wrapPlayer(player);
-		World world = new BukkitWorld(player.getWorld());
+		com.sk89q.worldedit.entity.Player bukkitPlayer = plugin.wrapPlayer(player.getBukkitPlayer());
+		World world = new BukkitWorld(player.getBukkitPlayer().getWorld());
 		
 		LocalSession session = plugin.getWorldEdit().getSessionManager().get(bukkitPlayer);
 		RegionSelector selector = session.getRegionSelector(world);
@@ -171,8 +171,7 @@ public class FloorCommands {
 			usage = "/spleef showfloor <Game> <Floorname>")
 	@PlayerOnly
 	public void onCommandShowFloor(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		Player player = context.getSender();
-		SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
@@ -191,7 +190,7 @@ public class FloorCommands {
 		Floor floor = game.getFloor(floorName);
 		RegionVisualizer visualizer = heavySpleef.getRegionVisualizer();
 		
-		visualizer.visualize(floor.getRegion(), spleefPlayer, game.getWorld());
+		visualizer.visualize(floor.getRegion(), player, game.getWorld());
 		player.sendMessage(i18n.getString(Messages.Command.REGION_VISUALIZED));
 	}
 
