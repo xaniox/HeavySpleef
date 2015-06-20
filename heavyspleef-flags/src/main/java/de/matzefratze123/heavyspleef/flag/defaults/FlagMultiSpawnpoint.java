@@ -67,9 +67,9 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 		private Game game;
 		
 		@Override
-		public void setValue(Location value) {
+		public void onFlagAdd(Game game) {
 			FlagMultiSpawnpoint parent = (FlagMultiSpawnpoint) getParent();
-			parent.add(value);
+			parent.add(getValue());
 			
 			game.removeFlag(getClass());
 		}
@@ -88,7 +88,7 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 		private Game game;
 		
 		@Override
-		public void setValue(Void value) {
+		public void onFlagAdd(Game game) {
 			FlagMultiSpawnpoint parent = (FlagMultiSpawnpoint) getParent();
 			int lastIndex = parent.size() - 1;
 			

@@ -38,7 +38,6 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
-import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -129,13 +128,10 @@ public class FlagFireworks extends LocationListFlag {
 	@Flag(name = "add", parent = FlagFireworks.class)
 	public static class FlagAddFirework extends LocationFlag {
 		
-		@Inject
-		private Game game;
-		
 		@Override
-		public void setValue(Location value) {
+		public void onFlagAdd(Game game) {
 			FlagFireworks parent = (FlagFireworks) getParent();
-			parent.add(value);
+			parent.add(getValue());
 			
 			game.removeFlag(getClass());
 		}
@@ -150,11 +146,8 @@ public class FlagFireworks extends LocationListFlag {
 	@Flag(name = "remove", parent = FlagFireworks.class)
 	public static class FlagRemoveFirework extends NullFlag {
 		
-		@Inject
-		private Game game;
-		
 		@Override
-		public void setValue(Void value) {
+		public void onFlagAdd(Game game) {
 			FlagFireworks parent = (FlagFireworks) getParent();
 			int lastIndex = parent.size() - 1;
 			

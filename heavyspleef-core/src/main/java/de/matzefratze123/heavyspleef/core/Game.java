@@ -721,9 +721,15 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void addFlag(AbstractFlag<?> flag) {
-		flag.onFlagAdd(this);
-		flagManager.addFlag(flag);
+		addFlag(flag, true);
+	}
+	
+	public void addFlag(AbstractFlag<?> flag, boolean initFlag) {
+		if (initFlag) {
+			flag.onFlagAdd(this);
+		}
 		
+		flagManager.addFlag(flag);
 		eventBus.registerListener(flag);
 	}
 	

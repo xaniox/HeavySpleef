@@ -148,13 +148,12 @@ public class CommandFlag {
 			}
 			
 			validateFlagParents(flagData, game);
+			if (value != null || NullFlag.class.isAssignableFrom(flagClass)) {
+				flag.setValue(value);
+			}
 			
 			if (!existingFlag) {
 				game.addFlag(flag);
-			}
-			
-			if (value != null || NullFlag.class.isAssignableFrom(flagClass)) {
-				flag.setValue(value);
 			}
 			
 			player.sendMessage(i18n.getVarString(Messages.Command.FLAG_SET)

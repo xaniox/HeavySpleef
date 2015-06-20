@@ -21,10 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -40,7 +36,19 @@ public class FlagAllowSpectateFly extends BooleanFlag {
 		Set<SpleefPlayer> spectators = flag.getSpectators();
 		
 		for (SpleefPlayer player : spectators) {
-			handleQuit(player);
+			Player bukkitPlayer = player.getBukkitPlayer();
+			bukkitPlayer.setAllowFlight(false);
+			bukkitPlayer.setFlying(false);
+		}
+	}
+	
+	@Override
+	public void onFlagAdd(Game game) {
+		FlagSpectate flag = (FlagSpectate) getParent();
+		Set<SpleefPlayer> spectators = flag.getSpectators();
+		
+		for (SpleefPlayer player : spectators) {
+			player.getBukkitPlayer().setAllowFlight(getValue());
 		}
 	}
 	
@@ -56,30 +64,6 @@ public class FlagAllowSpectateFly extends BooleanFlag {
 		
 		player.setAllowFlight(value);
 		player.setFlying(value);
-	}
-	
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		handleQuit(event);
-	}
-	
-	@EventHandler
-	public void onPlayerKick(PlayerKickEvent event) {
-		handleQuit(event);
-	}
-	
-	private void handleQuit(PlayerEvent event) {
-		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
-		handleQuit(player);
-	}
-	
-	private void handleQuit(SpleefPlayer player) {
-		FlagSpectate parent = (FlagSpectate) getParent();
-		if (parent.isSpectating(player)) {
-			Player bukkitPlayer = player.getBukkitPlayer();
-			bukkitPlayer.setAllowFlight(false);
-			bukkitPlayer.setFlying(false);
-		}
 	}
 
 }
