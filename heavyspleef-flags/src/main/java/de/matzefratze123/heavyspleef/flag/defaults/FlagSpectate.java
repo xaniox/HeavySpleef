@@ -30,6 +30,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.google.common.collect.ImmutableSet;
@@ -264,6 +267,25 @@ public class FlagSpectate extends LocationFlag {
 		event.getPlayer().sendMessage(getI18N().getString(Messages.Player.COMMAND_NOT_ALLOWED));
 	}
 	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		handleQuit(event);
+	}
+	
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event) {
+		handleQuit(event);
+	}
+	
+	private void handleQuit(PlayerEvent event) {
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+		if (!isSpectating(player)) {
+			return;
+		}
+		
+		leave(player);
+	}
+	
 	public void spectate(SpleefPlayer player, Game game) {
 		player.savePlayerState(this);
 		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
@@ -286,7 +308,6 @@ public class FlagSpectate extends LocationFlag {
 			player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
 		}
 		
-		state.apply(player.getBukkitPlayer(), false);
 		spectators.remove(player);
 	}
 	

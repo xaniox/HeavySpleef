@@ -58,11 +58,11 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = "bowspleef", hasGameProperties = true)
 @BukkitListener
-public class FlagBowspleef extends BooleanFlag {
+public class FlagBowspleef extends BaseFlag {
 
 	private static final String BOW_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef-Bow";
 	private static final ItemStack BOW_ITEMSTACK;
@@ -108,10 +108,6 @@ public class FlagBowspleef extends BooleanFlag {
 	
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent event) {
-		if (!getValue()) {
-			return;
-		}
-		
 		Projectile projectile = event.getEntity();
 		if (!(projectile instanceof Arrow)) {
 			return;

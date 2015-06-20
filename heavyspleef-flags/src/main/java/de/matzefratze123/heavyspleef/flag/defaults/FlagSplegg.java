@@ -57,11 +57,11 @@ import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = "splegg", hasGameProperties = true)
 @BukkitListener
-public class FlagSplegg extends BooleanFlag {
+public class FlagSplegg extends BaseFlag {
 
 	private static final String SPLEGG_LAUNCHER_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Splegg Launcher";
 	private static final List<String> SPLEGG_LAUNCHER_LORE = Lists.newArrayList(ChatColor.GRAY + "Right-Click to launch an egg");
@@ -142,10 +142,6 @@ public class FlagSplegg extends BooleanFlag {
 	
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent event) {
-		if (!getValue()) {
-			return;
-		}
-		
 		Projectile projectile = event.getEntity();
 		if (!(projectile instanceof Egg)) {
 			return;

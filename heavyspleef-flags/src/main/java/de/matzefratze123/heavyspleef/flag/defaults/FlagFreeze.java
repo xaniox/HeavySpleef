@@ -40,10 +40,10 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = "freeze")
-public class FlagFreeze extends BooleanFlag {
+public class FlagFreeze extends BaseFlag {
 	
 	private static final int POTION_AMPLIFIER = 128;
 	private static final float DEFAULT_WALK_SPEED = 0.2f;

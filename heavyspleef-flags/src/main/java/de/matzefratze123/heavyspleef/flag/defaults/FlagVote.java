@@ -64,10 +64,10 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = FlagVote.FLAG_NAME, hasCommands = true)
-public class FlagVote extends BooleanFlag {
+public class FlagVote extends BaseFlag {
 
 	protected static final String FLAG_NAME = "vote";
 	private static Listener listener;

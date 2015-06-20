@@ -33,15 +33,15 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = "scoreboard")
-public class FlagScoreboard extends BooleanFlag {
+public class FlagScoreboard extends BaseFlag {
 
 	private static final String SCOREBOARD_NAME = "heavyspleef";
 	private static final String SCOREBOARD_CRITERIA = "dummy";

@@ -52,9 +52,9 @@ import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
-public class FlagAntiCamping extends BooleanFlag {
+public class FlagAntiCamping extends BaseFlag {
 
 	private static final long ONE_SECOND_INTERVAL = 20L;
 	private static AntiCampingTask task;
@@ -127,11 +127,10 @@ public class FlagAntiCamping extends BooleanFlag {
 					continue;
 				}
 				
-				FlagAntiCamping flag = game.getFlag(FlagAntiCamping.class);
-				if (flag == null || !flag.getValue()) {
+				if (!game.isFlagPresent(FlagAntiCamping.class)) {
 					continue;
 				}
-				
+								
 				for (SpleefPlayer player : game.getPlayers()) {
 					if (recentLocations.containsKey(player)) {
 						Location recent = recentLocations.get(player);

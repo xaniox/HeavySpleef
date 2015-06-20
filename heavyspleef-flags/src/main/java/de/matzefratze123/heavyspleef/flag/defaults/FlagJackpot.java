@@ -20,17 +20,17 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import net.milkbowl.vault.economy.Economy;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = "jackpot", parent = FlagEntryFee.class, depend = HookReference.VAULT)
-public class FlagJackpot extends BooleanFlag {
+public class FlagJackpot extends BaseFlag {
 
 	private int playerCount;
 	

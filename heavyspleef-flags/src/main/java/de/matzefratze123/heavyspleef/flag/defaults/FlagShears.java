@@ -29,14 +29,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = "shears", hasGameProperties = true)
-public class FlagShears extends BooleanFlag {
+public class FlagShears extends BaseFlag {
 
 	private static final String SHEARS_DISPLAY_NAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef Shears";
 	
