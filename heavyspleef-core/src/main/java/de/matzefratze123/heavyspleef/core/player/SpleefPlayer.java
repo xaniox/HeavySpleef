@@ -95,7 +95,12 @@ public class SpleefPlayer implements CommandSender {
 	@Override
 	public void sendMessage(String message) {
 		validateOnline();
-		getBukkitPlayer().sendMessage(heavySpleef.getSpleefPrefix() + message);
+		sendUnprefixedMessage(heavySpleef.getSpleefPrefix() + message);
+	}
+	
+	public void sendUnprefixedMessage(String message) {
+		validateOnline();
+		getBukkitPlayer().sendMessage(message);
 	}
 	
 	public void teleport(Location location) {
