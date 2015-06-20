@@ -79,8 +79,8 @@ public class Polygonal2DRegionSchematicCodec implements SchematicRegionMetadataC
 			region.addPoint(point);
 		}
 		
-		region.setMinimumY(minY);
 		region.setMaximumY(maxY);
+		region.setMinimumY(minY);
 		return region;
 	}
 
