@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.regions.Region;
@@ -132,8 +133,9 @@ public class FlagAntiCamping extends BaseFlag {
 				if (!game.isFlagPresent(FlagAntiCamping.class)) {
 					continue;
 				}
-								
-				for (SpleefPlayer player : game.getPlayers()) {
+						
+				ImmutableList<SpleefPlayer> ingame = ImmutableList.copyOf(game.getPlayers());
+				for (SpleefPlayer player : ingame) {
 					if (recentLocations.containsKey(player)) {
 						Location recent = recentLocations.get(player);
 						Location now = player.getBukkitPlayer().getLocation();
