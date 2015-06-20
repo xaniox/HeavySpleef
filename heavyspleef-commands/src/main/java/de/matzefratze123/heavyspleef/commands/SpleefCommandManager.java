@@ -149,6 +149,7 @@ public class SpleefCommandManager implements CommandManager {
 				.command("/spleef help")
 				.tooltip("Click here to access help")
 			.then(" for help or click ")
+				.color(ChatColor.GOLD)
 			.then("here")
 				.color(ChatColor.GRAY)
 				.command("/spleef help")
