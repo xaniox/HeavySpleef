@@ -72,10 +72,16 @@ public class CommandHelp {
 			page = Math.max(page - 1, 0);
 		}
 		
-		sender.sendMessage(i18n.getVarString(Messages.Command.HELP_HEADER)
+		String header = i18n.getVarString(Messages.Command.HELP_HEADER)
 				.setVariable("page", String.valueOf(page + 1))
 				.setVariable("max-pages", String.valueOf(maxPage))
-				.toString());
+				.toString();
+		
+		if (sender instanceof SpleefPlayer) {
+			((SpleefPlayer)sender).sendUnprefixedMessage(header);
+		} else {
+			sender.sendMessage(header);
+		}
 		
 		for (int i = page * RECORDS_PER_PAGE; i < page * RECORDS_PER_PAGE + RECORDS_PER_PAGE; i++) {
 			if (i >= childs.size()) {
