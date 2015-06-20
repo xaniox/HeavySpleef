@@ -140,7 +140,10 @@ public class SpleefCommandManager implements CommandManager {
 		new FancyMessage(desc.getName())
 				.color(ChatColor.GRAY)
 				.style(ChatColor.BOLD)
-			.then(" version " + desc.getVersion() + "\nType ")
+			.then(" version " + desc.getVersion() + "")
+			.send(sender);
+		
+		new FancyMessage("Type ")
 				.color(ChatColor.GOLD)
 			.then("/spleef help")
 				.command("/spleef help")
