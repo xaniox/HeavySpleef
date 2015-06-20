@@ -36,6 +36,7 @@ import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandHelp {
 	
@@ -88,12 +89,19 @@ public class CommandHelp {
 				desc = i18n.getString(child.getDescriptionRef());
 			}
 			
-			sender.sendMessage(i18n.getVarString(Messages.Command.HELP_RECORD)
+			String record = i18n.getVarString(Messages.Command.HELP_RECORD)
 					.setVariable("command_fq", child.getFullyQualifiedName())
 					.setVariable("command", child.getName())
 					.setVariable("usage", child.getUsage())
 					.setVariable("description", desc)
-					.toString());
+					.toString();
+			
+			if (sender instanceof SpleefPlayer) {
+				SpleefPlayer player = (SpleefPlayer) sender;
+				player.sendUnprefixedMessage(record);
+			} else {
+				sender.sendMessage(record);
+			}
 		}
 	}
 	
