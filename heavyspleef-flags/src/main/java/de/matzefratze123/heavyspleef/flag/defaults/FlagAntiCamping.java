@@ -105,8 +105,8 @@ public class FlagAntiCamping extends BaseFlag {
 		private static final Comparator<Floor> COMPARATOR = new FloorComparator();
 		private final HeavySpleef heavySpleef;
 		private final I18N i18n = I18NManager.getGlobal();
-		private FlagSection flagSection;
 		private GameManager gameManager;
+		private DefaultConfig config;
 		private Map<SpleefPlayer, Location> recentLocations = Maps.newHashMap();
 		private Map<SpleefPlayer, Integer> secondsCamping = Maps.newHashMap();
 		
@@ -114,12 +114,12 @@ public class FlagAntiCamping extends BaseFlag {
 			this.heavySpleef = heavySpleef;
 			this.gameManager = heavySpleef.getGameManager();
 			
-			DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
-			this.flagSection = config.getFlagSection();
+			config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
 		}
 		
 		@Override
 		public void run() {
+			final FlagSection flagSection = config.getFlagSection();
 			final int anticampingWarn = flagSection.getAnticampingWarn();
 			final int anticampingTeleport = flagSection.getAnticampingTeleport();
 			final boolean warn = flagSection.isAnticampingDoWarn();
