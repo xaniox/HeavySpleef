@@ -9,6 +9,7 @@
   <properties>
     <main.class>de.matzefratze123.heavyspleef.HeavySpleefPlugin</main.class>
     <shadedArtifact.name>HeavySpleef</shadedArtifact.name>
+    <package.librarybase>de.matzefratze123.heavyspleef.lib</package.librarybase>
   </properties>
   <build>
     <plugins>      
@@ -43,31 +44,35 @@
           <relocations>
             <relocation>
               <pattern>mkremins.fanciful</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.fanciful</shadedPattern>
+              <shadedPattern>${package.librarybase}.fanciful</shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.dom4j</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.dom4j</shadedPattern>
+              <shadedPattern>${package.librarybase}.dom4j</shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.slf4j</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.slf4j</shadedPattern>
+              <shadedPattern>${package.librarybase}.slf4j</shadedPattern>
             </relocation>
             <relocation>
               <pattern>snaq</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.snaq</shadedPattern>
+              <shadedPattern>${package.librarybase}.snaq</shadedPattern>
             </relocation>
             <relocation>
-              <pattern>com.google.commons</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.com.google.commons</shadedPattern>
+              <pattern>com.google</pattern>
+              <shadedPattern>${package.librarybase}.com.google</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.unsynchronized</pattern>
+              <shadedPattern>${package.librarybase}.org.unsynchronized</shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.poly2tri</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.org.poly2tri</shadedPattern>
+              <shadedPattern>${package.librarybase}.org.poly2tri</shadedPattern>
             </relocation>
             <reloaction>
               <pattern>org.mcstats</pattern>
-              <shadedPattern>de.matzefratze123.heavyspleef.lib.org.mcstats</shadedPattern>
+              <shadedPattern>${package.librarybase}.org.mcstats</shadedPattern>
             </reloaction>
           </relocations>
           <transformers>
