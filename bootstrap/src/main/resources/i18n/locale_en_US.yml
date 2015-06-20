@@ -173,7 +173,7 @@ player:
   no-sign-available: "Signtype \"$[identifier]\" is not available"
   sign-removed: "Sign removed"
   anticamping-warn: "Warning: You will be teleported down if you continue to camp"
-  anticamping-teleported: "You have been teleported down for camping"
+  anticamping-teleport: "You have been teleported down for camping"
   
   itemreward-items-dropped: "Your item reward has been dropped onto the ground as your inventory is full"
   cannot-teleport-in-queue: "You cannot teleport yourself while you are in the queue for a game\nUse /spleef leave to leave the queue"

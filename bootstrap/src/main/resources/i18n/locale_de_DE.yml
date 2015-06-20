@@ -174,7 +174,7 @@ player:
   sign-removed: "Schild entfernt"
   
   anticamping-warn: "Warnung: Du wirst nach unten teleportiert, wenn du weiterhin campst"
-  anticamping-teleported: "Du wurdest nach unten teleportiert, da du gecampt hast"
+  anticamping-teleport: "Du wurdest nach unten teleportiert, da du gecampt hast"
   
   itemreward-items-dropped: "Dein Item-Preis wurde auf den Boden gespawnt, da dein Inventar voll ist!"
   cannot-teleport-in-queue: "Du kannst dich nicht teleportieren während du in der Warteschlange eines Spiels bist\nBenutze /spleef leave um die Warteschlange zu verlassen"
