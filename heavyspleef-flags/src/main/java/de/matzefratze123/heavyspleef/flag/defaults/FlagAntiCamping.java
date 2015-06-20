@@ -46,6 +46,7 @@ import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.FlagSection;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -54,6 +55,7 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
+@Flag(name = "anticamping")
 public class FlagAntiCamping extends BaseFlag {
 
 	private static final long ONE_SECOND_INTERVAL = 20L;

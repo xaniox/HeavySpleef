@@ -21,6 +21,7 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAllowSpectateFly;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagAntiCamping;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAutostart;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagBowspleef;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagCountdown;
@@ -62,6 +63,7 @@ public class FlagModule extends SimpleModule {
 		FlagRegistry registry = getHeavySpleef().getFlagRegistry();
 		
 		registry.registerFlag(FlagAllowSpectateFly.class);
+		registry.registerFlag(FlagAntiCamping.class);
 		registry.registerFlag(FlagAutostart.class);
 		registry.registerFlag(FlagBowspleef.class);
 		registry.registerFlag(FlagCountdown.class);
