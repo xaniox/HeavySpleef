@@ -125,7 +125,7 @@ public class FlagAntiCamping extends BaseFlag {
 			final boolean warn = flagSection.isAnticampingDoWarn();
 			
 			for (Game game : gameManager.getGames()) {
-				if (game.getGameState() == GameState.INGAME || game.getGameState() == GameState.STARTING) {
+				if (game.getGameState() != GameState.INGAME) {
 					continue;
 				}
 				
