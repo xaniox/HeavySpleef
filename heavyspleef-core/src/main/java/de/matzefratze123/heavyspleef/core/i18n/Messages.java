@@ -60,7 +60,7 @@ public interface Messages {
 		public static final String FLOOR_ADDED = PREFIX +"floor-added";
 		public static final String FLOOR_NOT_PRESENT = PREFIX + "floor-not-present";
 		public static final String FLOOR_REMOVED = PREFIX + "floor-removed";
-		public static final String REGION_VISUALIZED = PREFIX + "deathzone-not-present";
+		public static final String REGION_VISUALIZED = PREFIX + "region-visualized";
 		
 		public static final String DEATHZONE_NOT_PRESENT = PREFIX + "deathzone-not-present";
 		public static final String DEATHZONE_REMOVED = PREFIX + "deathzone-removed";
