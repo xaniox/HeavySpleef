@@ -219,7 +219,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 				AbstractFlag<?> flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class, game);
 				flag.unmarshal(flagElement);
 				
-				game.addFlag(flag);
+				game.addFlag(flag, false);
 			}
 			
 			FlagManager flagManager = game.getFlagManager();
