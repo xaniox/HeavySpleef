@@ -128,7 +128,12 @@ public class StatisticRecorder implements SpleefListener {
 			String name = entry.getKey();
 			Statistic statistic = entry.getValue();
 			
-			statistic.setRating(newRating.get(name));
+			double rating = newRating.get(name);
+			if (rating < 0) {
+				rating = 0;
+			}
+			
+			statistic.setRating(rating);
 		}
 		
 		AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();
