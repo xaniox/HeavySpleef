@@ -174,6 +174,7 @@ public interface Messages {
 		public static final String TOO_FEW_PLAYERS_TEAM = PREFIX + "too-few-players-team"; // $[amount]
 
 		public static final String FLOORS_REGENERATED = PREFIX + "floors-regenerated";
+		public static final String NEED_MIN_PLAYERS = PREFIX + "need-min-players";
 		
 	}
 	

@@ -146,6 +146,7 @@ broadcast:
   too-few-players-team: "Es werden mindestens $[amount] Spieler in jedem Team benötigt um das Spiel zu starten"
   
   floors-regenerated: "Alle Ebenen wurden regeneriert"
+  need-min-players: "Es werden mindestens $[min-players] Spieler benötigt"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"

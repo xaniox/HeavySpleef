@@ -56,6 +56,9 @@ public class FlagMinPlayers extends IntegerFlag {
 	public void onGameCountdown(GameCountdownEvent event) {
 		Game game = event.getGame();
 		if (!isStartAllowed(game)) {
+			game.broadcast(getI18N().getVarString(Messages.Broadcast.NEED_MIN_PLAYERS)
+					.setVariable("min-players", String.valueOf(getValue()))
+					.toString());
 			event.setCancelled(true);
 		}
 	}
