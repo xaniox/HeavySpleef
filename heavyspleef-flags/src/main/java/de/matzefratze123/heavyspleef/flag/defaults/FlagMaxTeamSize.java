@@ -19,6 +19,12 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
+import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.Game.JoinResult;
+import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -37,6 +43,41 @@ public class FlagMaxTeamSize extends IntegerFlag {
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Sets the count of maximum players which are allowed to join a team");
+	}
+	
+	@Subscribe
+	public void onPreGameJoin(PlayerPreJoinGameEvent event) {
+		FlagTeam flagTeam = (FlagTeam) getParent();
+		int maxSize = getValue();
+		int sizeTeams = flagTeam.size();
+		int players = flagTeam.getPlayers().size();
+		
+		if (players >= maxSize * sizeTeams) {
+			event.setJoinResult(JoinResult.TEMPORARY_DENY);
+			event.setMessage(getI18N().getString(Messages.Player.TEAM_MAX_PLAYER_COUNT_REACHED));
+			return;
+		}
+	}
+	
+	@Subscribe
+	public void onPlayerLeave(PlayerLeaveGameEvent event) {
+		Game game = event.getGame();
+		
+		if (game.getGameState() != GameState.LOBBY) {
+			return;
+		}
+		
+		FlagTeam flagTeam = (FlagTeam) getParent();
+		int maxSize = getValue();
+		int sizeTeams = flagTeam.size();
+		int players = flagTeam.getPlayers().size();
+		
+		if (players >= maxSize * sizeTeams) {
+			return;
+		}
+		
+		//Flush queue
+		game.flushQueue();
 	}
 
 }

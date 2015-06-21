@@ -20,6 +20,9 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Set;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -52,8 +55,11 @@ import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.GeneralSection;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
+import de.matzefratze123.heavyspleef.core.event.Cancellable;
 import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerSpectateGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
@@ -61,6 +67,7 @@ import de.matzefratze123.heavyspleef.core.extension.SignExtension;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
+import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -75,6 +82,8 @@ public class FlagSpectate extends LocationFlag {
 	
 	private static final String SPLEEF_COMMAND = "spleef";
 	
+	@Inject
+	private Game game;
 	private Set<SpleefPlayer> spectators;
 	private Set<SpleefPlayer> deadPlayers;
 	
@@ -291,19 +300,29 @@ public class FlagSpectate extends LocationFlag {
 	}
 	
 	public void spectate(SpleefPlayer player, Game game) {
+		PlayerSpectateGameEvent event = new PlayerSpectateGameEvent(game, player);
+		game.getEventBus().callEvent(event);
+		
+		if (event.isCancelled()) {
+			return;
+		}
+		
 		player.savePlayerState(this);
 		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
 		
 		spectators.add(player);
 		
 		player.teleport(getValue());
-		FlagAllowSpectateFly allowFlyFlag = getChildFlag(FlagAllowSpectateFly.class, game);
-		if (allowFlyFlag != null) {
-			allowFlyFlag.onSpectateEnter(player);
-		}
 	}
 	
 	public void leave(SpleefPlayer player) {
+		SpectateLeaveEvent event = new SpectateLeaveEvent(game, player);
+		game.getEventBus().callEvent(event);
+		
+		if (event.isCancelled()) {
+			return;
+		}
+		
 		PlayerStateHolder state = player.getPlayerState(this);
 		if (state != null) {
 			state.apply(player.getBukkitPlayer(), true);
@@ -372,6 +391,26 @@ public class FlagSpectate extends LocationFlag {
 		public SignLayout retrieveSignLayout() {
 			SignLayoutConfiguration config = heavySpleef.getConfiguration(ConfigType.SPECTATE_SIGN_LAYOUT_CONFIG);
 			return config.getLayout();
+		}
+		
+	}
+	
+	public static class SpectateEnterEvent extends PlayerGameEvent implements Cancellable {
+
+		private @Getter @Setter boolean cancelled;
+		
+		public SpectateEnterEvent(Game game, SpleefPlayer player) {
+			super(game, player);
+		}
+		
+	}
+	
+	public static class SpectateLeaveEvent extends PlayerGameEvent implements Cancellable {
+
+		private @Getter @Setter boolean cancelled;
+		
+		public SpectateLeaveEvent(Game game, SpleefPlayer player) {
+			super(game, player);
 		}
 		
 	}

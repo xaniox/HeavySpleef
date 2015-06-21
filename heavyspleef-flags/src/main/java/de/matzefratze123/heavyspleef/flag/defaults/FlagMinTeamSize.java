@@ -19,9 +19,12 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamSizeHolder;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.ValidateTeamsEvent;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "min-players", parent = FlagTeam.class)
@@ -36,6 +39,22 @@ public class FlagMinTeamSize extends IntegerFlag {
 	public void validateInput(Integer input) throws ValidationException {
 		if (input <= 1) {
 			throw new ValidationException(getI18N().getString(Messages.Command.INVALID_TEAM_MIN_SIZE));
+		}
+	}
+	
+	@Subscribe
+	public void validateTeams(ValidateTeamsEvent event) {
+		int minSize = getValue();
+		
+		for (TeamSizeHolder holder : event.getTeams()) {
+			if (holder.getSize() < minSize) {
+				//Too few players
+				event.setCancelled(true);
+				event.setErrorMessage(getI18N().getVarString(Messages.Broadcast.TOO_FEW_PLAYERS_TEAM)
+						.setVariable("amount", String.valueOf(minSize))
+						.toString());
+				return;
+			}
 		}
 	}
 
