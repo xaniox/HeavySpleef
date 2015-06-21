@@ -173,6 +173,10 @@ public class FlagSpectate extends LocationFlag {
 	
 	@Subscribe
 	public void onPlayerEnterQueue(PlayerEnterQueueEvent event) {
+		if (!isSpectating(event.getPlayer())) {
+			return;
+		}
+		
 		Game game = event.getGame();
 		
 		if (game.getFlag(FlagQueueLobby.class) != null) {
