@@ -39,6 +39,7 @@ import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandStats {
 	
@@ -79,7 +80,7 @@ public class CommandStats {
 				printer = new FullStatisticPrinter(databaseHandler, sender, arg, heavySpleef.getLogger());
 			}
 		} else {
-			if (!(sender instanceof Player)) {
+			if (!(sender instanceof SpleefPlayer)) {
 				sender.sendMessage(i18n.getString(Messages.Command.PLAYER_ONLY));
 				return;
 			}
