@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
@@ -131,6 +134,8 @@ public final class HeavySpleef {
 		loadConfigurations();
 				
 		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
+		checkConfigVersions(defaultConfig, dataFolder.toPath());
+		
 		Locale locale = defaultConfig.getLocalization().getLocale();
 		I18NBuilder builder = I18NBuilder.builder()
 				.setLoadingMode(LoadingMode.FILE_SYSTEM)
@@ -238,10 +243,7 @@ public final class HeavySpleef {
 	}
 	
 	public void disable() {
-		moduleManager.disableModules();
-		
-		HandlerList.unregisterAll(plugin);
-		
+		gameManager.shutdown();
 		ListenableFuture<?> future = databaseHandler.saveGames(gameManager.getGames(), null);
 		
 		try {
@@ -253,6 +255,9 @@ public final class HeavySpleef {
 		} catch (ExecutionException e) {
 			logger.log(Level.SEVERE, "Could not save games to database", e);
 		}
+		
+		HandlerList.unregisterAll(plugin);
+		moduleManager.disableModules();
 	}
 	
 	private void loadConfigurations() {
@@ -316,6 +321,22 @@ public final class HeavySpleef {
 			int read;
 			while ((read = inStream.read(buffer)) > 0) {
 				outStream.write(buffer, 0, read);
+			}
+		}
+	}
+	
+	private void checkConfigVersions(DefaultConfig config, Path dataFolder) {
+		if (config.getConfigVersion() < DefaultConfig.CURRENT_CONFIG_VERSION) {
+			Path configSource = dataFolder.resolve(ConfigType.DEFAULT_CONFIG.getDestinationFileName());
+			Path configTarget = dataFolder.resolve("config_old.yml");
+			
+			try {
+				Files.move(configSource, configTarget, StandardCopyOption.REPLACE_EXISTING);
+				URL configResource = getClass().getResource(ConfigType.DEFAULT_CONFIG.getClasspathResourceName());
+				
+				copyResource(configResource, configSource.toFile());
+			} catch (IOException e) {
+				getLogger().log(Level.SEVERE, "Could not create updated configuration due to IOException", e);
 			}
 		}
 	}

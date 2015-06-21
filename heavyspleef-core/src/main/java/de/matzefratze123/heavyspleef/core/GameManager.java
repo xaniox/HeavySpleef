@@ -103,5 +103,15 @@ public class GameManager {
 	public List<Game> getGames() {
 		return ImmutableList.copyOf(games.values());
 	}
+
+	public void shutdown() {
+		for (Game game : games.values()) {
+			if (!game.getGameState().isGameActive() && game.getGameState() != GameState.LOBBY) {
+				return;
+			}
+			
+			game.stop();
+		}
+	}
 	
 }
