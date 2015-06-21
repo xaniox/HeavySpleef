@@ -31,8 +31,8 @@ import de.matzefratze123.heavyspleef.core.FlagManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.event.Event;
 import de.matzefratze123.heavyspleef.core.event.EventBus;
-import de.matzefratze123.heavyspleef.core.event.GameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionManager;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
@@ -161,7 +161,7 @@ public class SafeGameCreator {
 		public void unregister(SpleefListener listener) {}
 		
 		@Override
-		public void callEvent(GameEvent event) {}
+		public void callEvent(Event event) {}
 		
 	}
 
