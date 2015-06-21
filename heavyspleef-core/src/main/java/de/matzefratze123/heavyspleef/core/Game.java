@@ -135,7 +135,7 @@ public class Game implements VariableSuppliable {
 	
 	private final EditSessionFactory editSessionFactory;
 	private @Getter HeavySpleef heavySpleef;
-	private EventBus eventBus;
+	private @Getter EventBus eventBus;
 	private Set<SpleefPlayer> ingamePlayers;
 	private @Getter List<SpleefPlayer> deadPlayers;
 	private List<SpleefPlayer> killedPlayers;
@@ -361,6 +361,18 @@ public class Game implements VariableSuppliable {
 			floor.generate(editSession);
 		}
 		
+		blocksBroken.clear();
+		deadPlayers.clear();
+		setGameState(GameState.WAITING);
+		
+		//Stop the countdown if necessary
+		if (countdownTask != null) {
+			countdownTask.cancel();
+			countdownTask = null;
+		}
+	}
+	
+	public void flushQueue() {
 		Queue<SpleefPlayer> failedToQueue = Lists.newLinkedList();
 		
 		//Flush the queue
@@ -385,15 +397,6 @@ public class Game implements VariableSuppliable {
 		}
 		
 		queuedPlayers.addAll(failedToQueue);
-		blocksBroken.clear();
-		deadPlayers.clear();
-		setGameState(GameState.WAITING);
-		
-		//Stop the countdown if necessary
-		if (countdownTask != null) {
-			countdownTask.cancel();
-			countdownTask = null;
-		}
 	}
 	
 	public void disable() {
