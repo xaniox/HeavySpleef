@@ -175,6 +175,8 @@ public interface Messages {
 
 		public static final String FLOORS_REGENERATED = PREFIX + "floors-regenerated";
 		public static final String NEED_MIN_PLAYERS = PREFIX + "need-min-players";
+		public static final String TEAMS_LEFT = PREFIX + "teams-left";
+		public static final String TEAM_WON = PREFIX + "team-won";
 		
 	}
 	

@@ -147,6 +147,8 @@ broadcast:
   
   floors-regenerated: "Alle Ebenen wurden regeneriert"
   need-min-players: "Es werden mindestens $[min-players] Spieler benötigt"
+  teams-left: "Im Team $[team] verleiben $[amount] Spieler"
+  team-won: "Das Team $[team] hat das Spiel in der Arena $[test] gewonnen!"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"
