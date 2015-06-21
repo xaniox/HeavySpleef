@@ -112,7 +112,7 @@ public class MetadatableItemStack extends ItemStack {
 	}
 	
 	private String unhideString(String hidden) {
-		return hidden.replace("§", " ");
+		return hidden.replace("§", "");
 	}
 	
 }
