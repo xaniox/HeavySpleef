@@ -68,17 +68,5 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 		
 		return i18n;
 	}
-	
-	@SuppressWarnings("unchecked")
-	protected <F extends AbstractFlag<?>> F getChildFlag(Class<F> childFlagClass, Game game) {
-		Class<? extends AbstractFlag<?>> thisClass = (Class<? extends AbstractFlag<?>>) getClass();
-		
-		FlagRegistry registry = heavySpleef.getFlagRegistry();
-		if (!registry.isChildFlag(thisClass, childFlagClass)) {
-			return null;
-		}
-		
-		return game.getFlag(childFlagClass);
-	}
 
 }
