@@ -17,17 +17,22 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
+@Getter
 public class PlayerLeaveGameEvent extends PlayerGameEvent implements Cancellable {
 
-	private boolean cancel;
+	private @Setter boolean cancelled;
+	private @Setter Location teleportationLocation;
+	private @Setter boolean sendMessages;
 	private QuitCause cause;
-	private Location teleportationLocation;
 	private SpleefPlayer killer;
 	
 	public PlayerLeaveGameEvent(Game game, SpleefPlayer player, SpleefPlayer killer, QuitCause cause) {
@@ -35,32 +40,6 @@ public class PlayerLeaveGameEvent extends PlayerGameEvent implements Cancellable
 		
 		this.killer = killer;
 		this.cause = cause;
-	}
-
-	@Override
-	public void setCancelled(boolean cancel) {
-		this.cancel = cancel;
-	}
-
-	@Override
-	public boolean isCancelled() {
-		return cancel;
-	}
-	
-	public QuitCause getCause() {
-		return cause;
-	}
-	
-	public SpleefPlayer getKiller() {
-		return killer;
-	}
-
-	public void setTeleportationLocation(Location location) {
-		this.teleportationLocation = location;
-	}
-	
-	public Location getTeleportationLocation() {
-		return teleportationLocation;
 	}
 	
 }
