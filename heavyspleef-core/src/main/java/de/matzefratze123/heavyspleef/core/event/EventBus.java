@@ -67,7 +67,7 @@ public class EventBus {
 		return registeredEventListeners.contains(listener);
 	}
 	
-	public void callEvent(GameEvent event) {
+	public void callEvent(Event event) {
 		for (EventListenerMethod method : registeredEventListeners) {
 			if (!method.getEventClass().isInstance(event)) {
 				continue;
@@ -89,9 +89,9 @@ public class EventBus {
 		}
 
 		Class<?> parameterType = parameterTypes[0];
-		if (!GameEvent.class.isAssignableFrom(parameterType)) {
+		if (!Event.class.isAssignableFrom(parameterType)) {
 			throw new IllegalGameListenerMethodException(method, "First parameter of method " + method.getName() + " in type "
-					+ method.getDeclaringClass().getCanonicalName() + " is not a subtype of GameEvent");
+					+ method.getDeclaringClass().getCanonicalName() + " is not a subtype of Event");
 		}
 	}
 	

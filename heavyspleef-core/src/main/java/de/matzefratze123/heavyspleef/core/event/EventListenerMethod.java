@@ -26,7 +26,7 @@ public class EventListenerMethod {
 	
 	private Object instance;
 	private Method method;
-	private Class<? extends GameEvent> eventClass;
+	private Class<? extends Event> eventClass;
 	
 	@SuppressWarnings("unchecked")
 	public EventListenerMethod(Object instance, Method method) {
@@ -50,7 +50,7 @@ public class EventListenerMethod {
 		return method.getName();
 	}
 	
-	public Class<? extends GameEvent> getEventClass() {
+	public Class<? extends Event> getEventClass() {
 		return eventClass;
 	}
 	
@@ -58,7 +58,7 @@ public class EventListenerMethod {
 		return method.getDeclaringClass();
 	}
 	
-	public void invoke(GameEvent event) {
+	public void invoke(Event event) {
 		Validate.isTrue(eventClass.isAssignableFrom(event.getClass()), "event must be either " + eventClass.getName() + " or a subtype");
 		
 		try {

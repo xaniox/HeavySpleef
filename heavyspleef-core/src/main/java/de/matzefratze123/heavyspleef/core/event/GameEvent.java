@@ -19,7 +19,7 @@ package de.matzefratze123.heavyspleef.core.event;
 
 import de.matzefratze123.heavyspleef.core.Game;
 
-public class GameEvent {
+public class GameEvent extends Event {
 
 	private Game game;
 	
