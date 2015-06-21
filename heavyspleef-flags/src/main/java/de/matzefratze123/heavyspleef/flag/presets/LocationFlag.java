@@ -39,10 +39,13 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 		coords[1] = playerLocation.getY();
 		coords[2] = playerLocation.getZ();
 		
+		float yaw = playerLocation.getYaw();
+		float pitch = playerLocation.getPitch();
+		
 		String[] args = input.split(" ");
 		
 		if (args.length >= 3) {
-			for (int i = 0; i < coords.length; i++) {
+			for (int i = 0; i < 3; i++) {
 				// Use ~ for a relative coordinate
 				boolean relative = args[i].startsWith("~");
 				if (relative) {
@@ -65,9 +68,25 @@ public abstract class LocationFlag extends AbstractFlag<Location> {
 					coords[i] = result;
 				}
 			}
+			
+			if (args.length > 3) {
+				try {
+					yaw = Float.parseFloat(args[3]);
+				} catch (NumberFormatException nfe) {
+					throw new InputParseException(args[3], getI18N().getString(Messages.Player.NOT_A_NUMBER));
+				}
+				
+				if (args.length > 4) {
+					try {
+						pitch = Float.parseFloat(args[4]);
+					} catch (NumberFormatException nfe) {
+						throw new InputParseException(args[4], getI18N().getString(Messages.Player.NOT_A_NUMBER));
+					}
+				}
+			}
 		}
 		
-		return new Location(playerLocation.getWorld(), coords[0], coords[1], coords[2]);
+		return new Location(playerLocation.getWorld(), coords[0], coords[1], coords[2], yaw, pitch);
 	}
 	
 	@Override
