@@ -35,11 +35,15 @@ import de.matzefratze123.heavyspleef.core.GameProperty;
 public class DefaultConfig extends ConfigurationObject {
 	
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
+	public static final int CURRENT_CONFIG_VERSION = 4;
+	
 	private Map<GameProperty, Object> defaultGameProperties;
 	private @Getter GeneralSection generalSection;
+	private @Getter QueueSection queueSection;
 	private @Getter Localization localization;
 	private @Getter FlagSection flagSection;
 	private @Getter UpdateSection updateSection;
+	private @Getter int configVersion;
 	
 	public DefaultConfig(Configuration config) {
 		super(config);
@@ -49,6 +53,9 @@ public class DefaultConfig extends ConfigurationObject {
 	public void inflate(Configuration config, Object... args) {
 		ConfigurationSection generalSection = config.getConfigurationSection("general");
 		this.generalSection = new GeneralSection(generalSection);
+		
+		ConfigurationSection queueSection = config.getConfigurationSection("queues");
+		this.queueSection = new QueueSection(queueSection);
 		
 		defaultGameProperties = new EnumMap<GameProperty, Object>(GameProperty.class);
 		ConfigurationSection propsSection = config.getConfigurationSection("default-game-properties");
@@ -77,6 +84,8 @@ public class DefaultConfig extends ConfigurationObject {
 		
 		ConfigurationSection updateSection = config.getConfigurationSection("update");
 		this.updateSection = new UpdateSection(updateSection);
+		
+		this.configVersion = config.getInt("config-version", CURRENT_CONFIG_VERSION);
 	}
 	
 	public Object getGameProperty(GameProperty property) {

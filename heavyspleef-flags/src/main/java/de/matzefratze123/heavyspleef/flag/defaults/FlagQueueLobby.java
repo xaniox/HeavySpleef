@@ -31,6 +31,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
@@ -55,8 +56,12 @@ public class FlagQueueLobby extends LocationFlag {
 		description.add("Teleports queued players into a lobby where they cannot teleport until they left the queue");
 	}
 	
-	@Subscribe
+	@Subscribe(priority = Priority.MONITOR)
 	public void onQueueEnter(PlayerEnterQueueEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
 		Location teleportPoint = getValue();
 		
 		SpleefPlayer player = event.getPlayer();
@@ -70,7 +75,7 @@ public class FlagQueueLobby extends LocationFlag {
 	@Subscribe
 	public void onQueueLeave(PlayerLeaveQueueEvent event) {
 		SpleefPlayer player = event.getPlayer();
-		Location previous = previousLocations.get(player);
+		Location previous = previousLocations.remove(player);
 		
 		if (previous != null) {
 			player.getBukkitPlayer().teleport(previous);
@@ -81,7 +86,7 @@ public class FlagQueueLobby extends LocationFlag {
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
 		
-		if (!game.isQueued(player)) {
+		if (!game.isQueued(player) || previousLocations.get(player) == null) {
 			return;
 		}
 		

@@ -41,6 +41,9 @@ import com.google.common.collect.Maps;
 import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.JoinRequester.PvPTimerManager.FailCause;
 import de.matzefratze123.heavyspleef.core.JoinRequester.PvPTimerManager.PvPTimerCallback;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.QueueSection;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -54,7 +57,10 @@ public class JoinRequester {
 		
 		@Override
 		public void onJoin(SpleefPlayer player, Game game, JoinResult result) {
-			if (result == JoinResult.TEMPORARY_DENY) {
+			DefaultConfig config = game.getHeavySpleef().getConfiguration(ConfigType.DEFAULT_CONFIG);
+			QueueSection section = config.getQueueSection();
+			
+			if (result == JoinResult.TEMPORARY_DENY && section.isUseQueues()) {
 				GameManager manager = game.getHeavySpleef().getGameManager();
 				
 				//Remove the player from all other queues
@@ -131,19 +137,19 @@ public class JoinRequester {
 		if (!game.getGameState().isGameEnabled()) {
 			throw new JoinValidationException(i18n.getVarString(Messages.Command.GAME_JOIN_IS_DISABLED)
 				.setVariable("game", game.getName())
-				.toString());
+				.toString(), JoinResult.PERMANENT_DENY);
 		}
 		
 		if (game.getGameState().isGameActive()) {
 			throw new JoinValidationException(i18n.getVarString(Messages.Command.GAME_IS_INGAME)
 					.setVariable("game", game.getName())
-					.toString());
+					.toString(), JoinResult.TEMPORARY_DENY);
 		}
 		
 		GameManager manager = game.getHeavySpleef().getGameManager();
 		
 		if (manager.getGame(player) != null) {
-			throw new JoinValidationException(i18n.getString(Messages.Command.ALREADY_PLAYING));
+			throw new JoinValidationException(i18n.getString(Messages.Command.ALREADY_PLAYING), JoinResult.PERMANENT_DENY);
 		}
 		
 		callbacks.put(player, callback);
@@ -166,9 +172,12 @@ public class JoinRequester {
 	public static class JoinValidationException extends Exception {
 
 		private static final long serialVersionUID = -2124169192955966100L;
+		private @Getter JoinResult result;
 
-		public JoinValidationException(String message) {
+		public JoinValidationException(String message, JoinResult result) {
 			super(message);
+			
+			this.result = result;
 		}
 		
 	}

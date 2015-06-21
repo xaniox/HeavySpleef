@@ -348,6 +348,7 @@ public class ExtensionLobbyWall extends GameExtension {
 			}
 		} catch (JoinValidationException e) {
 			player.sendMessage(e.getMessage());
+			JoinRequester.QUEUE_PLAYER_CALLBACK.onJoin(player, game, e.getResult());
 		}
 	}
 	

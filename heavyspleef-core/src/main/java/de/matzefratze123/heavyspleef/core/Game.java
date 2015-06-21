@@ -78,6 +78,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.GeneralSection;
+import de.matzefratze123.heavyspleef.core.config.QueueSection;
 import de.matzefratze123.heavyspleef.core.event.EventBus;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
@@ -1107,15 +1108,33 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void onPlayerQuit(PlayerQuitEvent event, SpleefPlayer quitter) {
-		requestLose(quitter, QuitCause.SELF);
+		handleQuit(quitter);
 	}
 	
 	public void onPlayerKick(PlayerKickEvent event, SpleefPlayer quitter) {
-		requestLose(quitter, QuitCause.SELF);
+		handleQuit(quitter);
+	}
+	
+	private void handleQuit(SpleefPlayer quitter) {
+		if (ingamePlayers.contains(quitter)) {
+			requestLose(quitter, QuitCause.SELF);
+		} else if (isQueued(quitter)) {
+			unqueue(quitter);
+		}
 	}
 	
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event, SpleefPlayer typing) {
-		boolean blockCommands = getPropertyValue(GameProperty.BLOCK_COMMANDS); 
+		boolean blockCommands = false;
+		
+		if (ingamePlayers.contains(typing)) {
+			blockCommands = getPropertyValue(GameProperty.BLOCK_COMMANDS);
+		} else if (isQueued(typing)) {
+			DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+			QueueSection section = config.getQueueSection();
+			
+			blockCommands = !section.isCommandsInQueue();
+		}
+		
 		if (!blockCommands) {
 			return;
 		}
@@ -1136,7 +1155,7 @@ public class Game implements VariableSuppliable {
 		
 		//Block this command
 		event.setCancelled(true);
-		event.getPlayer().sendMessage(i18n.getString(Messages.Player.COMMAND_NOT_ALLOWED));
+		typing.sendMessage(i18n.getString(Messages.Player.COMMAND_NOT_ALLOWED));
 	}
 	
 	public void onPlayerDeath(PlayerDeathEvent event, SpleefPlayer dead) {

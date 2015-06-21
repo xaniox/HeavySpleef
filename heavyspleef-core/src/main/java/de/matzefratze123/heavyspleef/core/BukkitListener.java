@@ -156,7 +156,10 @@ public class BukkitListener implements Listener {
 	private void handlePlayerEvent(Player bukkitPlayer, Event event) {
 		SpleefPlayer player = playerManager.getSpleefPlayer(bukkitPlayer);
 		
-		if (event instanceof PlayerRespawnEvent) {
+		if (event instanceof PlayerRespawnEvent
+				|| event instanceof PlayerQuitEvent
+				|| event instanceof PlayerKickEvent
+				|| event instanceof PlayerCommandPreprocessEvent) {
 			for (Game game : gameManager.getGames()) {
 				invokeEvent(game, event, player);
 			}

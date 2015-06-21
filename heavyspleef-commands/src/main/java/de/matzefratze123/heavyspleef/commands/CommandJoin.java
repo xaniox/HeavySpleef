@@ -60,7 +60,8 @@ public class CommandJoin {
 						.toString());
 			}
 		} catch (JoinValidationException e) {
-			throw new CommandException(e.getMessage());
+			player.sendMessage(e.getMessage());
+			JoinRequester.QUEUE_PLAYER_CALLBACK.onJoin(player, game, e.getResult());
 		}
 	}
 	
