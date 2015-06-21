@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.core.event;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,12 +26,14 @@ import lombok.Setter;
 import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 @Getter @Setter
 public class GameCountdownEvent extends GameEvent implements Cancellable {
 	
 	private boolean cancelled;
 	private List<Location> spawnLocations;
+	private Map<SpleefPlayer, Location> spawnLocationMap;
 	private int countdownLength;
 	private boolean countdownEnabled;
 	private String errorBroadcast;

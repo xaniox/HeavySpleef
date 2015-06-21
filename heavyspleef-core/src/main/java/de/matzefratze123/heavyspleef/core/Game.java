@@ -235,30 +235,38 @@ public class Game implements VariableSuppliable {
 			floor.generate(editSession);
 		}
 		
-		List<Location> spawnLocations = event.getSpawnLocations();
-		if (spawnLocations == null) {
-			spawnLocations = Lists.newArrayList();
-			
-			// Generate a random spawnpoint
-			Floor topFloor = null;
-			for (Floor floor : floors.values()) {
-				if (topFloor == null || floor.getRegion().getMaximumPoint().getBlockY() > topFloor.getRegion().getMaximumPoint().getBlockY()) {
-					topFloor = floor;
-				}
+		// Generate a random spawnpoint
+		Floor topFloor = null;
+		for (Floor floor : floors.values()) {
+			if (topFloor == null || floor.getRegion().getMaximumPoint().getBlockY() > topFloor.getRegion().getMaximumPoint().getBlockY()) {
+				topFloor = floor;
 			}
-			
-			Region region = topFloor.getRegion();
-			
-			generateSpawnpoints(region, spawnLocations, ingamePlayers.size());
 		}
 		
-		int locIndex = 0;
+		Region region = topFloor.getRegion();
+		
+		List<Location> randomLocations = Lists.newArrayList();
+		generateSpawnpoints(region, randomLocations, ingamePlayers.size());
+		
+		int listIndex = 0;
+		int randomIndex = 0;
+		
 		for (SpleefPlayer player : ingamePlayers) {
-			Location loc = spawnLocations.get(locIndex);
+			Location location;
 			
-			player.getBukkitPlayer().teleport(loc);
+			Map<SpleefPlayer, Location> spawnLocationMap = event.getSpawnLocationMap();
+			List<Location> spawnLocations = event.getSpawnLocations();
 			
-			locIndex = locIndex + 1 >= spawnLocations.size() ? 0 : ++locIndex;
+			if (spawnLocationMap != null && spawnLocationMap.containsKey(player)) {
+				location = spawnLocationMap.get(player);
+			} else if (spawnLocations != null && !spawnLocations.isEmpty()) {
+				location = spawnLocations.get(listIndex++);
+				listIndex = listIndex >= spawnLocations.size() ? 0 : listIndex;
+			} else {
+				location = randomLocations.get(randomIndex++);
+			}
+			
+			player.getBukkitPlayer().teleport(location);
 		}
 		
 		boolean countdownEnabled = event.isCountdownEnabled();
@@ -342,7 +350,7 @@ public class Game implements VariableSuppliable {
 		//a ConcurrentModificationException
 		Set<SpleefPlayer> ingamePlayersCopy = Sets.newHashSet(ingamePlayers);
 		for (SpleefPlayer player : ingamePlayersCopy) {
-			leave(player, QuitCause.STOP);
+			leave(player, QuitCause.STOP, true);
 		}
 		
 		resetGame();
@@ -537,10 +545,10 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void leave(SpleefPlayer player) {
-		leave(player, QuitCause.SELF);
+		leave(player, QuitCause.SELF, true);
 	}
 	
-	public void leave(SpleefPlayer player, QuitCause cause, Object... args) {
+	public void leave(SpleefPlayer player, QuitCause cause, boolean sendMessages, Object... args) {
 		if (!ingamePlayers.contains(player)) {
 			return;
 		}
@@ -564,6 +572,10 @@ public class Game implements VariableSuppliable {
 			ingamePlayers.add(player);
 			deadPlayers.remove(player);
 			return;
+		}
+		
+		if (!event.isSendMessages()) {
+			sendMessages = false;
 		}
 		
 		Location tpLoc = event.getTeleportationLocation();
@@ -591,65 +603,67 @@ public class Game implements VariableSuppliable {
 			setGameState(GameState.WAITING);
 		}
 		
-		String broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LEFT_GAME)
-				.setVariable("player", player.getDisplayName())
-				.toString();
-		String playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
-		
-		switch (cause) {
-		case KICK:
-			CommandSender clientPlayer = null;
-			String message = null;
-			
-			int messageIndex = 0;
-			if (args != null && args.length > 0 && args[0] instanceof CommandSender) {
-				// Caller gave us a client player
-				clientPlayer = (CommandSender) args[0];
-				messageIndex = 1;
-			}
-			
-			if (args != null && args.length > messageIndex && args[messageIndex] instanceof String) {
-				// Caller gave us a kick message
-				message = (String) args[1];
-			}
-			
-			playerMessage = i18n.getVarString(Messages.Player.PLAYER_KICK)
-					.setVariable("message", message != null ? message : "No reason provided")
-					.setVariable("kicker", clientPlayer != null ? clientPlayer.getName() : "Unknown")
-					.toString();
-			break;
-		case SELF:
-			playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
-			break;
-		case STOP:
-			playerMessage = i18n.getString(Messages.Player.GAME_STOPPED);
-			break;
-		case LOSE:
-			if (killer != null) {
-				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
-						.setVariable("player", player.getDisplayName())
-						.setVariable("killer", killer.getDisplayName())
-						.toString();
-			} else {
-				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME_UNKNOWN_KILLER)
-						.setVariable("player", player.getDisplayName())
-						.toString();
-			}
-			
-			playerMessage = i18n.getString(Messages.Player.PLAYER_LOSE);
-			break;
-		case WIN:
-			broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_WON_GAME)
+		if (sendMessages) {
+			String broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LEFT_GAME)
 					.setVariable("player", player.getDisplayName())
 					.toString();
+			String playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
 			
-			playerMessage = i18n.getString(Messages.Player.PLAYER_WIN);
-		default:
-			break;
+			switch (cause) {
+			case KICK:
+				CommandSender clientPlayer = null;
+				String message = null;
+				
+				int messageIndex = 0;
+				if (args != null && args.length > 0 && args[0] instanceof CommandSender) {
+					// Caller gave us a client player
+					clientPlayer = (CommandSender) args[0];
+					messageIndex = 1;
+				}
+				
+				if (args != null && args.length > messageIndex && args[messageIndex] instanceof String) {
+					// Caller gave us a kick message
+					message = (String) args[1];
+				}
+				
+				playerMessage = i18n.getVarString(Messages.Player.PLAYER_KICK)
+						.setVariable("message", message != null ? message : "No reason provided")
+						.setVariable("kicker", clientPlayer != null ? clientPlayer.getName() : "Unknown")
+						.toString();
+				break;
+			case SELF:
+				playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
+				break;
+			case STOP:
+				playerMessage = i18n.getString(Messages.Player.GAME_STOPPED);
+				break;
+			case LOSE:
+				if (killer != null) {
+					broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
+							.setVariable("player", player.getDisplayName())
+							.setVariable("killer", killer.getDisplayName())
+							.toString();
+				} else {
+					broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME_UNKNOWN_KILLER)
+							.setVariable("player", player.getDisplayName())
+							.toString();
+				}
+				
+				playerMessage = i18n.getString(Messages.Player.PLAYER_LOSE);
+				break;
+			case WIN:
+				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_WON_GAME)
+						.setVariable("player", player.getDisplayName())
+						.toString();
+				
+				playerMessage = i18n.getString(Messages.Player.PLAYER_WIN);
+			default:
+				break;
+			}
+			
+			broadcast(broadcastMessage);
+			player.sendMessage(playerMessage);
 		}
-		
-		broadcast(broadcastMessage);
-		player.sendMessage(playerMessage);
 	}
 	
 	public void requestLose(SpleefPlayer player, QuitCause cause) {
@@ -668,7 +682,7 @@ public class Game implements VariableSuppliable {
 			return;
 		}
 		
-		leave(player, cause == null ? QuitCause.LOSE : cause, args);
+		leave(player, cause == null ? QuitCause.LOSE : cause, true, args);
 		
 		if (gameState == GameState.STARTING || gameState == GameState.INGAME) {
 			if (ingamePlayers.size() == 1 && checkWin) {
@@ -684,12 +698,16 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void requestWin(SpleefPlayer... players) {
+		requestWin(players, true);
+	}
+	
+	public void requestWin(SpleefPlayer[] players, boolean sendMessages) {
 		for (SpleefPlayer ingamePlayer : ingamePlayers) {
 			for (SpleefPlayer player : players) {
 				if (ingamePlayer == player) {
-					leave(player, QuitCause.WIN);
+					leave(player, QuitCause.WIN, sendMessages);
 				} else {
-					requestLose(player, false, QuitCause.LOSE);
+					requestLose(player, sendMessages, QuitCause.LOSE);
 				}
 			}
 		}
@@ -729,12 +747,12 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void addFlag(AbstractFlag<?> flag, boolean initFlag) {
+		flagManager.addFlag(flag);
+		eventBus.registerListener(flag);
+		
 		if (initFlag) {
 			flag.onFlagAdd(this);
 		}
-		
-		flagManager.addFlag(flag);
-		eventBus.registerListener(flag);
 	}
 	
 	public void removeFlag(String path) {
