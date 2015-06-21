@@ -222,6 +222,10 @@ public class GameAccessor extends XMLAccessor<Game> {
 				game.addFlag(flag, false);
 			}
 			
+			for (AbstractFlag<?> flag : game.getFlagManager().getFlags()) {
+				flag.onFlagAdd(game);
+			}
+			
 			FlagManager flagManager = game.getFlagManager();
 			flagManager.revalidateParents();
 			
