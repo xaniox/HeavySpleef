@@ -65,7 +65,7 @@ public class DefaultRatingCompute implements RatingCompute {
 			}
 		}
 		
-		throw new IllegalArgumentException("Dead players list has does not contain a player with the name " + name);
+		throw new IllegalArgumentException("Dead players list does not contain a player with the name " + name);
 	}
 	
 	private double e(Map<String, Double> ratings, String name) {
