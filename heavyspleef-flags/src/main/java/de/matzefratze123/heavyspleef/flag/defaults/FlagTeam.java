@@ -39,9 +39,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -61,7 +59,6 @@ import de.matzefratze123.heavyspleef.core.event.Cancellable;
 import de.matzefratze123.heavyspleef.core.event.Event;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
@@ -95,12 +92,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	};
 	private static final int OFFSET = 2;
 	
-	private static final MaterialData LEATHER_HELMET_DATA = new MaterialData(Material.LEATHER_HELMET);
-	private static final MaterialData LEATHER_CHESTPLATE_DATA = new MaterialData(Material.LEATHER_CHESTPLATE);
-	private static final MaterialData LEATHER_LEGGINGS_DATA = new MaterialData(Material.LEATHER_LEGGINGS);
-	private static final MaterialData LEATHER_BOOTS_DATA = new MaterialData(Material.LEATHER_BOOTS);
 	private static final MaterialData TEAM_SELECT_ITEMDATA = new MaterialData(Material.CLAY_BRICK);
-	
 	private static final String TEAM_SELECT_ITEM_KEY = "team_select";
 	
 	private @Getter Map<SpleefPlayer, TeamColor> players;
@@ -348,36 +340,6 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		//Enough players to start the game, set the temporary assigns to real ones
 		players = tempTeamAssigns;
 		updateScoreboard();
-	}
-	
-	@Subscribe
-	public void onGameStart(GameStartEvent event) {
-		for (SpleefPlayer player : event.getGame().getPlayers()) {
-			if (!players.containsKey(player)) {
-				continue;
-			}
-			
-			TeamColor color = players.get(player);
-			
-			ItemStack leatherHelmet = LEATHER_HELMET_DATA.toItemStack(1);
-			ItemStack leatherChestplate = LEATHER_CHESTPLATE_DATA.toItemStack(1);
-			ItemStack leatherLeggings = LEATHER_LEGGINGS_DATA.toItemStack(1);
-			ItemStack leatherBoots = LEATHER_BOOTS_DATA.toItemStack(1);
-			
-			LeatherArmorMeta meta = (LeatherArmorMeta) leatherHelmet.getItemMeta();
-			meta.setColor(color.getRGB());
-			
-			leatherHelmet.setItemMeta(meta);
-			leatherChestplate.setItemMeta(meta);
-			leatherLeggings.setItemMeta(meta);
-			leatherBoots.setItemMeta(meta);
-			
-			PlayerInventory inventory = player.getBukkitPlayer().getInventory();
-			inventory.setHelmet(leatherHelmet);
-			inventory.setChestplate(leatherChestplate);
-			inventory.setLeggings(leatherLeggings);
-			inventory.setBoots(leatherBoots);
-		}
 	}
 	
 	@Subscribe
