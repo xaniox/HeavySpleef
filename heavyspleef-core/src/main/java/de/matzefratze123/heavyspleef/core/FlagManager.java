@@ -210,6 +210,10 @@ public class FlagManager {
 		return false;
 	}
 	
+	public Set<AbstractFlag<?>> getFlags() {
+		return flags.values();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void disableFlag(String path) {
 		Validate.isTrue(flags.containsKey(path), "Flag is not registered or already disabled");
