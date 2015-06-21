@@ -185,6 +185,7 @@ player:
   join-cancelled-death: "Teleportation has been cancelled because you died!"
   
   cannot-change-gamemode: "You cannot change your gamemode while playing spleef!"
+  team-choosen: "You are now in the $[team] team"
 help:
   description:
     clearcache: "Clears the statistic cache"

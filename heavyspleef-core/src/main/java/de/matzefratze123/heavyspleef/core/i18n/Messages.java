@@ -224,6 +224,7 @@ public interface Messages {
 		public static final String JOIN_CANCELLED_DAMAGE = PREFIX + "join-cancelled-damage";
 		public static final String JOIN_CANCELLED_DEATH = PREFIX + "join-cancelled-death";
 		public static final String CANNOT_CHANGE_GAMEMODE = PREFIX + "cannot-change-gamemode";
+		public static final String TEAM_CHOOSEN = PREFIX + "team-choosen";
 		
 	}
 	
