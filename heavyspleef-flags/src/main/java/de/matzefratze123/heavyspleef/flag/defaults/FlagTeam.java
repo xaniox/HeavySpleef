@@ -75,7 +75,7 @@ import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 import de.matzefratze123.inventoryguilib.GuiInventory;
 import de.matzefratze123.inventoryguilib.GuiInventorySlot;
 
-@Flag(name = "team")
+@Flag(name = "team", conflictsWith = {FlagScoreboard.class, FlagMinPlayers.class, FlagMaxPlayers.class})
 @BukkitListener
 public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	
