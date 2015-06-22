@@ -36,6 +36,7 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.Inventory;
@@ -57,6 +58,7 @@ import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
@@ -68,6 +70,9 @@ public class FlagBowspleef extends BaseFlag {
 	private static final ItemStack BOW_ITEMSTACK;
 	private static final String BOWSPLEEF_METADATA_KEY = "bowspleef";
 	private static final double BLOCK_PADDING = 0.4;
+	
+	@Inject
+	private Game game;
 	
 	static {
 		BOW_ITEMSTACK = new ItemStack(Material.BOW);
@@ -107,6 +112,42 @@ public class FlagBowspleef extends BaseFlag {
 	}
 	
 	@EventHandler
+	public void onPlayerDamage(EntityDamageByEntityEvent event) {
+		Entity damagerEntity = event.getDamager();
+		Entity damagedEntity = event.getEntity();
+		
+		if (!(damagerEntity instanceof Arrow) || !(damagedEntity instanceof Player)) {
+			return;
+		}
+		
+		Arrow arrow = (Arrow) damagerEntity;
+		ProjectileSource source = arrow.getShooter();
+		if (!(source instanceof Player)) {
+			return;
+		}
+		
+		SpleefPlayer damager = getHeavySpleef().getSpleefPlayer(source);
+		SpleefPlayer damaged = getHeavySpleef().getSpleefPlayer(damagedEntity);
+		
+		if (!game.isIngame(damager) || !game.isIngame(damaged)) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		
+		Location location = damaged.getBukkitPlayer().getLocation();
+		location.subtract(0, 1, 0);
+		
+		Block block = location.getWorld().getBlockAt(location);
+		if (!game.canSpleef(block)) {
+			return;
+		}
+		
+		game.addBlockBroken(damager, block);
+		dropBlock(block);
+	}
+	
+	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent event) {
 		Projectile projectile = event.getEntity();
 		if (!(projectile instanceof Arrow)) {
@@ -119,10 +160,12 @@ public class FlagBowspleef extends BaseFlag {
 			return;
 		}
 		
-		SpleefPlayer shooter = getHeavySpleef().getSpleefPlayer(source);
-		Game game = getHeavySpleef().getGameManager().getGame(shooter);
-		
+		SpleefPlayer shooter = getHeavySpleef().getSpleefPlayer(source);		
 		if (game == null || game.getGameState() != GameState.INGAME) {
+			return;
+		}
+		
+		if (!game.isIngame(shooter)) {
 			return;
 		}
 		
@@ -217,8 +260,9 @@ public class FlagBowspleef extends BaseFlag {
 		World world = location.getWorld();
 		
 		if (block.getType() == Material.TNT) {
-			TNTPrimed tntEntity = (TNTPrimed) world.spawnEntity(location, EntityType.PRIMED_TNT);
+			TNTPrimed tntEntity = (TNTPrimed) world.spawnEntity(location.add(0.5, 0, 0.5), EntityType.PRIMED_TNT);
 			tntEntity.setMetadata(BOWSPLEEF_METADATA_KEY, new FixedMetadataValue(plugin, true));
+			tntEntity.setVelocity(new Vector());
 		} else {
 			FallingBlock fallingBlock = block.getWorld().spawnFallingBlock(location, block.getType(), block.getData());
 			fallingBlock.setMetadata(BOWSPLEEF_METADATA_KEY, new FixedMetadataValue(plugin, true));
