@@ -239,12 +239,15 @@ public class FlagRegistry {
 	
 	/* Reverse path lookup */
 	public Class<? extends AbstractFlag<?>> getFlagClass(String flagPath) {
-		FlagClassHolder holder = registeredFlagsMap.get(flagPath);
-		if (holder == null) {
-			return null;
+		for (Entry<DualKeyPair<String, Flag>, FlagClassHolder> entry : registeredFlagsMap.entrySet()) {
+			if (!entry.getKey().getPrimaryKey().equalsIgnoreCase(flagPath)) {
+				continue;
+			}
+			
+			return entry.getValue().flagClass;
 		}
 		
-		return holder.flagClass;
+		return null;
 	}
 	
 	public DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> getAvailableFlags() {
