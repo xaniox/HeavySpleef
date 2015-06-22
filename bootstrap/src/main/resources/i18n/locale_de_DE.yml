@@ -128,6 +128,7 @@ command:
   unsufficient-funds: "Du benötigst mindestens [$amount] um diesem Spiel beitreten zu können!"
   flag-doesnt-exist: "Diese Flag existiert nicht!"
   join-timer-started: "Du wirst in $[timer] Sekunden teleportiert.\nBitte bewege dich nicht!"
+  flag-conflict: "Die Flag $[conflict-source] ist nicht kompatibel mit $[conflict-with]"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

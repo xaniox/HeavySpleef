@@ -42,4 +42,6 @@ public @interface Flag {
 	
 	String[] pluginDepend() default {};
 	
+	Class<? extends AbstractFlag<?>>[] conflictsWith() default {};
+	
 }

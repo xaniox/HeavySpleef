@@ -20,9 +20,14 @@ package de.matzefratze123.heavyspleef.core;
 import java.lang.reflect.Method;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -34,6 +39,7 @@ import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -212,6 +218,34 @@ public class FlagManager {
 	
 	public Set<AbstractFlag<?>> getFlags() {
 		return flags.values();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public List<Conflict> computeConflicts(Class<? extends AbstractFlag<?>> flagClass, Flag flagAnnotation) {
+		List<Conflict> conflicts = Lists.newArrayList();
+		
+		for (AbstractFlag<?> otherFlag : flags.values()) {
+			Class<? extends AbstractFlag> otherFlagClass = otherFlag.getClass();
+			Flag otherFlagAnnotation = otherFlagClass.getAnnotation(Flag.class);
+			
+			for (Class<? extends AbstractFlag<?>> flagConflictClass : flagAnnotation.conflictsWith()) {
+				if (flagConflictClass != otherFlagClass) {
+					continue;
+				}
+				
+				conflicts.add(new Conflict(flagClass, flagAnnotation, otherFlagClass, otherFlagAnnotation));
+			}
+			
+			for (Class<? extends AbstractFlag<?>> flagConflictClass : otherFlagAnnotation.conflictsWith()) {
+				if (flagConflictClass != flagClass) {
+					continue;
+				}
+				
+				conflicts.add(new Conflict(otherFlagClass, otherFlagAnnotation, flagClass, flagAnnotation));
+			}
+		}
+		
+		return conflicts;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -399,6 +433,17 @@ public class FlagManager {
 		public DefaultGamePropertyBundle(Map<GameProperty, Object> propertyMap) {
 			super(Priority.REQUESTED, propertyMap);
 		}
+		
+	}
+	
+	@Getter
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	public static class Conflict {
+		
+		private Class<?> conflictSource;
+		private Flag conflictSourceAnnotation;
+		private Class<?> conflictWith;
+		private Flag conflictWithAnnotation;
 		
 	}
 	

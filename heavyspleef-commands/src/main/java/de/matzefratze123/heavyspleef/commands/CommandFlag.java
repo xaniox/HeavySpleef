@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.commands;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.command.CommandSender;
@@ -29,6 +30,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
+import de.matzefratze123.heavyspleef.core.FlagManager.Conflict;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -114,6 +116,18 @@ public class CommandFlag {
 				CommandValidate.isTrue(hook.isProvided(), i18n.getVarString(Messages.Command.FLAG_REQUIRES_HOOK)
 						.setVariable("hook", hook.getName())
 						.toString());
+			}
+			
+			List<Conflict> conflicts = game.getFlagManager().computeConflicts(flagClass, flagData);
+			if (!conflicts.isEmpty()) {
+				for (Conflict conflict : conflicts) {
+					player.sendMessage(i18n.getVarString(Messages.Command.FLAG_CONFLICT)
+							.setVariable("conflict-source", conflict.getConflictSourceAnnotation().name())
+							.setVariable("conflict-with", conflict.getConflictWithAnnotation().name())
+							.toString());
+				}
+				
+				return;
 			}
 			
 			AbstractFlag<Object> flag;
