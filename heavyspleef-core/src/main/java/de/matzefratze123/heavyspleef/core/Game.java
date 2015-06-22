@@ -715,7 +715,8 @@ public class Game implements VariableSuppliable {
 		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players);
 		eventBus.callEvent(event);
 		
-		resetGame();		
+		resetGame();
+		flushQueue();
 	}
 	
 	public void kickPlayer(SpleefPlayer player, String message, CommandSender sender) {
