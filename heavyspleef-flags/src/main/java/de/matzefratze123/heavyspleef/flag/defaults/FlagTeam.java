@@ -73,6 +73,7 @@ import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
+import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.EnumListFlag;
@@ -100,6 +101,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	
 	private static final MaterialData TEAM_SELECT_ITEMDATA = new MaterialData(Material.CLAY_BRICK);
 	private static final String TEAM_SELECT_ITEM_KEY = "team_select";
+	public static final String OBJECTIVE_NAME = "spleef_teams";
 	
 	private @Getter Map<SpleefPlayer, TeamColor> players;
 	private Map<SpleefPlayer, TeamColor> deadPlayers;
@@ -107,7 +109,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	private Map<TeamColor, Location> spawnpoints;
 	private boolean updateInventory;
 	private GuiInventory teamChooser;
-	private Scoreboard scoreboard;
+	private @Getter Scoreboard scoreboard;
 	private @Inject Game game;
 	
 	public FlagTeam() {
@@ -128,6 +130,20 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	@Override
 	public Class<TeamColor> getEnumType() {
 		return TeamColor.class;
+	}
+	
+	@Override
+	public void validateInput(List<TeamColor> input) throws ValidationException {
+		if (input.size() <= 1) {
+			throw new ValidationException(getI18N().getString(Messages.Command.AT_LEAST_TWO_TEAMS));
+		}
+		
+		List<TeamColor> existing = Lists.newArrayList();
+		for (TeamColor color : input) {
+			if (existing.contains(color)) {
+				throw new ValidationException(getI18N().getString(Messages.Command.NO_DUPLICATE_TEAMS));
+			}
+		}
 	}
 
 	@Override
@@ -281,6 +297,10 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 		
 		ItemStack clicked = event.getItem();
+		if (clicked == null || !clicked.hasItemMeta() || !clicked.getItemMeta().hasLore()) {
+			return;
+		}
+		
 		MetadatableItemStack metadatable = new MetadatableItemStack(clicked);
 		
 		if (!metadatable.hasMetadata(TEAM_SELECT_ITEM_KEY)) {
@@ -391,7 +411,9 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			TeamColor color = entry.getValue();
 			
 			Location spawnpoint = spawnpoints.get(color);
-			spawnLocationMap.put(player, spawnpoint);
+			if (spawnpoint != null) {
+				spawnLocationMap.put(player, spawnpoint);
+			}
 		}
 		
 		if (!spawnLocationMap.isEmpty()) {
@@ -470,10 +492,11 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		updateScoreboard(null);
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void updateScoreboard(SpleefPlayer left) {
 		if (scoreboard == null) {
 			scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-			scoreboard.registerNewObjective("spleef_teams", "dummy");
+			scoreboard.registerNewObjective(OBJECTIVE_NAME, "dummy");
 			
 			for (TeamColor color : getValue()) {
 				Team team = scoreboard.registerNewTeam(color.name());
@@ -481,6 +504,9 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 				team.setAllowFriendlyFire(false);
 				team.setPrefix(color.getChatColor().toString());
 			}
+			
+			TeamScoreboardInitializeEvent event = new TeamScoreboardInitializeEvent();
+			game.getEventBus().callEvent(event);
 		}
 		
 		if (left != null) {
@@ -508,7 +534,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 	}
 	
-	private String getLocalizedColorName(TeamColor color) {
+	public String getLocalizedColorName(TeamColor color) {
 		String[] localizedArray = getI18N().getStringArray(Messages.Arrays.TEAM_COLOR_ARRAY);
 		return color.getLocalizedName(localizedArray);
 	}
@@ -601,6 +627,10 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		public PlayerSelectedTeamEvent(Game game, SpleefPlayer who, TeamColor color) {
 			super(game, who);
 		}
+		
+	}
+	
+	public static class TeamScoreboardInitializeEvent extends Event {
 		
 	}
 	
