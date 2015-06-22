@@ -38,6 +38,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
@@ -50,7 +51,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.GameProperty;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.RatingCompute;
@@ -60,8 +63,10 @@ import de.matzefratze123.heavyspleef.core.event.Cancellable;
 import de.matzefratze123.heavyspleef.core.event.Event;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
@@ -213,6 +218,9 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 						.toString());
 				updateScoreboard();
 				updateInventory(game);
+				
+				PlayerSelectedTeamEvent selectedEvent = new PlayerSelectedTeamEvent(game, spleefPlayer, color);
+				game.getEventBus().callEvent(selectedEvent);
 			}
 		};
 		
@@ -282,6 +290,16 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		teamChooser.open(player);
 	}
 	
+	@Subscribe
+	public void onPlayerPreJoinGame(PlayerPreJoinGameEvent event) {
+		if (event.getGame().getGameState() == GameState.STARTING) {
+			event.setJoinResult(JoinResult.TEMPORARY_DENY);
+			event.setMessage(getI18N().getVarString(Messages.Command.GAME_IS_INGAME)
+					.setVariable("game", game.getName())
+					.toString());
+		}
+	}
+	
 	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameJoin(PlayerJoinGameEvent event) {
@@ -306,6 +324,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		updateScoreboard();
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameCountdown(GameCountdownEvent event) {		
 		List<TeamSizeHolder> teamSizes = Lists.newArrayList();
@@ -345,6 +364,25 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		
 		//Enough players to start the game, set the temporary assigns to real ones
 		players = tempTeamAssigns;
+		
+		//Remove team selection items
+		for (SpleefPlayer player : players.keySet()) {
+			Inventory inventory = player.getBukkitPlayer().getInventory();
+			for (ItemStack stack : inventory.getContents()) {
+				if (stack == null) {
+					continue;
+				}
+				
+				MetadatableItemStack metaStack = new MetadatableItemStack(stack);
+				if (!metaStack.hasMetadata(TEAM_SELECT_ITEM_KEY)) {
+					continue;
+				}
+				
+				inventory.remove(stack);
+			}
+			
+			player.getBukkitPlayer().updateInventory();
+		}
 		
 		//Determine spawnpoints for teams
 		Map<SpleefPlayer, Location> spawnLocationMap = Maps.newHashMap();
@@ -551,6 +589,17 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		@Override
 		public int compareTo(TeamSizeHolder o) {
 			return Integer.valueOf(size).compareTo(o.size);
+		}
+		
+	}
+	
+	@Getter
+	public static class PlayerSelectedTeamEvent extends PlayerGameEvent {
+
+		private TeamColor colorSelected;
+		
+		public PlayerSelectedTeamEvent(Game game, SpleefPlayer who, TeamColor color) {
+			super(game, who);
 		}
 		
 	}
