@@ -151,6 +151,8 @@ public interface Messages {
 		public static final String FLAG_DOESNT_EXIST = PREFIX + "flag-doesnt-exist";
 		public static final String JOIN_TIMER_STARTED = PREFIX + "join-timer-started";
 		public static final String FLAG_CONFLICT = PREFIX + "flag-conflict";
+		public static final String AT_LEAST_TWO_TEAMS = PREFIX + "at-least-two-teams";
+		public static final String NO_DUPLICATE_TEAMS = PREFIX + "no-duplicate-teams";
 		
 	}
 	

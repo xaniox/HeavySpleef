@@ -129,6 +129,8 @@ command:
   flag-doesnt-exist: "Diese Flag existiert nicht!"
   join-timer-started: "Du wirst in $[timer] Sekunden teleportiert.\nBitte bewege dich nicht!"
   flag-conflict: "Die Flag $[conflict-source] ist nicht kompatibel mit $[conflict-with]"
+  at-least-two-teams: "Es werden mindestens zwei Teams benötigt!"
+  no-duplicate-teams: "Doppelte Teams sind ungültig"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

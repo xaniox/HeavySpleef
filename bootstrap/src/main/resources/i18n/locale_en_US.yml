@@ -129,7 +129,8 @@ command:
   flag-doesnt-exist: "This flag does not exist!"
   join-timer-started: "Teleportation commences in $[timer] seconds.\nPlease do not move!"
   flag-conflict: "Flag $[conflict-source] is not compatible with flag $[conflict-with]"
-
+  at-least-two-teams: "You need to specify at least two teams!"
+  no-duplicate-teams: "Duplicate teams are invalid!"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
