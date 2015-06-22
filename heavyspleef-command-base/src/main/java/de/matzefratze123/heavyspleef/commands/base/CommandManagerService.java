@@ -20,6 +20,7 @@ package de.matzefratze123.heavyspleef.commands.base;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -31,13 +32,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
 
-public class CommandManagerService implements CommandExecutor {
+public class CommandManagerService implements CommandExecutor, TabCompleter {
 	
 	private static Map<Class<?>, Transformer<?>> TRANSFORMERS = Maps.newHashMap(BaseTransformers.BASE_TRANSFORMERS);
 	
@@ -100,7 +102,7 @@ public class CommandManagerService implements CommandExecutor {
 				if (bukkitCommand != null) {
 					bukkitCommand.setExecutor(this);
 				} else {
-					logger.warning("command " + command.getName() + " registered but could not find a matching command for plugin " + plugin.getName() + ". Did you forget to add the command to your plugin.yml?");
+					logger.warning("Command " + command.getName() + " registered but could not find a matching command for plugin " + plugin.getName() + ". Did you forget to add the command to your plugin.yml?");
 				}
 			} else {
 				// Just add it as a child
@@ -175,6 +177,50 @@ public class CommandManagerService implements CommandExecutor {
 			return true;
 		}
 		
+		SearchResult result = searchCommand(name, args);
+		if (result == null || result.container == null) {
+			sender.sendMessage(messageBundle.getMessage("message-unknown-command"));
+			return true;
+		}
+		
+		CommandContainer command = result.container;
+		int deepness = result.deepness;
+		
+		//Cut the args to be suitable to the sub-command-deepness
+		String[] cutArgs = new String[args.length - deepness];
+		System.arraycopy(args, deepness, cutArgs, 0, args.length - deepness);
+		
+		CommandContext context = new CommandContext(cutArgs, command, sender);
+		command.execute(context, messageBundle, permissionChecker, this.args);
+		return true;
+	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+		String name = cmd.getName();
+		if (!commandMap.containsKey(name)) {
+			//That command doesn't belong to us
+			return null;
+		}
+		
+		SearchResult result = searchCommand(name, args);
+		if (result == null || result.container == null) {
+			return null;
+		}
+		
+		CommandContainer container = result.container;
+		int deepness = result.deepness;
+		
+		//Cut the args to be suitable to the sub-command-deepness
+		String[] cutArgs = new String[args.length - deepness];
+		System.arraycopy(args, deepness, cutArgs, 0, args.length - deepness);
+		
+		CommandContext context = new CommandContext(cutArgs, container, sender);
+		List<String> tabCompletes = container.tabComplete(context, permissionChecker, this.args);
+		return tabCompletes;
+	}
+	
+	private SearchResult searchCommand(String name, String[] args) {
 		CommandContainer command = commandMap.get(name);
 		
 		//Try to find the deepest available sub-command
@@ -200,18 +246,18 @@ public class CommandManagerService implements CommandExecutor {
 			} while (index < args.length && subFound);
 		}
 		
-		if (command == null) {
-			sender.sendMessage(messageBundle.getMessage("message-unknown-command"));
-			return true;
-		}
+		SearchResult result = new SearchResult();
+		result.container = command;
+		result.deepness = index;
 		
-		//Cut the args to be suitable to the sub-command-deepness
-		String[] cutArgs = new String[args.length - index];
-		System.arraycopy(args, index, cutArgs, 0, args.length - index);
+		return result;
+	}
+	
+	private class SearchResult {
 		
-		CommandContext context = new CommandContext(cutArgs, command, sender);
-		command.execute(context, messageBundle, permissionChecker, this.args);
-		return true;
+		private CommandContainer container;
+		private int deepness;
+		
 	}
  	
 }

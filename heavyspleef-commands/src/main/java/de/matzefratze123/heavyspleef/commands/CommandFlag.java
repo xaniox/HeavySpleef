@@ -30,6 +30,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.FlagManager.Conflict;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
@@ -52,6 +53,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandFlag {
 	
+	private static final String REMOVE_IDENTIFIER = "remove";
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@SuppressWarnings("unchecked")
@@ -85,7 +87,7 @@ public class CommandFlag {
 				.setVariable("flag", flagPath)
 				.toString());
 		
-		if (context.argsLength() > 2 && (removeIdentifier.equalsIgnoreCase("remove") || removeIdentifier.equalsIgnoreCase("clear"))) {
+		if (context.argsLength() > 2 && (removeIdentifier.equalsIgnoreCase(REMOVE_IDENTIFIER) || removeIdentifier.equalsIgnoreCase("clear"))) {
 			CommandValidate.isTrue(game.isFlagPresent(flagPath), i18n.getVarString(Messages.Command.FLAG_NOT_PRESENT)
 					.setVariable("flag", flagPath)
 					.toString());
@@ -227,6 +229,31 @@ public class CommandFlag {
 			} else {
 				return;
 			}
+		}
+	}
+	
+	@TabComplete("flag")
+	public void onFlagTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		FlagRegistry registry = heavySpleef.getFlagRegistry();
+		
+		if (context.argsLength() == 1) {
+			GameManager manager = heavySpleef.getGameManager();
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		} else if (context.argsLength() == 2) {
+			DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> flags = registry.getAvailableFlags();
+			
+			Set<String> flagNames = Sets.newTreeSet();
+			for (String flagPath : flags.primaryKeySet()) {
+				flagNames.add(flagPath);
+			}
+			
+			for (String flagName : flagNames) {
+				list.add(flagName);
+			}
+		} else if (context.argsLength() == 4) {
+			list.add(REMOVE_IDENTIFIER);
 		}
 	}
 

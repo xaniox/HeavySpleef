@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,6 +26,7 @@ import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -68,6 +71,21 @@ public class CommandStop {
 		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_STOPPED)
 				.setVariable("game", game.getName())
 				.toString());
+	}
+	
+	@TabComplete("stop")
+	public void onStopTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				if (!game.getGameState().isGameActive()) {
+					continue;
+				}
+				
+				list.add(game.getName());
+			}
+		}
 	}
 	
 }

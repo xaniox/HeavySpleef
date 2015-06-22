@@ -17,13 +17,17 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.List;
+
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.JoinRequester;
 import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
@@ -37,7 +41,7 @@ public class CommandJoin {
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "join", minArgs = 1, usage = "/spleef join <game> [args]",
+	@Command(name = "join", minArgs = 1, usage = "/spleef join <game>",
 			descref = Messages.Help.Description.JOIN,
 			permission = Permissions.PERMISSION_JOIN)
 	@PlayerOnly
@@ -62,6 +66,21 @@ public class CommandJoin {
 		} catch (JoinValidationException e) {
 			player.sendMessage(e.getMessage());
 			JoinRequester.QUEUE_PLAYER_CALLBACK.onJoin(player, game, e.getResult());
+		}
+	}
+	
+	@TabComplete("join")
+	public void onJoinTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				if (game.getGameState() == GameState.DISABLED) {
+					continue;
+				}
+				
+				list.add(game.getName());
+			}
 		}
 	}
 	

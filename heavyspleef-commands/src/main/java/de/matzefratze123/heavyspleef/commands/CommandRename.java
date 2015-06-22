@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,6 +28,7 @@ import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -75,7 +78,16 @@ public class CommandRename {
 						.toString());
 			}
 		});
-		
+	}
+	
+	@TabComplete("rename")
+	public void onRenameTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		GameManager manager = heavySpleef.getGameManager();
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		}
 	}
 	
 }

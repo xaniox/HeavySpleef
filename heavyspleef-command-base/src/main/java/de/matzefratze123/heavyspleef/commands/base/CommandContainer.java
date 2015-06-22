@@ -18,7 +18,9 @@
 package de.matzefratze123.heavyspleef.commands.base;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lombok.AccessLevel;
@@ -36,11 +38,13 @@ public class CommandContainer {
 	private Set<CommandContainer> childCommands;
 	private @Getter boolean playerOnly;
 	private @Getter CommandContainer parent;
-	@Getter(value = AccessLevel.PROTECTED)
+	@Getter(AccessLevel.PROTECTED)
 	private Method commandMethod;
+	@Getter(AccessLevel.PROTECTED)
+	private Method tabCompleteMethod;
 	private @Getter Object commandClassInstance;
 	
-	protected CommandContainer(Method method, Object instance, Command command, boolean playerOnly, CommandExecution execution) {
+	protected CommandContainer(Method method, Method tabCompleteMethod, Object instance, Command command, boolean playerOnly, CommandExecution execution) {
 		this.commandMethod = method;
 		this.commandClassInstance = instance;
 		this.command = command;
@@ -48,8 +52,8 @@ public class CommandContainer {
 		this.execution = execution;
 	}
 	
-	protected CommandContainer(Method method, Object instance, Command command, boolean playerOnly, CommandExecution execution, CommandContainer parent) {
-		this(method, instance, command, playerOnly, execution);
+	protected CommandContainer(Method method, Method tabCompleteMethod, Object instance, Command command, boolean playerOnly, CommandExecution execution, CommandContainer parent) {
+		this(method, tabCompleteMethod, instance, command, playerOnly, execution);
 		
 		this.parent = parent;
 	}
@@ -111,6 +115,10 @@ public class CommandContainer {
 		execution.execute(context, messageBundle, permissionChecker, args);
 	}
 	
+	public List<String> tabComplete(CommandContext context, PermissionChecker permissionChecker, Object[] args) {
+		return execution.tabComplete(context, permissionChecker, args);
+	}
+	
 	public static Set<CommandContainer> create(Class<?> rootClass, Instantiator instantiator, CommandExecution execution, Logger logger) {
 		return buildHierarchy(new Class<?>[] {rootClass}, instantiator, null, logger, execution);
 	}
@@ -122,6 +130,7 @@ public class CommandContainer {
 		Set<CommandContainer> containers = Sets.newHashSet();
 		
 		for (Class<?> clazz : nestedClasses) {
+			//Searching for commands
 			for (Method method : clazz.getDeclaredMethods()) {
 				if (!method.isAnnotationPresent(Command.class)) {
 					continue;
@@ -141,7 +150,7 @@ public class CommandContainer {
 					continue;
 				}
 				
-				CommandContainer container = new CommandContainer(method, instance, command, playerOnly, execution, parent);
+				CommandContainer container = new CommandContainer(method, null, instance, command, playerOnly, execution, parent);
 				
 				if (method.isAnnotationPresent(NestedCommands.class)) {
 					Class<?>[] nestedCommandClasses = method.getAnnotation(NestedCommands.class).value();
@@ -151,6 +160,35 @@ public class CommandContainer {
 				
 				container.setChildCommands(childCommands);
 				containers.add(container);
+			}
+			
+			//Searching for tab completers which are defined in the same class
+			for (Method method : clazz.getDeclaredMethods()) {
+				if (!method.isAnnotationPresent(TabComplete.class)) {
+					continue;
+				}
+				
+				TabComplete tabComplete = method.getAnnotation(TabComplete.class);
+				String command = tabComplete.value();
+				
+				CommandContainer found = null;
+				
+				for (CommandContainer container : containers) {
+					if (!container.getName().equals(command)) {
+						continue;
+					}
+					
+					found = container;
+					break;
+				}
+				
+				if (found == null) {
+					logger.log(Level.WARNING, "TabComplete method " + method.getName() + " in class " + method.getDeclaringClass().getName()
+							+ " found but no suitable command was found!");
+					continue;
+				}
+				
+				found.tabCompleteMethod = method;
 			}
 		}
 		

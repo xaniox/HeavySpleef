@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.commands;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Statistic;
@@ -39,6 +41,7 @@ import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.core.player.PlayerManager;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandStats {
@@ -133,6 +136,17 @@ public class CommandStats {
 				.setVariable("wins-per-lose", FORMAT.format(wl))
 				.setVariable("knockouts-per-game", FORMAT.format(kg))
 				.toString());
+	}
+	
+	@TabComplete("stats")
+	public void onStatsTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		PlayerManager manager = heavySpleef.getPlayerManager();
+		
+		if (context.argsLength() == 1) {
+			for (SpleefPlayer player : manager.getSpleefPlayers()) {
+				list.add(player.getName());
+			}
+		}
 	}
 	
 	private interface StatisticPrinter {

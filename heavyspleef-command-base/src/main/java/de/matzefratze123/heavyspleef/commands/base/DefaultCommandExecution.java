@@ -19,6 +19,8 @@ package de.matzefratze123.heavyspleef.commands.base;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,8 @@ import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import com.google.common.collect.Lists;
 
 public class DefaultCommandExecution implements CommandExecution {
 
@@ -74,19 +78,44 @@ public class DefaultCommandExecution implements CommandExecution {
 			return;
 		}
 		
-		invokeMethod(context, executionArgs);
+		invokeMethod(context, null, executionArgs, false);
 	}
 	
-	protected void invokeMethod(CommandContext context, Object[] args) {
-		Method method = context.getCommand().getCommandMethod();
+	@Override
+	public List<String> tabComplete(CommandContext context, PermissionChecker checker, Object[] args) {
+		CommandSender sender = context.getSender();
+		CommandContainer command = context.getCommand();
+		if (command.getTabCompleteMethod() == null) {
+			return null;
+		}
+		
+		if (!(sender instanceof Player) && command.isPlayerOnly()) {
+			return null;
+		}
+		
+		if (!command.getPermission().isEmpty() && !checker.checkPermission(sender, command.getPermission())) {
+			return null;
+		}
+		
+		System.out.println("Tab complete for " + context.getCommand().getName() + ": " + Arrays.toString(context.args()));
+		List<String> tabCompleteList = Lists.newArrayList();
+		invokeMethod(context, tabCompleteList, args, true);
+		return tabCompleteList;
+	}
+	
+	protected Object invokeMethod(CommandContext context, List<String> tabCompleteList, Object[] args, boolean completeTabsInvoke) {
+		CommandContainer command = context.getCommand();
+		
+		Method method = completeTabsInvoke ? command.getTabCompleteMethod() : command.getCommandMethod();
 		Object instance = context.getCommand().getCommandClassInstance();
 		
 		boolean accessible = method.isAccessible();
 		method.setAccessible(true);
 		
 		//Analyse the method
-		//Default method format is: methodName(CommandContext)
+		//Default method format is: methodName(CommandContext, OptionalArgs)
 		
+		//Tabformat is: methodName(CommandContext, List<String>, OptionalArgs)
 		try {
 			Class<?>[] parameterTypes = method.getParameterTypes();
 			if (parameterTypes.length == 0) {
@@ -100,6 +129,8 @@ public class DefaultCommandExecution implements CommandExecution {
 					
 					if (parameterType == CommandContext.class) {
 						parameterValues[i] = context;
+					} else if (parameterType == List.class) {
+						parameterValues[i] = tabCompleteList;
 					} else if (plugin.getClass() == parameterType) {
 						parameterValues[i] = plugin;
 					} else if (parameterType.isPrimitive()) {
@@ -114,23 +145,28 @@ public class DefaultCommandExecution implements CommandExecution {
 					}
 				}
 				
-				method.invoke(instance, parameterValues);
+				return method.invoke(instance, parameterValues);
 			}
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getCause();
-			
+
 			if (cause instanceof CommandException) {
 				((CommandException) cause).sendToPlayer(prefix, context.getSender());
 			} else {
-				logger.log(Level.SEVERE, "Unhandled exception executing command \"" + context.getCommand().getName() + "\"", cause);
+				logger.log(Level.SEVERE, "Unhandled exception executing " + (completeTabsInvoke ? "tab complete for " : "") + "command \""
+						+ context.getCommand().getName() + "\"", cause);
 			}
 		} catch (IllegalAccessException | IllegalArgumentException e) {
-			logger.log(Level.SEVERE, "Could not invoke command method for '" + context.getCommand().getFullyQualifiedName() + "'", e);
+			logger.log(Level.SEVERE, "Could not invoke " + (completeTabsInvoke ? "tab complete " : "") + "method for '"
+					+ context.getCommand().getFullyQualifiedName() + "'", e);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Unhandled exception executing command '" + context.getCommand().getFullyQualifiedName() + "'", e);
+			logger.log(Level.SEVERE, "Unhandled exception executing " + (completeTabsInvoke ? "tab complete for " : "") + "command '"
+					+ context.getCommand().getFullyQualifiedName() + "'", e);
 		} finally {
 			method.setAccessible(accessible);
 		}
+		
+		return null;
 	}
 	
 	private Object getDefaultPrimitiveValue(Class<?> clazz) {

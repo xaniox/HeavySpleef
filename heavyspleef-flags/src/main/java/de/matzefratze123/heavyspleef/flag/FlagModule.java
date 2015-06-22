@@ -44,6 +44,7 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagReward;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagShears;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagShovels;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagShowBarriers;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSnowballs;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
@@ -96,6 +97,7 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagScoreboard.class);
 		registry.registerFlag(FlagShears.class);
 		registry.registerFlag(FlagShovels.class);
+		registry.registerFlag(FlagShowBarriers.class);
 		registry.registerFlag(FlagSnowballs.class);
 		registry.registerFlag(FlagSpawnpoint.class);
 		registry.registerFlag(FlagSpectate.class);

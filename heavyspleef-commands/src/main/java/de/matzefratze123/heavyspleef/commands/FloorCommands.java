@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -42,6 +44,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -117,6 +120,17 @@ public class FloorCommands {
 		//Save the game
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
+	
+	@TabComplete("addfloor")
+	public void onAddFloorTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		}
+	}
 
 	private void validateSelectedRegion(Region region) throws CommandException {
 		if (!(region instanceof CuboidRegion) && !(region instanceof Polygonal2DRegion) && !(region instanceof CylinderRegion)) {
@@ -166,6 +180,22 @@ public class FloorCommands {
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
 	
+	@TabComplete("removefloor")
+	public void onRemoveFloorTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		} else if (context.argsLength() == 2) {
+			Game game = manager.getGame(context.getString(0));
+			for (Floor floor : game.getFloors()) {
+				list.add(floor.getName());
+			}
+		}
+	}
+	
 	@Command(name = "showfloor", permission = Permissions.PERMISSION_SHOW_FLOOR, minArgs = 2,
 			descref = Messages.Help.Description.SHOWFLOOR,
 			usage = "/spleef showfloor <Game> <Floorname>")
@@ -192,6 +222,22 @@ public class FloorCommands {
 		
 		visualizer.visualize(floor.getRegion(), player, game.getWorld());
 		player.sendMessage(i18n.getString(Messages.Command.REGION_VISUALIZED));
+	}
+	
+	@TabComplete("showfloor")
+	public void onShowFloorTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		} else if (context.argsLength() == 2) {
+			Game game = manager.getGame(context.getString(0));
+			for (Floor floor : game.getFloors()) {
+				list.add(floor.getName());
+			}
+		}
 	}
 
 }

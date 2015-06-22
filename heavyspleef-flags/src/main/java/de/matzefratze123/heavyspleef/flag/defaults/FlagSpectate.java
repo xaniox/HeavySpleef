@@ -46,6 +46,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -143,6 +144,26 @@ public class FlagSpectate extends LocationFlag {
 			spleefPlayer.sendMessage(i18n.getVarString(Messages.Player.PLAYER_LEAVE_SPECTATE)
 					.setVariable("game", game.getName())
 					.toString());
+		}
+	}
+	
+	@TabComplete("spectate")
+	public void onSpectateTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
+		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
+		if (isSpectating(player)) {
+			return;
+		}
+		
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				if (!game.isFlagPresent(FlagSpectate.class)) {
+					continue;
+				}
+				
+				list.add(game.getName());
+			}
 		}
 	}
 	

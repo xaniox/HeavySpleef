@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,6 +38,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -94,6 +97,17 @@ public class DeathzoneCommands {
 		//Save the game
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
+	
+	@TabComplete("adddeathzone")
+	public void onAddDeathzoneTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		}
+	}
 
 	private void validateSelectedRegion(Region region) throws CommandException {
 		if (!(region instanceof CuboidRegion) && !(region instanceof Polygonal2DRegion) && !(region instanceof CylinderRegion)) {
@@ -143,6 +157,22 @@ public class DeathzoneCommands {
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
 	
+	@TabComplete("removedeathzone")
+	public void onRemoveDeathzoneTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		} else if (context.argsLength() == 2) {
+			Game game = manager.getGame(context.getString(0));
+			for (String deathzoneName : game.getDeathzones().keySet()) {
+				list.add(deathzoneName);
+			}
+		}
+	}
+	
 	@Command(name = "showdeathzone", permission = Permissions.PERMISSION_SHOW_DEATHZONE, minArgs = 2,
 			descref = Messages.Help.Description.SHOWDEATHZONE,
 			usage = "/spleef showdeathzone <Game> <Deathzone-Name>")
@@ -169,6 +199,22 @@ public class DeathzoneCommands {
 		
 		visualizer.visualize(region, player, game.getWorld());
 		player.sendMessage(i18n.getString(Messages.Command.REGION_VISUALIZED));
+	}
+	
+	@TabComplete("showdeathzone")
+	public void onShowDeathzoneTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		} else if (context.argsLength() == 2) {
+			Game game = manager.getGame(context.getString(0));
+			for (String deathzoneName : game.getDeathzones().keySet()) {
+				list.add(deathzoneName);
+			}
+		}
 	}
 	
 }

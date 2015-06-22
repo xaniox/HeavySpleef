@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,6 +26,8 @@ import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
@@ -55,6 +59,16 @@ public class CommandDelete {
 		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_DISCARDED)
 				.setVariable("game", gameName)
 				.toString());
+	}
+	
+	@TabComplete("delete")
+	public void onDeleteTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		if (context.argsLength() == 1) {
+			GameManager manager = heavySpleef.getGameManager();
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		}
 	}
 	
 }

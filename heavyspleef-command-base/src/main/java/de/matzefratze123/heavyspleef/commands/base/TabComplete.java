@@ -17,12 +17,15 @@
  */
 package de.matzefratze123.heavyspleef.commands.base;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface CommandExecution {
-
-	public void execute(CommandContext context, MessageBundle messageBundle, PermissionChecker permissionChecker, Object[] executionArgs);
-
-	public List<String> tabComplete(CommandContext context, PermissionChecker permissionChecker, Object[] args);
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface TabComplete {
 	
+	public String value();
+
 }

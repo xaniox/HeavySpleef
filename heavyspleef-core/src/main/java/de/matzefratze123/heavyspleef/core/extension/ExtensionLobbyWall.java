@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.core.extension;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -44,6 +45,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -117,6 +119,17 @@ public class ExtensionLobbyWall extends GameExtension {
 		}, game);
 		
 		player.sendMessage(i18n.getString(Messages.Command.CLICK_ON_SIGN_TO_ADD_WALL));
+	}
+	
+	@TabComplete("addwall")
+	public static void onAddWallTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				list.add(game.getName());
+			}
+		}
 	}
 	
 	@Command(name = "removewall", permission = Permissions.PERMISSION_REMOVE_WALL, minArgs = 1,

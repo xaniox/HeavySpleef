@@ -151,6 +151,11 @@ public class ProxyExecution implements CommandExecution {
 		return false;
 	}
 	
+	@Override
+	public List<String> tabComplete(CommandContext context, PermissionChecker permissionChecker, Object[] args) {
+		return delegate.tabComplete(context, permissionChecker, args);
+	}
+	
 	private class ProxyHolder implements Comparable<ProxyHolder> {
 		
 		private Proxy proxy;

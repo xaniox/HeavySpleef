@@ -17,8 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
-import org.bukkit.entity.Player;
-
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
@@ -31,6 +29,7 @@ import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class CommandCreate {
 
@@ -41,14 +40,14 @@ public class CommandCreate {
 			permission = Permissions.PERMISSION_DELETE)
 	@PlayerOnly
 	public void onCreateCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		Player sender = context.getSender();
+		SpleefPlayer sender = heavySpleef.getSpleefPlayer(context.getSender());
 		
 		String gameName = context.getString(0);
 		GameManager manager = heavySpleef.getGameManager();
 		
 		CommandValidate.isTrue(!manager.hasGame(gameName), i18n.getString(Messages.Command.GAME_ALREADY_EXIST));
 		
-		Game game = new Game(heavySpleef, gameName, sender.getWorld());
+		Game game = new Game(heavySpleef, gameName, sender.getBukkitPlayer().getWorld());
 		manager.addGame(game);
 		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_CREATED)
 				.setVariable("game", gameName)

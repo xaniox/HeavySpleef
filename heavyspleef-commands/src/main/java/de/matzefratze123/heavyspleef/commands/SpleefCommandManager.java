@@ -80,6 +80,7 @@ public class SpleefCommandManager implements CommandManager {
 		
 		PluginCommand spleefCommand = plugin.getPlugin().getCommand("spleef");
 		spleefCommand.setExecutor(service);
+		spleefCommand.setTabCompleter(service);
 	}
 	
 	/**
