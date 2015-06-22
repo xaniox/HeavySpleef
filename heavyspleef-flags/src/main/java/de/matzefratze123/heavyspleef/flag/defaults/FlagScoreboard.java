@@ -67,6 +67,7 @@ public class FlagScoreboard extends BaseFlag {
 		description.add("Enables a sidebar scoreboard to show the status of the game");
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		scoreboard = manager.getNewScoreboard();
