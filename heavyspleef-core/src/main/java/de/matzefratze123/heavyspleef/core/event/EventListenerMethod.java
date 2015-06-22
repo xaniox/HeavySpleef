@@ -38,12 +38,12 @@ public class EventListenerMethod {
 		}
 		
 		Class<?>[] parameters = method.getParameterTypes();
-		Validate.isTrue(parameters.length == 1, "method must have only one parameter which must be a subtype of GameEvent");
+		Validate.isTrue(parameters.length == 1, "method must have only one parameter which must be a subtype of Event");
 		
 		Class<?> eventClass = parameters[0];
-		Validate.isTrue(GameEvent.class.isAssignableFrom(eventClass), "First parameter of method must be a subtype of GameEvent");
+		Validate.isTrue(Event.class.isAssignableFrom(eventClass), "First parameter of method must be a subtype of Event");
 		
-		this.eventClass = (Class<? extends GameEvent>) eventClass;
+		this.eventClass = (Class<? extends Event>) eventClass;
 	}
 	
 	public String getMethodName() {
