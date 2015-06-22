@@ -31,7 +31,7 @@ public class PlayerLeaveGameEvent extends PlayerGameEvent implements Cancellable
 
 	private @Setter boolean cancelled;
 	private @Setter Location teleportationLocation;
-	private @Setter boolean sendMessages;
+	private @Setter boolean sendMessages = true;
 	private QuitCause cause;
 	private SpleefPlayer killer;
 	
