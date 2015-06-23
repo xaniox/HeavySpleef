@@ -125,7 +125,7 @@ command:
   invalid-snowball-amount: "Die Anzahl an Schneebällen muss größer als 0 sein"
   invalid-timeout: "Der Timeout muss größer als 0 sein"
   
-  unsufficient-funds: "Du benötigst mindestens [$amount] um diesem Spiel beitreten zu können!"
+  unsufficient-funds: "Du benötigst mindestens $[amount] um diesem Spiel beitreten zu können!"
   flag-doesnt-exist: "Diese Flag existiert nicht!"
   join-timer-started: "Du wirst in $[timer] Sekunden teleportiert.\nBitte bewege dich nicht!"
   flag-conflict: "Die Flag $[conflict-source] ist nicht kompatibel mit $[conflict-with]"
@@ -150,8 +150,8 @@ broadcast:
   
   floors-regenerated: "Alle Ebenen wurden regeneriert"
   need-min-players: "Es werden mindestens $[min-players] Spieler benötigt"
-  teams-left: "Im Team $[team] verleiben $[amount] Spieler"
-  team-won: "Das Team $[team] hat das Spiel in der Arena $[test] gewonnen!"
+  teams-left: "Im Team $[team] verbleiben $[amount] Spieler"
+  team-won: "Das Team $[team] hat das Spiel in der Arena $[game] gewonnen!"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"
