@@ -32,7 +32,6 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
-import de.matzefratze123.heavyspleef.commands.base.CommandManagerService.SearchResult;
 import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
 import de.matzefratze123.heavyspleef.commands.base.NestedCommands;
 import de.matzefratze123.heavyspleef.commands.base.TabComplete;
@@ -137,7 +136,7 @@ public class SpleefCommandManager implements CommandManager {
 			DeathzoneCommands.class,
 			FloorCommands.class
 	})
-	public void onSpleefCommand(CommandContext context, HeavySpleef heavySpleef) {
+	public static void onSpleefCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
 		PluginDescriptionFile desc = heavySpleef.getPlugin().getDescription();
 		
@@ -163,14 +162,12 @@ public class SpleefCommandManager implements CommandManager {
 	}
 	
 	@TabComplete("spleef")
-	public void onSpleefTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+	public static void onSpleefTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
 		if (context.argsLength() != 1) {
 			return;
 		}
 		
-		SearchResult result = service.searchCommand("spleef", new String[0]);
-		CommandContainer spleefCommand = result.getContainer();
-		
+		CommandContainer spleefCommand = context.getCommand();
 		for (CommandContainer child : spleefCommand.getChildCommands()) {
 			list.add(child.getName());
 		}
