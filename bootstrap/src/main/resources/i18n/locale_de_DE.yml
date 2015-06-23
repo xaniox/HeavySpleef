@@ -131,6 +131,7 @@ command:
   flag-conflict: "Die Flag $[conflict-source] ist nicht kompatibel mit $[conflict-with]"
   at-least-two-teams: "Es werden mindestens zwei Teams benötigt!"
   no-duplicate-teams: "Doppelte Teams sind ungültig"
+  function-only-in-lobby: "Du kannst diese Funktion nur in der Lobby benutzen"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -152,6 +153,7 @@ broadcast:
   need-min-players: "Es werden mindestens $[min-players] Spieler benötigt"
   teams-left: "Im Team $[team] verbleiben $[amount] Spieler"
   team-won: "Das Team $[team] hat das Spiel in der Arena $[game] gewonnen!"
+  player-voted: "Der Spieler $[player] hat dafür gestimmt das Spiel zu starten!"
 player:
   player-leave: "Du hast das Spiel verlassen"
   player-kick: "Du wurdest von $[kicker] gekickt: $[message]"

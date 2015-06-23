@@ -42,6 +42,7 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Unregister;
@@ -92,6 +93,11 @@ public class FlagVote extends BaseFlag {
 		
 		CommandValidate.notNull(game, i18n.getString(Messages.Command.NOT_INGAME));
 		CommandValidate.isTrue(game.isFlagPresent(FLAG_NAME), i18n.getString(Messages.Command.NO_VOTE_ENABLED));
+		
+		if (game.getGameState() != GameState.LOBBY) {
+			player.sendMessage(i18n.getString(Messages.Command.FUNCTION_ONLY_IN_LOBBY));
+			return;
+		}
 		
 		FlagVote flag = game.getFlag(FlagVote.class);
 		boolean success = flag.vote(player, game);
@@ -144,11 +150,15 @@ public class FlagVote extends BaseFlag {
 	}
 	
 	public boolean vote(SpleefPlayer player, Game game) {
-		if (voted.contains(player)) {
+		if (voted.contains(player) || game.getGameState() != GameState.LOBBY) {
 			return false;
 		}
 		
 		voted.add(player);
+		game.broadcast(getI18N().getVarString(Messages.Broadcast.PLAYER_VOTED)
+				.setVariable("player", player.getDisplayName())
+				.toString());
+		
 		checkVotes(game);
 		return true;
 	}
@@ -163,10 +173,7 @@ public class FlagVote extends BaseFlag {
 		double percentageVoted = (double)voted.size() / players.size();
 		
 		if (percentageVoted * 100 >= autostartVote && players.size() >= 2) {
-			boolean success = game.countdown();
-			if (success) {
-				voted.clear();
-			}
+			game.countdown();
 		}
 	}
 	
@@ -197,6 +204,11 @@ public class FlagVote extends BaseFlag {
 				player.sendMessage(i18n.getVarString(Messages.Command.NO_VOTE_ENABLED)
 						.setVariable("game", game.getName())
 						.toString());
+				return;
+			}
+			
+			if (game.getGameState() != GameState.LOBBY) {
+				player.sendMessage(i18n.getString(Messages.Command.FUNCTION_ONLY_IN_LOBBY));
 				return;
 			}
 			
@@ -240,6 +252,11 @@ public class FlagVote extends BaseFlag {
 			
 			Block clickedBlock = event.getClickedBlock();
 			if (clickedBlock == null || clickedBlock.getType() != readyBlock.getItemType() || clickedBlock.getData() != readyBlock.getData()) {
+				return;
+			}
+			
+			if (game.getGameState() != GameState.LOBBY) {
+				player.sendMessage(i18n.getString(Messages.Command.FUNCTION_ONLY_IN_LOBBY));
 				return;
 			}
 			

@@ -131,6 +131,7 @@ command:
   flag-conflict: "Flag $[conflict-source] is not compatible with flag $[conflict-with]"
   at-least-two-teams: "You need to specify at least two teams!"
   no-duplicate-teams: "Duplicate teams are invalid!"
+  function-only-in-lobby: "You may not use this function when not in lobby"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -152,6 +153,7 @@ broadcast:
   need-min-players: "Need at least $[min-players] to start the game."
   teams-left: "$[amount] players left in team $[team]"
   team-won: "Team $[team] has won the game in the arena $[game]"
+  player-voted: "The player $[player] voted to start the game!"
 player:
   player-leave: "You left the game."
   player-kick: "You were kicked by $[kicker]: $[message]"
