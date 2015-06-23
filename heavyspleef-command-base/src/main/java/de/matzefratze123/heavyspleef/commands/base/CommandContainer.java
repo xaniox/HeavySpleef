@@ -143,7 +143,7 @@ public class CommandContainer {
 				
 				Object instance = null;
 				
-				if ((method.getModifiers() & Modifier.STATIC) != 0) { 
+				if ((method.getModifiers() & Modifier.STATIC) == 0) { 
 					try {
 						instance = instantiator.instantiate(clazz);
 					} catch (InstantiationException e) {
