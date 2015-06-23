@@ -35,6 +35,7 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -284,8 +285,11 @@ public class Game implements VariableSuppliable {
 				@Override
 				public void onCountdownFinish(CountdownTask task) {
 					for (SpleefPlayer player : ingamePlayers) {
-						player.getBukkitPlayer().setLevel(0);
-						player.getBukkitPlayer().setExp(0f);
+						Player bukkitPlayer = player.getBukkitPlayer();
+
+						bukkitPlayer.setLevel(0);
+						bukkitPlayer.setExp(0f);
+						bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.NOTE_PLING, 1.0f, 1.5f);
 					}
 					
 					start();
@@ -308,6 +312,11 @@ public class Game implements VariableSuppliable {
 						broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
 							.setVariable("remaining", String.valueOf(task.getRemaining()))
 							.toString());
+						
+						for (SpleefPlayer player : ingamePlayers) {
+							Player bukkitPlayer = player.getBukkitPlayer();
+							bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+						}
 					}
 				}
 			});
@@ -601,6 +610,10 @@ public class Game implements VariableSuppliable {
 		
 		if (ingamePlayers.size() == 0 && gameState == GameState.LOBBY) {
 			setGameState(GameState.WAITING);
+		}
+		
+		if (cause == QuitCause.WIN) {
+			player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 		}
 		
 		if (sendMessages) {
@@ -1033,6 +1046,7 @@ public class Game implements VariableSuppliable {
 	
 	public void onPlayerBreakBlock(BlockBreakEvent event, SpleefPlayer player) {
 		if (gameState != GameState.INGAME) {
+			event.setCancelled(true);
 			return;
 		}
 		
