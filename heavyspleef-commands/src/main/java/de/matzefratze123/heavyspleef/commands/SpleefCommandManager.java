@@ -24,6 +24,7 @@ import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import de.matzefratze123.heavyspleef.commands.base.BukkitPermissionChecker;
@@ -167,8 +168,13 @@ public class SpleefCommandManager implements CommandManager {
 			return;
 		}
 		
+		boolean senderIsPlayer = context.getSender() instanceof Player;
 		CommandContainer spleefCommand = context.getCommand();
 		for (CommandContainer child : spleefCommand.getChildCommands()) {
+			if (child.isPlayerOnly() && !senderIsPlayer) {
+				continue;
+			}
+			
 			list.add(child.getName());
 		}
 	}
