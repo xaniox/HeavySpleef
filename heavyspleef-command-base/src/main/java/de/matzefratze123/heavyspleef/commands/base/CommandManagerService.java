@@ -217,6 +217,21 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		
 		CommandContext context = new CommandContext(cutArgs, container, sender);
 		List<String> tabCompletes = container.tabComplete(context, permissionChecker, this.args);
+		
+		if (args.length > 0 && !args[args.length - 1].isEmpty()) {
+			//Remove unrelevant completes
+			String lastArgument = args[args.length - 1];
+			
+			Iterator<String> iterator = tabCompletes.iterator();
+			while (iterator.hasNext()) {
+				String complete = iterator.next().toLowerCase();
+				
+				if (!complete.startsWith(lastArgument.toLowerCase())) {
+					iterator.remove();
+				}
+			}
+		}
+		
 		return tabCompletes;
 	}
 	
