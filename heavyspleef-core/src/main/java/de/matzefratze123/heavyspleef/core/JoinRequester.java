@@ -140,7 +140,8 @@ public class JoinRequester {
 				.toString(), JoinResult.PERMANENT_DENY);
 		}
 		
-		if (game.getGameState().isGameActive()) {
+		boolean joinOnCountdown = game.getPropertyValue(GameProperty.JOIN_ON_COUNTDOWN);
+		if (game.getGameState() == GameState.INGAME || (game.getGameState() == GameState.STARTING && !joinOnCountdown)) {
 			throw new JoinValidationException(i18n.getVarString(Messages.Command.GAME_IS_INGAME)
 					.setVariable("game", game.getName())
 					.toString(), JoinResult.TEMPORARY_DENY);
