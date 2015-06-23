@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.commands;
 
+import java.util.List;
+
 import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.ChatColor;
@@ -30,8 +32,10 @@ import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
+import de.matzefratze123.heavyspleef.commands.base.CommandManagerService.SearchResult;
 import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
 import de.matzefratze123.heavyspleef.commands.base.NestedCommands;
+import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
@@ -156,6 +160,20 @@ public class SpleefCommandManager implements CommandManager {
 				.command("/spleef help")
 				.tooltip("Click here to access help")
 			.send(sender);
+	}
+	
+	@TabComplete("spleef")
+	public void onSpleefTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		if (context.argsLength() != 1) {
+			return;
+		}
+		
+		SearchResult result = service.searchCommand("spleef", new String[0]);
+		CommandContainer spleefCommand = result.getContainer();
+		
+		for (CommandContainer child : spleefCommand.getChildCommands()) {
+			list.add(child.getName());
+		}
 	}
 	
 }

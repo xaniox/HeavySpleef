@@ -44,18 +44,17 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagReward;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagShears;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagShovels;
-import de.matzefratze123.heavyspleef.flag.defaults.FlagShowBarriers;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSnowballs;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSplegg;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.FlagTeamSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeamLeatherArmor;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeamScoreboard;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagVote;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
-import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.FlagTeamSpawnpoint;
 
 public class FlagModule extends SimpleModule {
 	
@@ -97,7 +96,6 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagScoreboard.class);
 		registry.registerFlag(FlagShears.class);
 		registry.registerFlag(FlagShovels.class);
-		registry.registerFlag(FlagShowBarriers.class);
 		registry.registerFlag(FlagSnowballs.class);
 		registry.registerFlag(FlagSpawnpoint.class);
 		registry.registerFlag(FlagSpectate.class);

@@ -220,7 +220,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		return tabCompletes;
 	}
 	
-	private SearchResult searchCommand(String name, String[] args) {
+	public SearchResult searchCommand(String name, String[] args) {
 		CommandContainer command = commandMap.get(name);
 		
 		//Try to find the deepest available sub-command
@@ -253,7 +253,8 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		return result;
 	}
 	
-	private class SearchResult {
+	@Getter
+	public class SearchResult {
 		
 		private CommandContainer container;
 		private int deepness;
