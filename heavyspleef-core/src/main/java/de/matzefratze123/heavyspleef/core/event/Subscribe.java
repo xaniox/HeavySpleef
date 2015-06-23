@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import lombok.Getter;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Subscribe {
@@ -30,12 +32,19 @@ public @interface Subscribe {
 	
 	public enum Priority {
 		
-		LOWEST,
-		LOW,
-		NORMAL,
-		HIGH,
-		HIGHEST,
-		MONITOR;
+		LOWEST(0),
+		LOW(1),
+		NORMAL(2),
+		HIGH(3),
+		HIGHEST(4),
+		MONITOR(5);
+		
+		@Getter
+		private int orderId;
+		
+		private Priority(int orderId) {
+			this.orderId = orderId;
+		}
 		
 	}
 	

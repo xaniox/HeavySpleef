@@ -22,10 +22,11 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.lang.Validate;
 
-public class EventListenerMethod {
+public class EventListenerMethod implements Comparable<EventListenerMethod> {
 	
 	private Object instance;
 	private Method method;
+	private Subscribe subscribe;
 	private Class<? extends Event> eventClass;
 	
 	@SuppressWarnings("unchecked")
@@ -36,6 +37,8 @@ public class EventListenerMethod {
 		if (!method.isAccessible()) {
 			method.setAccessible(true);
 		}
+		
+		subscribe = method.getAnnotation(Subscribe.class);
 		
 		Class<?>[] parameters = method.getParameterTypes();
 		Validate.isTrue(parameters.length == 1, "method must have only one parameter which must be a subtype of Event");
@@ -65,6 +68,19 @@ public class EventListenerMethod {
 			method.invoke(instance, event);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public int compareTo(EventListenerMethod o) {
+		int thisPriority = subscribe.priority().getOrderId();
+		int otherPriority = o.subscribe.priority().getOrderId();
+		
+		//Don't return 0, as we're using a set (a bit hacky)
+		if (thisPriority < otherPriority) {
+			return -1;
+		} else {
+			return 1;
 		}
 	}
 	

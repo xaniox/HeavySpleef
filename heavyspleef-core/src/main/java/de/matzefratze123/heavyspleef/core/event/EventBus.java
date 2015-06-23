@@ -32,7 +32,7 @@ public class EventBus {
 	
 	protected EventBus(Logger logger) {
 		this.logger = logger;
-		this.registeredEventListeners = Sets.newLinkedHashSet();
+		this.registeredEventListeners = Sets.newTreeSet();
 	}
 	
 	public void registerListener(SpleefListener listener) {
@@ -64,7 +64,13 @@ public class EventBus {
 	}
 	
 	protected boolean isRegistered(SpleefListener listener) {
-		return registeredEventListeners.contains(listener);
+		for (EventListenerMethod method : registeredEventListeners) {
+			if (method.getEventClass() == listener.getClass()) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public void callEvent(Event event) {
