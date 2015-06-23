@@ -248,6 +248,12 @@ public abstract class ItemStackFlag extends AbstractFlag<ItemStack> {
 			if (part.startsWith("\"")) {
 				readingWithQuotes = true;
 				current += part.substring(1);
+				
+				if (part.endsWith("\"")) {
+					components.add(current.substring(0, current.length() - 1));
+					current = "";
+					readingWithQuotes = false;
+				}
 			} else if (readingWithQuotes) {
 				current += " ";
 				
