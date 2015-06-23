@@ -18,6 +18,7 @@
 package de.matzefratze123.heavyspleef.commands.base;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -140,14 +141,16 @@ public class CommandContainer {
 				Set<CommandContainer> childCommands = null;
 				boolean playerOnly = method.isAnnotationPresent(PlayerOnly.class);
 				
-				Object instance;
+				Object instance = null;
 				
-				try {
-					instance = instantiator.instantiate(clazz);
-				} catch (InstantiationException e) {
-					logger.warning("Could not instantiate class " + clazz.getName() + ": " + e.getMessage());
-					logger.warning("Ignoring command class...");
-					continue;
+				if ((method.getModifiers() & Modifier.STATIC) != 0) { 
+					try {
+						instance = instantiator.instantiate(clazz);
+					} catch (InstantiationException e) {
+						logger.warning("Could not instantiate class " + clazz.getName() + ": " + e.getMessage());
+						logger.warning("Ignoring command class...");
+						continue;
+					}
 				}
 				
 				CommandContainer container = new CommandContainer(method, null, instance, command, playerOnly, execution, parent);
