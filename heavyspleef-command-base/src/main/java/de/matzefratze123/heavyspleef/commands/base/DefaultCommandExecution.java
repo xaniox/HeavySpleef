@@ -19,7 +19,6 @@ package de.matzefratze123.heavyspleef.commands.base;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,7 +96,6 @@ public class DefaultCommandExecution implements CommandExecution {
 			return null;
 		}
 		
-		System.out.println("Tab complete for " + context.getCommand().getName() + ": " + Arrays.toString(context.args()));
 		List<String> tabCompleteList = Lists.newArrayList();
 		invokeMethod(context, tabCompleteList, args, true);
 		return tabCompleteList;
