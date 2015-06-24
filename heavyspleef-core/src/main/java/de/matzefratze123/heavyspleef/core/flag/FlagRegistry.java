@@ -47,6 +47,8 @@ import de.matzefratze123.heavyspleef.core.collection.DualKeyHashBiMap;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyMap.DualKeyPair;
 import de.matzefratze123.heavyspleef.core.collection.DualMaps;
 import de.matzefratze123.heavyspleef.core.collection.DualMaps.Mapper;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -250,11 +252,23 @@ public class FlagRegistry {
 		return null;
 	}
 	
+	public String getFlagPath(Class<? extends AbstractFlag<?>> flagClass) {
+		for (Entry<DualKeyPair<String, Flag>, FlagClassHolder> entry : registeredFlagsMap.entrySet()) {
+			if (entry.getValue().flagClass != flagClass) {
+				continue;
+			}
+			
+			return entry.getKey().getPrimaryKey();
+		}
+		
+		return null;
+	}
+	
 	public DualKeyBiMap<String, Flag, Class<? extends AbstractFlag<?>>> getAvailableFlags() {
 		return DualMaps.valueMappedImmutableDualBiMap(registeredFlagsMap, valueMapper);
 	}
 	
-	public <T extends AbstractFlag<?>> T neFlagInstance(String name, Class<T> expected) {
+	public <T extends AbstractFlag<?>> T newFlagInstance(String name, Class<T> expected) {
 		return newFlagInstance(name, expected, null);
 	}
 	
@@ -345,9 +359,13 @@ public class FlagRegistry {
 				@Override
 				public void inject(AbstractFlag<?> instance, Field[] injectableFields, Object cookie) throws IllegalArgumentException,
 						IllegalAccessException {
+					DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+					
 					for (Field field : injectableFields) {
 						if (field.getType() == Game.class) {
 							field.set(instance, game);
+						} else if (field.getType() == DefaultConfig.class) {
+							field.set(instance, config);
 						}
 					}
 				}
@@ -448,6 +466,19 @@ public class FlagRegistry {
 		return methods.toArray(new Method[methods.size()]);
 	}
 	
+	public List<Class<? extends AbstractFlag<?>>> getChildFlags(Class<? extends AbstractFlag<?>> flagClass) {
+		List<Class<? extends AbstractFlag<?>>> childs = Lists.newArrayList();
+		for (FlagClassHolder holder : registeredFlagsMap.values()) {
+			if (!isChildFlag(flagClass, holder.flagClass)) {
+				continue;
+			}
+			
+			childs.add(holder.flagClass);
+		}
+		
+		return childs;
+	}
+	
 	public boolean isChildFlag(Class<? extends AbstractFlag<?>> parent, Class<? extends AbstractFlag<?>> childCandidate) {
 		Validate.notNull(parent, "Parent cannot be null");
 		Validate.notNull(childCandidate, "Child candidate cannot be null");
@@ -467,7 +498,33 @@ public class FlagRegistry {
 		Flag annotation = inverse.get(foundHolder).getSecondaryKey();
 		
 		Validate.isTrue(annotation != null, "ChildCandidate has not been registered");
-		return annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == parent;
+		boolean directChild = annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == parent;
+		if (directChild) {
+			return true;
+		}
+		
+		//Do a search on the path
+		Class<? extends AbstractFlag<?>> recentParent = annotation.parent();
+		
+		do {
+			if (recentParent == childCandidate) {
+				return true;
+			}
+			
+			for (FlagClassHolder holder : inverse.keySet()) {
+				if (holder.flagClass != recentParent) {
+					continue;
+				}
+				
+				recentParent = holder.flagClass;
+				break;
+			}
+			
+			recentParent = null;
+		} while (recentParent != null && recentParent != NullFlag.class);
+		//NullFlag is the root parent as annotations require non-null values
+		
+		return false;
 	}
 	
 	public void registerInjector(Injector<AbstractFlag<?>> injector) {
@@ -539,5 +596,5 @@ public class FlagRegistry {
 		private boolean staticMethodsInitialized;
 		
 	}
-	
+
 }
