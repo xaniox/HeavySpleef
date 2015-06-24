@@ -32,6 +32,7 @@ public class FlagSection {
 	private boolean anticampingDoWarn;
 	private int anticampingTeleport;
 	private MaterialData readyBlock;
+	private MaterialData leaveItem;
 	
 	public FlagSection(ConfigurationSection section) {
 		this.autostartVote = section.getInt("autostart-vote", 75);
@@ -39,11 +40,17 @@ public class FlagSection {
 		this.anticampingDoWarn = section.getBoolean("anticamping-do-warn", true);
 		this.anticampingTeleport = section.getInt("anticamping-teleported", 6);
 		
-		String readyBlockStr = section.getString("ready-block");
+		String readyBlockStr = section.getString("ready-block", "IRON_BLOCK");
 		MaterialDataMatcher matcher = MaterialDataMatcher.newMatcher(readyBlockStr);
 		matcher.match();
 		
 		readyBlock = matcher.result();
+		
+		String leaveItemStr = section.getString("leave-item", "MAGMA_CREAM");
+		matcher = MaterialDataMatcher.newMatcher(leaveItemStr);
+		matcher.match();
+		
+		leaveItem = matcher.result();
 	}
 
 }

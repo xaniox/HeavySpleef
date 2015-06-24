@@ -186,6 +186,12 @@ flags:
   # have to click in order to vote for the start
   ready-block: IRON_BLOCK
   
+  # Flag: spectate, queuelobby
+  #
+  # An item the player can right-click to leave
+  # the spectate mode or the queue lobby
+  leave-item: MAGMA_CREAM
+  
 update:
   # Decide wether you want the plugin
   # to check for updates everytime you
