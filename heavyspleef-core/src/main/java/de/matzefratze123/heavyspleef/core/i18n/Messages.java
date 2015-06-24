@@ -232,6 +232,13 @@ public interface Messages {
 		public static final String JOIN_CANCELLED_DEATH = PREFIX + "join-cancelled-death";
 		public static final String CANNOT_CHANGE_GAMEMODE = PREFIX + "cannot-change-gamemode";
 		public static final String TEAM_CHOOSEN = PREFIX + "team-choosen";
+
+		public static final String LEAVE_SPECTATE_DISPLAYNAME = PREFIX + "leave-spectate-displayname";
+		public static final String LEAVE_SPECTATE_LORE = PREFIX + "leave-spectate-lore";
+
+		public static final String LEAVE_QUEUE_DISPLAYNAME = PREFIX + "leave-queue-displayname";
+		public static final String LEAVE_QUEUE_LORE = PREFIX + "leave-queue-lore";
+		public static final String REMOVED_FROM_QUEUE_DEATH = PREFIX + "removed-from-queue-death";
 		
 	}
 	

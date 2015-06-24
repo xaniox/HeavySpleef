@@ -193,6 +193,12 @@ player:
   
   cannot-change-gamemode: "You cannot change your gamemode while playing spleef!"
   team-choosen: "You are now in the $[team] team"
+  leave-spectate-displayname: "&c&lLeave spectate mode"
+  leave-spectate-lore: "&aRight-Click &7to leave the spectate mode"
+  
+  leave-queue-displayname: "&c&lLeave queue"
+  leave-queue-lore: "&aRight-Click &7to leave the queue"
+  removed-from-queue-death: "You have been removed from the queue of game $[game] because you died!"
 help:
   description:
     clearcache: "Clears the statistic cache"
