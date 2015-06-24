@@ -65,6 +65,10 @@ public class JoinRequester {
 				
 				//Remove the player from all other queues
 				for (Game otherGame : manager.getGames()) {
+					if (!otherGame.isQueued(player)) {
+						continue;
+					}
+					
 					otherGame.unqueue(player);
 				}
 				
