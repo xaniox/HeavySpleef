@@ -127,6 +127,8 @@ public final class HeavySpleef {
 		File layoutDir = new File(dataFolder, "layout");
 		layoutDir.mkdirs();
 		
+		MinecraftVersion.initialize(logger);
+		
 		gamesLoadCallbacks = Sets.newLinkedHashSet();
 		flagRegistry = new FlagRegistry(this);
 		

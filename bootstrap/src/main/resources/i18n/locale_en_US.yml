@@ -132,6 +132,8 @@ command:
   at-least-two-teams: "You need to specify at least two teams!"
   no-duplicate-teams: "Duplicate teams are invalid!"
   function-only-in-lobby: "You may not use this function when not in lobby"
+  
+  need-mc-version-for-flag: "You need at least Minecraft version $[required] or higher in order to use this flag!"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

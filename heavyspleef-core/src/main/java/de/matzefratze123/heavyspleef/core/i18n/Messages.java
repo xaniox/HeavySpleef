@@ -154,6 +154,8 @@ public interface Messages {
 		public static final String AT_LEAST_TWO_TEAMS = PREFIX + "at-least-two-teams";
 		public static final String NO_DUPLICATE_TEAMS = PREFIX + "no-duplicate-teams";
 		public static final String FUNCTION_ONLY_IN_LOBBY = PREFIX + "function-only-in-lobby";
+
+		public static final String NEED_MC_VERSION_FOR_FLAG = PREFIX + "need-mc-version-for-flag";
 		
 	}
 	

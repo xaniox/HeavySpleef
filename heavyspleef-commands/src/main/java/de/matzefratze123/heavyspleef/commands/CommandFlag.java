@@ -35,6 +35,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager.Conflict;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.MinecraftVersion;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
@@ -113,6 +114,15 @@ public class CommandFlag {
 			}
 			
 			Flag flagData = registry.getFlagData(flagClass);
+			if (flagData.requiresVersion() != MinecraftVersion.UNKNOWN_VERSION) {
+				int implementationVersion = MinecraftVersion.getImplementationVersion();
+				if (implementationVersion < flagData.requiresVersion()) {
+					player.sendMessage(i18n.getVarString(Messages.Command.NEED_MC_VERSION_FOR_FLAG)
+							.setVariable("required", MinecraftVersion.getImplementationVersionString(flagData.requiresVersion()))
+							.toString());
+					return;
+				}
+			}
 			
 			HookReference[] references = flagData.depend();
 			HookManager hookManager = heavySpleef.getHookManager();
