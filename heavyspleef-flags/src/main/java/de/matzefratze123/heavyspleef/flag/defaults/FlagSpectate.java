@@ -23,6 +23,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -34,11 +35,15 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.Command;
@@ -50,6 +55,7 @@ import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
@@ -60,7 +66,6 @@ import de.matzefratze123.heavyspleef.core.event.Cancellable;
 import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerSpectateGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
@@ -82,9 +87,13 @@ import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 public class FlagSpectate extends LocationFlag {
 	
 	private static final String SPLEEF_COMMAND = "spleef";
+	private static final String LEAVE_ITEM_KEY = "leave_item_spectate";
+	private static final int RIGHT_HOTBAR_SLOT = 8;
 	
 	@Inject
 	private Game game;
+	@Inject
+	private DefaultConfig config;
 	private Set<SpleefPlayer> spectators;
 	private Set<SpleefPlayer> deadPlayers;
 	
@@ -135,10 +144,12 @@ public class FlagSpectate extends LocationFlag {
 				i18n.getString(Messages.Command.CANNOT_SPECTATE_IN_QUEUE_LOBBY));
 		
 		if (!spectateFlag.isSpectating(spleefPlayer)) {			
-			spectateFlag.spectate(spleefPlayer, game);
-			spleefPlayer.sendMessage(i18n.getVarString(Messages.Player.PLAYER_SPECTATE)
+			boolean success = spectateFlag.spectate(spleefPlayer, game);
+			if (success) {
+				spleefPlayer.sendMessage(i18n.getVarString(Messages.Player.PLAYER_SPECTATE)
 					.setVariable("game", game.getName())
 					.toString());
+			}
 		} else {
 			spectateFlag.leave(spleefPlayer);
 			spleefPlayer.sendMessage(i18n.getVarString(Messages.Player.PLAYER_LEAVE_SPECTATE)
@@ -148,12 +159,7 @@ public class FlagSpectate extends LocationFlag {
 	}
 	
 	@TabComplete("spectate")
-	public void onSpectateTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
-		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
-		if (isSpectating(player)) {
-			return;
-		}
-		
+	public static void onSpectateTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) throws CommandException {
 		GameManager manager = heavySpleef.getGameManager();
 		
 		if (context.argsLength() == 1) {
@@ -182,6 +188,13 @@ public class FlagSpectate extends LocationFlag {
 	public FlagSpectate() {
 		this.spectators = Sets.newHashSet();
 		this.deadPlayers = Sets.newHashSet();
+	}
+	
+	@Override
+	public void onFlagRemove(Game game) {
+		for (SpleefPlayer player : spectators) {
+			leave(player);
+		}
 	}
 	
 	@Override
@@ -226,13 +239,23 @@ public class FlagSpectate extends LocationFlag {
 	
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+		final SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
 		if (!deadPlayers.contains(player)) {
 			return;
 		}
 		
 		deadPlayers.remove(player);
-		leave(player);
+		Bukkit.getScheduler().runTaskLater(getHeavySpleef().getPlugin(), new Runnable() {
+			
+			@Override
+			public void run() {
+				if (!player.isOnline()) {
+					return;
+				}
+				
+				leave(player);
+			}
+		}, 10L);
 	}
 	
 	@EventHandler
@@ -320,33 +343,68 @@ public class FlagSpectate extends LocationFlag {
 		leave(player);
 	}
 	
-	public void spectate(SpleefPlayer player, Game game) {
-		PlayerSpectateGameEvent event = new PlayerSpectateGameEvent(game, player);
-		game.getEventBus().callEvent(event);
-		
-		if (event.isCancelled()) {
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+		if (!isSpectating(player)) {
 			return;
 		}
 		
+		MetadatableItemStack inHand = new MetadatableItemStack(player.getBukkitPlayer().getItemInHand());
+		if (!inHand.hasItemMeta() || !inHand.getItemMeta().hasLore() || !inHand.hasMetadata(LEAVE_ITEM_KEY)) {
+			return;
+		}
+		
+		//Leave the spectate mode
+		leave(player);
+		player.sendMessage(getI18N().getVarString(Messages.Player.PLAYER_LEAVE_SPECTATE)
+				.setVariable("game", game.getName())
+				.toString());
+	}
+	
+	@SuppressWarnings("deprecation")
+	public boolean spectate(SpleefPlayer player, Game game) {
+		SpectateEnterEvent enterEvent = new SpectateEnterEvent(game, player);
+		game.getEventBus().callEvent(enterEvent);
+		
+		if (enterEvent.isCancelled()) {
+			return false;
+		}
+		
+		Player bukkitPlayer = player.getBukkitPlayer();
+		
 		player.savePlayerState(this);
-		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
+		PlayerStateHolder.applyDefaultState(bukkitPlayer);
 		
 		spectators.add(player);
 		
+		MaterialData data = config.getFlagSection().getLeaveItem();
+		MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
+		ItemMeta meta = stack.getItemMeta();
+		meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_SPECTATE_DISPLAYNAME));
+		meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_SPECTATE_LORE)));
+		stack.setItemMeta(meta);
+		
+		stack.setMetadata(LEAVE_ITEM_KEY, null);
+		
+		bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
+		bukkitPlayer.updateInventory();
+		
 		player.teleport(getValue());
+		
+		SpectateEnteredEvent enteredEvent = new SpectateEnteredEvent(game, player);
+		game.getEventBus().callEvent(enteredEvent);
+		return true;
 	}
 	
 	public void leave(SpleefPlayer player) {
 		SpectateLeaveEvent event = new SpectateLeaveEvent(game, player);
 		game.getEventBus().callEvent(event);
 		
-		if (event.isCancelled()) {
-			return;
-		}
-		
 		PlayerStateHolder state = player.getPlayerState(this);
 		if (state != null) {
 			state.apply(player.getBukkitPlayer(), true);
+			player.removePlayerState(this);
 		} else {
 			//Ugh, something went wrong
 			player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
@@ -426,9 +484,15 @@ public class FlagSpectate extends LocationFlag {
 		
 	}
 	
-	public static class SpectateLeaveEvent extends PlayerGameEvent implements Cancellable {
+	public static class SpectateEnteredEvent extends PlayerGameEvent {
 
-		private @Getter @Setter boolean cancelled;
+		public SpectateEnteredEvent(Game game, SpleefPlayer player) {
+			super(game, player);
+		}
+		
+	}
+	
+	public static class SpectateLeaveEvent extends PlayerGameEvent {
 		
 		public SpectateLeaveEvent(Game game, SpleefPlayer player) {
 			super(game, player);
