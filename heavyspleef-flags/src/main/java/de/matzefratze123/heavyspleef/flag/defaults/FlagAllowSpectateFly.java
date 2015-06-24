@@ -26,7 +26,7 @@ import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate.SpectateEnterEvent;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate.SpectateEnteredEvent;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 
 @Flag(name = "allow-fly", parent = FlagSpectate.class)
@@ -55,7 +55,7 @@ public class FlagAllowSpectateFly extends BooleanFlag {
 	}
 	
 	@Subscribe
-	public void onSpectateEnter(SpectateEnterEvent event) {
+	public void onSpectateEntered(SpectateEnteredEvent event) {
 		spectateEnter(event.getPlayer());
 	}
 	
