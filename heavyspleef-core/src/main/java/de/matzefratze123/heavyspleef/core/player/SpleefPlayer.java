@@ -119,6 +119,10 @@ public class SpleefPlayer implements CommandSender {
 		return playerStates.get(key);
 	}
 	
+	public PlayerStateHolder removePlayerState(Object key) {
+		return playerStates.remove(key);
+	}
+	
 	private void validateOnline() {
 		Validate.isTrue(isOnline(), "Player is not online");
 	}
