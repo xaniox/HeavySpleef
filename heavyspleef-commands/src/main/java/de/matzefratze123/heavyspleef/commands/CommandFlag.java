@@ -92,10 +92,15 @@ public class CommandFlag {
 					.setVariable("flag", flagPath)
 					.toString());
 			
-			game.removeFlag(flagClass);
-			player.sendMessage(i18n.getVarString(Messages.Command.FLAG_REMOVED)
-					.setVariable("flag", flagPath)
-					.toString());
+			List<Class<? extends AbstractFlag<?>>> childs = registry.getChildFlags(flagClass);
+			childs.add(flagClass);
+			
+			for (Class<? extends AbstractFlag<?>> clazz : childs) {
+				game.removeFlag(clazz);
+				player.sendMessage(i18n.getVarString(Messages.Command.FLAG_REMOVED)
+						.setVariable("flag", registry.getFlagPath(clazz))
+						.toString());
+			}
 		} else {
 			//Parse value
 			StringBuilder inputBuilder = new StringBuilder();
