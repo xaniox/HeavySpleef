@@ -57,6 +57,7 @@ public class PlayerStateHolder {
 	private int fireTicks;
 	private List<WeakReference<Player>> cantSee;
 	private Scoreboard scoreboard;
+	private Location compassTarget;
 	
 	private Location location;
 	
@@ -90,6 +91,7 @@ public class PlayerStateHolder {
 		stateHolder.setFireTicks(player.getFireTicks());
 		stateHolder.setLocation(player.getLocation());
 		stateHolder.setScoreboard(player.getScoreboard());
+		stateHolder.setCompassTarget(player.getCompassTarget());
 		
 		List<WeakReference<Player>> cantSee = Lists.newArrayList();
 		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -197,6 +199,13 @@ public class PlayerStateHolder {
 		if (teleport) {
 			player.teleport(location);
 		}
+		
+		Location compassTarget = this.compassTarget;
+		if (compassTarget == null) {
+			compassTarget = player.getWorld().getSpawnLocation();
+		}
+		
+		player.setCompassTarget(compassTarget);
 		
 		for (WeakReference<Player> ref : cantSee) {
 			Player cantSeePlayer = ref.get();
