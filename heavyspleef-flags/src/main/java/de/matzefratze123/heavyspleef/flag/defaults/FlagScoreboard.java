@@ -29,6 +29,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
+import com.google.common.collect.Lists;
+
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.GameState;
@@ -47,6 +49,7 @@ public class FlagScoreboard extends BaseFlag {
 	private static final String SCOREBOARD_CRITERIA = "dummy";
 	
 	private static final String OBJECTIVE_NAME = ChatColor.GOLD + "Kills";
+	private static final int MAX_OBJECTIVE_ENTRIES = 16;
 	
 	private static final String IS_ALIVE_SYMBOL = ChatColor.GREEN + "✔ " + ChatColor.WHITE;
 	private static final String IS_DEAD_SYMBOL = ChatColor.RED + "✘ " + ChatColor.GRAY;
@@ -54,9 +57,11 @@ public class FlagScoreboard extends BaseFlag {
 	private final ScoreboardManager manager;
 	private Scoreboard scoreboard;
 	private Objective objective;
+	private List<SpleefPlayer> playersTracked;
 	
 	public FlagScoreboard() {
 		this.manager = Bukkit.getScoreboardManager();
+		this.playersTracked = Lists.newArrayList();
 	}
 	
 	@Override
@@ -76,15 +81,20 @@ public class FlagScoreboard extends BaseFlag {
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		objective.setDisplayName(OBJECTIVE_NAME);
 		
+		int index = 0;
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
 			Team team = scoreboard.registerNewTeam(player.getName());
 			team.setPrefix(IS_ALIVE_SYMBOL + (player.isVip() ? getHeavySpleef().getVipPrefix() : ""));
 			team.addPlayer(player.getBukkitPlayer());
 			
-			Score score = objective.getScore(player.getName());
-			score.setScore(0);
+			if (index >= MAX_OBJECTIVE_ENTRIES) {
+				Score score = objective.getScore(player.getName());
+				score.setScore(0);
+				playersTracked.add(player);
+			}
 			
 			player.getBukkitPlayer().setScoreboard(scoreboard);
+			index++;
 		}
 	}
 	
@@ -107,7 +117,7 @@ public class FlagScoreboard extends BaseFlag {
 		
 		//Note: Scoreboard restoring is managed by the PlayerState
 		SpleefPlayer killer = event.getKiller();
-		if (killer != null) {
+		if (killer != null && playersTracked.contains(killer)) {
 			Score killerScore = objective.getScore(killer.getName());
 			int previousScore = killerScore.getScore();
 			
@@ -122,6 +132,7 @@ public class FlagScoreboard extends BaseFlag {
 	public void onGameEnd(GameEndEvent event) {
 		//Remove that reference
 		scoreboard = null;
+		playersTracked.clear();
 	}
 
 }
