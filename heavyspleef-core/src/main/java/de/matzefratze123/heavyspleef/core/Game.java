@@ -715,7 +715,7 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void requestWin(SpleefPlayer[] players, boolean sendMessages) {
-		for (SpleefPlayer ingamePlayer : ingamePlayers) {
+		for (SpleefPlayer ingamePlayer : Sets.newHashSet(ingamePlayers)) {
 			for (SpleefPlayer player : players) {
 				if (ingamePlayer == player) {
 					leave(player, QuitCause.WIN, sendMessages);
