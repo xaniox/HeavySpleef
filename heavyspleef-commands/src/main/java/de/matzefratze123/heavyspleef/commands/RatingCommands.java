@@ -29,53 +29,48 @@ import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
-public class CommandEnable {
-
+public class RatingCommands {
+	
 	private final I18N i18n = I18NManager.getGlobal();
 	
-	@Command(name = "enable", minArgs = 1, usage = "/spleef enable <game>",
-			descref = Messages.Help.Description.ENABLE,
-			permission = Permissions.PERMISSION_ENABLE)
-	public void onEnableCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
+	@Command(name = "enablerating", descref = Messages.Help.Description.ENABLERATING,
+			minArgs = 1, permission = Permissions.PERMISSION_ENABLE_RATING,
+			usage = "/spleef enablerating <game>")
+	public void onEnableRatingCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		if (sender instanceof Player) {
 			sender = heavySpleef.getSpleefPlayer(sender);
 		}
 		
 		String gameName = context.getString(0);
-		
 		GameManager manager = heavySpleef.getGameManager();
+		
 		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
 				.setVariable("game", gameName)
 				.toString());
 		
 		Game game = manager.getGame(gameName);
-		CommandValidate.isTrue(!game.getGameState().isGameEnabled(), i18n.getVarString(Messages.Command.GAME_ALREADY_ENABLED)
-				.setVariable("game", gameName)
-				.toString());
-		
-		game.enable();
-		sender.sendMessage(i18n.getVarString(Messages.Command.GAME_ENABLED)
-				.setVariable("game", gameName)
+		game.getStatisticRecorder().setEnableRating(true);
+		sender.sendMessage(i18n.getVarString(Messages.Command.RATING_ENABLED)
+				.setVariable("game", game.getName())
 				.toString());
 		
 		heavySpleef.getDatabaseHandler().saveGame(game, null);
 	}
 	
-	@TabComplete("enable")
-	public void onEnableTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+	@TabComplete("enablerating")
+	public void onEnableRatingTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
 		GameManager manager = heavySpleef.getGameManager();
 		
 		if (context.argsLength() == 1) {
 			for (Game game : manager.getGames()) {
-				if (game.getGameState() != GameState.DISABLED) {
+				if (game.getStatisticRecorder().isEnableRating()) {
 					continue;
 				}
 				
@@ -84,4 +79,44 @@ public class CommandEnable {
 		}
 	}
 	
+	@Command(name = "disablerating", descref = Messages.Help.Description.DISABLERATING,
+			minArgs = 1, permission = Permissions.PERMISSION_DISABLE_RATING,
+			usage = "/spleef disablerating <game>")
+	public void onDisableRatingCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
+		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
+		String gameName = context.getString(0);
+		GameManager manager = heavySpleef.getGameManager();
+		
+		CommandValidate.isTrue(manager.hasGame(gameName), i18n.getVarString(Messages.Command.GAME_DOESNT_EXIST)
+				.setVariable("game", gameName)
+				.toString());
+		
+		Game game = manager.getGame(gameName);
+		game.getStatisticRecorder().setEnableRating(true);
+		sender.sendMessage(i18n.getVarString(Messages.Command.RATING_DISABLED)
+				.setVariable("game", game.getName())
+				.toString());
+		
+		heavySpleef.getDatabaseHandler().saveGame(game, null);
+	}
+	
+	@TabComplete("disablerating")
+	public void onDisableRatingTabComplete(CommandContext context, List<String> list, HeavySpleef heavySpleef) {
+		GameManager manager = heavySpleef.getGameManager();
+		
+		if (context.argsLength() == 1) {
+			for (Game game : manager.getGames()) {
+				if (!game.getStatisticRecorder().isEnableRating()) {
+					continue;
+				}
+				
+				list.add(game.getName());
+			}
+		}
+	}
+
 }

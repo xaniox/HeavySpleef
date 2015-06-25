@@ -89,6 +89,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 		try {
 			element.addAttribute("name", game.getName());
 			element.addAttribute("world", game.getWorld().getName());
+			element.addAttribute("enable-rating", String.valueOf(game.getStatisticRecorder().isEnableRating()));
 			if (game.getGameState() == GameState.DISABLED) {
 				element.addAttribute("disabled", String.valueOf(true));
 			}
@@ -208,6 +209,12 @@ public class GameAccessor extends XMLAccessor<Game> {
 			Attribute disabledAttribute = element.attribute("disabled");
 			if (disabledAttribute != null) {
 				game.setGameState(GameState.DISABLED);
+			}
+			
+			Attribute enableRatingAttribute = element.attribute("enable-rating");
+			if (enableRatingAttribute != null) {
+				boolean enabled = Boolean.parseBoolean(enableRatingAttribute.getValue());
+				game.getStatisticRecorder().setEnableRating(enabled);
 			}
 			
 			Element flagsElement = element.element("flags");

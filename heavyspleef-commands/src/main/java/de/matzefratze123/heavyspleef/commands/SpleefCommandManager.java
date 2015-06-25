@@ -135,7 +135,8 @@ public class SpleefCommandManager implements CommandManager {
 			CommandStop.class,
 			CommandUpdate.class,
 			DeathzoneCommands.class,
-			FloorCommands.class
+			FloorCommands.class,
+			RatingCommands.class
 	})
 	public static void onSpleefCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();

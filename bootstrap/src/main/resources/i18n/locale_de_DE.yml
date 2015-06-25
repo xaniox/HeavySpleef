@@ -133,7 +133,10 @@ command:
   no-duplicate-teams: "Doppelte Teams sind ungültig"
   function-only-in-lobby: "Du kannst diese Funktion nur in der Lobby benutzen"
   
-  need-mc-version-for-flag: "Es wird Minecraft Version $[required] oder höher benötigt um diese Flag zu benutzen!"
+  need-mc-version-for-flag: "Es wird die Minecraft Version $[required] oder höher benötigt um diese Flag zu benutzen!"
+  
+  rating-enabled: "Du hast das Verteilen von Rating für das Spiel $[game] aktiviert"
+  rating-disabled: "Du hast das Verteilen von Rating für das Spiel $[game] deaktiviert"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"
@@ -202,13 +205,24 @@ player:
   leave-queue-displayname: "&c&lWarteschlange verlassen"
   leave-queue-lore: "&aRechtsklicken &7um die Warteschlange zu verlassen"
   removed-from-queue-death: "Du wurdest von der Warteschlange für das Spiel $[game] entfernt, da du gestorben bist!"
+  
+  tracker: "&c&lTracker"
+  tracker-lore: "&aRechtsklicken &7um das Tracker Menü zu öffnen"
+  tracker-inventory-title: "&cTracker Menü"
+  tracker-now-tracking: "&7Du beobachtest nun &a$[tracking]"
+  tracker-skull-title: "&7$[tracking]"
+  
+  gained-rating: "Deine neue Rating ist: $[new-rating] ($[change])"
+  lost-rating: "Deine neue Rating ist: $[new-rating] ($[change])"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"
     create: "Erstellt ein neues Spiel mit Namen"
     delete: "Löscht ein Spiel mit Namen"
     disable: "Deaktiviert die Benutzung eines Spieles"
+    disablerating: "Deaktiviert das Verteilen von Rating am Ende eines Spiels"
     enable: "Aktiviert die Benutzung eines Spieles"
+    enablerating: "Aktiviert das Verteilen von Rating am Ende eines Spiels"
     flag: "Setzt/Löscht Flags eines Spiels"
     help: "Zeigt diese Hilfe-Nachricht an"
     info: "Gibt Informationen zu einem Spiel aus"

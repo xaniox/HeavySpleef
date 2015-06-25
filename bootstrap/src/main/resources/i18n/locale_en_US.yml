@@ -134,6 +134,9 @@ command:
   function-only-in-lobby: "You may not use this function when not in lobby"
   
   need-mc-version-for-flag: "You need at least Minecraft version $[required] or higher in order to use this flag!"
+  
+  rating-enabled: "You enabled the distribution of rating for the game $[game]"
+  rating-disabled: "You disabled the distribution of rating for the game $[game]"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"
@@ -201,13 +204,24 @@ player:
   leave-queue-displayname: "&c&lLeave queue"
   leave-queue-lore: "&aRight-Click &7to leave the queue"
   removed-from-queue-death: "You have been removed from the queue of game $[game] because you died!"
+  
+  tracker: "&c&lTracker"
+  tracker-lore: "&aRight-Click &7to open the tracking menu"
+  tracker-inventory-title: "&cTracking Menu"
+  tracker-now-tracking: "&7You are now spectating &a$[tracking]"
+  tracker-skull-title: "&7$[tracking]"
+  
+  gained-rating: "Your new rating is: $[new-rating] ($[change])"
+  lost-rating: "Your new rating is: $[new-rating] ($[change])"
 help:
   description:
     clearcache: "Clears the statistic cache"
     create: "Creates a new spleef game with a name"
     delete: "Deletes the game with a name"
     disable: "Disables the use of a game"
+    disablerating: "Disables the distribution of rating at the of a game"
     enable: "Enables the use of a game"
+    enablerating: "Enables the distribution of rating at the of a game"
     flag: "Sets a flag or removes it"
     help: "Prints this help message"
     info: "Prints out attributes of a game"

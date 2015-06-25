@@ -28,7 +28,9 @@ public interface Permissions {
 	public static final String PERMISSION_CREATE = ADMIN_PREFIX + "create";
 	public static final String PERMISSION_DELETE = ADMIN_PREFIX + "delete";
 	public static final String PERMISSION_DISABLE = ADMIN_PREFIX + "disable";
+	public static final String PERMISSION_DISABLE_RATING = ADMIN_PREFIX + "disablerating";
 	public static final String PERMISSION_ENABLE = ADMIN_PREFIX + "enable";
+	public static final String PERMISSION_ENABLE_RATING = ADMIN_PREFIX + "enablerating";
 	public static final String PERMISSION_FLAG = ADMIN_PREFIX + "flag";
 	public static final String PERMISSION_HELP = PLAYER_PREFIX + "help";
 	public static final String PERMISSION_INFO = ADMIN_PREFIX + "info";
@@ -55,5 +57,6 @@ public interface Permissions {
 	public static final String PERMISSION_REMOVE_SIGN = ADMIN_PREFIX + "removesign";
 	public static final String PERMISSION_SPECTATE = PLAYER_PREFIX + "spectate";
 	public static final String PERMISSION_VOTE = PLAYER_PREFIX + "vote";
+	
 
 }

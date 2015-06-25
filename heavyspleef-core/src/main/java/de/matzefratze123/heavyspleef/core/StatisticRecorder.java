@@ -23,32 +23,41 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.bukkit.block.Block;
 
 import com.google.common.util.concurrent.FutureCallback;
 
 import de.matzefratze123.heavyspleef.core.RatingCompute.RatingResult;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class StatisticRecorder implements SpleefListener {
 
+	private final I18N i18n = I18NManager.getGlobal();
 	private final HeavySpleef heavySpleef;
 	private final Logger logger;
 	private RatingCompute ratingCompute;
 	private Map<String, Statistic> loadedStatistics;
 	private long gameStartedAt;
+	private @Getter @Setter boolean enableRating;
 	
 	public StatisticRecorder(HeavySpleef heavySpleef, Logger logger) {
 		this.heavySpleef = heavySpleef;
 		this.logger = logger;
 		this.ratingCompute = new DefaultRatingCompute();
+		this.enableRating = true;
 	}
 	
 	public void setRatingCompute(RatingCompute ratingCompute) {
@@ -113,6 +122,10 @@ public class StatisticRecorder implements SpleefListener {
 	
 	@Subscribe
 	public void onPlayerWinGame(PlayerWinGameEvent event) {
+		if (!enableRating) {
+			return;
+		}
+		
 		final Game game = event.getGame();
 		final SpleefPlayer[] winners = event.getWinners();
 		
@@ -133,11 +146,19 @@ public class StatisticRecorder implements SpleefListener {
 				rating = 0;
 			}
 			
+			double ratingChange = rating - statistic.getRating();
 			statistic.setRating(rating);
+			
+			SpleefPlayer player = heavySpleef.getSpleefPlayer(name);
+			player.sendMessage(i18n.getVarString(ratingChange >= 0 ? Messages.Player.GAINED_RATING : Messages.Player.LOST_RATING)
+					.setVariable("change", ratingChange >= 0 ? "+" + ratingChange : String.valueOf(ratingChange))
+					.setVariable("new-rating", String.valueOf(rating))
+					.toString());
 		}
 		
 		AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();
 		databaseHandler.saveStatistics(loadedStatistics.values(), null);
+		loadedStatistics = null;
 	}
 	
 	@Subscribe

@@ -156,6 +156,9 @@ public interface Messages {
 		public static final String FUNCTION_ONLY_IN_LOBBY = PREFIX + "function-only-in-lobby";
 
 		public static final String NEED_MC_VERSION_FOR_FLAG = PREFIX + "need-mc-version-for-flag";
+
+		public static final String RATING_ENABLED = PREFIX + "rating-enabled";
+		public static final String RATING_DISABLED = PREFIX + "rating-disabled";
 		
 	}
 	
@@ -241,6 +244,15 @@ public interface Messages {
 		public static final String LEAVE_QUEUE_DISPLAYNAME = PREFIX + "leave-queue-displayname";
 		public static final String LEAVE_QUEUE_LORE = PREFIX + "leave-queue-lore";
 		public static final String REMOVED_FROM_QUEUE_DEATH = PREFIX + "removed-from-queue-death";
+
+		public static final String TRACKER = PREFIX + "tracker";
+		public static final String TRACKER_LORE = PREFIX + "tracker-lore";
+		public static final String TRACKER_INVENTORY_TITLE = PREFIX + "tracker-inventory-title";
+		public static final String TRACKER_NOW_TRACKING = PREFIX + "tracker-now-tracking";
+		public static final String TRACKER_SKULL_TITLE = PREFIX + "tracker-skull-title";
+
+		public static final String GAINED_RATING = PREFIX + "gained-rating";
+		public static final String LOST_RATING = PREFIX + "lost-rating";
 		
 	}
 	
@@ -256,7 +268,9 @@ public interface Messages {
 			public static final String CREATE = PREFIX + "create";
 			public static final String DELETE = PREFIX + "delete";
 			public static final String DISABLE = PREFIX + "disable";
+			public static final String DISABLERATING = PREFIX + "disablerating";
 			public static final String ENABLE = PREFIX + "enable";
+			public static final String ENABLERATING = PREFIX + "enablerating";
 			public static final String FLAG = PREFIX + "flag";
 			public static final String HELP = PREFIX + "help";
 			public static final String INFO = PREFIX + "info";
@@ -280,7 +294,6 @@ public interface Messages {
 			public static final String SHOWDEATHZONE = PREFIX + "showdeathzone";
 			public static final String UPDATE = PREFIX + "update";
 			public static final String VOTE = PREFIX + "vote";
-
 			
 		}
 		
