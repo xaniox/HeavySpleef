@@ -51,6 +51,7 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSplegg;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTrackingSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.FlagTeamSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeamLeatherArmor;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeamScoreboard;
@@ -109,6 +110,7 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagTeamScoreboard.class);
 		registry.registerFlag(FlagTeamSpawnpoint.class);
 		registry.registerFlag(FlagTimeout.class);
+		registry.registerFlag(FlagTrackingSpectate.class);
 		registry.registerFlag(FlagWinPoint.class);
 		registry.registerFlag(FlagVote.class);
 	}
