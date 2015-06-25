@@ -154,6 +154,7 @@ public final class HeavySpleef {
 		
 		hookManager.registerHook(HookReference.VAULT);
 		hookManager.registerHook(HookReference.WORLDEDIT);
+		hookManager.registerHook(HookReference.PROTOCOLLIB);
 		
 		postActionHandler = new PlayerPostActionHandler(this);
 		regionVisualizer = new RegionVisualizer(getPlugin());
