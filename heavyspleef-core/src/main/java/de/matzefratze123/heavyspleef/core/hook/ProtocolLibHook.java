@@ -17,30 +17,17 @@
  */
 package de.matzefratze123.heavyspleef.core.hook;
 
-public enum HookReference {
-	
-	VAULT("Vault", VaultHook.class),
-	WORLDEDIT("WorldEdit", WorldEditHook.class), 
-	PROTOCOLLIB("ProtocolLib", ProtocolLibHook.class);
-	
-	private String pluginName;
-	private Class<? extends Hook> hookClass;
-	
-	private HookReference(String pluginName, Class<? extends Hook> hookClass) {
-		this.pluginName = pluginName;
-		this.hookClass = hookClass;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+
+public class ProtocolLibHook extends DefaultHook {
+
+	public ProtocolLibHook() {
+		super(HookReference.PROTOCOLLIB.getPluginName());
 	}
 	
-	public String getPluginName() {
-		return pluginName;
-	}
-	
-	public Hook newHookInstance() {
-		try {
-			return hookClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
+	public ProtocolManager getProtocolManager() {
+		return ProtocolLibrary.getProtocolManager();
 	}
 
 }

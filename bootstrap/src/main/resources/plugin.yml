@@ -9,7 +9,7 @@ website: ${project.parent.url}
 main: ${main.class}
 
 depend: [WorldEdit]
-softdepend: []
+softdepend: [Vault, ProtocolLib]
 
 commands:
   spleef:

@@ -169,24 +169,28 @@
   </pluginRepositories>
   <repositories>
     <repository>
-       <id>spigot-repo</id>
-       <name>Spigot's repository</name>
-       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-     </repository>
-     <repository>
-       <id>matze-repo</id>
-       <name>matze's repository</name>
-       <url>http://matzefratze123.de/artifactory/release/</url>
+      <id>spigot-repo</id>
+      <name>Spigot's repository</name>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
     <repository>
-       <id>vault-repo</id>
-       <name>vault's repository</name>
-       <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+      <id>matze-repo</id>
+      <name>matze's repository</name>
+      <url>http://matzefratze123.de/artifactory/release/</url>
     </repository>
     <repository>
-       <id>sk89q-repo</id>
-       <name>sk89q's repository</name>
-       <url>http://maven.sk89q.com/repo</url>
+      <id>vault-repo</id>
+      <name>vault's repository</name>
+      <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+    </repository>
+    <repository>
+      <id>sk89q-repo</id>
+      <name>sk89q's repository</name>
+      <url>http://maven.sk89q.com/repo</url>
+    </repository>
+    <repository>
+      <id>dmulloy2-repo</id>
+      <url>http://repo.dmulloy2.net/content/groups/public</url>
     </repository>
   </repositories>
   <dependencies>
@@ -222,6 +226,12 @@
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>VaultAPI</artifactId>
       <version>1.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.comphenix.protocol</groupId>
+      <artifactId>ProtocolLib</artifactId>
+      <version>3.6.4-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
