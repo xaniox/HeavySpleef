@@ -130,9 +130,13 @@ public class PlayerStateHolder {
 		player.setExp(0f);
 		player.setAllowFlight(false);
 		player.setFlying(false);
-		player.getActivePotionEffects().clear();
 		player.setFallDistance(0);
 		player.setFireTicks(0);
+		
+		Collection<PotionEffect> effects = player.getActivePotionEffects();
+		for (PotionEffect effect : effects) {
+			player.removePotionEffect(effect.getType());
+		}
 		
 		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
 			if (player.canSee(player)) {
@@ -170,7 +174,10 @@ public class PlayerStateHolder {
 		player.setFlying(isFlying);
 		
 		/* Remove current potion effects */
-		player.getActivePotionEffects().clear();
+		Collection<PotionEffect> effects = player.getActivePotionEffects();
+		for (PotionEffect effect : effects) {
+			player.removePotionEffect(effect.getType());
+		}
 		player.addPotionEffects(activeEffects);
 		
 		player.setExhaustion(exhaustion);
