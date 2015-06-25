@@ -93,6 +93,7 @@ public class FlagTimeout extends IntegerFlag {
 			if (secondsLeft <= 0) {
 				game.broadcast(getI18N().getString(Messages.Broadcast.GAME_TIMED_OUT));
 				game.stop();
+				game.flushQueue();
 				task.cancel();
 			} else if ((secondsLeft > 60 && secondsLeft % 60 == 0) || (secondsLeft <= 60 && secondsLeft % 30 == 0) || secondsLeft <= 5) {
 				String message = getTimeString();
