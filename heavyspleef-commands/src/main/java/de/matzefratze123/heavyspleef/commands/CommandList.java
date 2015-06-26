@@ -51,8 +51,13 @@ public class CommandList {
 		GameManager gameManager = heavySpleef.getGameManager();
 		Collection<Game> games = gameManager.getGames();
 		
+		if (games.isEmpty()) {
+			sender.sendMessage(i18n.getString(Messages.Command.NO_GAMES_EXIST));
+			return;
+		}
+		
 		for (Game game : games) {
-			FancyMessage message = new FancyMessage("");
+			FancyMessage message = new FancyMessage();
 			
 			if (sender instanceof SpleefPlayer) {
 				message.then(ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + i18n.getString(Messages.Command.JOIN) + ChatColor.DARK_GRAY + "]")

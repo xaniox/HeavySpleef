@@ -113,7 +113,7 @@ command:
   show-admin-info: "Zeige Admin Info"
   
   # Nachrichten, wenn ungültige Werte für Flags angegeben werden
-  # wie zum Beispiel null für den Countdown
+  # wie zum Beispiel 0 für den Countdown
   invalid-regen-interval: "Ebenen-Regenerationsintervall muss größer als 0 sein"
   invalid-autostart: "Autostart Anzahl an Spielern muss größer als 1 sein"
   invalid-countdown: "Die Countdown Länge muss größer als 0 sein"
@@ -137,6 +137,8 @@ command:
   
   rating-enabled: "Du hast das Verteilen von Rating für das Spiel $[game] aktiviert"
   rating-disabled: "Du hast das Verteilen von Rating für das Spiel $[game] deaktiviert"
+  
+  no-games-exist: "Es existieren noch keine Spleef Spiele"
 broadcast:
   player-left-game: "$[player] hat das Spiel verlassen"
   game-started: "Spiel $[game] ist gestartet. Viel Glück!"

@@ -113,7 +113,7 @@ command:
   show-admin-info: "Show Admin Info"
   
   # Messages when setting an invalid value for a flag
-  # for instance when setting the countdown to zero.
+  # for instance when setting the countdown to 0.
   invalid-regen-interval: "Floor regeneration interval must be greater than 0"
   invalid-autostart: "Autostart players amount must be greater than 1"
   invalid-countdown: "Countdown length must be greater than 0"
@@ -137,6 +137,8 @@ command:
   
   rating-enabled: "You enabled the distribution of rating for the game $[game]"
   rating-disabled: "You disabled the distribution of rating for the game $[game]"
+  
+  no-games-exist: "There are no spleef games yet"
 broadcast:
   player-left-game: "$[player] left the game"
   game-started: "The game $[game] has started. Good luck!"

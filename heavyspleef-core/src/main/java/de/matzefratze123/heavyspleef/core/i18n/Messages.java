@@ -159,6 +159,8 @@ public interface Messages {
 
 		public static final String RATING_ENABLED = PREFIX + "rating-enabled";
 		public static final String RATING_DISABLED = PREFIX + "rating-disabled";
+
+		public static final String NO_GAMES_EXIST = PREFIX + "no-games-exist";
 		
 	}
 	
