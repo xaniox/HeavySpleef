@@ -350,7 +350,9 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 			profile = new GameProfile(player.getUniqueId(), player.getName());
 		}
 		
-		return getStatistic(profile.getUniqueIdentifier());
+		Statistic statistic = getStatistic(profile.getUniqueIdentifier());
+		statistic.setLastName(playerName);
+		return statistic;
 	}
 	
 	@Override
@@ -472,6 +474,8 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 				found = new Statistic(profile.getUniqueIdentifier());
 			}
 			
+			found.setLastName(profile.getName());
+			
 			String name = null;
 			for (String playerName : players) {
 				if (playerName.equalsIgnoreCase(profile.getName())) {
@@ -507,7 +511,12 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 			GameProfile profile;
 			
 			profile = uuidManager.getProfile(uuid);
-			statisticMapping.put(profile.getName(), statistic);
+			String name = profile.getName();
+			if (name == null) {
+				name = statistic.getLastName();
+			}
+			
+			statisticMapping.put(name, statistic);
 		}
 		
 		return statisticMapping;

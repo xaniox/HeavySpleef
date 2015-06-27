@@ -49,6 +49,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		Map<String, Field> schema = Maps.newLinkedHashMap();
 		schema.put(ColumnContract.ID, new Field(Type.INTEGER).primaryKey().autoIncrement());
 		schema.put(ColumnContract.UUID, new Field(Type.CHAR).length(36).unique());
+		schema.put(ColumnContract.LAST_NAME, new Field(Type.CHAR).length(16));
 		schema.put(ColumnContract.WINS, new Field(Type.INTEGER));
 		schema.put(ColumnContract.LOSSES, new Field(Type.INTEGER));
 		schema.put(ColumnContract.KNOCKOUTS, new Field(Type.INTEGER));
@@ -70,7 +71,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		insertSql.append("INTO " + ColumnContract.TABLE_NAME + " (");
 		addColumnSignature(insertSql);
 		
-		insertSql.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		insertSql.append(") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		
 		if (getSqlImplementation() == SQLImplementation.MYSQL) {
 			insertSql.append(" ON DUPLICATE KEY UPDATE ");
@@ -91,7 +92,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 			setValues(insertStatement, object, true, 1);
 			
 			if (getSqlImplementation() == SQLImplementation.MYSQL) {
-				setValues(insertStatement, object, true, 9);
+				setValues(insertStatement, object, true, 10);
 			}
 			
 			insertStatement.executeUpdate();
@@ -116,7 +117,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 			try (PreparedStatement updateStatement = connection.prepareStatement(updateSql.toString())) {
 				setValues(updateStatement, object, true, 1);
 
-				updateStatement.setString(9, object.getUniqueIdentifier().toString());
+				updateStatement.setString(10, object.getUniqueIdentifier().toString());
 				updateStatement.executeUpdate();
 			}
 		}
@@ -124,6 +125,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 	
 	private void addColumnSignature(StringBuilder builder) {
 		builder.append(ColumnContract.UUID).append(", ");
+		builder.append(ColumnContract.LAST_NAME).append(", ");
 		builder.append(ColumnContract.WINS).append(", ");
 		builder.append(ColumnContract.LOSSES).append(", ");
 		builder.append(ColumnContract.KNOCKOUTS).append(", ");
@@ -138,6 +140,10 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		
 		if (addUniqueColumns) {
 			statement.setString(index++, statistic.getUniqueIdentifier().toString());
+		}
+		
+		if (statistic.getLastName() != null) {
+			statement.setString(index++, statistic.getLastName());
 		}
 		
 		statement.setInt(index++, statistic.getWins());
@@ -178,6 +184,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		
 		Statistic statistic = new Statistic(uuid);
 		
+		String lastName = result.getString(ColumnContract.LAST_NAME);
 		int wins = result.getInt(ColumnContract.WINS);
 		int losses = result.getInt(ColumnContract.LOSSES);
 		int knockouts = result.getInt(ColumnContract.KNOCKOUTS);
@@ -186,6 +193,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		long timePlayed = result.getLong(ColumnContract.TIME_PLAYED);
 		int rating = result.getInt(ColumnContract.RATING);
 		
+		statistic.setLastName(lastName);
 		statistic.setWins(wins);
 		statistic.setLosses(losses);
 		statistic.setKnockouts(knockouts);
@@ -222,10 +230,12 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 	
 	public interface ColumnContract {
 		
+
 		public static final String TABLE_NAME = "heavyspleef_statistics";
 		
 		public static final String ID = "id";
 		public static final String UUID = "uuid";
+		public static final String LAST_NAME = "last_name";
 		public static final String WINS = "wins";
 		public static final String LOSSES = "losses";
 		public static final String KNOCKOUTS = "knockouts";
@@ -234,7 +244,7 @@ public class StatisticAccessor extends SQLAccessor<Statistic, UUID> {
 		public static final String TIME_PLAYED = "time_played";
 		public static final String RATING = "rating";
 		
-		public static final String[] ALL_COLUMNS = {UUID, WINS, LOSSES, KNOCKOUTS, GAMES_PLAYED, BLOCKS_BROKEN, TIME_PLAYED, RATING};
+		public static final String[] ALL_COLUMNS = {UUID, LAST_NAME, WINS, LOSSES, KNOCKOUTS, GAMES_PLAYED, BLOCKS_BROKEN, TIME_PLAYED, RATING};
 		
 	}
 

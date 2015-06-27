@@ -29,6 +29,8 @@ public class Statistic implements Comparable<Statistic>, Rateable {
 	@Getter
 	private UUID uniqueIdentifier;
 	@Getter @Setter
+	private String lastName;
+	@Getter @Setter
 	private int wins;
 	@Getter @Setter
 	private int losses;
