@@ -139,7 +139,7 @@ public class CommandSave {
 			@Override
 			public void onFailure(Throwable t) {
 				receiver.sendMessage(i18n.getVarString(Messages.Command.ERROR_ON_SAVE)
-						.setVariable("error-message", t.toString())
+						.setVariable("detail-message", t.toString())
 						.toString());
 				heavySpleef.getLogger().log(Level.SEVERE, "Exception occured while saving data: ", t);
 			}
