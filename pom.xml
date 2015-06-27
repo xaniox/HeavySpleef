@@ -11,6 +11,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <worldedit.version>6.0.2-SNAPSHOT</worldedit.version>
+    <package.librarybase>de.matzefratze123.heavyspleef.lib</package.librarybase>
   </properties>
   <modules>
     <module>bootstrap</module>
