@@ -92,6 +92,13 @@ public class CommandHelp {
 			
 			String desc = child.getDescription();
 			if (desc.isEmpty() && !child.getDescriptionRef().isEmpty()) {
+				String i18nReference = child.getI18NRef();
+				I18N i18n = I18NManager.getGlobal();
+				
+				if (!i18nReference.isEmpty()) {
+					i18n = heavySpleef.getI18NManager().getI18N(i18nReference);
+				}
+				
 				desc = i18n.getString(child.getDescriptionRef());
 			}
 			
