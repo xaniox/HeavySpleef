@@ -9,7 +9,6 @@
   <properties>
     <main.class>de.matzefratze123.heavyspleef.HeavySpleefPlugin</main.class>
     <shadedArtifact.name>HeavySpleef</shadedArtifact.name>
-    <package.librarybase>de.matzefratze123.heavyspleef.lib</package.librarybase>
   </properties>
   <build>
     <plugins>      
