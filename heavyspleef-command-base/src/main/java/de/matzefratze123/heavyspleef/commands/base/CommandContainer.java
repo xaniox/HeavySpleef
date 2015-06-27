@@ -90,6 +90,10 @@ public class CommandContainer {
 		return command.descref();
 	}
 	
+	public String getI18NRef() {
+		return command.i18nref();
+	}
+	
 	public int getMinArgs() {
 		return command.minArgs();
 	}
