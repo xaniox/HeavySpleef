@@ -49,7 +49,7 @@ public class BasicAddOn implements AddOn {
 	private @Getter AddOnManager addOnManager;
 	private @Getter File dataFolder;
 	private @Getter AddOnProperties properties;
-	private @Getter AddOnLogger logger;
+	private @Getter Logger logger;
 	private @Getter @Setter boolean enabled;
 	private @Getter File file;
 	private @Getter ClassLoader classLoader;
@@ -114,31 +114,31 @@ public class BasicAddOn implements AddOn {
 		}
 	}
 	
-	void init(HeavySpleef heavySpleef, File dataFolder, AddOnProperties properties, File addOnFile, AddOnClassLoader classLoader, AddOnManager manager, I18N i18n) {
+	void init(HeavySpleef heavySpleef, File dataFolder, AddOnProperties properties, File addOnFile, AddOnClassLoader classLoader, AddOnManager manager, I18N i18n, Logger logger) {
 		this.heavySpleef = heavySpleef;
 		this.addOnManager = manager;
 		this.dataFolder = dataFolder;
 		this.properties = properties;
 		this.file = addOnFile;
 		this.classLoader = classLoader;
-		this.logger = new AddOnLogger();
-		this.logger.setParent(heavySpleef.getLogger());
-		this.logger.setUseParentHandlers(true);
 		this.i18n = i18n;
+		this.logger = logger;
 	}
 	
 	public class AddOnLogger extends Logger {
-
+		
 		private String loggerPrefix;
 		
 		public AddOnLogger() {
 			super(BasicAddOn.this.getClass().getCanonicalName(), null);
-			
-			this.loggerPrefix = "[" + properties.getName() + "]";
 		}		
 		
 		@Override
 		public void log(LogRecord record) {
+			if (loggerPrefix == null) {
+				loggerPrefix = "[" + properties.getName() + "]";
+			}
+			
 			record.setMessage("[" + heavySpleef.getPlugin().getName() + "] " + loggerPrefix + " " + record.getMessage());
 			super.log(record);
 		}

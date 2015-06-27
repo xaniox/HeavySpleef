@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -113,8 +114,8 @@ public class AddOnClassLoader extends URLClassLoader {
 		return clazz;
 	}
 	
-	void initialize(HeavySpleef heavySpleef) {
-		addOn.init(heavySpleef, dataFolder, properties, file, this, manager, i18N);
+	void initialize(HeavySpleef heavySpleef, Logger logger) {
+		addOn.init(heavySpleef, dataFolder, properties, file, this, manager, i18N, logger);
 	}
 
 }
