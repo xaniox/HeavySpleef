@@ -35,6 +35,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
@@ -46,7 +47,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 	private final JavaPlugin plugin;
 	private final Logger logger;
 	private final @Getter DefaultCommandExecution execution;
-	private Object[] args;
+	private List<Object> args;
 	private Instantiator instantiator;
 	private MessageBundle messageBundle;
 	private PermissionChecker permissionChecker;
@@ -55,7 +56,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 	public CommandManagerService(JavaPlugin plugin, Logger logger, MessageProvider messageProvider, PermissionChecker permissionChecker, Object... args) {
 		this.plugin = plugin;
 		this.logger = logger;
-		this.args = args;
+		this.args = Lists.newArrayList(args);
 		this.instantiator = new UnsafeInstantiator();
 		this.commandMap = Maps.newHashMap();
 		
@@ -75,6 +76,14 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 	@SuppressWarnings("unchecked")
 	public static <T> Transformer<T> getTransformer(Class<T> clazz) {
 		return (Transformer<T>) TRANSFORMERS.get(clazz);
+	}
+	
+	public void addArgument(Object object) {
+		args.add(object);
+	}
+	
+	public void removeArgument(Object object) {
+		args.remove(object);
 	}
 		
 	public void registerCommands(Class<?> clazz) {
@@ -191,7 +200,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		System.arraycopy(args, deepness, cutArgs, 0, args.length - deepness);
 		
 		CommandContext context = new CommandContext(cutArgs, command, sender);
-		command.execute(context, messageBundle, permissionChecker, this.args);
+		command.execute(context, messageBundle, permissionChecker, this.args.toArray(new Object[this.args.size()]));
 		return true;
 	}
 
@@ -216,7 +225,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		System.arraycopy(args, deepness, cutArgs, 0, args.length - deepness);
 		
 		CommandContext context = new CommandContext(cutArgs, container, sender);
-		List<String> tabCompletes = container.tabComplete(context, permissionChecker, this.args);
+		List<String> tabCompletes = container.tabComplete(context, permissionChecker, this.args.toArray(new Object[this.args.size()]));
 		
 		if (args.length > 0 && !args[args.length - 1].isEmpty()) {
 			//Remove unrelevant completes
