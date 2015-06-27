@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,6 +35,7 @@ import de.matzefratze123.heavyspleef.addon.AddOnLoader;
 import de.matzefratze123.heavyspleef.addon.AddOnManager;
 import de.matzefratze123.heavyspleef.addon.AddOnProperties;
 import de.matzefratze123.heavyspleef.addon.InvalidAddOnException;
+import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
@@ -83,6 +85,8 @@ public class JavaAddOnLoader implements AddOnLoader {
 		DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
 		Locale locale = config.getLocalization().getLocale();
 		
+		Logger addonLogger = addon.new AddOnLogger();
+		
 		I18N.LoadingMode loadingMode = properties.getLoadingMode();
 		if (loadingMode != null) {
 			if (loadingMode == LoadingMode.FILE_SYSTEM && !dataFolder.exists()) {
@@ -98,11 +102,11 @@ public class JavaAddOnLoader implements AddOnLoader {
 					.setLocale(locale)
 					.setFileSystemFolder(dataFolder)
 					.setClasspathFolder("")
-					.setLogger(addon.getLogger())
+					.setLogger(addonLogger)
 					.build();
 				
 				I18NManager manager = heavySpleef.getI18NManager();
-				manager.registerI18N(i18n);
+				manager.registerI18N(properties.getName(), i18n);
 				classLoader.setI18N(i18n);
 			} catch (MissingResourceException e) {
 				heavySpleef.getLogger().warning(
@@ -112,7 +116,10 @@ public class JavaAddOnLoader implements AddOnLoader {
 			classLoader.setI18N(I18NManager.getGlobal());
 		}
 		
-		classLoader.initialize(manager.getHeavySpleef());
+		CommandManagerService service = heavySpleef.getCommandManager().getService();
+		service.addArgument(addon);
+		
+		classLoader.initialize(manager.getHeavySpleef(), addonLogger);
 		return addon;
 	}
 	

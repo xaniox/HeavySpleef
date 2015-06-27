@@ -41,6 +41,7 @@ import de.matzefratze123.heavyspleef.addon.access.FlagRegistryAccess;
 import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import de.matzefratze123.heavyspleef.addon.java.JavaAddOnLoader;
 import de.matzefratze123.heavyspleef.addon.java.SharedClassContext;
+import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
@@ -157,8 +158,11 @@ public final class AddOnManager {
 		if (addOn.getProperties().getLoadingMode() != null) {
 			//Unregister i18n
 			I18NManager i18nManager = heavySpleef.getI18NManager();
-			i18nManager.unregisterI18N(basicAddOn.getI18n());
+			i18nManager.unregisterI18N(basicAddOn.getName());
 		}
+		
+		CommandManagerService service = heavySpleef.getCommandManager().getService();
+		service.removeArgument(addOn);
 		
 		//Clear class cache
 		classContext.unregister(addOn);
