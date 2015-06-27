@@ -159,12 +159,13 @@ public final class HeavySpleef {
 		postActionHandler = new PlayerPostActionHandler(this);
 		regionVisualizer = new RegionVisualizer(getPlugin());
 		globalEventBus = new GlobalEventBus(logger);
+		
+		extensionRegistry = new ExtensionRegistry(this);
 	}
 	
 	public void enable() {
 		gameManager = new GameManager(this);
 		
-		extensionRegistry = new ExtensionRegistry(this);
 		extensionRegistry.registerExtension(ExtensionLobbyWall.class);
 		extensionRegistry.registerExtension(JoinSignExtension.class);
 		extensionRegistry.registerExtension(LeaveSignExtension.class);
@@ -196,7 +197,7 @@ public final class HeavySpleef {
 		
 		bukkitListener = new BukkitListener(playerManager, gameManager, plugin);
 		LoseCheckerTask loseCheckTask = new LoseCheckerTask(this);
-		globalEventBus.registerGlobalListener(loseCheckTask);
+		globalEventBus.registerListener(loseCheckTask);
 		loseCheckTask.start();
 		
 		DefaultConfig config = getConfiguration(ConfigType.DEFAULT_CONFIG);
