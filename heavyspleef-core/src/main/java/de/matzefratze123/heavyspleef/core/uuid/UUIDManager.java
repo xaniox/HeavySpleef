@@ -46,7 +46,7 @@ import com.google.common.collect.Lists;
 public class UUIDManager {
 	
 	private static final String NAME_BASE_URL = "https://api.mojang.com/profiles/minecraft";
-	private static final String UUID_BASE_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
+	private static final String UUID_BASE_URL = " https://api.mojang.com/user/profiles/%s/names";
 	private static final int PROFILES_PER_REQUEST = 100;
 	
 	private final JSONParser parser = new JSONParser();
@@ -293,13 +293,14 @@ public class UUIDManager {
 	
 	private GameProfile fetchGameProfile(UUID uuid) throws IOException, ParseException {
 		String uuidString = uuid.toString().replace("-", "");
-		URL url = new URL(UUID_BASE_URL + uuidString);
+		URL url = new URL(String.format(UUID_BASE_URL, uuidString));
 		
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		InputStream inputStream = connection.getInputStream();
 		
-		JSONObject result = (JSONObject) parser.parse(new InputStreamReader(inputStream));
-		String name = (String) result.get("name");
+		JSONArray result = (JSONArray) parser.parse(new InputStreamReader(inputStream));
+		JSONObject current = (JSONObject) result.get(result.size() - 1);
+		String name = (String) current.get("name");
 		if (name == null) {
 			return null;
 		}
