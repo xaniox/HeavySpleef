@@ -17,12 +17,15 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import java.util.Set;
 import java.util.UUID;
 
+import de.matzefratze123.heavyspleef.core.script.Variable;
+import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Statistic implements Comparable<Statistic>, Rateable {
+public class Statistic implements Comparable<Statistic>, Rateable, VariableSuppliable {
 
 	private static final double START_RATING = 1000D;
 	
@@ -58,6 +61,18 @@ public class Statistic implements Comparable<Statistic>, Rateable {
 
 	public boolean isEmpty() {
 		return wins == 0 && losses == 0 && knockouts == 0 && gamesPlayed == 0 && timePlayed == 0 && blocksBroken == 0 && rating == START_RATING;
+	}
+
+	@Override
+	public void supply(Set<Variable> vars, Set<String> requested) {
+		vars.add(new Variable("last-name", lastName));
+		vars.add(new Variable("wins", wins));
+		vars.add(new Variable("losses", losses));
+		vars.add(new Variable("knockouts", knockouts));
+		vars.add(new Variable("games-played", gamesPlayed));
+		vars.add(new Variable("time-played", timePlayed));
+		vars.add(new Variable("blocks-broken", blocksBroken));
+		vars.add(new Variable("rating", rating));
 	}
 	
 }
