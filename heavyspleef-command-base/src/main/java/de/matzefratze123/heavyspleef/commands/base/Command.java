@@ -34,6 +34,8 @@ public @interface Command {
 	
 	String descref() default "";
 	
+	String i18nref() default "";
+	
 	int minArgs() default -1;
 	
 	String permission() default "";
