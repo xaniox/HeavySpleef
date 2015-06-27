@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -88,7 +89,10 @@ public class JavaAddOnLoader implements AddOnLoader {
 				dataFolder.mkdir();
 			}
 			
-			I18N i18n = I18NBuilder.builder()
+			I18N i18n = null;
+			
+			try {
+				i18n = I18NBuilder.builder()
 					.setLoadingMode(loadingMode)
 					.setClassLoader(classLoader)
 					.setLocale(locale)
@@ -96,10 +100,14 @@ public class JavaAddOnLoader implements AddOnLoader {
 					.setClasspathFolder("")
 					.setLogger(addon.getLogger())
 					.build();
-			
-			I18NManager manager = heavySpleef.getI18NManager();
-			manager.registerI18N(i18n);
-			classLoader.setI18N(i18n);
+				
+				I18NManager manager = heavySpleef.getI18NManager();
+				manager.registerI18N(i18n);
+				classLoader.setI18N(i18n);
+			} catch (MissingResourceException e) {
+				heavySpleef.getLogger().warning(
+						"Unable to find i18n messages for add-on " + properties.getName() + ". Are there any existing i18n files in the add-on jar?");
+			}
 		} else {
 			classLoader.setI18N(I18NManager.getGlobal());
 		}
