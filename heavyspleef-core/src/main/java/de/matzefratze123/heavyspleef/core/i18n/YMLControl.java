@@ -64,18 +64,12 @@ public class YMLControl extends ResourceBundle.Control {
 	@Override
 	public List<Locale> getCandidateLocales(String baseName, Locale locale) {
 		List<Locale> candidates = Lists.newArrayList();
-		
 		candidates.add(locale);
 		
-		if (!locale.getLanguage().isEmpty() && !locale.getCountry().isEmpty() && !locale.getVariant().isEmpty()) {
-			candidates.add(new Locale(locale.getLanguage(), locale.getCountry()));
-			candidates.add(new Locale(locale.getLanguage()));
-		} else if (!locale.getLanguage().isEmpty() && !locale.getCountry().isEmpty()) {
-			candidates.add(new Locale(locale.getLanguage()));
+		if (!locale.equals(Locale.US)) {
+			candidates.add(Locale.US);
 		}
 		
-		candidates.add(Locale.US);
-		candidates.add(Locale.ROOT);
 		return candidates;
 	}
 	
@@ -108,6 +102,10 @@ public class YMLControl extends ResourceBundle.Control {
 				} else {
 					url = getClass().getResource(classpathDir + resourceName);
 				}
+			}
+			
+			if (url == null) {
+				return null;
 			}
 			
 			URLConnection connection = url.openConnection();
@@ -178,7 +176,7 @@ public class YMLControl extends ResourceBundle.Control {
 	
 	@Override
 	public Locale getFallbackLocale(String baseName, Locale locale) {
-		return Locale.US;
+		return null;
 	}
 	
 }

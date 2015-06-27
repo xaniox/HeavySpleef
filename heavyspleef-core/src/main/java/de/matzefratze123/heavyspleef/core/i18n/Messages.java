@@ -161,6 +161,10 @@ public interface Messages {
 		public static final String RATING_DISABLED = PREFIX + "rating-disabled";
 
 		public static final String NO_GAMES_EXIST = PREFIX + "no-games-exist";
+		public static final String NEED_STATISTICS_ENABLED = PREFIX + "need-statistics-enabled";
+		public static final String PODIUM_ADDED = PREFIX + "podium-added";
+		public static final String PODIUM_REMOVED = PREFIX + "podium-removed";
+		public static final String PODIUM_NOT_FOUND = PREFIX + "podium-not-found";
 		
 	}
 	
@@ -294,8 +298,11 @@ public interface Messages {
 			public static final String ADDDEATHZONE = PREFIX + "adddeathzone";
 			public static final String REMOVEDEATHZONE = PREFIX + "removedeathzone";
 			public static final String SHOWDEATHZONE = PREFIX + "showdeathzone";
+			public static final String ADDPODIUM = PREFIX + "addpodium";
+			public static final String REMOVEPODIUM = PREFIX + "removepodium";
 			public static final String UPDATE = PREFIX + "update";
 			public static final String VOTE = PREFIX + "vote";
+
 			
 		}
 		

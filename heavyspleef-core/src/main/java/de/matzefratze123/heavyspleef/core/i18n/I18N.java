@@ -115,21 +115,14 @@ public class I18N {
 		loadBundle();
 	}
 	
-	private void loadBundle() throws MissingResourceException {
-		//try {
-			bundle = ResourceBundle.getBundle("locale", locale, defaultControl);
-		/*} catch (MissingResourceException mre) {
-			//Locale could not be found
-			//YMLControl classpathControl = new YMLControl(null, CLASSPATH_DIR, mode);
-			//bundle = ResourceBundle.getBundle("locale", FALLBACK_LOCALE, classpathControl);
-			throw new Mis
-		}*/
-	}
-	
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 		
 		loadBundle();
+	}
+	
+	private void loadBundle() {
+		bundle = ResourceBundle.getBundle("locale", locale, defaultControl);
 	}
 	
 	public void setParent(I18N parent) {
