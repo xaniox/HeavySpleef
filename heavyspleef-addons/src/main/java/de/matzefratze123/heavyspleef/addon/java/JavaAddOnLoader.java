@@ -85,7 +85,7 @@ public class JavaAddOnLoader implements AddOnLoader {
 		DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
 		Locale locale = config.getLocalization().getLocale();
 		
-		Logger addonLogger = addon.new AddOnLogger();
+		Logger addonLogger = new BasicAddOn.AddOnLogger(addon, heavySpleef, properties);
 		
 		I18N.LoadingMode loadingMode = properties.getLoadingMode();
 		if (loadingMode != null) {

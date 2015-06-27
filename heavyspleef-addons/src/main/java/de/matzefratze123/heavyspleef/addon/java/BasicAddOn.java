@@ -125,13 +125,18 @@ public class BasicAddOn implements AddOn {
 		this.logger = logger;
 	}
 	
-	public class AddOnLogger extends Logger {
+	public static class AddOnLogger extends Logger {
 		
 		private String loggerPrefix;
+		private AddOnProperties properties;
+		private HeavySpleef heavySpleef;
 		
-		public AddOnLogger() {
-			super(BasicAddOn.this.getClass().getCanonicalName(), null);
-		}		
+		public AddOnLogger(BasicAddOn addOn, HeavySpleef heavySpleef, AddOnProperties properties) {
+			super(addOn.getClass().getCanonicalName(), null);
+			
+			this.heavySpleef = heavySpleef;
+			this.properties = properties;
+		}
 		
 		@Override
 		public void log(LogRecord record) {
