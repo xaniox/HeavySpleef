@@ -18,11 +18,11 @@
 package de.matzefratze123.heavyspleef.core.i18n;
 
 import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 
 public class I18NManager {
 	
@@ -32,7 +32,7 @@ public class I18NManager {
 	private static I18NBuilder globalBuilder;
 	private static I18N global;
 	
-	private Set<I18N> registered;
+	private Map<String, I18N> registered;
 	
 	/**
 	 * Returns the global I18N instance used for
@@ -72,27 +72,27 @@ public class I18NManager {
 	}
 	
 	public I18NManager() {
-		this.registered = Sets.newHashSet();
+		this.registered = Maps.newHashMap();
 	}
 	
-	public void registerI18N(I18N i18n) {
-		Validate.isTrue(!registered.contains(i18n), "I18N instance already registered");
+	public void registerI18N(String name, I18N i18n) {
+		Validate.isTrue(!registered.containsKey(name), "I18N instance already registered");
 		
 		i18n.setParent(global);
-		registered.add(i18n);
+		registered.put(name, i18n);
 	}
 	
-	public I18N registerI18N(I18NBuilder builder) {
+	public I18N registerI18N(String name, I18NBuilder builder) {
 		I18N i18n = builder.build();
-		registerI18N(i18n);
+		registerI18N(name, i18n);
 		
 		return i18n;
 	}
 	
-	public void unregisterI18N(I18N i18n) {
-		Validate.isTrue(registered.contains(i18n), "I18N instance is not registered");
+	public void unregisterI18N(String name) {
+		Validate.isTrue(registered.containsKey(name), "I18N instance is not registered");
 		
-		registered.remove(i18n);
+		registered.remove(name);
 	}
 	
 	public void reloadAll(Locale locale) {
@@ -101,7 +101,7 @@ public class I18NManager {
 			global.load();
 		}
 		
-		for (I18N i18n : registered) {
+		for (I18N i18n : registered.values()) {
 			i18n.setLocale(locale);
 			i18n.load();
 		}
