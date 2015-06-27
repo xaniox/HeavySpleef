@@ -95,6 +95,10 @@ public class I18NManager {
 		registered.remove(name);
 	}
 	
+	public I18N getI18N(String name) {
+		return registered.get(name);
+	}
+	
 	public void reloadAll(Locale locale) {
 		if (global != null) {
 			global.setLocale(locale);
