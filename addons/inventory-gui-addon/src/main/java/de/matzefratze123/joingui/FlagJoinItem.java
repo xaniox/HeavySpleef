@@ -52,7 +52,7 @@ public class FlagJoinItem extends SingleItemStackFlag {
 				CommandManagerService service = manager.getService();
 				
 				inventory = new JoinInventory(addOn);
-				heavySpleef.getGlobalEventBus().registerGlobalListener(inventory);
+				heavySpleef.getGlobalEventBus().registerListener(inventory);
 				
 				proxy = new JoinCommandProxy(inventory);
 				
@@ -71,7 +71,7 @@ public class FlagJoinItem extends SingleItemStackFlag {
 	@Unregister
 	public static void unattachCommandProxy(HeavySpleef heavySpleef) {
 		execution.unattachProxy(proxy);
-		heavySpleef.getGlobalEventBus().unregisterGlobalListener(inventory);
+		heavySpleef.getGlobalEventBus().unregister(inventory);
 	}
 	
 	@Override

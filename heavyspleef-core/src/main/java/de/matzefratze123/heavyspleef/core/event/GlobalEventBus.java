@@ -24,19 +24,22 @@ import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Sets;
 
-public class GlobalEventBus {
+public class GlobalEventBus extends EventBus {
 	
 	private final Logger logger;
 	private Set<EventBus> singleInstanceBusMap;
 	private Set<SpleefListener> globalListeners;
 	
 	public GlobalEventBus(Logger logger) {
+		super(logger);
+		
 		this.logger = logger;
 		this.singleInstanceBusMap = Sets.newHashSet();
 		this.globalListeners = Sets.newHashSet();
 	}
 	
-	public void registerGlobalListener(SpleefListener listener) {
+	@Override
+	public void registerListener(SpleefListener listener) {
 		Validate.isTrue(!globalListeners.contains(listener), "Global listener already registered");
 		for (EventBus bus : singleInstanceBusMap) {
 			if (bus.isRegistered(listener)) {
@@ -50,7 +53,8 @@ public class GlobalEventBus {
 		}
 	}
 	
-	public void unregisterGlobalListener(SpleefListener listener) {
+	@Override
+	public void unregister(SpleefListener listener) {
 		Validate.isTrue(globalListeners.contains(listener), "Global listener has not been registered");
 		
 		globalListeners.remove(listener);
@@ -58,6 +62,9 @@ public class GlobalEventBus {
 			bus.unregister(listener);
 		}
 	}
+	
+	@Override
+	public void callEvent(Event event) {}
 	
 	public EventBus newChildBus() {
 		EventBus bus = new EventBus(logger);
