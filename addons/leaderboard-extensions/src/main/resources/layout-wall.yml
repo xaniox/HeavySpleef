@@ -1,0 +1,5 @@
+layout:
+  1: '#$[rank]'
+  2: '&l$[player]'
+  3: '&8Rating'
+  4: '&4&l$[rating]'
