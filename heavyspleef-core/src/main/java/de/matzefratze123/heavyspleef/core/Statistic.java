@@ -72,7 +72,8 @@ public class Statistic implements Comparable<Statistic>, Rateable, VariableSuppl
 		vars.add(new Variable("games-played", gamesPlayed));
 		vars.add(new Variable("time-played", timePlayed));
 		vars.add(new Variable("blocks-broken", blocksBroken));
-		vars.add(new Variable("rating", rating));
+		vars.add(new Variable("rating", (int)rating));
+		vars.add(new Variable("rating-exact", rating));
 	}
 	
 }
