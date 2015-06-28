@@ -140,7 +140,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 			
 			if (method.getDeclaringClass() == clazz) {
 				iterator.remove();
-			} else if (!childs.isEmpty()) {
+			} else if (childs != null && !childs.isEmpty()) {
 				unregisterRecursively(clazz, childs.iterator());
 			}
 		}
