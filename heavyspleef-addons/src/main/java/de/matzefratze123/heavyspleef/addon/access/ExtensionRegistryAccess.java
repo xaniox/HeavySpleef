@@ -68,7 +68,7 @@ public class ExtensionRegistryAccess {
 	}
 	
 	public void unregister(AddOn addOn) {
-		Set<Class<? extends GameExtension>> set = addOnRegistrations.get(addOn);
+		Set<Class<? extends GameExtension>> set = addOnRegistrations.remove(addOn);
 		if (set == null) {
 			return;
 		}
