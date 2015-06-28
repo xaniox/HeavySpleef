@@ -40,9 +40,9 @@ public class JoinGuiAddOn extends BasicAddOn {
 	private static final String UTF_8 = "UTF-8";
 
 	private @Getter InventoryEntryConfig inventoryEntryConfig;
-
+	
 	@Override
-	public void enable() {
+	public void load() {
 		File dataFolder = getDataFolder();
 		if (!dataFolder.exists()) {
 			dataFolder.mkdir();
