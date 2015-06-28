@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,6 +46,8 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class StatisticRecorder implements SpleefListener {
 
+	private static final DecimalFormat FORMAT = new DecimalFormat("0.00");
+	
 	private final I18N i18n = I18NManager.getGlobal();
 	private final HeavySpleef heavySpleef;
 	private final Logger logger;
@@ -149,10 +152,13 @@ public class StatisticRecorder implements SpleefListener {
 			double ratingChange = rating - statistic.getRating();
 			statistic.setRating(rating);
 			
+			String ratingChangeStr = FORMAT.format(ratingChange);
+			String ratingStr = FORMAT.format(rating);
+			
 			SpleefPlayer player = heavySpleef.getSpleefPlayer(name);
 			player.sendMessage(i18n.getVarString(ratingChange >= 0 ? Messages.Player.GAINED_RATING : Messages.Player.LOST_RATING)
-					.setVariable("change", ratingChange >= 0 ? "+" + ratingChange : String.valueOf(ratingChange))
-					.setVariable("new-rating", String.valueOf(rating))
+					.setVariable("change", ratingChange >= 0 ? "+" + ratingChangeStr : ratingChangeStr)
+					.setVariable("new-rating", String.valueOf(ratingStr))
 					.toString());
 		}
 		
