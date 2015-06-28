@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -61,7 +63,9 @@ import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
-import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.WallValidationException.Cause;
+import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.SignRow.BlockFace2D;
+import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.SignRow.SignLooper;
+import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.SignRow.SignRowValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -109,7 +113,8 @@ public class ExtensionLobbyWall extends GameExtension {
 				event.setCancelled(true);
 				
 				Sign sign = (Sign) clickedBlock.getState();
-				ExtensionLobbyWall wall = generateWall(sign);
+				SignRow row = SignRow.generateRow(sign);
+				ExtensionLobbyWall wall = new ExtensionLobbyWall(row);
 				
 				game.addExtension(wall);
 				wall.updateWall(game, false);
@@ -194,120 +199,36 @@ public class ExtensionLobbyWall extends GameExtension {
 		player.sendMessage(i18n.getString(Messages.Command.CLICK_ON_WALL_TO_REMOVE));
 	}
 	
-	private static ExtensionLobbyWall generateWall(Sign clicked) {
-		Block block = clicked.getBlock();
-		Location location = block.getLocation();
-		Block attachedOn = getAttached(clicked);
-		
-		Location mod = attachedOn.getLocation().subtract(location);
-		BlockFace2D dir = BlockFace2D.byVector2D(mod.getBlockX(), mod.getBlockZ());
-		
-		BlockFace2D leftDir = dir.left();
-		BlockFace2D rightDir = dir.right();
-		
-		BlockFace leftFace = leftDir.getBlockFace3D();
-		BlockFace rightFace = rightDir.getBlockFace3D();
-		
-		Location start = location;
-		Block lastBlock = block;
-		
-		while (true) {
-			Block leftBlock = lastBlock.getRelative(leftFace);
-			if (leftBlock.getType() != Material.WALL_SIGN) {
-				break;
-			}
-			
-			lastBlock = leftBlock;
-			start = leftBlock.getLocation();
-		}
-		
-		Location end = location;
-		lastBlock = block;
-		
-		while (true) {
-			Block rightBlock = lastBlock.getRelative(rightFace);
-			if (rightBlock.getType() != Material.WALL_SIGN) {
-				break;
-			}
-			
-			lastBlock = rightBlock;
-			end = rightBlock.getLocation();
-		}
-		
-		try {
-			return new ExtensionLobbyWall(start, end);
-		} catch (WallValidationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	private static Block getAttached(Sign sign) {
-		Attachable data = (Attachable) sign.getData();
-		BlockFace attachingBlockFace = data.getFacing().getOppositeFace();
-		
-		return sign.getBlock().getRelative(attachingBlockFace);
-	}
-	
 	/* An instance of the global i18n */
 	private final I18N i18n = I18NManager.getGlobal();
-	/* The world this wall is in */
-	private World world;
-	/* The start location of this wall */
-	private Location start;
-	/* The end location of this wall */
-	private Location end;
-	/* The direction looking straight from start to end */
-	private BlockFace2D direction;
+	/* The actual sign row we're using */
+	private SignRow row;
 	
 	@SuppressWarnings("unused")
 	private ExtensionLobbyWall() {}
 	
-	public ExtensionLobbyWall(Location start, Location end) throws WallValidationException {
-		this.world = start.getWorld();
-		this.start = start;
-		this.end = end;
-		
-		recalculate();
+	public ExtensionLobbyWall(Location start, Location end) throws SignRowValidationException {
+		this.row = new SignRow(start, end);
 	}
 	
-	/**
-	 * Validates locations and recalculates their direction
-	 */
-	private void recalculate() throws WallValidationException {
-		//The two defining points must lie on the x-axis or y-axis
-		if (start.getBlockX() != end.getBlockX() && start.getBlockZ() != end.getBlockZ()) {
-			throw new WallValidationException(Cause.NOT_IN_LINE);
-		}
-		
-		if (start.getBlockY() != end.getBlockY()) {
-			throw new WallValidationException(Cause.NOT_SAME_Y_AXIS);
-		}
-		
-		if (start.getBlockX() == end.getBlockX()) {
-			if (start.getBlockZ() < end.getBlockZ()) {
-				direction = BlockFace2D.SOUTH;
-			} else {
-				direction = BlockFace2D.NORTH;
-			}
-		} else if (start.getBlockZ() == end.getBlockZ()) {
-			if (start.getBlockX() < end.getBlockX()) {
-				direction = BlockFace2D.EAST;
-			} else {
-				direction = BlockFace2D.WEST;
-			}
-		}
+	public ExtensionLobbyWall(SignRow row) {
+		this.row = row;
 	}
 	
 	public Location getStart() {
-		return start;
+		return row.getStart();
 	}
 	
 	public Location getEnd() {
-		return end;
+		return row.getEnd();
 	}
 	
 	public BlockFace2D getDirection() {
-		return direction;
+		return row.getDirection();
+	}
+	
+	public void clearAll() {
+		row.clearAll();
 	}
 	
 	@Subscribe(priority = Priority.MONITOR)
@@ -346,7 +267,7 @@ public class ExtensionLobbyWall extends GameExtension {
 			return;
 		}
 		
-		if (!clicked.getLocation().equals(start)) {
+		if (!clicked.getLocation().equals(row.getStart())) {
 			return;
 		}
 		
@@ -377,7 +298,7 @@ public class ExtensionLobbyWall extends GameExtension {
 		final SignLayout joinLayout = joinConfig.getLayout();
 		final SignLayout infoLayout = infoConfig.getLayout();
 		
-		loopSigns(new SignLooper() {
+		row.loopSigns(new SignLooper() {
 			
 			boolean ingamePlayers = true;
 			Iterator<SpleefPlayer> currentIterator = game.getPlayers().iterator();
@@ -444,229 +365,392 @@ public class ExtensionLobbyWall extends GameExtension {
 		});
 	}
 	
-	protected void clearAll() {
-		loopSigns(new SignLooper() {
-			
-			@Override
-			public LoopReturn loop(int index, Sign sign) {
-				for (int i = 0; i < SignLayout.LINE_COUNT; i++) {
-					sign.setLine(i, "");
-				}
-				
-				sign.update();
-				return LoopReturn.DEFAULT;
-			}
-		});
-	}
-	
-	private void loopSigns(SignLooper looper) {
-		Vector startVec = new Vector(start.getBlockX(), start.getBlockY(), start.getBlockZ());
-		Vector endVec = new Vector(end.getBlockX(), end.getBlockY(), end.getBlockZ());
-		
-		Vector directionVec = direction.mod();
-		
-		int maxDistance = Math.abs(direction == BlockFace2D.NORTH || direction == BlockFace2D.SOUTH ? endVec.getBlockZ() - startVec.getBlockZ()
-				: endVec.getBlockX() - startVec.getBlockX());
-		BlockIterator iterator = new BlockIterator(world, startVec, directionVec, 0, maxDistance);
-		
-		for (int i = 0; iterator.hasNext(); i++) {
-			Block block = iterator.next();
-			
-			if (block.getType() != Material.WALL_SIGN) {
-				continue;
-			}
-			
-			Sign sign = (Sign) block.getState();
-			
-			SignLooper.LoopReturn loopReturn = looper.loop(i, sign);
-			if (loopReturn == SignLooper.LoopReturn.CONTINUE) {
-				continue;
-			} else if (loopReturn == SignLooper.LoopReturn.BREAK) {
-				break;
-			} else if (loopReturn == SignLooper.LoopReturn.RETURN) {
-				return;
-			}
-		}
-	}
-	
 	@Override
 	public void marshal(Element element) {
-		Element startElement = element.addElement("start");
-		Element xStartElement = startElement.addElement("x");
-		Element yStartElement = startElement.addElement("y");
-		Element zStartElement = startElement.addElement("z");
-		Element worldStartElement = startElement.addElement("world");
-		
-		Element endElement = element.addElement("end");
-		Element xEndElement = endElement.addElement("x");
-		Element yEndElement = endElement.addElement("y");
-		Element zEndElement = endElement.addElement("z");
-		Element worldEndElement = endElement.addElement("world");
-		
-		worldStartElement.addText(start.getWorld().getName());
-		xStartElement.addText(String.valueOf(start.getBlockX()));
-		yStartElement.addText(String.valueOf(start.getBlockY()));
-		zStartElement.addText(String.valueOf(start.getBlockZ()));
-		
-		worldEndElement.addText(end.getWorld().getName());
-		xEndElement.addText(String.valueOf(end.getBlockX()));
-		yEndElement.addText(String.valueOf(end.getBlockY()));
-		zEndElement.addText(String.valueOf(end.getBlockZ()));
+		row.marshal(element);
 	}
 	
 	@Override
 	public void unmarshal(Element element) {
-		Element startElement = element.element("start");
-		Element endElement = element.element("end");
+		row = new SignRow();
+		row.unmarshal(element);
+	}
+	
+	@Getter
+	public static class SignRow {
 		
-		Element xStartElement = startElement.element("x");
-		Element yStartElement = startElement.element("y");
-		Element zStartElement = startElement.element("z");
-		Element worldStartElement = startElement.element("world");
+		/* The world this wall is in */
+		private World world;
+		/* The start location of this wall */
+		private Location start;
+		/* The end location of this wall */
+		private Location end;
+		/* The direction looking straight from start to end */
+		private BlockFace2D direction;
+		/* The length of this row */
+		private int length;
 		
-		Element xEndElement = endElement.element("x");
-		Element yEndElement = endElement.element("y");
-		Element zEndElement = endElement.element("z");
-		Element worldEndElement = endElement.element("world");
+		public SignRow() {}
 		
-		World startWorld = Bukkit.getWorld(worldStartElement.getText());
-		int startX = Integer.parseInt(xStartElement.getText());
-		int startY = Integer.parseInt(yStartElement.getText());
-		int startZ = Integer.parseInt(zStartElement.getText());
-		
-		World endWorld = Bukkit.getWorld(worldEndElement.getText());
-		int endX = Integer.parseInt(xEndElement.getText());
-		int endY = Integer.parseInt(yEndElement.getText());
-		int endZ = Integer.parseInt(zEndElement.getText());
-		
-		world = startWorld;
-		start = new Location(startWorld, startX, startY, startZ);
-		end = new Location(endWorld, endX, endY, endZ);
-		
-		try {
+		public SignRow(Location start, Location end) throws SignRowValidationException {
+			this.world = start.getWorld();
+			this.start = start;
+			this.end = end;
+			
 			recalculate();
-		} catch (WallValidationException e) {
-			throw new RuntimeException(e);
 		}
-	}
-	
-	private interface SignLooper {
 		
-		public LoopReturn loop(int index, Sign sign);
-		
-		public enum LoopReturn {
+		public static SignRow generateRow(Sign clicked) {
+			Block block = clicked.getBlock();
+			Location location = block.getLocation();
+			Block attachedOn = getAttached(clicked);
 			
-			DEFAULT,
-			CONTINUE,
-			BREAK,
-			RETURN;
+			Location mod = attachedOn.getLocation().subtract(location);
+			BlockFace2D dir = BlockFace2D.byVector2D(mod.getBlockX(), mod.getBlockZ());
 			
-		}
-		
-	}
-	
-	public enum BlockFace2D {
-		
-		NORTH(0, -1, BlockFace.NORTH),
-		SOUTH(0, 1, BlockFace.SOUTH),
-		WEST(-1, 0, BlockFace.WEST),
-		EAST(1, 0, BlockFace.EAST);
-		
-		private int xVec;
-		private int zVec;
-		private BlockFace blockFace;
-		
-		private BlockFace2D(int xVec, int zVec, BlockFace blockFace) {
-			this.xVec = xVec;
-			this.zVec = zVec;
-			this.blockFace = blockFace;
-		}
-		
-		public BlockFace2D opposite() {
-			return byVector2D(-xVec, -zVec);
-		}
-		
-		public BlockFace2D right() {
-			return byVector2D(-zVec, xVec);
-		}
-		
-		public BlockFace2D left() {
-			return byVector2D(zVec, -xVec);
-		}
-		
-		public Vector mod() {
-			return new Vector(xVec, 0, zVec);
-		}
-		
-		public BlockFace getBlockFace3D() {
-			return blockFace;
-		}
-		
-		public static BlockFace2D byVector2D(int x, int z) {
-			x = normalize(x);
-			z = normalize(z);
+			BlockFace2D leftDir = dir.left();
+			BlockFace2D rightDir = dir.right();
 			
-			for (BlockFace2D direction : values()) {
-				if (direction.xVec == x && direction.zVec == z) {
-					return direction;
-				}
-			}
+			BlockFace leftFace = leftDir.getBlockFace3D();
+			BlockFace rightFace = rightDir.getBlockFace3D();
 			
-			return null;
-		}
-		
-		private static int normalize(int target) {
-			int result = 0;
+			Location start = location;
+			Block lastBlock = block;
 			
-			if (target > 0) {
-				result = 1;
-			} else if (target < 0) {
-				result = -1;
-			}
-			
-			return result;
-		}
-		
-	}
-	
-	public static class WallValidationException extends Exception {
-
-		private static final long serialVersionUID = -1720873353345614589L;
-		
-		private Cause cause;
-		
-		public WallValidationException(Cause cause) {
-			this.cause = cause;
-		}
-		
-		public WallValidationException(Cause cause, String message) {
-			super(message);
-			
-			this.cause = cause;
-		}
-		
-		@Override
-		public String getMessage() {
-			String message = super.getMessage();
-			if (cause != null) {
-				if (message != null && !message.isEmpty()) {
-					message += " ";
+			while (true) {
+				Block leftBlock = lastBlock.getRelative(leftFace);
+				if (leftBlock.getType() != Material.WALL_SIGN) {
+					break;
 				}
 				
-				message += "[Cause: " + cause.name() + "]";
+				lastBlock = leftBlock;
+				start = leftBlock.getLocation();
 			}
 			
-			return message;
-		}
-		
-		public Cause getExceptionCause() {
-			return cause;
-		}
-		
-		public enum Cause {
+			Location end = location;
+			lastBlock = block;
 			
-			NOT_IN_LINE, 
-			NOT_SAME_Y_AXIS;
+			while (true) {
+				Block rightBlock = lastBlock.getRelative(rightFace);
+				if (rightBlock.getType() != Material.WALL_SIGN) {
+					break;
+				}
+				
+				lastBlock = rightBlock;
+				end = rightBlock.getLocation();
+			}
+			
+			try {
+				return new SignRow(start, end);
+			} catch (SignRowValidationException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		private static Block getAttached(Sign sign) {
+			Attachable data = (Attachable) sign.getData();
+			BlockFace attachingBlockFace = data.getFacing().getOppositeFace();
+			
+			return sign.getBlock().getRelative(attachingBlockFace);
+		}
+		
+		public int getLength() {
+			return length;
+		}
+		
+		public void loopSigns(SignLooper looper) {
+			Vector startVec = new Vector(start.getBlockX(), start.getBlockY(), start.getBlockZ());
+			Vector endVec = new Vector(end.getBlockX(), end.getBlockY(), end.getBlockZ());
+			
+			Vector directionVec = direction.mod();
+			
+			int maxDistance = Math.abs(direction == BlockFace2D.NORTH || direction == BlockFace2D.SOUTH ? endVec.getBlockZ() - startVec.getBlockZ()
+					: endVec.getBlockX() - startVec.getBlockX());
+			BlockIterator iterator = new BlockIterator(world, startVec, directionVec, 0, maxDistance);
+			
+			for (int i = 0; iterator.hasNext(); i++) {
+				Block block = iterator.next();
+				
+				if (block.getType() != Material.WALL_SIGN) {
+					continue;
+				}
+				
+				Sign sign = (Sign) block.getState();
+				
+				SignLooper.LoopReturn loopReturn = looper.loop(i, sign);
+				if (loopReturn == SignLooper.LoopReturn.CONTINUE) {
+					continue;
+				} else if (loopReturn == SignLooper.LoopReturn.BREAK) {
+					break;
+				} else if (loopReturn == SignLooper.LoopReturn.RETURN) {
+					return;
+				}
+			}
+		}
+		
+		public void clearAll() {
+			loopSigns(new SignLooper() {
+				
+				@Override
+				public LoopReturn loop(int index, Sign sign) {
+					for (int i = 0; i < SignLayout.LINE_COUNT; i++) {
+						sign.setLine(i, "");
+					}
+					
+					sign.update();
+					return LoopReturn.DEFAULT;
+				}
+			});
+		}
+		
+		/**
+		 * Validates locations and recalculates their direction
+		 */
+		private void recalculate() throws SignRowValidationException {
+			//The two defining points must lie on the x-axis or y-axis
+			if (start.getBlockX() != end.getBlockX() && start.getBlockZ() != end.getBlockZ()) {
+				throw new SignRowValidationException(SignRowValidationException.Cause.NOT_IN_LINE);
+			}
+			
+			if (start.getBlockY() != end.getBlockY()) {
+				throw new SignRowValidationException(SignRowValidationException.Cause.NOT_SAME_Y_AXIS);
+			}
+			
+			if (start.getBlockX() == end.getBlockX()) {
+				if (start.getBlockZ() < end.getBlockZ()) {
+					direction = BlockFace2D.SOUTH;
+				} else {
+					direction = BlockFace2D.NORTH;
+				}
+				
+				length = Math.abs(end.getBlockZ() - start.getBlockZ()) + 1; 
+			} else if (start.getBlockZ() == end.getBlockZ()) {
+				if (start.getBlockX() < end.getBlockX()) {
+					direction = BlockFace2D.EAST;
+				} else {
+					direction = BlockFace2D.WEST;
+				}
+				
+				length = Math.abs(end.getBlockX() - start.getBlockX()) + 1;
+			}
+		}
+		
+		public void marshal(Element element) {
+			Element startElement = element.addElement("start");
+			Element xStartElement = startElement.addElement("x");
+			Element yStartElement = startElement.addElement("y");
+			Element zStartElement = startElement.addElement("z");
+			Element worldStartElement = startElement.addElement("world");
+			
+			Element endElement = element.addElement("end");
+			Element xEndElement = endElement.addElement("x");
+			Element yEndElement = endElement.addElement("y");
+			Element zEndElement = endElement.addElement("z");
+			Element worldEndElement = endElement.addElement("world");
+			
+			worldStartElement.addText(start.getWorld().getName());
+			xStartElement.addText(String.valueOf(start.getBlockX()));
+			yStartElement.addText(String.valueOf(start.getBlockY()));
+			zStartElement.addText(String.valueOf(start.getBlockZ()));
+			
+			worldEndElement.addText(end.getWorld().getName());
+			xEndElement.addText(String.valueOf(end.getBlockX()));
+			yEndElement.addText(String.valueOf(end.getBlockY()));
+			zEndElement.addText(String.valueOf(end.getBlockZ()));
+		}
+
+		public void unmarshal(Element element) {
+			Element startElement = element.element("start");
+			Element endElement = element.element("end");
+			
+			Element xStartElement = startElement.element("x");
+			Element yStartElement = startElement.element("y");
+			Element zStartElement = startElement.element("z");
+			Element worldStartElement = startElement.element("world");
+			
+			Element xEndElement = endElement.element("x");
+			Element yEndElement = endElement.element("y");
+			Element zEndElement = endElement.element("z");
+			Element worldEndElement = endElement.element("world");
+			
+			World startWorld = Bukkit.getWorld(worldStartElement.getText());
+			int startX = Integer.parseInt(xStartElement.getText());
+			int startY = Integer.parseInt(yStartElement.getText());
+			int startZ = Integer.parseInt(zStartElement.getText());
+			
+			World endWorld = Bukkit.getWorld(worldEndElement.getText());
+			int endX = Integer.parseInt(xEndElement.getText());
+			int endY = Integer.parseInt(yEndElement.getText());
+			int endZ = Integer.parseInt(zEndElement.getText());
+			
+			world = startWorld;
+			start = new Location(startWorld, startX, startY, startZ);
+			end = new Location(endWorld, endX, endY, endZ);
+			
+			try {
+				recalculate();
+			} catch (SignRowValidationException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		public interface SignLooper {
+			
+			public LoopReturn loop(int index, Sign sign);
+			
+			public enum LoopReturn {
+				
+				DEFAULT,
+				CONTINUE,
+				BREAK,
+				RETURN;
+				
+			}
+			
+		}
+		
+		public enum BlockFace2D {
+			
+			NORTH(0, -1, BlockFace.NORTH, 135, 225),
+			SOUTH(0, 1, BlockFace.SOUTH, 315, 45),
+			WEST(-1, 0, BlockFace.WEST, 225, 315),
+			EAST(1, 0, BlockFace.EAST, 45, 135);
+			
+			private int xVec;
+			private int zVec;
+			private BlockFace blockFace;
+			private int yawStart;
+			private int yawEnd;
+			
+			private BlockFace2D(int xVec, int zVec, BlockFace blockFace, int yawStart, int yawEnd) {
+				this.xVec = xVec;
+				this.zVec = zVec;
+				this.blockFace = blockFace;
+				this.yawStart = yawStart;
+				this.yawEnd = yawEnd;
+			}
+			
+			public BlockFace2D opposite() {
+				return byVector2D(-xVec, -zVec);
+			}
+			
+			public BlockFace2D right() {
+				return byVector2D(-zVec, xVec);
+			}
+			
+			public BlockFace2D left() {
+				return byVector2D(zVec, -xVec);
+			}
+			
+			public Vector mod() {
+				return new Vector(xVec, 0, zVec);
+			}
+			
+			public BlockFace getBlockFace3D() {
+				return blockFace;
+			}
+			
+			public BlockFace2D getOpposite() {
+				switch (this) {
+				case EAST:
+					return WEST;
+				case NORTH:
+					return SOUTH;
+				case SOUTH:
+					return NORTH;
+				case WEST:
+					return EAST;
+				default:
+					return null;
+				}
+			}
+			
+			public static BlockFace2D byVector2D(int x, int z) {
+				x = normalize(x);
+				z = normalize(z);
+				
+				for (BlockFace2D direction : values()) {
+					if (direction.xVec == x && direction.zVec == z) {
+						return direction;
+					}
+				}
+				
+				return null;
+			}
+			
+			public static BlockFace2D byYaw(float yaw) {
+				float absYaw = Math.abs(yaw);
+				
+				for (BlockFace2D face : values()) {
+					if ((face.yawStart < face.yawEnd && (absYaw <= face.yawStart || absYaw > face.yawEnd))
+							|| (face.yawStart > face.yawEnd && (absYaw <= face.yawStart && absYaw > face.yawEnd))) {
+						continue;
+					}
+					
+					if (yaw > 0 && (face == EAST || face == WEST)) {
+						face = face.getOpposite();
+					}
+					
+					return face;
+				}
+				
+				return null;
+			}
+			
+			private static int normalize(int target) {
+				int result = 0;
+				
+				if (target > 0) {
+					result = 1;
+				} else if (target < 0) {
+					result = -1;
+				}
+				
+				return result;
+			}
+			
+		}
+		
+		public static class SignRowValidationException extends Exception {
+
+			private static final long serialVersionUID = -1720873353345614589L;
+			
+			private Cause cause;
+			
+			public SignRowValidationException(Cause cause) {
+				this.cause = cause;
+			}
+			
+			public SignRowValidationException(Cause cause, String message) {
+				super(message);
+				
+				this.cause = cause;
+			}
+			
+			@Override
+			public String getMessage() {
+				String message = super.getMessage();
+				if (cause != null) {
+					if (message != null && !message.isEmpty()) {
+						message += " ";
+					}
+					
+					message += "[Cause: " + cause.name() + "]";
+				}
+				
+				return message;
+			}
+			
+			public Cause getExceptionCause() {
+				return cause;
+			}
+			
+			public enum Cause {
+				
+				NOT_IN_LINE, 
+				NOT_SAME_Y_AXIS;
+				
+			}
 			
 		}
 		
