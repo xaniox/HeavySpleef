@@ -26,8 +26,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.Set;
+import java.util.logging.Level;
 
 import lombok.Getter;
 
@@ -69,7 +69,7 @@ import com.sk89q.worldedit.regions.Region;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall;
-import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.WallValidationException;
+import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.SignRow.SignRowValidationException;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
@@ -97,8 +97,8 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSplegg;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam;
-import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamColor;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
@@ -338,7 +338,7 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				
 				try {
 					wall = new ExtensionLobbyWall(first, second);
-				} catch (WallValidationException e) {
+				} catch (SignRowValidationException e) {
 					throw new MigrationException(e);
 				}
 				
