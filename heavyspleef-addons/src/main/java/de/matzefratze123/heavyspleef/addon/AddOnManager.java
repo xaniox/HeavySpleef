@@ -264,7 +264,15 @@ public final class AddOnManager {
 			}
 		}
 		
-		addOn.enable();
+		try {
+			addOn.enable();
+		} catch (Throwable t) {
+			getLogger().log(
+					Level.SEVERE,
+					"Unexpected exception while enabling Add-On " + addOn.getName() + " v" + addOn.getProperties().getVersion()
+							+ ". Is it up to date?", t);
+		}
+
 		addOn.setEnabled(true);
 	}
 	
@@ -282,12 +290,20 @@ public final class AddOnManager {
 			throw new IllegalStateException("Add-On is already disabled");
 		}
 		
+		addOn.setEnabled(false);
+		
+		try {
+			addOn.disable();
+		} catch (Throwable t) {
+			getLogger().log(
+					Level.SEVERE,
+					"Unexpected exception while disabling Add-On " + addOn.getName() + " v" + addOn.getProperties().getVersion()
+							+ ". Is it up to date?", t);
+		}
+		
 		commandManagerAccess.unregisterSpleefCommands(addOn);
 		flagRegistryAccess.unregister(addOn);
 		extensionRegistryAccess.unregister(addOn);
-		
-		addOn.setEnabled(false);
-		addOn.disable();
 	}
 	
 	public AddOn getAddOn(String name) {
