@@ -210,6 +210,11 @@ public class I18N {
 		
 		// Check if all messages exist, and add missing messages to the file e.g validate and replace
 		for (File localeFile : fileSystemFolder.listFiles()) {
+			//Check if the file is a localization file
+			if (!localeFile.getName().matches(LOCALE_FILE_REGEX)) {
+				continue;
+			}
+			
 			//Classpath resources can only exist in one folder, so their name is unique
 			URL classpathResource = classLoader.getResource(classpathFolder + localeFile.getName());
 			if (classpathResource == null) {
