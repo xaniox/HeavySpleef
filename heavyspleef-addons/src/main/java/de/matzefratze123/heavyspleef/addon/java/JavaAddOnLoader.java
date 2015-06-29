@@ -86,6 +86,8 @@ public class JavaAddOnLoader implements AddOnLoader {
 		Locale locale = config.getLocalization().getLocale();
 		
 		Logger addonLogger = new BasicAddOn.AddOnLogger(addon, heavySpleef, properties);
+		addonLogger.setParent(manager.getLogger());
+		addonLogger.setUseParentHandlers(true);
 		
 		I18N.LoadingMode loadingMode = properties.getLoadingMode();
 		if (loadingMode != null) {
