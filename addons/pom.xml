@@ -63,7 +63,37 @@
   <dependencies>
     <dependency>
       <groupId>de.matzefratze123</groupId>
-      <artifactId>heavyspleef-api</artifactId>
+      <artifactId>heavyspleef-addons</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>heavyspleef-commands</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>heavyspleef-command-base</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>heavyspleef-core</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>heavyspleef-flags</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.matzefratze123</groupId>
+      <artifactId>heavyspleef-persistence</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
