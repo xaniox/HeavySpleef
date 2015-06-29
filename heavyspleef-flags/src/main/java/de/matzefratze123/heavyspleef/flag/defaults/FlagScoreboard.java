@@ -75,6 +75,7 @@ public class FlagScoreboard extends BaseFlag {
 	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
+		playersTracked.clear();
 		scoreboard = manager.getNewScoreboard();
 		objective = scoreboard.registerNewObjective(SCOREBOARD_NAME, SCOREBOARD_CRITERIA);
 		
