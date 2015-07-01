@@ -217,7 +217,6 @@ public interface Messages {
 		public static final String PLAYER_SPECTATE = PREFIX + "player-spectate";
 		public static final String PLAYER_LEAVE_SPECTATE = PREFIX + "player-leave-spectate";
 		
-		public static final String PLAYER_PAY_FEE = PREFIX + "player-pay-fee"; // $[amount]
 		public static final String PLAYER_RECEIVE_JACKPOT = PREFIX + "player-receive-jackpot"; // $[amount]
 		
 		public static final String MAX_PLAYER_COUNT_REACHED = PREFIX + "max-player-count-reached"; // $[max]
@@ -309,6 +308,7 @@ public interface Messages {
 		
 		public static final String TEAM_COLOR_ARRAY = PREFIX + "team-color-array";
 		public static final String TIME_UNIT_ARRAY = PREFIX + "time-unit-array";
+		public static final String GAME_STATE_ARRAY = PREFIX + "game-state-array";
 		
 	}
 	
