@@ -261,3 +261,9 @@ arrays:
   - "seconds"
   - "minutes"
   - "hours"
+  game-state-array:
+  - "Disabled"
+  - "Waiting"
+  - "Lobby"
+  - "Starting"
+  - "Ingame"

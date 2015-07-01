@@ -17,6 +17,10 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
+
 public enum GameState {
 	
 	DISABLED(false, false),
@@ -39,6 +43,12 @@ public enum GameState {
 	
 	public boolean isGameEnabled() {
 		return gameEnabled;
+	}
+	
+	public String getLocalizedName() {
+		I18N i18n = I18NManager.getGlobal();
+		String[] array = i18n.getStringArray(Messages.Arrays.GAME_STATE_ARRAY);
+		return array[ordinal()];
 	}
 	
 }

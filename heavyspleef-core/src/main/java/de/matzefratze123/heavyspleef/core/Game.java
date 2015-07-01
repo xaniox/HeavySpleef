@@ -882,11 +882,12 @@ public class Game implements VariableSuppliable {
 		
 	@Override
 	public void supply(Set<Variable> vars, Set<String> requested) {
-		String gameStateName = gameState.name().toLowerCase();
+		String gameStateName = gameState.name();
 		gameStateName = Character.toUpperCase(gameStateName.charAt(0)) + gameStateName.substring(1);
 		
 		vars.add(new Variable("name", name));
 		vars.add(new Variable("state", gameStateName));
+		vars.add(new Variable("localized_state", gameState.getLocalizedName()));
 		vars.add(new Variable("players", ingamePlayers.size()));
 		vars.add(new Variable("dead", deadPlayers.size()));
 		vars.add(new Variable("countdown", countdownTask != null ? countdownTask.getRemaining() : 0));
