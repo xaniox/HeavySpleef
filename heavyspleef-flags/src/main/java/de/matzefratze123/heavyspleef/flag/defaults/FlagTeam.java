@@ -234,6 +234,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 						.toString());
 				updateScoreboard();
 				updateInventory(game);
+				updateViews();
 				
 				PlayerSelectedTeamEvent selectedEvent = new PlayerSelectedTeamEvent(game, spleefPlayer, color);
 				game.getEventBus().callEvent(selectedEvent);

@@ -166,6 +166,8 @@ public class FlagTrackingSpectate extends BaseFlag {
 				break;
 			}
 		}
+		
+		trackerInventory.updateViews();
 	}
 	
 	@Subscribe
@@ -198,6 +200,8 @@ public class FlagTrackingSpectate extends BaseFlag {
 				otherSlot.setValue(null);
 			}
 		}
+		
+		trackerInventory.updateViews();
 		
 		Iterator<Entry<SpleefPlayer, SpleefPlayer>> iterator = tracking.entrySet().iterator();
 		while (iterator.hasNext()) {

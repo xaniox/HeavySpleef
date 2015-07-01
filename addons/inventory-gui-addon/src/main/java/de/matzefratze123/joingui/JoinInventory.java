@@ -140,6 +140,8 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 				}
 			}
 		}
+		
+		updateViews();
 	}
 	
 	@Override
