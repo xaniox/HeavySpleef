@@ -98,7 +98,7 @@ command:
   starting-update: "&7Starte Update auf Version v&a$[new-version]"
   successfully-pulled-update: "&7Update erfolgreich heruntergeladen und in den Ordner &a$[folder] &7abgelegt"
   restart-server-to-update: "&7Bitte &astarte den Server &7neu um die neue Version zu aktivieren"
-  error-on-updating: "&cKonnte Plugin nicht herunterladen, bitte prüfe den Log für mehr Details"
+  error-on-updating: "&cKonnte Update nicht herunterladen, bitte prüfe den Log für mehr Details"
   updating-not-enabled: "&cDas Updaten des Plugins ist in der Konfiguration deaktiviert. Bitte aktiviere es um das Plugin via /spleef update aktualisieren zu können"
   
   already-playing: "&cDu bist bereits in einem Spiel"
@@ -180,7 +180,7 @@ player:
   
   player-receive-jackpot: "&7Dir wurde der Jackpot in Höhe von &a$[amount] &7gutgeschrieben"
   max-player-count-reached: "&cDie maximale Anzahl an Spieler wurde erreicht"
-  team-selector-title: "&5Teamauswahl"
+  team-selector-title: "&6Teamauswahl"
   click-to-join-team: "&7Team beitreten"
   need-min-players: "&cEs werden mindestens $[amount] Spieler zum starten benötigt"
   
@@ -213,8 +213,8 @@ player:
   tracker-now-tracking: "&7Du beobachtest nun &a$[tracking]"
   tracker-skull-title: "&7$[tracking]"
   
-  gained-rating: "&7Deine neue Rating ist: &6$[new-rating] (&a$[change])"
-  lost-rating: "&7Deine neue Rating ist: &6$[new-rating] (&c$[change])"
+  gained-rating: "&7Deine neue Rating ist: &6$[new-rating] &7(&a$[change]&7)"
+  lost-rating: "&7Deine neue Rating ist: &6$[new-rating] &7(&c$[change]&7)"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"
@@ -261,3 +261,9 @@ arrays:
   - "Sekunden"
   - "Minuten"
   - "Stunden"
+  game-state-array:
+  - "Deaktiviert"
+  - "Wartet"
+  - "Lobby"
+  - "Startet"
+  - "Im Spiel"
