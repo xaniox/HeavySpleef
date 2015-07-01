@@ -79,8 +79,8 @@ public class CommandInfo {
 		Set<GameExtension> extensions = game.getExtensions();
 		
 		StringBuilder builder = new StringBuilder();
-		builder.append(ChatColor.GOLD + "-------- " + ChatColor.DARK_GRAY + ChatColor.BOLD + "[" + ChatColor.GOLD
-				+ i18n.getString(Messages.Command.GAME_INFORMATION) + ChatColor.DARK_GRAY + ChatColor.BOLD + "] " + ChatColor.GOLD + "--------");
+		builder.append(ChatColor.GOLD + "-------- " + ChatColor.DARK_GRAY + ChatColor.BOLD + "[ " + ChatColor.GOLD
+				+ i18n.getString(Messages.Command.GAME_INFORMATION) + ChatColor.DARK_GRAY + ChatColor.BOLD + " ] " + ChatColor.GOLD + "--------");
 		builder.append('\n');
 		
 		builder.append(ChatColor.GOLD + "| ")
