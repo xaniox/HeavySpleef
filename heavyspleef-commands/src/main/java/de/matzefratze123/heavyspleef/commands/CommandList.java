@@ -57,7 +57,7 @@ public class CommandList {
 		}
 		
 		for (Game game : games) {
-			FancyMessage message = new FancyMessage();
+			FancyMessage message = new FancyMessage("");
 			
 			if (sender instanceof SpleefPlayer) {
 				message.then(ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + i18n.getString(Messages.Command.JOIN) + ChatColor.DARK_GRAY + "]")
