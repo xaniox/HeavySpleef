@@ -1,12 +1,12 @@
 # HeavySpleef-2.0
 
-This is a completely recoded and revamped version of HeavySpleef. As the project is currently in the end-phase you may test the plugin and report bugs via the [GitHub Issue Tracker](https://github.com/matzefratze123/HeavySpleef-2.0/issues).
+This is a completely recoded and revamped version of HeavySpleef. As the project is currently in the end-phase you may test the plugin and report bugs via the <a href="https://github.com/matzefratze123/HeavySpleef-2.0/issues" target="_blank">GitHub Issue Tracker</a>
 
 ## Builds
 
 If you want to help testing you may download versions from the build server as stated below:
 
-[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/)&nbsp;&nbsp;[Visit the Jenkins Build Server](http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/)
+[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/)&nbsp;&nbsp;Visit the <a href="http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/" target="_blank">Jenkins Build Server</a>
 
 ## Compilation
 
