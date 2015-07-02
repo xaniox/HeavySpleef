@@ -36,6 +36,7 @@ public class MinecraftVersion {
 	
 	private static @Getter int implementationVersion = UNKNOWN_VERSION;
 	private static @Getter String implementationVersionString;
+	private static @Getter boolean spigot;
 	
 	static void initialize(Logger logger) {
 		String bukkitVersion = Bukkit.getBukkitVersion();
@@ -79,6 +80,11 @@ public class MinecraftVersion {
 		}
 		
 		implementationVersionString = majorVersion;
+		
+		String version = Bukkit.getVersion();
+		if (version.toLowerCase().contains("spigot")) {
+			spigot = true;
+		}
 	}
 	
 	public static String getImplementationVersionString(int version) {
