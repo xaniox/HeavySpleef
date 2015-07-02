@@ -28,10 +28,6 @@
           </artifactSet>
           <relocations>
             <relocation>
-              <pattern>mkremins.fanciful</pattern>
-              <shadedPattern>${package.librarybase}.fanciful</shadedPattern>
-            </relocation>
-            <relocation>
               <pattern>org.dom4j</pattern>
               <shadedPattern>${package.librarybase}.dom4j</shadedPattern>
             </relocation>

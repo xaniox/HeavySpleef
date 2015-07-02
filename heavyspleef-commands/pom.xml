@@ -24,10 +24,5 @@
   	  <artifactId>heavyspleef-command-base</artifactId>
   	  <version>${project.version}</version>
   	</dependency>
-  	<dependency>
-      <groupId>mkremins</groupId>
-      <artifactId>fanciful</artifactId>
-      <version>0.2.1-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 </project>

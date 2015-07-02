@@ -19,9 +19,12 @@ package de.matzefratze123.heavyspleef.commands;
 
 import java.util.List;
 
-import mkremins.fanciful.FancyMessage;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -37,9 +40,11 @@ import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider
 import de.matzefratze123.heavyspleef.commands.base.NestedCommands;
 import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.MinecraftVersion;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class SpleefCommandManager implements CommandManager {
 	
@@ -140,27 +145,41 @@ public class SpleefCommandManager implements CommandManager {
 	})
 	public static void onSpleefCommand(CommandContext context, HeavySpleef heavySpleef) {
 		CommandSender sender = context.getSender();
+		if (sender instanceof Player) {
+			sender = heavySpleef.getSpleefPlayer(sender);
+		}
+		
 		PluginDescriptionFile desc = heavySpleef.getPlugin().getDescription();
 		
-		// Send a nice, formatted message to the player
-		new FancyMessage(desc.getName())
-				.color(ChatColor.GRAY)
-				.style(ChatColor.BOLD)
-			.then(" version " + desc.getVersion() + "")
-			.send(sender);
-		
-		new FancyMessage("Type ")
-				.color(ChatColor.GOLD)
-			.then("/spleef help")
-				.command("/spleef help")
-				.tooltip("Click here to access help")
-			.then(" for help or click ")
-				.color(ChatColor.GOLD)
-			.then("here")
-				.color(ChatColor.GRAY)
-				.command("/spleef help")
-				.tooltip("Click here to access help")
-			.send(sender);
+		if (sender instanceof SpleefPlayer && MinecraftVersion.isSpigot()) {
+			BaseComponent[] infoMsg = new ComponentBuilder(desc.getName())
+					.color(ChatColor.GRAY)
+					.bold(true)
+				.append(" version " + desc.getVersion())
+					.color(ChatColor.WHITE)
+					.bold(false)
+				.create();
+			
+			BaseComponent[] helpMsg = new ComponentBuilder("Type ")
+					.color(ChatColor.GOLD)
+				.append("/spleef help")
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click here to access help").color(ChatColor.GOLD).create()))
+					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef help"))
+				.append(" for help or click ")
+					.color(ChatColor.GOLD)
+				.append("here")
+					.color(ChatColor.GRAY)
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click here to access help").color(ChatColor.GOLD).create()))
+					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef help"))
+				.create();
+			
+			Player bukkitPlayer = ((SpleefPlayer)sender).getBukkitPlayer();
+			bukkitPlayer.spigot().sendMessage(infoMsg);
+			bukkitPlayer.spigot().sendMessage(helpMsg);
+		} else {
+			sender.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + desc.getName() + ChatColor.RESET + " version " + desc.getVersion());
+			sender.sendMessage(ChatColor.GOLD + "Type " + ChatColor.RESET + "/spleef help" + ChatColor.GOLD + " for help");
+		}
 	}
 	
 	@TabComplete("spleef")
