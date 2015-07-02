@@ -32,6 +32,12 @@ public abstract class BooleanFlag extends AbstractFlag<Boolean> {
 	
 	@Override
 	public Boolean parseInput(SpleefPlayer player, String input) {
+		if (input.isEmpty()) {
+			//Empty input is true as the user may forget
+			//to actually define wether he wants to enable the flag
+			return true;
+		}
+		
 		boolean bool = false;
 		for (String keyword : TRUE_MATCHING_KEYWORDS) {
 			if (keyword.equals(input)) {
