@@ -74,7 +74,8 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 		}
 		
 		setTitle(i18n.getString(de.matzefratze123.joingui.Messages.INVENTORY_TITLE));
-		setLines((int) Math.ceil(games.size() / 9D));
+		int lines = (int) Math.ceil(games.size() / 9d);
+		setLines(lines == 0 ? 1 : lines);
 		
 		int x = 0;
 		int y = 0;
