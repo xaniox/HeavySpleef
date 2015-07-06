@@ -1,34 +1,35 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>de.matzefratze123</groupId>
-    <artifactId>heavyspleef</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>heavyspleef-persistence</artifactId>
-  <repositories>
-    <repository>
-      <id>sk89q-repo</id>
-      <name>sk89q's repository</name>
-      <url>http://maven.sk89q.com/repo</url>
-    </repository>
-  </repositories>
-  <dependencies>
-    <dependency>
-      <groupId>de.matzefratze123</groupId>
-      <artifactId>heavyspleef-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-	  <groupId>net.snaq</groupId>
-	  <artifactId>dbpool</artifactId>
-	  <version>6.0.1</version>
-    </dependency>
-    <!-- Use slf4j nop implementation -->
-    <dependency>
-	  <groupId>org.slf4j</groupId>
-	  <artifactId>slf4j-nop</artifactId>
-	  <version>1.7.10</version>
-    </dependency>   
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.matzefratze123</groupId>
+		<artifactId>heavyspleef</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>heavyspleef-persistence</artifactId>
+	<repositories>
+		<repository>
+			<id>sk89q-repo</id>
+			<name>sk89q's repository</name>
+			<url>http://maven.sk89q.com/repo</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>de.matzefratze123</groupId>
+			<artifactId>heavyspleef-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.snaq</groupId>
+			<artifactId>dbpool</artifactId>
+			<version>6.0.1</version>
+		</dependency>
+		<!-- Use slf4j nop implementation -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+	</dependencies>
 </project>
