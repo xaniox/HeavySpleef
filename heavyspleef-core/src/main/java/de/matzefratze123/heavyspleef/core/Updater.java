@@ -119,6 +119,21 @@ public class Updater {
 				Reader reader = new InputStreamReader(in);
 				
 				JSONArray fileArray = (JSONArray) parser.parse(reader);
+				
+				//Search for the latest jar available
+				boolean isJar = false;
+				for (int i = 1; !isJar && i <= fileArray.size(); i++) {
+					JSONObject latestJarObj = (JSONObject) fileArray.get(fileArray.size() - i);
+					
+					name = (String) latestJarObj.get("name");
+					fileName = (String) latestJarObj.get("fileName");
+					downloadUrl = (String) latestJarObj.get("downloadUrl");
+					
+					if (fileName.toLowerCase().endsWith(".jar")) {
+						isJar = true;
+					}
+				}
+				
 				JSONObject latestFileObj = (JSONObject) fileArray.get(fileArray.size() - 1);
 				
 				name = (String) latestFileObj.get("name");
