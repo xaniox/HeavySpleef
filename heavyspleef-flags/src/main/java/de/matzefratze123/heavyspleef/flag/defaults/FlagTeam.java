@@ -321,7 +321,6 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameJoin(PlayerJoinGameEvent event) {
 		Game game = event.getGame();
@@ -345,7 +344,6 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		updateScoreboard();
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameCountdown(GameCountdownEvent event) {		
 		List<TeamSizeHolder> teamSizes = Lists.newArrayList();

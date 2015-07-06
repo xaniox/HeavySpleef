@@ -62,7 +62,6 @@ public class FlagShovels extends BaseFlag {
 		description.add("Enables the use of shovels in spleef");
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();

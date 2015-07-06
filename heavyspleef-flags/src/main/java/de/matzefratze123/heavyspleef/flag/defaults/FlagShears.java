@@ -60,7 +60,6 @@ public class FlagShears extends BaseFlag {
 		description.add("Enables the use of shears in spleef");
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();

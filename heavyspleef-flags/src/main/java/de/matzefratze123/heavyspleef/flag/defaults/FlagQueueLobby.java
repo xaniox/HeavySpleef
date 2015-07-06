@@ -78,7 +78,6 @@ public class FlagQueueLobby extends LocationFlag {
 		description.add("Teleports queued players into a lobby where they cannot teleport until they left the queue");
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe(priority = Priority.MONITOR)
 	public void onQueueEnter(PlayerEnterQueueEvent event) {
 		if (event.isCancelled()) {

@@ -362,7 +362,6 @@ public class FlagSpectate extends LocationFlag {
 				.toString());
 	}
 	
-	@SuppressWarnings("deprecation")
 	public boolean spectate(SpleefPlayer player, Game game) {
 		SpectateEnterEvent enterEvent = new SpectateEnterEvent(game, player);
 		game.getEventBus().callEvent(enterEvent);

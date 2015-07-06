@@ -95,7 +95,6 @@ public class FlagBowspleef extends BaseFlag {
 		description.add("Enables the BowSpleef gamemode");
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();

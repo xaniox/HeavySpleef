@@ -81,7 +81,6 @@ public class BaseTransformers {
 
 	public static final Transformer<Player> PLAYER_TRANSFORMER = new Transformer<Player>() {
 		
-		@SuppressWarnings("deprecation")
 		@Override
 		public Player transform(String arg) throws TransformException {
 			Player player = Bukkit.getPlayerExact(arg);

@@ -100,7 +100,6 @@ public class FlagSplegg extends BaseFlag {
 		description.add("Enables the Splegg gamemode in spleef games.");
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();

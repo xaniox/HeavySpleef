@@ -97,7 +97,6 @@ public class FlagTrackingSpectate extends BaseFlag {
 		description.add("Gives spectating players a tracking compass to teleport to ingame players");
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onSpectateEnter(SpectateEnteredEvent event) {
 		MetadatableItemStack compass = new MetadatableItemStack(Material.COMPASS);
@@ -113,7 +112,6 @@ public class FlagTrackingSpectate extends BaseFlag {
 		bukkitPlayer.updateInventory();
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Subscribe
 	public void onSpectateLeave(SpectateLeaveEvent event) {
 		Player player = event.getPlayer().getBukkitPlayer();

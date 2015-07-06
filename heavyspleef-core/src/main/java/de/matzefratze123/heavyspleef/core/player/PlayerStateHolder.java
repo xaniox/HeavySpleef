@@ -121,7 +121,6 @@ public class PlayerStateHolder {
 	 * 
 	 * @param player
 	 */
-	@SuppressWarnings("deprecation")
 	public static void applyDefaultState(Player player) {
 		player.getInventory().clear();
 		player.updateInventory();
@@ -153,7 +152,6 @@ public class PlayerStateHolder {
 		apply(player, true);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void apply(Player player, boolean teleport) {
 		PlayerInventory playerInv = player.getInventory();
 		
