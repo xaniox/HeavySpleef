@@ -163,6 +163,7 @@ public class SpleefCommandManager implements CommandManager {
 			BaseComponent[] helpMsg = new ComponentBuilder("Type ")
 					.color(ChatColor.GOLD)
 				.append("/spleef help")
+					.color(ChatColor.WHITE)
 					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click here to access help").color(ChatColor.GOLD).create()))
 					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef help"))
 				.append(" for help or click ")
