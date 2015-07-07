@@ -220,7 +220,7 @@ public class CommandFlag {
 			}
 		}
 		
-		sender.sendMessage(prefix + i18n.getVarString(Messages.Player.AVAILABLE_FLAGS)
+		sender.sendMessage(i18n.getVarString(Messages.Player.AVAILABLE_FLAGS)
 				.setVariable("flags", builder.toString())
 				.toString());
 	}
