@@ -96,6 +96,7 @@ import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveQueueEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerLeftGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
@@ -677,6 +678,9 @@ public class Game implements VariableSuppliable {
 			broadcast(broadcastMessage);
 			player.sendMessage(playerMessage);
 		}
+		
+		PlayerLeftGameEvent leftEvent = new PlayerLeftGameEvent(this, player, killer, cause);
+		eventBus.callEvent(leftEvent);
 	}
 	
 	public void requestLose(SpleefPlayer player, QuitCause cause) {
