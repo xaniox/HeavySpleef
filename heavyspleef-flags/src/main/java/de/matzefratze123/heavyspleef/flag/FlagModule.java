@@ -22,6 +22,7 @@ import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAllowSpectateFly;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAntiCamping;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagAutoSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAutostart;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagBowspleef;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagCountdown;
@@ -51,11 +52,11 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSplegg;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam;
-import de.matzefratze123.heavyspleef.flag.defaults.FlagTrackingSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.FlagTeamSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeamLeatherArmor;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeamScoreboard;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTrackingSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagVote;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
 
@@ -71,6 +72,7 @@ public class FlagModule extends SimpleModule {
 		
 		registry.registerFlag(FlagAllowSpectateFly.class);
 		registry.registerFlag(FlagAntiCamping.class);
+		registry.registerFlag(FlagAutoSpectate.class);
 		registry.registerFlag(FlagAutostart.class);
 		registry.registerFlag(FlagBowspleef.class);
 		registry.registerFlag(FlagCountdown.class);
