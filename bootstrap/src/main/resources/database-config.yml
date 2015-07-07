@@ -57,7 +57,7 @@ persistence-connection:
     # (MySQL for instance)
     use-authentication: false
     
-    # Specify an database user for use with MySQL
+    # Specify a database user for use with MySQL
     # This value is not needed if you prefer using
     # a SQLite database
     user: root
