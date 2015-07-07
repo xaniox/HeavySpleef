@@ -120,15 +120,17 @@ public class MigrationModule extends SimpleModule {
 		getLogger().info("Migrating statistic data...");
 		boolean statisticMigrationSuccess = false;
 		
-		try {
-			//Migrate all legacy data
-			migrateStatisticData(dataFolder, configuration);
-			statisticMigrationSuccess = true;
-			int statisticsMigrated = statisticMigrator.getCountMigrated();
-			
-			getLogger().info("Successfully migrated " + statisticsMigrated + " statistics");
-		} catch (MigrationException e) {
-			getLogger().log(Level.SEVERE, "Could not migrate statistic data", e);
+		if (configuration.contains("statistic")) {
+			try {
+				//Migrate all legacy data
+				migrateStatisticData(dataFolder, configuration);
+				statisticMigrationSuccess = true;
+				int statisticsMigrated = statisticMigrator.getCountMigrated();
+				
+				getLogger().info("Successfully migrated " + statisticsMigrated + " statistics");
+			} catch (MigrationException e) {
+				getLogger().log(Level.SEVERE, "Could not migrate statistic data", e);
+			}
 		}
 		
 		File legacyGameFolder = new File(dataFolder, "games");
