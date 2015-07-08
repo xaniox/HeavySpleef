@@ -70,8 +70,13 @@ public class FlagJoinItem extends SingleItemStackFlag {
 	
 	@Unregister
 	public static void unattachCommandProxy(HeavySpleef heavySpleef) {
-		execution.unattachProxy(proxy);
-		heavySpleef.getGlobalEventBus().unregister(inventory);
+		if (execution != null) {
+			execution.unattachProxy(proxy);
+		}
+		
+		if (inventory != null) {
+			heavySpleef.getGlobalEventBus().unregister(inventory);
+		}
 	}
 	
 	@Override
