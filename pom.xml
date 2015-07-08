@@ -3,7 +3,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.matzefratze123</groupId>
 	<artifactId>heavyspleef</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>HeavySpleef</name>
 	<description>Spleef plugin for Bukkit</description>
 	<packaging>pom</packaging>
@@ -243,4 +242,5 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	<version>2.0-ALPHA-SNAPSHOT</version>
 </project>
