@@ -54,6 +54,20 @@ public class FlagAllowSpectateFly extends BooleanFlag {
 		}
 	}
 	
+	public void setValue(Boolean value) {
+		FlagSpectate flag = (FlagSpectate) getParent();
+		
+		if (flag != null) {
+			Set<SpleefPlayer> spectators = flag.getSpectators();
+			
+			for (SpleefPlayer player : spectators) {
+				Player bukkitPlayer = player.getBukkitPlayer();
+				bukkitPlayer.setAllowFlight(value);
+				bukkitPlayer.setFlying(value);
+			}
+		}
+	}
+	
 	@Subscribe
 	public void onSpectateEntered(SpectateEnteredEvent event) {
 		spectateEnter(event.getPlayer());
