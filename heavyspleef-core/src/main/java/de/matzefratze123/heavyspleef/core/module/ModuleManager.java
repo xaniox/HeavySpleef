@@ -19,6 +19,8 @@ package de.matzefratze123.heavyspleef.core.module;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.common.collect.Maps;
 
@@ -26,9 +28,11 @@ import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 
 public class ModuleManager {
 	
+	private final Logger logger;
 	private Map<Module, Lifecycle> modules;
 	
-	public ModuleManager() {
+	public ModuleManager(Logger logger) {
+		this.logger = logger;
 		this.modules = Maps.newLinkedHashMap();
 	}
 	
@@ -50,19 +54,31 @@ public class ModuleManager {
 				continue;
 			}
 			
-			entry.getKey().enable();
+			try {
+				entry.getKey().enable();
+			} catch (Throwable t) {
+				logger.log(Level.SEVERE, "Unexpected exception occured while enabling module " + entry.getKey().getClass().getName(), t);
+			}
 		}
 	}
 	
 	public void disableModules() {
 		for (Module module : modules.keySet()) {
-			module.disable();
+			try {
+				module.disable();
+			} catch (Throwable t) {
+				logger.log(Level.SEVERE, "Unexpected exception occured while disabling module " + module.getClass().getName(), t);
+			}
 		}
 	}
 
 	public void reloadModules() {
 		for (Module module : modules.keySet()) {
-			module.reload();
+			try {
+				module.reload();
+			} catch (Throwable t) {
+				logger.log(Level.SEVERE, "Unexpected exception occured while reloading module " + module.getClass().getName(), t);
+			}
 		}
 	}
 	

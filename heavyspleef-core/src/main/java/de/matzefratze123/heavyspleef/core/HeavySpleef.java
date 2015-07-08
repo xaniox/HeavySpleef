@@ -116,7 +116,7 @@ public final class HeavySpleef {
 	public HeavySpleef(JavaPlugin plugin) {
 		this.plugin = plugin;
 		this.logger = plugin.getLogger();
-		this.moduleManager = new ModuleManager();
+		this.moduleManager = new ModuleManager(logger);
 	}
 	
 	public void load() {
