@@ -242,6 +242,18 @@ public class Updater {
 				versionString = versionString.substring(0, versionString.lastIndexOf(SNAPSHOT_IDENTIFIER));
 			}
 			
+			char[] chars = versionString.toCharArray();
+			StringBuilder versionBuilder = new StringBuilder();
+			
+			for (char c : chars) {
+				if (!Character.isDigit(c) && c != '.') {
+					break;
+				}
+				
+				versionBuilder.append(c);
+			}
+			
+			versionString = versionBuilder.toString();
 			String[] strComponents = versionString.split(SPLIT_BY_DOT);
 			final int deepness = strComponents.length;
 			int[] components = new int[deepness];
