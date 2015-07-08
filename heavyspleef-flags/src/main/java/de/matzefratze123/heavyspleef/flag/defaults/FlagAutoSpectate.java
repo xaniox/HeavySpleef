@@ -20,8 +20,9 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerLeftGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -35,8 +36,8 @@ public class FlagAutoSpectate extends BaseFlag {
 		description.add("Automatically makes players spectate upon losing in Spleef");
 	}
 	
-	@Subscribe
-	public void onPlayerLeftGame(PlayerLeaveGameEvent event) {
+	@Subscribe(priority = Priority.HIGH)
+	public void onPlayerLeftGame(PlayerLeftGameEvent event) {
 		FlagSpectate flag = (FlagSpectate) getParent();
 		SpleefPlayer player = event.getPlayer();
 		Game game = event.getGame();
