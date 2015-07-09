@@ -96,18 +96,6 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 	
 	private void placeGame(GuiInventorySlot slot, Game game) {
 		slot.setValue(game);
-		
-		ItemStack stack;
-		
-		if (game.isFlagPresent(FlagJoinItem.class)) {
-			FlagJoinItem flag = game.getFlag(FlagJoinItem.class);
-			
-			stack = flag.getValue().clone();
-		} else {
-			stack = new ItemStack(Material.DIAMOND_SPADE);
-		}
-		
-		slot.setItem(stack);
 		updateSlot(slot, game);
 	}
 	
@@ -153,8 +141,20 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 	}
 	
 	private void updateSlot(GuiInventorySlot slot, Game game) {
+		ItemStack stack;
+		
+		if (game.isFlagPresent(FlagJoinItem.class)) {
+			FlagJoinItem flag = game.getFlag(FlagJoinItem.class);
+			
+			stack = flag.getValue().clone();
+		} else {
+			stack = new ItemStack(Material.DIAMOND_SPADE);
+		}
+		
+		slot.setItem(stack);
+		
 		InventoryEntryLayout layout = config.getLayout();
-		layout.inflate(slot.getItem(), game);
+		layout.inflate(stack, game);
 	}
 	
 	private void clearInventory() {
