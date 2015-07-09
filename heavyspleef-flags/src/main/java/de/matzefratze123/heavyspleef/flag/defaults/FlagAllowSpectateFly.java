@@ -55,6 +55,8 @@ public class FlagAllowSpectateFly extends BooleanFlag {
 	}
 	
 	public void setValue(Boolean value) {
+		super.setValue(value);
+		
 		FlagSpectate flag = (FlagSpectate) getParent();
 		
 		if (flag != null) {
