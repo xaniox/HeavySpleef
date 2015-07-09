@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,8 +45,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.mcstats.Metrics;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -68,7 +72,11 @@ import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.JoinSignExtension;
 import de.matzefratze123.heavyspleef.core.extension.LeaveSignExtension;
 import de.matzefratze123.heavyspleef.core.extension.StartSignExtension;
+import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
+import de.matzefratze123.heavyspleef.core.flag.NullFlag;
+import de.matzefratze123.heavyspleef.core.flag.UnloadedFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry.InitializationPolicy;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
@@ -345,6 +353,7 @@ public final class HeavySpleef {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void reload() {
 		loadConfigurations();
 		DefaultConfig config = getConfiguration(ConfigType.DEFAULT_CONFIG);
@@ -367,6 +376,62 @@ public final class HeavySpleef {
 		for (Game game : gameManager.getGames()) {
 			JoinRequester requester = game.getJoinRequester();
 			requester.setPvpTimerMode(pvpTimer > 0);
+			
+			List<AbstractFlag<?>> loadedFlags = Lists.newArrayList();
+			Iterator<AbstractFlag<?>> iterator = game.getFlagManager().getFlags().iterator();
+			while (iterator.hasNext()) {
+				AbstractFlag<?> flag = iterator.next();
+				
+				if (flag instanceof UnloadedFlag) {
+					UnloadedFlag unloaded = (UnloadedFlag) flag;
+					if (!unloaded.validateLoad(flagRegistry)) {
+						//This is not ready for load yet
+						continue;
+					}
+					
+					AbstractFlag<?> loaded = unloaded.loadFlag(flagRegistry);
+					loadedFlags.add(loaded);
+					game.removeFlag(unloaded.getClass());
+					game.addFlag(loaded, false);
+				} else {
+					Class<? extends AbstractFlag<?>> clazz = (Class<? extends AbstractFlag<?>>) flag.getClass();
+					if (flagRegistry.isFlagPresent(clazz)) {
+						continue;
+					}
+					
+					//This flag has been deactivated
+					game.removeFlag(clazz);
+					
+					/* Generate a path */
+					StringBuilder pathBuilder = new StringBuilder();
+					Flag parentFlagData = clazz.getAnnotation(Flag.class);
+					
+					do {
+						pathBuilder.insert(0, parentFlagData.name());
+						
+						Class<? extends AbstractFlag<?>> parentFlagClass = parentFlagData.parent();
+						parentFlagData = parentFlagClass.getAnnotation(Flag.class);
+						
+						if (parentFlagData != null && parentFlagClass != NullFlag.class) {
+							pathBuilder.insert(0, FlagRegistry.FLAG_PATH_SEPERATOR);
+						}
+					} while (parentFlagData != null);
+					
+					String path = pathBuilder.toString();
+					
+					Element element = DocumentHelper.createElement("flag");
+					element.addAttribute("name", path);
+					flag.marshal(element);
+					
+					UnloadedFlag unloaded = new UnloadedFlag();
+					unloaded.setXmlElement(element);
+					game.addFlag(unloaded, false);
+				}
+			}
+			
+			for (AbstractFlag<?> loaded : loadedFlags) {
+				loaded.onFlagAdd(game);
+			}
 		}
 	}
 	

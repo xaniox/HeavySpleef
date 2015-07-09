@@ -56,7 +56,7 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 
 public class FlagRegistry {
 	
-	private static final String FLAG_PATH_SEPERATOR = ":";
+	public static final String FLAG_PATH_SEPERATOR = ":";
 	
 	private final HeavySpleef heavySpleef;
 	private final I18NSupplier GLOBAL_SUPPLIER = new I18NSupplier() {

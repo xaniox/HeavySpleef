@@ -49,6 +49,7 @@ import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
+import de.matzefratze123.heavyspleef.core.flag.UnloadedFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.persistence.RegionType;
 
@@ -222,9 +223,17 @@ public class GameAccessor extends XMLAccessor<Game> {
 			
 			for (Element flagElement : flagElementsList) {
 				String flagName = flagElement.attributeValue("name");
+				AbstractFlag<?> flag;
 				
-				AbstractFlag<?> flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class, game);
-				flag.unmarshal(flagElement);
+				if (flagRegistry.isFlagPresent(flagName)) {
+					flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class, game);
+					flag.unmarshal(flagElement);
+				} else {
+					//This flag class has not been registered yet
+					UnloadedFlag unloaded = new UnloadedFlag();
+					unloaded.setXmlElement(flagElement);
+					flag = unloaded;
+				}
 				
 				game.addFlag(flag, false);
 			}
