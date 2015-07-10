@@ -21,6 +21,7 @@ import java.util.List;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeftGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
@@ -43,7 +44,7 @@ public class FlagAutoSpectate extends BaseFlag {
 		SpleefPlayer player = event.getPlayer();
 		Game game = event.getGame();
 		
-		if (game.getGameState() != GameState.INGAME && game.getGameState() != GameState.STARTING) {
+		if ((game.getGameState() != GameState.INGAME && game.getGameState() != GameState.STARTING) || event.getCause() != QuitCause.LOSE) {
 			//Only auto-spectate when ingame
 			return;
 		}
