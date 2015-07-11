@@ -523,7 +523,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			
 			TeamColor color = entry.getValue();
 			if (color == null) {
-				return;
+				continue;
 			}
 			
 			Team team = scoreboard.getTeam(color.name());
