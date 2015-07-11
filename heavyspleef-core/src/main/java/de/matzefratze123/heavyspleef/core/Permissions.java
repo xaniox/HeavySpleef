@@ -25,6 +25,7 @@ public interface Permissions {
 	
 	public static final String PERMISSION_VIP = PREFIX + "vip";
 	public static final String PERMISSION_CLEAR_CACHE = ADMIN_PREFIX + "clearcache";
+	public static final String PERMISSION_COMMAND_BYPASS = ADMIN_PREFIX + "commandbypass";
 	public static final String PERMISSION_CREATE = ADMIN_PREFIX + "create";
 	public static final String PERMISSION_DELETE = ADMIN_PREFIX + "delete";
 	public static final String PERMISSION_DISABLE = ADMIN_PREFIX + "disable";

@@ -1176,7 +1176,7 @@ public class Game implements VariableSuppliable {
 			blockCommands = !section.isCommandsInQueue();
 		}
 		
-		if (!blockCommands) {
+		if (!blockCommands || typing.hasPermission(Permissions.PERMISSION_COMMAND_BYPASS)) {
 			return;
 		}
 		

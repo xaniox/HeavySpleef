@@ -301,7 +301,7 @@ public class FlagSpectate extends LocationFlag {
 	@EventHandler
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
-		if (!isSpectating(player)) {
+		if (!isSpectating(player) || player.hasPermission(Permissions.PERMISSION_COMMAND_BYPASS)) {
 			return;
 		}
 		
