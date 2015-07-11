@@ -393,7 +393,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 				}
 				
 				MetadatableItemStack metaStack = new MetadatableItemStack(stack);
-				if (!metaStack.hasMetadata(TEAM_SELECT_ITEM_KEY)) {
+				if (!metaStack.hasItemMeta() || !metaStack.getItemMeta().hasLore() || !metaStack.hasMetadata(TEAM_SELECT_ITEM_KEY)) {
 					continue;
 				}
 				
