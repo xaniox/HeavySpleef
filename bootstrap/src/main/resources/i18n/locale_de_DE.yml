@@ -75,7 +75,7 @@ command:
   statistic-cache-cleared: "&7Statistik-Cache wurde erfolgreich geleert."
   
   no-vote-enabled: "&cDieses Spiel unterstützt kein Voting!"
-  successfully-voted: "&7Du hast erfolgreich dafür gestimmt, das Spiel zu starten-"
+  successfully-voted: "&7Du hast erfolgreich dafür gestimmt, das Spiel zu starten."
   already-voted: "&cDu hast bereits gevoted."
   
   cannot-do-that-ingame: "&cDu kannst das nicht im Spiel ausführen"
