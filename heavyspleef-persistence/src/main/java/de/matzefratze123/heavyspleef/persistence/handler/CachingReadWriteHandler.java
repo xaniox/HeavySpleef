@@ -216,6 +216,15 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 			}
 		}
 		
+		for (File file : gameSchematicFolder.listFiles(FLOOR_SCHEMATIC_FILTER)) {
+			String floorName = file.getName().substring(2);
+			if (game.isFloorPresent(floorName)) {
+				continue;
+			}
+			
+			file.delete();
+		}
+		
 		for (Floor floor : game.getFloors()) {	
 			File floorFile = new File(gameSchematicFolder, getFloorFileName(floor));
 			if (!floorFile.exists()) {
