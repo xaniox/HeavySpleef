@@ -97,6 +97,10 @@ public class CommandFlag {
 			childs.add(flagClass);
 			
 			for (Class<? extends AbstractFlag<?>> clazz : childs) {
+				if (clazz == null) {
+					continue;
+				}
+				
 				game.removeFlag(clazz);
 				player.sendMessage(i18n.getVarString(Messages.Command.FLAG_REMOVED)
 						.setVariable("flag", registry.getFlagPath(clazz))
