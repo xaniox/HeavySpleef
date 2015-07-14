@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -500,9 +501,13 @@ public class Game implements VariableSuppliable {
 		if (gameState == GameState.WAITING) {
 			setGameState(GameState.LOBBY);
 		}
-		
+
+		//Firstly set the players gamemode to provide compatibility with inventory plugins
+		//such as MultiInv
+		GameMode gameMode = player.getBukkitPlayer().getGameMode();
+		player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
 		//Store a reference to the player state
-		player.savePlayerState(this);
+		player.savePlayerState(this, gameMode);
 		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
 		
 		Location location = event.getTeleportationLocation();
@@ -719,13 +724,12 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void requestWin(SpleefPlayer[] players, boolean sendMessages) {
+		List<SpleefPlayer> winnerList = Arrays.asList(players);
 		for (SpleefPlayer ingamePlayer : Sets.newHashSet(ingamePlayers)) {
-			for (SpleefPlayer player : players) {
-				if (ingamePlayer == player) {
-					leave(player, QuitCause.WIN, sendMessages);
-				} else {
-					requestLose(player, sendMessages, QuitCause.LOSE);
-				}
+			if (winnerList.contains(ingamePlayer)) {
+				leave(ingamePlayer, QuitCause.WIN, sendMessages);
+			} else {
+				requestLose(ingamePlayer, sendMessages, QuitCause.LOSE);
 			}
 		}
 		
@@ -775,16 +779,20 @@ public class Game implements VariableSuppliable {
 	
 	public void removeFlag(String path) {
 		AbstractFlag<?> flag = flagManager.removeFlag(path);
-		flag.onFlagRemove(this);
-		
-		eventBus.unregister(flag);
+		if (flag != null) {
+			flag.onFlagRemove(this);
+			
+			eventBus.unregister(flag);
+		}
 	}
 	
 	public void removeFlag(Class<? extends AbstractFlag<?>> flagClass) {
 		AbstractFlag<?> flag = flagManager.removeFlag(flagClass);
-		flag.onFlagRemove(this);
-		
-		eventBus.unregister(flag);
+		if (flag != null) {
+			flag.onFlagRemove(this);
+			
+			eventBus.unregister(flag);
+		}
 	}
 	
 	public boolean isFlagPresent(String path) {
