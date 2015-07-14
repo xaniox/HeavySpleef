@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -372,7 +373,9 @@ public class FlagSpectate extends LocationFlag {
 		
 		Player bukkitPlayer = player.getBukkitPlayer();
 		
-		player.savePlayerState(this);
+		GameMode gameMode = bukkitPlayer.getGameMode();
+		bukkitPlayer.setGameMode(GameMode.SURVIVAL);
+		player.savePlayerState(this, gameMode);
 		PlayerStateHolder.applyDefaultState(bukkitPlayer);
 		
 		spectators.add(player);

@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -108,10 +109,10 @@ public class SpleefPlayer implements CommandSender {
 		getBukkitPlayer().teleport(location);
 	}
 	
-	public void savePlayerState(Object key) {
+	public void savePlayerState(Object key, GameMode gameMode) {
 		validateOnline();
 		
-		PlayerStateHolder holder = PlayerStateHolder.create(getBukkitPlayer());
+		PlayerStateHolder holder = PlayerStateHolder.create(getBukkitPlayer(), gameMode);
 		playerStates.put(key, holder);
 	}
 	

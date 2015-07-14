@@ -64,7 +64,7 @@ public class PlayerStateHolder {
 	/* Post initialization via #create(Player) */
 	private PlayerStateHolder() {}
 	
-	public static PlayerStateHolder create(Player player) {
+	public static PlayerStateHolder create(Player player, GameMode gameMode) {
 		PlayerStateHolder stateHolder = new PlayerStateHolder();
 		
 		PlayerInventory inventory = player.getInventory();
@@ -77,7 +77,7 @@ public class PlayerStateHolder {
 		
 		/* Initialize the state with the current player state */
 		stateHolder.setInventory(inventoryArray);
-		stateHolder.setGamemode(player.getGameMode());
+		stateHolder.setGamemode(gameMode != null ? gameMode : player.getGameMode());
 		stateHolder.setHealth(player.getHealth());
 		stateHolder.setFoodLevel(player.getFoodLevel());
 		stateHolder.setLevel(player.getLevel());
@@ -122,10 +122,10 @@ public class PlayerStateHolder {
 	 * @param player
 	 */
 	public static void applyDefaultState(Player player) {
+		player.setGameMode(GameMode.SURVIVAL);
 		player.getInventory().clear();
 		player.updateInventory();
 		player.setHealth(20.0);
-		player.setGameMode(GameMode.SURVIVAL);
 		player.setFoodLevel(20);
 		player.setLevel(0);
 		player.setExp(0f);
@@ -165,7 +165,6 @@ public class PlayerStateHolder {
 		playerInv.setArmorContents(armorContents);
 		player.updateInventory();
 		
-		player.setGameMode(gamemode);
 		player.setHealth(health);
 		player.setFoodLevel(foodLevel);
 		player.setLevel(level);
@@ -219,6 +218,8 @@ public class PlayerStateHolder {
 			
 			player.hidePlayer(cantSeePlayer);
 		}
+		
+		player.setGameMode(gamemode);
 	}
 	
 }
