@@ -3,7 +3,7 @@ command:
   no-permission: "&cYou do not have sufficient permission to execute this command"
   description-format: "&6Description: &7$[description]"
   usage-format: "&6Usage: &7$[usage]"
-  unknown-command: "&7Unknown spleef command. Type /spleef help for help"
+  unknown-command: "&7Unknown spleef command. Type /spleef help for instructions"
   
   game-created: "&7The game '&a$[game]' &7has been created."
   game-already-exist: "&cThis game already exist!"
@@ -17,8 +17,8 @@ command:
   game-started: "&7Game has been started."
   game-stopped: "&7Game has been stopped."
   game-is-ingame: "&cThere is already a game running in this arena!"
-  player-not-found: "&cThe player '$[player]' could not be found!"
-  player-not-ingame: "&cThe player '$[player]' is not in any game!"
+  player-not-found: "&cThe player '$[player]' cannot be found!"
+  player-not-ingame: "&cThe player '$[player]' is not in a game!"
   player-kicked: "&7You kicked player '&a$[player]&7' from the game."
   not-ingame: "&cYou must be ingame to use this command!"
   
@@ -43,12 +43,12 @@ command:
   deathzone-removed: "&7The deathzone with the name '&a$[deathzonename]&7' has been removed"
   deathzone-added: "&7A deathzone with the name '&a$[deathzonename]&7' has been added"
   
-  block-not-a-sign: "&cThe block you clicked is not a sign"
+  block-not-a-sign: "&cThe block that you selected is not a sign"
   click-on-sign-to-add-wall: "&7Click on a row of signs to add them as a lobby-wall"
-  wall-added: "&7The clicked lobby-wall has been added"
+  wall-added: "&7The selected lobby-wall has been added"
   click-on-wall-to-remove: "&7Click on a lobby-wall to remove it"
   walls-removed: "&a$[count] &7lobby-wall(s) were removed"
-  no-walls-found: "&cThere were no lobby-walls found for the block you clicked"
+  no-walls-found: "&cThere were no lobby-walls found for the block you selected"
   
   game-information: "Game Information"
   name: "Name"
@@ -171,6 +171,8 @@ player:
   error-on-inventory-load: "&cYour inventory could not be loaded back. Please contact an administrator."
   error-no-lobby-point-set: "&cThere is no lobby point set for this game"
   available-flags: "&aAvailable flags: &7$[flags]"
+  
+  team-max-player-count-reached: "&cThe maximum amount of players in this game is reached!"
   
   paid-entry-fee: "&7You paid an entry fee of &c$[amount]"
   

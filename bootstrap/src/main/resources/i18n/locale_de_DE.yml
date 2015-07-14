@@ -172,6 +172,8 @@ player:
   error-no-lobby-point-set: "&cFür dieses Spiel wurde noch kein Lobby-Punkt gesetzt"
   available-flags: "&aVerfügbare Flags: &7$[flags]"
   
+  team-max-player-count-reached: "&cDie maximale Anzahl an Spielern in diesem Spiel ist erreicht!"
+  
   paid-entry-fee: "&7Du hast &c$[amount] &7Eintrittsgebühr gezahlt"
   
   no-spectate-flag: "&cDie Spectate-Flag wurde für dieses Spiel noch nicht gesetzt!"
