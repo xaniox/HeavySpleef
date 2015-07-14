@@ -47,10 +47,13 @@ public class FlagAllowSpectateFly extends BooleanFlag {
 	@Override
 	public void onFlagAdd(Game game) {
 		FlagSpectate flag = (FlagSpectate) getParent();
-		Set<SpleefPlayer> spectators = flag.getSpectators();
 		
-		for (SpleefPlayer player : spectators) {
-			player.getBukkitPlayer().setAllowFlight(getValue());
+		if (flag != null) {
+			Set<SpleefPlayer> spectators = flag.getSpectators();
+			
+			for (SpleefPlayer player : spectators) {
+				player.getBukkitPlayer().setAllowFlight(getValue());
+			}
 		}
 	}
 	
