@@ -65,7 +65,7 @@ import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerLeftGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
@@ -423,7 +423,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	}
 	
 	@Subscribe
-	public void onPlayerLeave(PlayerLeaveGameEvent event) {
+	public void onPlayerLeave(PlayerLeftGameEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		TeamColor color = players.get(player);
 		
@@ -738,10 +738,11 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 				
 				double ratingDif = K * (score - expectation);
 				
-				for (SpleefPlayer player : getDeadPlayersByTeam(teamColor)) {
+				Set<SpleefPlayer> players = getDeadPlayersByTeam(teamColor);
+				for (SpleefPlayer player : players) {
 					Statistic statistic = statistics.get(player.getName());
 					
-					results.put(player.getName(), statistic.getRating() + ratingDif);
+					results.put(player.getName(), statistic.getRating() + (ratingDif / players.size()));
 				}
 			}
 			
