@@ -178,7 +178,7 @@ public class StatisticRecorder implements SpleefListener {
 
 		QuitCause cause = event.getCause();
 		
-		if (cause != QuitCause.STOP && cause != QuitCause.KICK) {
+		if (cause != QuitCause.STOP && cause != QuitCause.KICK && loadedStatistics != null) {
 			EnumStatisticAction actionType = event.getCause() == QuitCause.WIN ? EnumStatisticAction.WIN : EnumStatisticAction.LOSE;
 			
 			Statistic playerStatistic = loadedStatistics.get(player.getName());
