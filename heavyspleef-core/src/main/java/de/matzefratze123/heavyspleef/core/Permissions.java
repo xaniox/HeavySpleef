@@ -42,8 +42,10 @@ public interface Permissions {
 	public static final String PERMISSION_RELOAD = ADMIN_PREFIX + "reload";
 	public static final String PERMISSION_RENAME = ADMIN_PREFIX + "rename";
 	public static final String PERMISSION_SAVE = ADMIN_PREFIX + "save";
-	public static final String PERMISSION_START = PLAYER_PREFIX + "start";
+	public static final String PERMISSION_START = ADMIN_PREFIX + "start";
 	public static final String PERMISSION_STATS = PLAYER_PREFIX + "stats";
+	public static final String PERMISSION_STATS_OTHER = PLAYER_PREFIX + "stats.other";
+	public static final String PERMISSION_STATS_TOP = PLAYER_PREFIX + "stats.top";
 	public static final String PERMISSION_STOP = ADMIN_PREFIX + "stop";
 	public static final String PERMISSION_UPDATE = ADMIN_PREFIX + "update";
 	public static final String PERMISSION_ADD_DEATHZONE = ADMIN_PREFIX + "adddeathzone";
@@ -57,6 +59,6 @@ public interface Permissions {
 	public static final String PERMISSION_CREATE_SIGN = ADMIN_PREFIX + "createsign";
 	public static final String PERMISSION_REMOVE_SIGN = ADMIN_PREFIX + "removesign";
 	public static final String PERMISSION_SPECTATE = PLAYER_PREFIX + "spectate";
-	public static final String PERMISSION_VOTE = PLAYER_PREFIX + "vote";;
+	public static final String PERMISSION_VOTE = PLAYER_PREFIX + "vote";
 	
 }

@@ -33,6 +33,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import de.matzefratze123.heavyspleef.commands.base.Command;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
 import de.matzefratze123.heavyspleef.commands.base.CommandException;
+import de.matzefratze123.heavyspleef.commands.base.CommandValidate;
 import de.matzefratze123.heavyspleef.commands.base.TabComplete;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
@@ -51,8 +52,7 @@ public class CommandStats {
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "stats", usage = "/spleef stats [player|top [page]]",
-			descref = Messages.Help.Description.STATS,
-			permission = Permissions.PERMISSION_STATS)
+			descref = Messages.Help.Description.STATS)
 	public void onStatsCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
 		if (sender instanceof Player) {
@@ -67,6 +67,7 @@ public class CommandStats {
 			String arg = context.getString(0);
 			
 			if (arg.equalsIgnoreCase("top")) {
+				CommandValidate.isTrue(sender.hasPermission(Permissions.PERMISSION_STATS_TOP), i18n.getString(Messages.Command.NO_PERMISSION));
 				int page = 1;
 				
 				if (context.argsLength() > 1) {
@@ -80,6 +81,7 @@ public class CommandStats {
 				
 				printer = new TopStatisticPrinter(sender, page, databaseHandler, heavySpleef.getLogger());
 			} else {
+				CommandValidate.isTrue(sender.hasPermission(Permissions.PERMISSION_STATS_OTHER), i18n.getString(Messages.Command.NO_PERMISSION));
 				printer = new FullStatisticPrinter(databaseHandler, sender, arg, heavySpleef.getLogger());
 			}
 		} else {
@@ -88,6 +90,7 @@ public class CommandStats {
 				return;
 			}
 			
+			CommandValidate.isTrue(sender.hasPermission(Permissions.PERMISSION_STATS), i18n.getString(Messages.Command.NO_PERMISSION));
 			printer = new FullStatisticPrinter(databaseHandler, sender, sender.getName(), heavySpleef.getLogger());
 		}
 		
