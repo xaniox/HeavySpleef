@@ -44,6 +44,7 @@ import de.matzefratze123.heavyspleef.core.FlagManager;
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.StatisticRecorder;
 import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
@@ -90,7 +91,14 @@ public class GameAccessor extends XMLAccessor<Game> {
 		try {
 			element.addAttribute("name", game.getName());
 			element.addAttribute("world", game.getWorld().getName());
-			element.addAttribute("enable-rating", String.valueOf(game.getStatisticRecorder().isEnableRating()));
+			
+			boolean enableRating = true;
+			StatisticRecorder recorder = game.getStatisticRecorder();
+			if (recorder != null) {
+				enableRating = recorder.isEnableRating();
+			}
+			
+			element.addAttribute("enable-rating", String.valueOf(enableRating));
 			if (game.getGameState() == GameState.DISABLED) {
 				element.addAttribute("disabled", String.valueOf(true));
 			}
