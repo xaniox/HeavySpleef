@@ -255,6 +255,8 @@ public interface Messages {
 
 		public static final String GAINED_RATING = PREFIX + "gained-rating";
 		public static final String LOST_RATING = PREFIX + "lost-rating";
+
+		public static final String MAX_PLAYERS_IN_TEAM_REACHED = PREFIX + "max-players-in-team-reached";
 		
 	}
 	

@@ -228,6 +228,14 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 					return;
 				}
 				
+				PlayerSelectTeamEvent selectEvent = new PlayerSelectTeamEvent(game, spleefPlayer, color);
+				game.getEventBus().callEvent(selectEvent);
+				
+				if (selectEvent.isCancelled()) {
+					spleefPlayer.sendMessage(selectEvent.getFailMessage());
+					return;
+				}
+				
 				players.put(spleefPlayer, color);
 				spleefPlayer.sendMessage(getI18N().getVarString(Messages.Player.TEAM_CHOOSEN)
 						.setVariable("team", color.getChatColor() + getLocalizedColorName(color))
@@ -624,6 +632,19 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		private TeamColor colorSelected;
 		
 		public PlayerSelectedTeamEvent(Game game, SpleefPlayer who, TeamColor color) {
+			super(game, who);
+		}
+		
+	}
+	
+	@Getter
+	public static class PlayerSelectTeamEvent extends PlayerGameEvent implements Cancellable {
+
+		private @Setter boolean cancelled;
+		private @Setter String failMessage;
+		private TeamColor colorSelected;
+		
+		public PlayerSelectTeamEvent(Game game, SpleefPlayer who, TeamColor color) {
 			super(game, who);
 		}
 		

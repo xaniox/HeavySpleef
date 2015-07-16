@@ -217,6 +217,8 @@ player:
   
   gained-rating: "&7Deine neue Rating ist: &6$[new-rating] &7(&a$[change]&7)"
   lost-rating: "&7Deine neue Rating ist: &6$[new-rating] &7(&c$[change]&7)"
+  
+  max-players-in-team-reached: "&cDie maximale Anzahl an Spielern in diesem Team ist erreicht!"
 help:
   description:
     clearcache: "Leert den Statistik-Cache"

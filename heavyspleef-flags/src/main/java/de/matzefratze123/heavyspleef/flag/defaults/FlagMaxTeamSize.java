@@ -20,14 +20,16 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 
 import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.Game.JoinResult;
+import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.PlayerSelectTeamEvent;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamColor;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "max-players", parent = FlagTeam.class)
@@ -78,6 +80,24 @@ public class FlagMaxTeamSize extends IntegerFlag {
 		
 		//Flush queue
 		game.flushQueue();
+	}
+	
+	@Subscribe
+	public void onPlayerSelectTeam(PlayerSelectTeamEvent event) {
+		TeamColor color = event.getColorSelected();
+		
+		FlagTeam flagTeam = (FlagTeam) getParent();
+		int maxSize = getValue();
+		int teamSize = flagTeam.sizeOf(color);
+		
+		if (teamSize < maxSize) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		event.setFailMessage(getI18N().getVarString(Messages.Player.MAX_PLAYERS_IN_TEAM_REACHED)
+				.setVariable("color", color.getChatColor() + flagTeam.getLocalizedColorName(color))
+				.toString());
 	}
 
 }
