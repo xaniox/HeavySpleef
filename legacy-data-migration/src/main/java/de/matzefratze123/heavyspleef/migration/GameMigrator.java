@@ -490,7 +490,11 @@ public class GameMigrator implements Migrator<Configuration, File> {
 								
 								for (Object collectionValue : collection) {
 									String loreLine = ((StringObject) collectionValue).value;
-									lore.add(loreLine);
+									String[] parts = loreLine.split("\\n");
+									
+									for (String part : parts) {
+										lore.add(part);
+									}
 								}
 							}
 						}
