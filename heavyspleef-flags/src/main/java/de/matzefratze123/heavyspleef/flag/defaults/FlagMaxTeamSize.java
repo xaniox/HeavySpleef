@@ -28,6 +28,7 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.GetMaxPlayersEvent;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.PlayerSelectTeamEvent;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamColor;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
@@ -98,6 +99,11 @@ public class FlagMaxTeamSize extends IntegerFlag {
 		event.setFailMessage(getI18N().getVarString(Messages.Player.MAX_PLAYERS_IN_TEAM_REACHED)
 				.setVariable("color", color.getChatColor() + flagTeam.getLocalizedColorName(color))
 				.toString());
+	}
+	
+	@Subscribe
+	public void onGetMaxPlayersEvent(GetMaxPlayersEvent event) {
+		event.setMaxPlayers(getValue());
 	}
 
 }
