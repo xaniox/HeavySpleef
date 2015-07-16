@@ -633,6 +633,8 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		
 		public PlayerSelectedTeamEvent(Game game, SpleefPlayer who, TeamColor color) {
 			super(game, who);
+			
+			this.colorSelected = color;
 		}
 		
 	}
@@ -646,6 +648,8 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		
 		public PlayerSelectTeamEvent(Game game, SpleefPlayer who, TeamColor color) {
 			super(game, who);
+			
+			this.colorSelected = color;
 		}
 		
 	}
