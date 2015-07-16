@@ -9,9 +9,9 @@ website: ${project.parent.url}
 main: ${main.class}
 
 depend: [WorldEdit]
-softdepend: [Vault, ProtocolLib]
+softdepend: [Vault, ProtocolLib, Multiverse-Core, MultiWorld]
 
 commands:
   spleef:
     description: Main command for controlling HeavySpleef
-    aliases: [spl, heavyspleef]
+    aliases: [spl, heavyspleef, splegg]
