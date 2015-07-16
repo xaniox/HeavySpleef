@@ -31,6 +31,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.plugin.PluginManager;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -49,9 +50,12 @@ import de.matzefratze123.heavyspleef.core.extension.Extension;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionRegistry;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
+import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
 import de.matzefratze123.heavyspleef.core.flag.UnloadedFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.hook.HookManager;
+import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.persistence.RegionType;
 
 public class GameAccessor extends XMLAccessor<Game> {
@@ -231,12 +235,46 @@ public class GameAccessor extends XMLAccessor<Game> {
 			
 			for (Element flagElement : flagElementsList) {
 				String flagName = flagElement.attributeValue("name");
-				AbstractFlag<?> flag;
+				AbstractFlag<?> flag = null;
 				
+				boolean loadUnloaded = false;
 				if (flagRegistry.isFlagPresent(flagName)) {
-					flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class, game);
-					flag.unmarshal(flagElement);
-				} else {
+					Class<? extends AbstractFlag<?>> clazz = flagRegistry.getFlagClass(flagName);
+					Flag data = flagRegistry.getFlagData(clazz);
+					HookReference[] refs = data.depend();
+					if (refs.length != 0) {
+						HookManager hookManager = heavySpleef.getHookManager();
+						
+						for (HookReference ref : refs) {
+							if (hookManager.getHook(ref).isProvided()) {
+								continue;
+							}
+							
+							loadUnloaded = true;
+							break;
+						}
+					}
+					
+					String[] pluginDepends = data.pluginDepend();
+					if (pluginDepends.length != 0) {
+						PluginManager manager = Bukkit.getPluginManager();
+						for (String depend : pluginDepends) {
+							if (manager.isPluginEnabled(depend)) {
+								continue;
+							}
+							
+							loadUnloaded = true;
+							break;
+						}
+					}
+					
+					if (!loadUnloaded) {
+						flag = flagRegistry.newFlagInstance(flagName, AbstractFlag.class, game);
+						flag.unmarshal(flagElement);
+					}
+				}
+				
+				if (loadUnloaded) {
 					//This flag class has not been registered yet
 					UnloadedFlag unloaded = new UnloadedFlag();
 					unloaded.setXmlElement(flagElement);

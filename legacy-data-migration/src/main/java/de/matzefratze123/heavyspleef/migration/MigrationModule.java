@@ -120,7 +120,7 @@ public class MigrationModule extends SimpleModule {
 		getLogger().info("Migrating statistic data...");
 		boolean statisticMigrationSuccess = false;
 		
-		if (configuration.contains("statistic")) {
+		if (configuration.contains("statistic") && configuration.getBoolean("statistic.enabled", true)) {
 			try {
 				//Migrate all legacy data
 				migrateStatisticData(dataFolder, configuration);

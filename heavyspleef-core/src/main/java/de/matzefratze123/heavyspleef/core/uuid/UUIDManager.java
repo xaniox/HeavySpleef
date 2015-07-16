@@ -144,11 +144,15 @@ public class UUIDManager {
 		return getProfiles(names);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public List<GameProfile> getProfiles(String[] names) throws ExecutionException {
+		return getProfiles(names, false);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public List<GameProfile> getProfiles(String[] names, boolean forceMojangAPI) throws ExecutionException {
 		List<GameProfile> profiles = Lists.newArrayList();
 		
-		if (onlineMode) {
+		if (onlineMode && !forceMojangAPI) {
 			for (String name : names) {
 				OfflinePlayer player = Bukkit.getOfflinePlayer(name);
 				GameProfile profile = new GameProfile(player.getUniqueId(), player.getName());

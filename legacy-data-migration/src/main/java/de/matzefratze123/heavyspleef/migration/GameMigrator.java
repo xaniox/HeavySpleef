@@ -182,6 +182,10 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				Element rootElement = document.addElement("game");
 				
 				Game game = migrateGame(section, rootElement);
+				if (game == null) {
+					continue;
+				}
+				
 				accessor.write(game, rootElement);
 				gameList.add(game);
 				
@@ -203,7 +207,18 @@ public class GameMigrator implements Migrator<Configuration, File> {
 	
 	private Game migrateGame(ConfigurationSection in, Element element) throws MigrationException {
 		String name = in.getName();
-		World world = legacyStringToLocation(in.getString("first")).getWorld();
+		World world;
+		String type = in.getString("type");
+		
+		if ("CUBOID".equalsIgnoreCase(type)) {
+			world = legacyStringToLocation(in.getString("first")).getWorld();
+		} else if ("CYLINDER".equalsIgnoreCase(type)){
+			world = legacyStringToLocation(in.getString("center")).getWorld();
+		} else {
+			heavySpleef.getLogger().warning("Cannot convert game '" + name + "': Unknown game type");
+			return null;
+		}
+		
 		//Create the game safely without calling the constructor
 		Game game = gameCreator.createSafeGame(name, world);
 		

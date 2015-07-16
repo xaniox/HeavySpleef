@@ -43,9 +43,9 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 
 	private static final String TABLE_NAME = "heavyspleef_statistics";
 	private static final String TEMP_TABLE_NAME = "heavyspleef_statistics_temp";
-	private static final int RECORD_BUFFER_SIZE = 500;
+	private static final int RECORD_BUFFER_SIZE = 400;
 	private static final int PROFILES_PER_REQUEST = 100;
-	private static final int MAXIMUM_REQUESTS_PER_MINUTE = 600;
+	private static final int MAXIMUM_REQUESTS_PER_MINUTE = 400;
 	private static final String CREATE_TABLE_SQL = "CREATE TABLE %s ("
 			+ "id INTEGER NOT NULL PRIMARY KEY %s, "
 			+ "uuid CHAR(36) UNIQUE, "
@@ -127,7 +127,7 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 			List<GameProfile> gameProfiles;
 			
 			try {
-				gameProfiles = uuidManager.getProfiles(names);
+				gameProfiles = uuidManager.getProfiles(names, true);
 			} catch (ExecutionException e) {
 				throw new MigrationException(e);
 			}
