@@ -52,6 +52,8 @@ import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.SignSection;
+import de.matzefratze123.heavyspleef.core.event.GameEvent;
+import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -120,6 +122,12 @@ public abstract class SignExtension extends GameExtension {
 		}
 		
 		return layout;
+	}
+	
+	//We update the sign on all game events
+	@Subscribe
+	public void onGameEvent(GameEvent event) {
+		updateSign();
 	}
 	
 	@EventHandler
