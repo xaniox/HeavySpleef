@@ -435,6 +435,11 @@ public class FlagSpectate extends LocationFlag {
 		public SpectateSignExtension(Location location) {
 			super(location);
 		}
+		
+		@Override
+		public String[] getPermission() {
+			return new String[] {Permissions.PERMISSION_SIGN_SPECTATE, Permissions.PERMISSION_SPECTATE};
+		}
 
 		@Override
 		public void onSignClick(SpleefPlayer player) {

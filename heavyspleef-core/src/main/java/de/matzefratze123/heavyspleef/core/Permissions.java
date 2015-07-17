@@ -60,5 +60,10 @@ public interface Permissions {
 	public static final String PERMISSION_REMOVE_SIGN = ADMIN_PREFIX + "removesign";
 	public static final String PERMISSION_SPECTATE = PLAYER_PREFIX + "spectate";
 	public static final String PERMISSION_VOTE = PLAYER_PREFIX + "vote";
+	public static final String PERMISSION_SIGN_JOIN = PLAYER_PREFIX + "sign.join";
+	public static final String PERMISSION_SIGN_LEAVE = PLAYER_PREFIX + "sign.leave";
+	public static final String PERMISSION_SIGN_SPECTATE = PLAYER_PREFIX + "sign.spectate";
+	public static final String PERMISSION_SIGN_VOTE = PLAYER_PREFIX + "sign.vote";
+	public static final String PERMISSION_SIGN_START = ADMIN_PREFIX + "sign.join";
 	
 }

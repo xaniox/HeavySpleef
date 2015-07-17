@@ -191,6 +191,11 @@ public class FlagVote extends BaseFlag {
 		}
 		
 		@Override
+		public String[] getPermission() {
+			return new String[] {Permissions.PERMISSION_SIGN_VOTE, Permissions.PERMISSION_VOTE};
+		}
+		
+		@Override
 		public void onSignClick(SpleefPlayer player) {
 			GameManager manager = getHeavySpleef().getGameManager();
 			

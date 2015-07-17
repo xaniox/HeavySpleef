@@ -57,6 +57,7 @@ public abstract class SignExtension extends GameExtension {
 	
 	protected static final String SPLEEF_SIGN_IDENTIFIER = "[spleef]";
 	
+	private final I18N i18n = I18NManager.getGlobal();
 	@Getter
 	private Location location;
 	@Getter
@@ -77,6 +78,8 @@ public abstract class SignExtension extends GameExtension {
 	public abstract void onSignClick(SpleefPlayer player);
 	
 	protected abstract SignLayout retrieveSignLayout();
+	
+	public abstract String[] getPermission();
 	
 	public void updateSign() {
 		Block block = location.getWorld().getBlockAt(location);
@@ -120,6 +123,22 @@ public abstract class SignExtension extends GameExtension {
 		
 		Action action = event.getAction();
 		if (action == Action.LEFT_CLICK_BLOCK && player.getBukkitPlayer().getGameMode() == GameMode.CREATIVE) {
+			return;
+		}
+		
+		String[] permissions = getPermission();
+		boolean hasPermission = false;
+		
+		for (String perm : permissions) {
+			if (!player.hasPermission(perm)) {
+				continue;
+			}
+			
+			hasPermission = true;
+		}
+		
+		if (!hasPermission) {
+			player.sendMessage(i18n.getString(Messages.Command.NO_PERMISSION));
 			return;
 		}
 		

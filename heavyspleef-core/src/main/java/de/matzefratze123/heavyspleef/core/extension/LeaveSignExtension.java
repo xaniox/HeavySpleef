@@ -21,6 +21,7 @@ import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
@@ -41,6 +42,11 @@ public class LeaveSignExtension extends SignExtension {
 	
 	public LeaveSignExtension(Location location) {
 		super(location);
+	}
+	
+	@Override
+	public String[] getPermission() {
+		return new String[] {Permissions.PERMISSION_SIGN_LEAVE, Permissions.PERMISSION_LEAVE};
 	}
 
 	@Override

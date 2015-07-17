@@ -21,6 +21,7 @@ import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.JoinRequester;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
@@ -42,6 +43,11 @@ public class JoinSignExtension extends SignExtension {
 	
 	public JoinSignExtension(Location location) {
 		super(location);
+	}
+	
+	@Override
+	public String[] getPermission() {
+		return new String[] {Permissions.PERMISSION_SIGN_JOIN, Permissions.PERMISSION_JOIN};
 	}
 	
 	@Override
