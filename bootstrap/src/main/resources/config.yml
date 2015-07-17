@@ -192,6 +192,15 @@ flags:
   # the spectate mode or the queue lobby
   leave-item: MAGMA_CREAM
   
+signs:
+  # This prefix may be shown on signs if
+  # requested by writing [Spleef] in the first line
+  spleef-prefix: '&8[&6Spleef&8]'
+  
+  # This prefix may be shown on signs if
+  # requested by writing [Splegg] in the first line
+  splegg-prefix: '&8[&6Splegg&8]'
+  
 update:
   # Decide wether you want the plugin
   # to check for updates everytime you
@@ -205,4 +214,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 4
+config-version: 5

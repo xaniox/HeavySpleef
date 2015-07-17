@@ -43,21 +43,28 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
 import org.dom4j.Element;
 
+import com.google.common.collect.Sets;
+
 import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.SignSection;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.core.script.Variable;
 
 public abstract class SignExtension extends GameExtension {
 	
 	protected static final String SPLEEF_SIGN_IDENTIFIER = "[spleef]";
 	
 	private final I18N i18n = I18NManager.getGlobal();
+	private PrefixType prefixType;
 	@Getter
 	private Location location;
 	@Getter
@@ -65,8 +72,9 @@ public abstract class SignExtension extends GameExtension {
 	
 	protected SignExtension() {}
 	
-	public SignExtension(Location location) {
+	public SignExtension(Location location, PrefixType prefixType) {
 		this.location = location;
+		this.prefixType = prefixType;
 	}
 	
 	@ExtensionInit
@@ -88,11 +96,22 @@ public abstract class SignExtension extends GameExtension {
 		}
 		
 		Sign sign = (Sign) block.getState();
-		getSignLayout().inflate(sign, getGame());
+		getSignLayout().inflate(sign, getVariables());
 	}
 	
 	protected String[] generateLines() {
-		return getSignLayout().generate(getGame());
+		return getSignLayout().generate(getVariables());
+	}
+	
+	private Set<Variable> getVariables() {
+		Set<Variable> vars = Sets.newHashSet();
+		Set<String> requested = getSignLayout().getRequestedVariables();
+		
+		DefaultConfig config = getHeavySpleef().getConfiguration(ConfigType.DEFAULT_CONFIG);
+		vars.add(new Variable("prefix", prefixType.getConfigString(config)));
+		getGame().supply(vars, requested);
+		
+		return vars;
 	}
 	
 	private SignLayout getSignLayout() {
@@ -147,6 +166,7 @@ public abstract class SignExtension extends GameExtension {
 	
 	@Override
 	public void marshal(Element element) {
+		element.addElement("prefix-type").addText(prefixType.name());
 		Element locationElement = element.addElement("location");
 		locationElement.addElement("world").addText(location.getWorld().getName());
 		locationElement.addElement("x").addText(String.valueOf(location.getBlockX()));
@@ -156,6 +176,9 @@ public abstract class SignExtension extends GameExtension {
 
 	@Override
 	public void unmarshal(Element element) {
+		Element prefixTypeElement = element.element("prefix-type");
+		prefixType = prefixTypeElement != null ? PrefixType.valueOf(element.elementText("prefix-type")) : PrefixType.SPLEEF;
+		
 		Element locationElement = element.element("location");
 		
 		World world = Bukkit.getWorld(locationElement.elementText("world"));
@@ -163,6 +186,38 @@ public abstract class SignExtension extends GameExtension {
 		int y = Integer.parseInt(locationElement.elementText("y"));
 		int z = Integer.parseInt(locationElement.elementText("z"));
 		location = new Location(world, x, y, z);
+	}
+	
+	protected enum PrefixType {
+		
+		SPLEEF("[spleef]"),
+		SPLEGG("[splegg]");
+		
+		private @Getter String prefixString;
+		
+		private PrefixType(String prefixString) {
+			this.prefixString = prefixString;
+		}
+		
+		protected String getConfigString(DefaultConfig config) {
+			SignSection section = config.getSignSection();
+			String configString;
+			
+			switch (this) {
+			case SPLEEF:
+				configString = section.getSpleefPrefix();
+				break;
+			case SPLEGG:
+				configString = section.getSpleggPrefix();
+				break;
+			default:
+				configString = section.getSpleefPrefix();
+				break;
+			}
+			
+			return configString;
+		}
+		
 	}
 	
 	private static class SignChangeListener implements Listener {
@@ -178,7 +233,16 @@ public abstract class SignExtension extends GameExtension {
 		public void onSignChange(SignChangeEvent event) {
 			String[] lines = event.getLines();
 			
-			if (!lines[0].equalsIgnoreCase(SPLEEF_SIGN_IDENTIFIER)) {
+			PrefixType type = null;
+			for (PrefixType availableType : PrefixType.values()) {
+				if (!lines[0].equalsIgnoreCase(availableType.getPrefixString())) {
+					continue;
+				}
+				
+				type = availableType;
+			}
+			
+			if (type == null) {
 				return;
 			}
 			
@@ -244,8 +308,8 @@ public abstract class SignExtension extends GameExtension {
 			SignExtension extension;
 			
 			try {
-				Constructor<? extends SignExtension> constructor = found.getConstructor(Location.class);
-				extension = constructor.newInstance(event.getBlock().getLocation());
+				Constructor<? extends SignExtension> constructor = found.getConstructor(Location.class, PrefixType.class);
+				extension = constructor.newInstance(event.getBlock().getLocation(), type);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				heavySpleef.getLogger().log(Level.WARNING, "Could not create sign: " + e);
 				player.sendMessage(i18n.getVarString(Messages.Player.NO_SIGN_AVAILABLE)

@@ -186,8 +186,8 @@ public class FlagVote extends BaseFlag {
 		@SuppressWarnings("unused")
 		private VoteSignExtension() {}
 		
-		public VoteSignExtension(Location location) {
-			super(location);
+		public VoteSignExtension(Location location, PrefixType prefixType) {
+			super(location, prefixType);
 		}
 		
 		@Override

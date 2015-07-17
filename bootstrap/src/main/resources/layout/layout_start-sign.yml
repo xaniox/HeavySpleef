@@ -1,7 +1,7 @@
 # The following variables are available:
 # - $[name] -> The name of the game this join sign is referring to
 layout:
-  1: "&8[&6Spleef&8]"
+  1: "$[prefix]"
   2: "&8[&aStart&8]"
   3: "&3$[name]"
   4: ""

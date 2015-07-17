@@ -39,8 +39,8 @@ public class StartSignExtension extends SignExtension {
 	@SuppressWarnings("unused")
 	private StartSignExtension() {}
 	
-	public StartSignExtension(Location location) {
-		super(location);
+	public StartSignExtension(Location location, PrefixType prefixType) {
+		super(location, prefixType);
 	}
 	
 	@Override

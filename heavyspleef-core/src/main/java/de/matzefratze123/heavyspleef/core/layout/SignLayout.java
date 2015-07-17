@@ -56,7 +56,7 @@ public class SignLayout {
 		}
 	}
 	
-	public <T> boolean inflate(Sign sign, VariableSuppliable suppliable) {
+	public boolean inflate(Sign sign, VariableSuppliable suppliable) {
 		String[] result = generate(suppliable);
 		for (int i = 0; i < result.length; i++) {
 			sign.setLine(i, result[i]);
@@ -65,25 +65,35 @@ public class SignLayout {
 		return sign.update();
 	}
 
-	public <T> String[] generate(VariableSuppliable suppliable) {
+	public String[] generate(VariableSuppliable suppliable) {
 		Set<Variable> vars = Sets.newHashSet();
-		Set<String> requested = Sets.newHashSet();
-		String[] result = new String[LINE_COUNT];
-		
-		for (CustomizableLine line : lines) {
-			line.getRequestedVariables(requested);
-		}
+		Set<String> requested = getRequestedVariables();
 		
 		suppliable.supply(vars, requested);
+		return generate(vars);
+	}
+	
+	public String[] generate(Set<Variable> variables) {
+		String[] result = new String[LINE_COUNT];
 		
 		for (int i = 0; i < lines.size(); i++) {
-			String strLine = lines.get(i).generate(vars);
+			String strLine = lines.get(i).generate(variables);
 			strLine = ChatColor.translateAlternateColorCodes(TRANSLATE_CHAR, strLine);
 			
 			result[i] = strLine;
 		}
 		
 		return result;
+	}
+	
+	public Set<String> getRequestedVariables() {
+		Set<String> requested = Sets.newHashSet();
+		
+		for (CustomizableLine line : lines) {
+			line.getRequestedVariables(requested);
+		}
+		
+		return requested;
 	}
 	
 }

@@ -40,8 +40,8 @@ public class LeaveSignExtension extends SignExtension {
 	@SuppressWarnings("unused")
 	private LeaveSignExtension() {}
 	
-	public LeaveSignExtension(Location location) {
-		super(location);
+	public LeaveSignExtension(Location location, PrefixType prefixType) {
+		super(location, prefixType);
 	}
 	
 	@Override

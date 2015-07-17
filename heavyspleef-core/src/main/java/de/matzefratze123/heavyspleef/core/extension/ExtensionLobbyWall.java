@@ -38,6 +38,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.dom4j.Element;
 
+import com.google.common.collect.Sets;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -56,6 +57,7 @@ import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.PlayerPostActionHandler.PostActionCallback;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
@@ -71,6 +73,7 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.layout.SignLayout;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.core.script.Variable;
 
 @Extension(name = "lobby-wall", hasCommands = true)
 public class ExtensionLobbyWall extends GameExtension {
@@ -307,7 +310,12 @@ public class ExtensionLobbyWall extends GameExtension {
 			public LoopReturn loop(int index, Sign sign) {
 				if (index == 0) {
 					//First sign is the join sign
-					joinLayout.inflate(sign, game);
+					DefaultConfig defConfig = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+					Set<Variable> vars = Sets.newHashSet();
+					vars.add(new Variable("prefix", defConfig.getSignSection().getSpleefPrefix()));
+					game.supply(vars, joinLayout.getRequestedVariables());
+					
+					joinLayout.inflate(sign, vars);
 				} else if (index == 1) {
 					//Second sign is the informational sign
 					infoLayout.inflate(sign, game);

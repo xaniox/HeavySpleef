@@ -432,8 +432,8 @@ public class FlagSpectate extends LocationFlag {
 		@SuppressWarnings("unused")
 		private SpectateSignExtension() {}
 		
-		public SpectateSignExtension(Location location) {
-			super(location);
+		public SpectateSignExtension(Location location, PrefixType prefixType) {
+			super(location, prefixType);
 		}
 		
 		@Override

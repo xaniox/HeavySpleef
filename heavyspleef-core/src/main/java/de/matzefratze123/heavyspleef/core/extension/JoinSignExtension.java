@@ -41,8 +41,8 @@ public class JoinSignExtension extends SignExtension {
 	@SuppressWarnings("unused")
 	private JoinSignExtension() {}
 	
-	public JoinSignExtension(Location location) {
-		super(location);
+	public JoinSignExtension(Location location, PrefixType prefixType) {
+		super(location, prefixType);
 	}
 	
 	@Override

@@ -42,6 +42,7 @@ public class DefaultConfig extends ConfigurationObject {
 	private @Getter QueueSection queueSection;
 	private @Getter Localization localization;
 	private @Getter FlagSection flagSection;
+	private @Getter SignSection signSection;
 	private @Getter UpdateSection updateSection;
 	private @Getter int configVersion;
 	
@@ -81,6 +82,9 @@ public class DefaultConfig extends ConfigurationObject {
 		
 		ConfigurationSection flagSection = config.getConfigurationSection("flags");
 		this.flagSection = new FlagSection(flagSection);
+		
+		ConfigurationSection signSection = config.getConfigurationSection("signs");
+		this.signSection = new SignSection(signSection);
 		
 		ConfigurationSection updateSection = config.getConfigurationSection("update");
 		this.updateSection = new UpdateSection(updateSection);
