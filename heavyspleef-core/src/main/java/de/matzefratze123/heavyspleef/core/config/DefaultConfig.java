@@ -35,7 +35,7 @@ import de.matzefratze123.heavyspleef.core.GameProperty;
 public class DefaultConfig extends ConfigurationObject {
 	
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
-	public static final int CURRENT_CONFIG_VERSION = 4;
+	public static final int CURRENT_CONFIG_VERSION = 5;
 	
 	private Map<GameProperty, Object> defaultGameProperties;
 	private @Getter GeneralSection generalSection;
