@@ -139,6 +139,7 @@ public class SpleefCommandManager implements CommandManager {
 			CommandStats.class,
 			CommandStop.class,
 			CommandUpdate.class,
+			CommandVersion.class,
 			DeathzoneCommands.class,
 			FloorCommands.class,
 			RatingCommands.class

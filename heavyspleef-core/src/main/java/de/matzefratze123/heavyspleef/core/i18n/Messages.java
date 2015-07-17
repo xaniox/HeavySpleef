@@ -297,6 +297,7 @@ public interface Messages {
 			public static final String REMOVEDEATHZONE = PREFIX + "removedeathzone";
 			public static final String SHOWDEATHZONE = PREFIX + "showdeathzone";
 			public static final String UPDATE = PREFIX + "update";
+			public static final String VERSION = PREFIX + "version";
 			public static final String VOTE = PREFIX + "vote";
 
 			

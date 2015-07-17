@@ -250,6 +250,7 @@ help:
     removedeathzone: "Entfernt eine Todeszone von einem Spiel"
     showdeathzone: "Identifiziert eine Todeszone visuell in der Welt"
     update: "Aktualisiert das Plugin auf die neueste Version"
+    version: "Zeigt Versionsinformationen über das Plugin an"
     vote: "Fügt dem Spiel eine Stimme zum Starten hinzu"
 arrays:
   team-color-array:
