@@ -30,8 +30,8 @@ import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.JoinRequester;
-import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.Permissions;
+import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
@@ -42,8 +42,7 @@ public class CommandJoin {
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "join", minArgs = 1, usage = "/spleef join <game>",
-			descref = Messages.Help.Description.JOIN,
-			permission = Permissions.PERMISSION_JOIN)
+			descref = Messages.Help.Description.JOIN)
 	@PlayerOnly
 	public void onJoinCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
@@ -55,6 +54,11 @@ public class CommandJoin {
 				.setVariable("game", gameName)
 				.toString());
 		Game game = manager.getGame(gameName);
+		
+		if (!player.hasPermission(Permissions.PERMISSION_JOIN) && !player.hasPermission(Permissions.PERMISSION_JOIN + "." + game.getName().toLowerCase())) {
+			player.sendMessage(i18n.getString(Messages.Command.NO_PERMISSION));
+			return;
+		}
 		
 		try {
 			long timer = game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
