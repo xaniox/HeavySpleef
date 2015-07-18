@@ -89,6 +89,11 @@ public class CommandHelp {
 			}
 			
 			CommandContainer child = childs.get(i);
+			String permission = child.getPermission();
+			
+			if (permission != null && !sender.hasPermission(permission)) {
+				continue;
+			}
 			
 			String desc = child.getDescription();
 			if (desc.isEmpty() && !child.getDescriptionRef().isEmpty()) {
