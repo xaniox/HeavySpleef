@@ -45,20 +45,25 @@ import com.google.common.collect.Lists;
 
 public class UUIDManager {
 	
+	private static final String ORIGINAL_NAME_BASE_URL = "https://api.mojang.com/users/profiles/minecraft/%s?at=0";
 	private static final String NAME_BASE_URL = "https://api.mojang.com/profiles/minecraft";
 	private static final String UUID_BASE_URL = " https://api.mojang.com/user/profiles/%s/names";
 	private static final int PROFILES_PER_REQUEST = 100;
+	private static final int MAX_ORIGINAL_LOOKUPS_LEFT = 500;
 	
 	private final JSONParser parser = new JSONParser();
 	private final boolean onlineMode;
 	
 	private LoadingCache<String, GameProfile> profileNameCache;
 	private LoadingCache<UUID, GameProfile> profileUUIDCache;
+	private int originalLookupsLeft = MAX_ORIGINAL_LOOKUPS_LEFT;
+	private long recentOriginalLookup;
 	
 	public UUIDManager() {
 		// Use fast Entity#getUniqueId() when onlineMode = true
 		// so we don't have to query the mojang servers
 		this.onlineMode = Bukkit.getOnlineMode();
+		this.recentOriginalLookup = System.currentTimeMillis();
 		
 		this.profileNameCache = CacheBuilder.newBuilder()
 				.expireAfterAccess(30, TimeUnit.MINUTES)
@@ -145,11 +150,11 @@ public class UUIDManager {
 	}
 	
 	public List<GameProfile> getProfiles(String[] names) throws ExecutionException {
-		return getProfiles(names, false);
+		return getProfiles(names, false, false);
 	}
 	
 	@SuppressWarnings("deprecation")
-	public List<GameProfile> getProfiles(String[] names, boolean forceMojangAPI) throws ExecutionException {
+	public List<GameProfile> getProfiles(String[] names, boolean forceMojangAPI, boolean checkOriginal) throws ExecutionException {
 		List<GameProfile> profiles = Lists.newArrayList();
 		
 		if (onlineMode && !forceMojangAPI) {
@@ -186,14 +191,56 @@ public class UUIDManager {
 						}
 					}
 					
+					String cachingName = loadingName;
+					
 					if (found == null) {
-						OfflinePlayer player = Bukkit.getOfflinePlayer(loadingName);
-						UUID uuid = player.getUniqueId();
-						
-						profiles.add(new GameProfile(uuid, player.getName()));
+						if (checkOriginal) {
+							long difSinceLastLookup = System.currentTimeMillis() - recentOriginalLookup;
+							int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(difSinceLastLookup);
+							
+							originalLookupsLeft += seconds;
+							if (originalLookupsLeft > MAX_ORIGINAL_LOOKUPS_LEFT) {
+								//Cannot lookup more than 600 profiles per 10 minutes
+								originalLookupsLeft = MAX_ORIGINAL_LOOKUPS_LEFT;
+							}
+							
+							if (originalLookupsLeft == 0) {
+								try {
+									Thread.sleep(1250L);
+								} catch (InterruptedException e) {
+									throw new ExecutionException(e);
+								}
+							} else {
+								originalLookupsLeft--;
+							}
+							
+							GameProfile current;
+							
+							try {
+								current = fetchOriginalGameProfile(loadingName);
+							} catch (Exception e) {
+								throw new ExecutionException(e);
+							}
+							
+							recentOriginalLookup = System.currentTimeMillis();
+							
+							if (current == null) {
+								//Skip this profile, we can't find a matching uuid
+								continue;
+							}
+							
+							found = current;
+							cachingName = current.getName();
+						} else {
+							OfflinePlayer player = Bukkit.getOfflinePlayer(loadingName);
+							UUID uuid = player.getUniqueId();
+							
+							profiles.add(new GameProfile(uuid, player.getName()));
+						}
 					}
 					
-					profileNameCache.put(loadingName, found);
+					profiles.add(found);
+					profileNameCache.put(cachingName, found);
 					profileUUIDCache.put(found.getUniqueIdentifier(), found);
 				}
 			}
@@ -293,6 +340,27 @@ public class UUIDManager {
 		}
 		
 		return profiles;
+	}
+	
+	private GameProfile fetchOriginalGameProfile(String name) throws IOException, ParseException {
+		URL url = new URL(String.format(ORIGINAL_NAME_BASE_URL, name.trim()));
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setDoOutput(true);
+		connection.setUseCaches(true);
+		connection.setRequestProperty("Content-Type", "application/json");
+		
+		InputStream in = connection.getInputStream();
+		if (in.available() == 0) {
+			return null;
+		}
+		
+		Reader reader = new InputStreamReader(in);
+		JSONObject obj = (JSONObject) parser.parse(reader);
+		UUID uuid = getUUID((String)obj.get("id"));
+		String currentName = (String) obj.get("name");
+		
+		GameProfile profile = new OriginalGameProfile(uuid, currentName, name);
+		return profile;
 	}
 	
 	private GameProfile fetchGameProfile(UUID uuid) throws IOException, ParseException {

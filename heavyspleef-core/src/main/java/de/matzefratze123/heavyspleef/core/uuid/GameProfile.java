@@ -19,6 +19,9 @@ package de.matzefratze123.heavyspleef.core.uuid;
 
 import java.util.UUID;
 
+import lombok.ToString;
+
+@ToString
 public class GameProfile {
 	
 	private UUID uniqueIdentifier;

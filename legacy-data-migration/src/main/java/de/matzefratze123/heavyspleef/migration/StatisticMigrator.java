@@ -26,29 +26,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
-import org.bukkit.Bukkit;
-
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.uuid.GameProfile;
+import de.matzefratze123.heavyspleef.core.uuid.OriginalGameProfile;
 import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 
 public class StatisticMigrator implements Migrator<Connection, Connection> {
 
 	private static final String TABLE_NAME = "heavyspleef_statistics";
 	private static final String TEMP_TABLE_NAME = "heavyspleef_statistics_temp";
-	private static final int RECORD_BUFFER_SIZE = 400;
-	private static final int PROFILES_PER_REQUEST = 100;
-	private static final int MAXIMUM_REQUESTS_PER_MINUTE = 400;
+	private static final int RECORD_BUFFER_SIZE = 1000;
+	private static final double ESTIMATED_TIME_PER_STATISTIC = 0.25;
 	private static final String CREATE_TABLE_SQL = "CREATE TABLE %s ("
 			+ "id INTEGER NOT NULL PRIMARY KEY %s, "
 			+ "uuid CHAR(36) UNIQUE, "
+			+ "last_name CHAR(16), "
 			+ "wins INTEGER, "
 			+ "losses INTEGER, "
 			+ "knockouts INTEGER, "
@@ -59,13 +65,15 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 	
 	private final UUIDManager uuidManager = new UUIDManager();
 	private final String db;
+	private final Logger logger;
 	private long watchdogTimeoutTime;
 	private boolean watchdogRestart;
 	private Method watchdogDoStartMethod;
 	private @Getter int countMigrated;
 	
-	public StatisticMigrator(String db) {
+	public StatisticMigrator(String db, Logger logger) {
 		this.db = db;
+		this.logger = logger;
 	}
 	
 	@Override
@@ -92,10 +100,21 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 			throw new MigrationException(e);
 		}
 		
+		int estimatedSeconds = (int) (ESTIMATED_TIME_PER_STATISTIC * size);
+		int hours = (int) TimeUnit.SECONDS.toHours(estimatedSeconds);
+		estimatedSeconds -= TimeUnit.HOURS.toSeconds(hours);
+		int minutes = (int) TimeUnit.SECONDS.toMinutes(estimatedSeconds);
+		
+		logger.log(Level.INFO, "Estimated time for this statistic database upgrade: " + (hours != 0 ? hours + " hour(s) " : "") + minutes + " minute(s).");
+		if (estimatedSeconds > 60L * 15L) {
+			//Make sure the user has enough coffee to survive this...
+			logger.log(Level.INFO, "Make sure you got a comfortable seat and enough coffee to survive this...");
+		}
+		
 		int requests = (int) Math.ceil((double)size / RECORD_BUFFER_SIZE);
-		int requestsMade = 0;
 		
 		boolean watchdogThreadDeactivated = false;
+		List<UUID> uuidsMigrated = Lists.newArrayList();
 		
 		for (int i = 0; i < requests; i++) {
 			int offset = i * RECORD_BUFFER_SIZE;
@@ -127,41 +146,83 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 			List<GameProfile> gameProfiles;
 			
 			try {
-				gameProfiles = uuidManager.getProfiles(names, true);
+				gameProfiles = uuidManager.getProfiles(names, true, true);
 			} catch (ExecutionException e) {
 				throw new MigrationException(e);
 			}
 			
-			final String insertSql = "INSERT INTO " + currentTableName + " (uuid, wins, losses, knockouts, games_played, blocks_broken, time_played, rating)"
-					+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			final String insertSql = "INSERT INTO " + currentTableName + " (uuid, wins, losses, knockouts, games_played, blocks_broken, time_played, rating, last_name)"
+					+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement insertStatement = null;
+			PreparedStatement mergeUpdateStatement = null;
 			
 			try {
 				outputSource.setAutoCommit(false);
 				insertStatement = outputSource.prepareStatement(insertSql);
 				
+				Map<GameProfile, LegacyStatisticProfile> mergingStatistics = Maps.newHashMap();
+				
 				for (LegacyStatisticProfile profile : profiles) {
 					GameProfile foundGameProfile = null;
 					for (GameProfile gameProfile : gameProfiles) {
-						if (gameProfile.getName().equalsIgnoreCase(profile.getOwner())) {
+						String profileName = gameProfile instanceof OriginalGameProfile ? ((OriginalGameProfile) gameProfile).getOriginalName()
+								: gameProfile.getName();
+						
+						if (profileName.equalsIgnoreCase(profile.getOwner())) {
 							foundGameProfile = gameProfile;
 							break;
 						}
 					}
 					
-					insertStatement.setString(1, foundGameProfile.getUniqueIdentifier().toString());
-					insertStatement.setInt(2, profile.getWins());
-					insertStatement.setInt(3, profile.getLosses());
-					insertStatement.setInt(4, profile.getKnockouts());
-					insertStatement.setInt(5, profile.getGamesPlayed());
-					insertStatement.setInt(6, 0);
-					insertStatement.setInt(7, 0);
-					insertStatement.setDouble(8, 1000D);
-					insertStatement.addBatch();
+					if (foundGameProfile == null) {
+						//No profile for this statistic set found, discard it
+						continue;
+					}
+					
+					UUID uuid = foundGameProfile.getUniqueIdentifier();
+					
+					if (uuidsMigrated.contains(uuid)) {
+						mergingStatistics.put(foundGameProfile, profile);
+					} else {
+						uuidsMigrated.add(uuid);
+						
+						insertStatement.setString(1, uuid.toString());
+						insertStatement.setInt(2, profile.getWins());
+						insertStatement.setInt(3, profile.getLosses());
+						insertStatement.setInt(4, profile.getKnockouts());
+						insertStatement.setInt(5, profile.getGamesPlayed());
+						insertStatement.setInt(6, 0);
+						insertStatement.setInt(7, 0);
+						insertStatement.setDouble(8, 1000D);
+						insertStatement.setString(1, foundGameProfile.getName());
+						insertStatement.addBatch();
+					}
 				}
 				
 				insertStatement.executeBatch();
+				
+				if (!mergingStatistics.isEmpty()) {
+					String updateSql = "UPDATE " + currentTableName
+							+ " SET wins = wins + ?, losses = losses + ?, knockouts = knockouts + ?, games_played = games_played + ? WHERE uuid = ?";  
+					mergeUpdateStatement = outputSource.prepareStatement(updateSql);
+					
+					//Merge those statistics
+					for (Entry<GameProfile, LegacyStatisticProfile> entry : mergingStatistics.entrySet()) {
+						GameProfile gameProfile = entry.getKey();
+						LegacyStatisticProfile statistic = entry.getValue();
+						
+						mergeUpdateStatement.setInt(1, statistic.getWins());
+						mergeUpdateStatement.setInt(2, statistic.getLosses());
+						mergeUpdateStatement.setInt(3, statistic.getKnockouts());
+						mergeUpdateStatement.setInt(4, statistic.getGamesPlayed());
+						mergeUpdateStatement.setString(5, gameProfile.getUniqueIdentifier().toString());
+						mergeUpdateStatement.addBatch();
+					}
+					
+					mergeUpdateStatement.executeBatch();
+				}
+				
 				outputSource.commit();
 			} catch (SQLException e) {
 				try {
@@ -175,53 +236,48 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 						insertStatement.close();
 					}
 					
+					if (mergeUpdateStatement != null) {
+						mergeUpdateStatement.close();
+					}
+					
 					outputSource.setAutoCommit(true);
 				} catch (SQLException e) {}
 			}
 			
-			requestsMade += RECORD_BUFFER_SIZE / PROFILES_PER_REQUEST;
-			
-			//Check if we are going to exceed the maximum 
-			//amount of requests we can make to the mojang api
-			if (!Bukkit.getOnlineMode() && requestsMade + RECORD_BUFFER_SIZE / PROFILES_PER_REQUEST > MAXIMUM_REQUESTS_PER_MINUTE) {
-				requestsMade = 0;
-				
-				if (!watchdogThreadDeactivated) {
-					try {
-						Class<?> clazz = Class.forName("org.spigotmc.WatchdogThread");
-						Field instanceField = clazz.getDeclaredField("instance");
-						Field timeoutTimeField = clazz.getDeclaredField("timeoutTime");
-						Field restartField = clazz.getDeclaredField("restart");
-						Method doStopMethod = clazz.getMethod("doStop");
-						watchdogDoStartMethod = clazz.getMethod("doStart", int.class, boolean.class);
-								
-						instanceField.setAccessible(true);
-						timeoutTimeField.setAccessible(true);
-						restartField.setAccessible(true);
-						
-						Object watchdogThread = instanceField.get(null);
-						watchdogTimeoutTime = (long) timeoutTimeField.get(watchdogThread);
-						watchdogRestart = (boolean) restartField.get(watchdogThread);
-						
-						doStopMethod.invoke(null);
-						watchdogThreadDeactivated = true;
-					} catch (ClassNotFoundException e) {
-						//Do nothing when the class does not exist
-						//as it does not seem like we're running
-						//on Spigot
-					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException
-							| InvocationTargetException e) {
-						//TODO: Handle
-					}
-				}
-				
+			//Deactivate the Spigot watchdog thread, as it may cause the server to force stop
+			//and interrupt the migration...
+			if (!watchdogThreadDeactivated) {
 				try {
-					//Waiting one minute before requesting again
-					Thread.sleep(1000L * 60L);
-				} catch (InterruptedException e) {
-					throw new MigrationException(e);
+					Class<?> clazz = Class.forName("org.spigotmc.WatchdogThread");
+					Field instanceField = clazz.getDeclaredField("instance");
+					Field timeoutTimeField = clazz.getDeclaredField("timeoutTime");
+					Field restartField = clazz.getDeclaredField("restart");
+					Method doStopMethod = clazz.getMethod("doStop");
+					watchdogDoStartMethod = clazz.getMethod("doStart", int.class, boolean.class);
+							
+					instanceField.setAccessible(true);
+					timeoutTimeField.setAccessible(true);
+					restartField.setAccessible(true);
+					
+					Object watchdogThread = instanceField.get(null);
+					watchdogTimeoutTime = (long) timeoutTimeField.get(watchdogThread);
+					watchdogRestart = (boolean) restartField.get(watchdogThread);
+					
+					doStopMethod.invoke(null);
+					watchdogThreadDeactivated = true;
+				} catch (ClassNotFoundException e) {
+					//Do nothing when the class does not exist
+					//as it does not seem like we're running
+					//on Spigot
+				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException
+						| InvocationTargetException e) {
+					logger.log(Level.SEVERE, "Failed to temporarily deactivate the Spigot Watchdog thread. Expecting Spigot to shut down the server in some seconds...");
+					logger.log(Level.SEVERE, "Stacktrace: ", e);
 				}
 			}
+			
+			int percent = (int)((i + 1) * 100d / requests);
+			logger.log(Level.INFO, percent + "%");
 		}
 		
 		if (sameConnection) {
@@ -240,9 +296,9 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 		if (watchdogThreadDeactivated) {
 			//Re-activate the watchdog thread
 			try {
-				watchdogDoStartMethod.invoke(null, watchdogTimeoutTime, watchdogRestart);
+				watchdogDoStartMethod.invoke(null, (int)watchdogTimeoutTime, watchdogRestart);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				//TODO: Handle
+				logger.log(Level.SEVERE, "Failed to reactivate the Spigot Watchdog thread", e);
 			}
 		}
 		

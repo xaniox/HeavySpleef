@@ -117,10 +117,12 @@ public class MigrationModule extends SimpleModule {
 			persistenceFolder.mkdir();
 		}
 		
-		getLogger().info("Migrating statistic data...");
+		
 		boolean statisticMigrationSuccess = false;
 		
 		if (configuration.contains("statistic") && configuration.getBoolean("statistic.enabled", true)) {
+			getLogger().info("Migrating statistic data. This may take up to an hour...");
+			
 			try {
 				//Migrate all legacy data
 				migrateStatisticData(dataFolder, configuration);
@@ -131,6 +133,8 @@ public class MigrationModule extends SimpleModule {
 			} catch (MigrationException e) {
 				getLogger().log(Level.SEVERE, "Could not migrate statistic data", e);
 			}
+		} else {
+			getLogger().info("Skipping the migration of statistics as this feature is disabled in the config!");
 		}
 		
 		File legacyGameFolder = new File(dataFolder, "games");
@@ -298,7 +302,7 @@ public class MigrationModule extends SimpleModule {
 			inputConnection = DriverManager.getConnection(inputUrl, user, password);
 			outputConnection = inputUrl.equals(outputUrl) ? inputConnection : DriverManager.getConnection(outputUrl, user, password);
 			
-			statisticMigrator = new StatisticMigrator(dbType);
+			statisticMigrator = new StatisticMigrator(dbType, getLogger());
 			statisticMigrator.migrate(inputConnection, outputConnection, null);
 		} catch (SQLException e) {
 			throw new MigrationException(e);
