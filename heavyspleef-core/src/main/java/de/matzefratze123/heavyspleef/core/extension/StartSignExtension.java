@@ -58,6 +58,11 @@ public class StartSignExtension extends SignExtension {
 			return;
 		}
 		
+		if (game.getGameState().isGameActive()) {
+			player.sendMessage(i18n.getString(Messages.Command.GAME_IS_INGAME));
+			return;
+		}
+		
 		game.countdown();
 	}
 	

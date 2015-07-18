@@ -19,6 +19,7 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
+import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -43,8 +44,10 @@ public class FlagAutostart extends IntegerFlag {
 	
 	@Subscribe
 	public void onPlayerJoin(PlayerJoinGameEvent event) {
-		int playersNow = event.getGame().getPlayers().size();
-		if (playersNow >= getValue()) {
+		Game game = event.getGame();
+		
+		int playersNow = game.getPlayers().size();
+		if (playersNow >= getValue() && !game.getGameState().isGameActive()) {
 			event.setStartGame(true);
 		}
 	}

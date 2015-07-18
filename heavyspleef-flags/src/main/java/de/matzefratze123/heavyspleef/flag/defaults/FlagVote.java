@@ -172,7 +172,7 @@ public class FlagVote extends BaseFlag {
 		int autostartVote = section.getAutostartVote();
 		double percentageVoted = (double)voted.size() / players.size();
 		
-		if (percentageVoted * 100 >= autostartVote && players.size() >= 2) {
+		if (percentageVoted * 100 >= autostartVote && players.size() >= 2 && !game.getGameState().isGameActive()) {
 			game.countdown();
 		}
 	}

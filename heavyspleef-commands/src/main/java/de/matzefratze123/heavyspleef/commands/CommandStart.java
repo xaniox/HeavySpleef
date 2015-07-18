@@ -58,6 +58,10 @@ public class CommandStart {
 			CommandValidate.notNull(game, i18n.getString(Messages.Command.NOT_INGAME));
 		}
 		
+		if (game.getGameState().isGameActive()) {
+			throw new CommandException(i18n.getString(Messages.Command.GAME_IS_INGAME));
+		}
+		
 		boolean success = game.countdown();
 		
 		if (success) {
