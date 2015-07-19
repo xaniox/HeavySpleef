@@ -25,19 +25,29 @@ import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyContext;
 import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyPriority;
 import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyPriority.Priority;
 import de.matzefratze123.heavyspleef.commands.base.proxy.Redirection;
+import de.matzefratze123.heavyspleef.core.Permissions;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 
 @Filter("spleef/join")
 @ProxyPriority(Priority.HIGH)
 public class JoinCommandProxy implements Proxy {
 
+	private final I18N i18n;
 	private JoinInventory inventory;
 	
-	public JoinCommandProxy(JoinInventory inventory) {
+	public JoinCommandProxy(JoinInventory inventory, JoinGuiAddOn addOn) {
 		this.inventory = inventory;
+		this.i18n = addOn.getI18n();
 	}
 	
 	@Override
 	public void execute(ProxyContext context, Object[] executionArgs) {
+		if (!context.getSender().hasPermission(Permissions.PERMISSION_JOIN)) {
+			context.getSender().sendMessage(i18n.getString(Messages.Command.NO_PERMISSION));
+			return;
+		}
+		
 		//Activate the GUI when the args length is 0
 		if (context.argsLength() == 0 && context.getSender() instanceof Player) {
 			Player player = context.getSender();

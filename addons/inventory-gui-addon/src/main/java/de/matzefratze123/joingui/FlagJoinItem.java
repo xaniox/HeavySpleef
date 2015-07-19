@@ -54,7 +54,7 @@ public class FlagJoinItem extends SingleItemStackFlag {
 				inventory = new JoinInventory(addOn);
 				heavySpleef.getGlobalEventBus().registerListener(inventory);
 				
-				proxy = new JoinCommandProxy(inventory);
+				proxy = new JoinCommandProxy(inventory, addOn);
 				
 				execution = ProxyExecution.inject(service, "spleef/join");
 				execution.attachProxy(proxy);
