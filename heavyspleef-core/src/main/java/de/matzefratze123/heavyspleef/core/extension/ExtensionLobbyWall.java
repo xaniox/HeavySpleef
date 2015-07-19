@@ -141,7 +141,7 @@ public class ExtensionLobbyWall extends GameExtension {
 	}
 	
 	@Command(name = "removewall", permission = Permissions.PERMISSION_REMOVE_WALL, minArgs = 1,
-			descref = Messages.Help.Description.REMOVEWALL, usage = "/spleef removewall")
+			descref = Messages.Help.Description.REMOVEWALL, usage = "/spleef removewall <game>")
 	@PlayerOnly
 	public static void onRemoveWallCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
@@ -186,7 +186,7 @@ public class ExtensionLobbyWall extends GameExtension {
 					
 					candidate.clearAll();
 					game.removeExtension(candidate);
-					removed = 0;
+					removed++;
 				}
 				
 				if (removed > 0) {
@@ -275,6 +275,9 @@ public class ExtensionLobbyWall extends GameExtension {
 		}
 		
 		Game game = getGame();
+		if (game == null) {
+			return;
+		}
 		
 		try {
 			long timer = game.getJoinRequester().request(player, JoinRequester.QUEUE_PLAYER_CALLBACK);
@@ -361,12 +364,12 @@ public class ExtensionLobbyWall extends GameExtension {
 						sign.setLine(i, line);
 					}
 					
-					sign.update();
-					
 					if (breakLoop) {
 						return LoopReturn.BREAK;
 					}
 				}
+				
+				sign.update(true);
 				
 				return LoopReturn.DEFAULT;
 			}
