@@ -195,7 +195,7 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 						insertStatement.setInt(6, 0);
 						insertStatement.setInt(7, 0);
 						insertStatement.setDouble(8, 1000D);
-						insertStatement.setString(1, foundGameProfile.getName());
+						insertStatement.setString(9, foundGameProfile.getName());
 						insertStatement.addBatch();
 					}
 				}
