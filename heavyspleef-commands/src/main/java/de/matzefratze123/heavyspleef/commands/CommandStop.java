@@ -59,7 +59,7 @@ public class CommandStop {
 					.setVariable("game", gameName)
 					.toString());
 		} else {
-			CommandValidate.isTrue(sender instanceof Player, i18n.getString(Messages.Command.PLAYER_ONLY));
+			CommandValidate.isTrue(sender instanceof SpleefPlayer, i18n.getString(Messages.Command.PLAYER_ONLY));
 			SpleefPlayer player = heavySpleef.getSpleefPlayer(sender);
 			
 			game = manager.getGame(player);
