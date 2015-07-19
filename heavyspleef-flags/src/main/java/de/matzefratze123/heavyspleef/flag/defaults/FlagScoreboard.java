@@ -88,7 +88,7 @@ public class FlagScoreboard extends BaseFlag {
 			team.setPrefix(IS_ALIVE_SYMBOL + (player.isVip() ? getHeavySpleef().getVipPrefix() : ""));
 			team.addPlayer(player.getBukkitPlayer());
 			
-			if (index >= MAX_OBJECTIVE_ENTRIES) {
+			if (index < MAX_OBJECTIVE_ENTRIES) {
 				Score score = objective.getScore(player.getName());
 				score.setScore(0);
 				playersTracked.add(player);
