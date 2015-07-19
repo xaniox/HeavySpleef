@@ -1,6 +1,6 @@
 command:
   player-only: "&cOnly players may execute this command"
-  no-permission: "&cYou do not have sufficient permission to execute this command"
+  no-permission: "&cYou do not have sufficient permissions to execute this command"
   description-format: "&6Description: &7$[description]"
   usage-format: "&6Usage: &7$[usage]"
   unknown-command: "&7Unknown spleef command. Type /spleef help for instructions"
