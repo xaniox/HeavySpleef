@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -140,12 +141,16 @@ public final class HeavySpleef {
 		gamesLoadCallbacks = Sets.newLinkedHashSet();
 		flagRegistry = new FlagRegistry(this);
 		
+		File configFile = new File(dataFolder, ConfigType.DEFAULT_CONFIG.getDestinationFileName());
+		if (configFile.exists()) {
+			Configuration prevLoadConfig = YamlConfiguration.loadConfiguration(configFile);
+			checkConfigVersions(prevLoadConfig, dataFolder.toPath());
+		}
+		
 		configurations = new EnumMap<ConfigType, ConfigurationObject>(ConfigType.class);
 		loadConfigurations();
-				
-		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
-		checkConfigVersions(defaultConfig, dataFolder.toPath());
 		
+		DefaultConfig defaultConfig = getConfiguration(ConfigType.DEFAULT_CONFIG);
 		Locale locale = defaultConfig.getLocalization().getLocale();
 		I18NBuilder builder = I18NBuilder.builder()
 				.setLoadingMode(LoadingMode.FILE_SYSTEM)
@@ -337,8 +342,8 @@ public final class HeavySpleef {
 		}
 	}
 	
-	private void checkConfigVersions(DefaultConfig config, Path dataFolder) {
-		if (config.getConfigVersion() < DefaultConfig.CURRENT_CONFIG_VERSION) {
+	private void checkConfigVersions(Configuration config, Path dataFolder) {
+		if (config.getInt("config-version") < DefaultConfig.CURRENT_CONFIG_VERSION) {
 			Path configSource = dataFolder.resolve(ConfigType.DEFAULT_CONFIG.getDestinationFileName());
 			Path configTarget = dataFolder.resolve("config_old.yml");
 			
