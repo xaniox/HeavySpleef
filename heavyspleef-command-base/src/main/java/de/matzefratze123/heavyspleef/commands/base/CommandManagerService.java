@@ -226,6 +226,9 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		
 		CommandContext context = new CommandContext(cutArgs, container, sender);
 		List<String> tabCompletes = container.tabComplete(context, permissionChecker, this.args.toArray(new Object[this.args.size()]));
+		if (tabCompletes == null) {
+			tabCompletes = Lists.newArrayList();
+		}
 		
 		if (args.length > 0 && !args[args.length - 1].isEmpty()) {
 			//Remove unrelevant completes
