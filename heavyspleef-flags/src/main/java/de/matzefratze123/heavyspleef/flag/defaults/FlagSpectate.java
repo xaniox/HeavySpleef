@@ -371,7 +371,7 @@ public class FlagSpectate extends LocationFlag {
 			return false;
 		}
 		
-		Player bukkitPlayer = player.getBukkitPlayer();
+		final Player bukkitPlayer = player.getBukkitPlayer();
 		
 		GameMode gameMode = bukkitPlayer.getGameMode();
 		bukkitPlayer.setGameMode(GameMode.SURVIVAL);
@@ -380,17 +380,23 @@ public class FlagSpectate extends LocationFlag {
 		
 		spectators.add(player);
 		
-		MaterialData data = config.getFlagSection().getLeaveItem();
-		MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
-		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_SPECTATE_DISPLAYNAME));
-		meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_SPECTATE_LORE)));
-		stack.setItemMeta(meta);
-		
-		stack.setMetadata(LEAVE_ITEM_KEY, null);
-		
-		bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
-		bukkitPlayer.updateInventory();
+		Bukkit.getScheduler().runTask(game.getHeavySpleef().getPlugin(), new Runnable() {
+			
+			@Override
+			public void run() {
+				MaterialData data = config.getFlagSection().getLeaveItem();
+				MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
+				ItemMeta meta = stack.getItemMeta();
+				meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_SPECTATE_DISPLAYNAME));
+				meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_SPECTATE_LORE)));
+				stack.setItemMeta(meta);
+				
+				stack.setMetadata(LEAVE_ITEM_KEY, null);
+				
+				bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
+				bukkitPlayer.updateInventory();
+			}
+		});
 		
 		player.teleport(getValue());
 		
