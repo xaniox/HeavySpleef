@@ -19,6 +19,7 @@ package de.matzefratze123.heavyspleef.commands;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -60,6 +61,17 @@ public class CommandHelp {
 		
 		CommandContainer container = service.getCommand(BASE_COMMAND);
 		List<CommandContainer> childs = Lists.newArrayList(container.getChildCommands());
+		for (Iterator<CommandContainer> iterator = childs.iterator(); iterator.hasNext();) {
+			CommandContainer child = iterator.next();
+			String permission = child.getPermission();
+			
+			if (permission.isEmpty() || sender.hasPermission(child.getPermission())) {
+				continue;
+			}
+			
+			iterator.remove();
+		}
+		
 		Collections.sort(childs, COMPARATOR);
 		
 		int maxPage = (int) Math.ceil(childs.size() / (double)RECORDS_PER_PAGE);
@@ -89,11 +101,6 @@ public class CommandHelp {
 			}
 			
 			CommandContainer child = childs.get(i);
-			String permission = child.getPermission();
-			
-			if (permission != null && !sender.hasPermission(permission)) {
-				continue;
-			}
 			
 			String desc = child.getDescription();
 			if (desc.isEmpty() && !child.getDescriptionRef().isEmpty()) {
