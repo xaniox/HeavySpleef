@@ -28,7 +28,7 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public abstract class BooleanFlag extends AbstractFlag<Boolean> {
 
-	private static final List<String> TRUE_MATCHING_KEYWORDS = Lists.newArrayList("true", "yes", "on", "enable");
+	private static final List<String> TRUE_MATCHING_KEYWORDS = Lists.newArrayList("true", "yes", "on", "enable", "allow");
 	
 	@Override
 	public Boolean parseInput(SpleefPlayer player, String input) {
