@@ -332,7 +332,7 @@ public class ExtensionLeaderboardWall extends GameExtension {
 		}
 		
 		@Override
-		public LoopReturn loop(int index, Sign sign) {
+		public LoopReturn loop(int rowIndex, Sign sign) {
 			if (!iterator.hasNext()) {
 				return LoopReturn.RETURN;
 			}
