@@ -301,8 +301,9 @@ public class ExtensionLeaderboardPodium extends GameExtension {
 				continue;
 			}
 			
-			signBlock.setType(Material.WALL_SIGN, false);
-			skullBlock.setType(Material.SKULL, false);
+			/* For legacy reasons and compatibility */
+			signBlock.setTypeId(Material.WALL_SIGN.getId(), false);
+			skullBlock.setTypeId(Material.SKULL.getId(), false);
 			
 			Skull skull = (Skull) skullBlock.getState();
 			skull.setRotation(direction.getBlockFace3D());
