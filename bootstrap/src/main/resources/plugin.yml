@@ -1,0 +1,17 @@
+name: ${project.parent.name}
+version: ${project.parent.version}
+prefix: ${project.parent.name}
+
+description: ${project.parent.description}
+author: matzefratze123
+website: ${project.parent.url}
+
+main: ${main.class}
+
+depend: [WorldEdit]
+softdepend: [Vault, ProtocolLib, Multiverse-Core, MultiWorld]
+
+commands:
+  spleef:
+    description: Main command for controlling HeavySpleef
+    aliases: [spl, heavyspleef, splegg]

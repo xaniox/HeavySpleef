@@ -1,0 +1,20 @@
+# Layout for the vote sign
+# The following variables are available:
+# String/Text: $[name] - The name of the game (string)
+#              $[state] - The current state of the game in english (string)
+#              $[localized_state] - The current state of the in the language as configured in the config.yml (string)
+#              $[players] - The amount of players currently playing (number)
+#              $[dead] - The amount of players which are out of the game (number)
+#              $[flag_value:<flag-name>] - A specific value for a flag, always check with $[has_flag:<flag-name>] before using this variable (can be every data type depending on the flag)
+#              $[countdown] - Seconds left in the countdown (number)
+#              $[has_flag:<flag-name>] - Wether or not this game has a maximum player count (boolean / condition)
+#              $[is_countdown] - Wether or not this game is currently counting down (boolean / condition)
+# 
+# For a reference on how to use scripting please 
+# visit the documentation of HeavySpleef at BukkitDev
+# http://dev.bukkit.org/bukkit-plugins/heavyspleef/pages/documentation/heavyspleef-2-0/layout-scripting/
+layout:
+  1: "$[prefix]"
+  2: "&8[&aVote&8]"
+  3: "&3$[name]"
+  4: ""

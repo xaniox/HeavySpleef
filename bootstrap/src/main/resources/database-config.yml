@@ -1,0 +1,79 @@
+# Database configuration for HeavySpleef
+# This config includes database connections
+# and other details for database modules
+
+# Manage your database modules here
+# Please note that you can only use
+# a sql database for statistics due
+# to performance issues on xml
+database-modules:
+  statistics:
+    enabled: true
+
+    # For experts only
+    # Specify the maximim account of statistics
+    # which will be cached (other statistics will be evicted from
+    # the cache and need to be loaded again from the database)
+    max-cache-size: 1024
+
+# This is for advanced users only.
+# HeavySpleef automatically handles
+# your required database connections if
+# you keep this untouched. If you want to
+# use MySQL for statistic persistence you need
+# to edit this section
+#
+# Specify your database connection
+# details here. 
+# 
+# Use the {basedir} variable for a reference to
+# the HeavySpleef working directory
+persistence-connection:
+  xml:
+    # Define the directory for xml
+    dir: "{basedir}/persistence/games/xml"
+  schematic:
+    # Define the schematic directory
+    dir: "{basedir}/persistence/games/schematic"
+  sql:
+    # Default available drivers:
+    #   - MySQL: com.mysql.jdbc.Driver
+    #   - SQLite: org.sqlite.JDBC
+    driver: org.sqlite.JDBC
+    
+    # Database connection url
+    #
+    # MySQL scheme: "jdbc:mysql://{host}/{database}"
+    # MySQL example: "jdbc:mysql://localhost:3306/heavyspleef"
+    # Note on MySQL: Make sure that you have created the database
+    #                when using MySQL before starting HeavySpleef
+    #
+    # SQLite scheme: "jdbc:sqlite:{path-to-file}"
+    # SQLite example: "jdbc:sqlite:{basedir}/persistence/database.sqlite"
+    #
+    url: "jdbc:sqlite:{basedir}/persistence/database.sqlite"
+    
+    # Set this to true if you use an authentication based sql database
+    # (MySQL for instance)
+    use-authentication: false
+    
+    # Specify a database user for use with MySQL
+    # This value is not needed if you prefer using
+    # a SQLite database
+    user: root
+    
+    # Only for MySQL
+    # Defines your password for the database user as defined above
+    password: password
+    
+    # For experts only. Specify the connection pool name.
+    pool-name: heavyspleef_connection_pool
+    
+    # For experts only. Specify the maximum connection pool size.
+    # Use one connection pool for SQLite. The connection pool size
+    # depends on your database thread concurrency
+    pool-size-max: 1
+    
+    # For experts only. Specify the idle closure-timeout for an unused connection
+    # in the connection pool (in seconds)
+    idle-timeout: 600

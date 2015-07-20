@@ -1,0 +1,10 @@
+name: LeaderboardExtensions
+version: 1.0
+
+author: matzefratze123
+main: de.matzefratze123.leaderboardextensions.LeaderboardAddOn
+i18n: dynamic
+
+extensions:
+- de.matzefratze123.leaderboardextensions.ExtensionLeaderboardPodium
+- de.matzefratze123.leaderboardextensions.ExtensionLeaderboardWall

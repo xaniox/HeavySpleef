@@ -1,0 +1,9 @@
+name: JoinGUI
+version: 1.0
+
+author: matzefratze123
+main: de.matzefratze123.joingui.JoinGuiAddOn
+i18n: dynamic
+
+flags:
+- de.matzefratze123.joingui.FlagJoinItem

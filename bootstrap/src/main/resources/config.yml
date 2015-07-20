@@ -1,0 +1,217 @@
+######################################
+## -- HeavySpleef  -  Configuration ##
+######################################
+#
+# This is the main configuration file of HeavySpleef
+# For database and back-end configuration see database-config.yml
+
+general:
+  # This prefix will be shown in every message
+  # you receive by the plugin
+  spleef-prefix: '&8[&6&lSpleef&8]'
+  
+  # Whitelisted commands
+  # A list of commands which are not blocked
+  # while playing spleef
+  command-whitelist:
+  - spleef
+  - money
+  - msg
+  - tell
+  
+  # This is the prefix for players
+  # who have the status 'vip'
+  # The permission for vip's is heavyspleef.vip
+  vip-prefix: '&c'
+  
+  # Defines wether vip are allowed to join
+  # full games. Full games are marked by the
+  # 'max-players' flag
+  vip-join-full: true
+  
+  # If you are running a pvp server this
+  # will come very handy for you. It allows
+  # you to set a timer the player has to wait
+  # before he is able to join a game. Movement,
+  # damage and death of the player cancelles the
+  # join.
+  #
+  # Given in seconds, use 0 to disable the timer.
+  pvp-timer: 0
+  
+queues:
+  # Wether players are able to use queues if they
+  # are not allowed to join the game (when it is ingame
+  # or full for instance)
+  use-queues: true
+  
+  # Defines wether players in the queue are allowed
+  # to execute commands. This can be used to prevent
+  # players from joining other games while in queue.
+  # The command whitelist will apply on this function.
+  commands-in-queues: false
+
+# This section defines the default properties
+# for games. Most of these properties are pretty
+# basic. For a more complex and challenging gameplay
+# see flags.
+# 
+# Please note that these properties will apply to all
+# games if changed.
+# 
+# Also note that these properties can be overriden by
+# flags as some flags require some properties to be
+# enabled or disabled (for instance the shovels flags
+# disables the instant break)!
+default-game-properties:
+
+  # Defines wether or not the players are
+  # able to instantly break blocks on floors.
+  # Default: true
+  instant-break: true
+  
+  # Defines wether or not a cracking effect
+  # will be played when a block is broken
+  # in instant-break mode.
+  # Default: true
+  play-block-break: true
+  
+  # Defines wether or not players are able
+  # to join, even if the game is in countdown.
+  # Default: true
+  join-on-countdown: true
+  
+  # Defines wether or not hunger is disabled
+  # while playing spleef.
+  # Default: true
+  disable-hunger: true
+  
+  # Defines wether or not pvp is disabled
+  # while playing spleef.
+  # Default: true
+  disable-pvp: true
+  
+  # Defines wether or not environmental damage
+  # is disabled while playing spleef.
+  # Default: true
+  disable-damage: true
+  
+  # Defines wether or not item pick-ups are
+  # disabled while playing spleef
+  # Default: true
+  disable-item-pickup: true
+  
+  # Defines wether or not players are able to
+  # drop items while playing spleef
+  # Default: true
+  disable-item-drop: true
+  
+  # Defines wether or not players are able to
+  # place blocks while playing spleef
+  # Default: true
+  disable-build: true
+  
+  # Defines wether or not liquid blocks are
+  # used to determine if a player has lost
+  # These liquids are: Water, Lava
+  # Default true
+  use-liquid-deathzone: true
+  
+  # Defines wether or not players are allowed
+  # to break blocks on floors
+  # Default: false
+  disable-floor-break: false
+  
+  # Defines wether players are able to use
+  # commands while in spleef
+  # Default: true
+  block-commands: true
+  
+  # Defines a broadcast radius where spleef
+  # messages are broadcasted around the game
+  # Default: 30
+  broadcast-radius: 30
+  
+localization:
+  # The language this plugin is using. Currently
+  # an english and a german translation is available
+  # 
+  # Possible values:
+  # en_US - English
+  # de_DE - German
+  #
+  # If you want to help with the translation of HeavySpleef
+  # feel free to translate it into your own language.
+  # For doing this, use the file located under
+  # /language/locale_en_US.yml as a template.
+  # Your translated file should have the following
+  # format: locale_<language-code>_<country-code>.yml
+  locale: en_US
+
+# Flag relevant configuration
+flags:
+  # Flag: vote
+  #
+  # Defines how many players have to vote
+  # in order to start the game (given in %)
+  # This means that x percent of players
+  # need to type /spleef vote to autostart
+  # the game
+  autostart-vote: 75
+  
+  # Flag: anticamping
+  #
+  # Defines after how many seconds of camping
+  # the player receives a warning. This does
+  # only work when anticamping-do-warn is set
+  # to true
+  anticamping-warn: 3
+  
+  # Flag: anticamping
+  #
+  # Defines wether or not the player even
+  # receives a warning when camping
+  anticamping-do-warn: true
+  
+  # Flag: anticamping
+  #
+  # Defines after how many seconds of camping
+  # the player is teleported down to the lower
+  # floor
+  anticamping-teleport: 6
+  
+  # Flag: vote
+  #
+  # Defines an alternative block the players
+  # have to click in order to vote for the start
+  ready-block: IRON_BLOCK
+  
+  # Flag: spectate, queuelobby
+  #
+  # An item the player can right-click to leave
+  # the spectate mode or the queue lobby
+  leave-item: MAGMA_CREAM
+  
+signs:
+  # This prefix may be shown on signs if
+  # requested by writing [Spleef] in the first line
+  spleef-prefix: '&8[&6Spleef&8]'
+  
+  # This prefix may be shown on signs if
+  # requested by writing [Splegg] in the first line
+  splegg-prefix: '&8[&6Splegg&8]'
+  
+update:
+  # Decide wether you want the plugin
+  # to check for updates everytime you
+  # start the server and notify you
+  enable-update-check: true
+  
+  # Decide wether you want to enable
+  # the /spleef update command for
+  # operators or admins with the
+  # heavyspleef.admin.update permission
+  enable-update-command: true
+
+# DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
+config-version: 5
