@@ -179,8 +179,8 @@ public class SpleefCommandManager implements CommandManager {
 			bukkitPlayer.spigot().sendMessage(infoMsg);
 			bukkitPlayer.spigot().sendMessage(helpMsg);
 		} else {
-			sender.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + desc.getName() + ChatColor.RESET + " version " + desc.getVersion());
-			sender.sendMessage(ChatColor.GOLD + "Type " + ChatColor.RESET + "/spleef help" + ChatColor.GOLD + " for help");
+			sender.sendMessage(org.bukkit.ChatColor.GRAY + "" + org.bukkit.ChatColor.BOLD + desc.getName() + org.bukkit.ChatColor.RESET + " version " + desc.getVersion());
+			sender.sendMessage(org.bukkit.ChatColor.GOLD + "Type " + org.bukkit.ChatColor.RESET + "/spleef help" + org.bukkit.ChatColor.GOLD + " for help");
 		}
 	}
 	
