@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lombok.Setter;
+import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -153,6 +154,7 @@ public class DefaultCommandExecution implements CommandExecution {
 			} else {
 				logger.log(Level.SEVERE, "Unhandled exception executing " + (completeTabsInvoke ? "tab complete for " : "") + "command \""
 						+ context.getCommand().getName() + "\"", cause);
+				context.getSender().sendMessage(ChatColor.RED + "An internal error occured while executing this command. Please see the server log.");
 			}
 		} catch (IllegalAccessException | IllegalArgumentException e) {
 			logger.log(Level.SEVERE, "Could not invoke " + (completeTabsInvoke ? "tab complete " : "") + "method for '"
