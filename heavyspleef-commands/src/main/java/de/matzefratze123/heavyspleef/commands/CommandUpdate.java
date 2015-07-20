@@ -61,7 +61,9 @@ public class CommandUpdate {
 		final CheckResult result = updater.getResult();
 		
 		CommandValidate.notNull(result, i18n.getString(Messages.Command.UPDATER_NOT_FINISHED_YET));
-		CommandValidate.isTrue(result.isUpdateAvailable(), i18n.getString(Messages.Command.NO_UPDATE_AVAILABLE));
+		CommandValidate.isTrue(result.isUpdateAvailable(), i18n.getVarString(Messages.Command.NO_UPDATE_AVAILABLE)
+				.setVariable("this-version", heavySpleef.getPlugin().getDescription().getVersion())
+				.toString());
 		
 		sender.sendMessage(i18n.getVarString(Messages.Command.STARTING_UPDATE)
 				.setVariable("new-version", result.getVersion().toString())
