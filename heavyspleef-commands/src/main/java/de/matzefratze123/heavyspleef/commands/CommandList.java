@@ -19,8 +19,8 @@ package de.matzefratze123.heavyspleef.commands;
 
 import java.util.Collection;
 
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -65,49 +65,42 @@ public class CommandList {
 		}
 	}
 	
-	private void sendGameEntry(CommandSender sender, Game game) {
+	public static void sendGameEntry(CommandSender sender, Game game) {
+		I18N i18n = I18NManager.getGlobal();
+		
 		if (MinecraftVersion.isSpigot() && sender instanceof SpleefPlayer) {
-			TextComponent comp = new TextComponent("");
-			TextComponent openBracket = new TextComponent("[");
-			openBracket.setColor(net.md_5.bungee.api.ChatColor.DARK_GRAY);
-			TextComponent closeBracket = new TextComponent("]");
-			closeBracket.setColor(net.md_5.bungee.api.ChatColor.DARK_GRAY);
-
-			TextComponent joinComp = new TextComponent(i18n.getString(Messages.Command.JOIN));
-			joinComp.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-			joinComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(i18n
-					.getVarString(Messages.Command.CLICK_TO_JOIN).setVariable("game", game.getName()).toString())));
-			joinComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef join " + game.getName()));
-
-			comp.addExtra(openBracket.duplicate());
-			comp.addExtra(joinComp);
-			comp.addExtra(closeBracket.duplicate());
-			comp.addExtra(" ");
+			ComponentBuilder builder = new ComponentBuilder("[")
+					.color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+				.append(i18n.getString(Messages.Command.JOIN))
+					.color(net.md_5.bungee.api.ChatColor.GREEN)
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(i18n
+							.getVarString(Messages.Command.CLICK_TO_JOIN).setVariable("game", game.getName()).toString())))
+					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef join " + game.getName()))
+				.append("]")
+					.color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+				.append(" ");
 
 			if (sender.hasPermission(Permissions.PERMISSION_INFO)) {
-				TextComponent infoComp = new TextComponent(i18n.getString(Messages.Command.ADMIN_INFO));
-				infoComp.setColor(net.md_5.bungee.api.ChatColor.RED);
-				infoComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(i18n
-						.getString(Messages.Command.SHOW_ADMIN_INFO))));
-				infoComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef info " + game.getName()));
-
-				comp.addExtra(openBracket.duplicate());
-				comp.addExtra(infoComp);
-				comp.addExtra(closeBracket.duplicate());
-				comp.addExtra(" ");
+				builder.append("[")
+						.color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+					.append(i18n.getString(Messages.Command.ADMIN_INFO))
+						.color(net.md_5.bungee.api.ChatColor.RED)
+						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(i18n
+								.getString(Messages.Command.SHOW_ADMIN_INFO))))
+						.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef info " + game.getName()))
+					.append("]")
+						.color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+					.append(" ");
 			}
 
-			TextComponent dashComp = new TextComponent("-");
-			dashComp.setColor(net.md_5.bungee.api.ChatColor.DARK_GRAY);
-			TextComponent gameComp = new TextComponent(game.getName());
-			gameComp.setColor(net.md_5.bungee.api.ChatColor.GRAY);
-
-			comp.addExtra(dashComp);
-			comp.addExtra(" ");
-			comp.addExtra(gameComp);
-
+			builder.append("-")
+					.color(net.md_5.bungee.api.ChatColor.DARK_GRAY)
+				.append(" ")
+				.append(game.getName())
+					.color(net.md_5.bungee.api.ChatColor.GRAY);
+			
 			SpleefPlayer player = (SpleefPlayer) sender;
-			player.getBukkitPlayer().spigot().sendMessage(new BaseComponent[] { comp });
+			player.getBukkitPlayer().spigot().sendMessage(builder.create());
 		} else {
 			// Standard message, no api is available
 			sender.sendMessage(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + game.getName());
