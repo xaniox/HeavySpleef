@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.game;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -38,12 +38,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.google.common.collect.Maps;
 
-import de.matzefratze123.heavyspleef.core.Game.JoinResult;
-import de.matzefratze123.heavyspleef.core.JoinRequester.PvPTimerManager.FailCause;
-import de.matzefratze123.heavyspleef.core.JoinRequester.PvPTimerManager.PvPTimerCallback;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.SimpleBasicTask;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.QueueSection;
+import de.matzefratze123.heavyspleef.core.game.Game.JoinResult;
+import de.matzefratze123.heavyspleef.core.game.JoinRequester.PvPTimerManager.FailCause;
+import de.matzefratze123.heavyspleef.core.game.JoinRequester.PvPTimerManager.PvPTimerCallback;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;

@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
 
-import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class PlayerInteractGameEvent extends PlayerGameEvent implements Cancellable {

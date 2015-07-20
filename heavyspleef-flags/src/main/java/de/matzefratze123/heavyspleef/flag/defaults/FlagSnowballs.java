@@ -33,14 +33,14 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
-import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameManager;
+import de.matzefratze123.heavyspleef.core.game.GameProperty;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;

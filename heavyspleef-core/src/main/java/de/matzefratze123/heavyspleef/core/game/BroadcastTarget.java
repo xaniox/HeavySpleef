@@ -15,30 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.game;
 
-import java.util.Map;
-
-import lombok.Getter;
-import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-
-public interface RatingCompute {
+public enum BroadcastTarget {
 	
-	//Leave this as a constant for now
-	public static final int K = 30;
-	public static final int D = 400;
-	
-	public RatingResult compute(Map<String, Statistic> statistics, Game game, SpleefPlayer[] winners);
-	
-	public static class RatingResult {
-		
-		@Getter
-		private Map<String, Double> newRating;
-		
-		public RatingResult(Map<String, Double> newRating) {
-			this.newRating = newRating;
-		}
-		
-	}
+	INGAME,
+	AROUND_GAME,
+	GLOBAL;
 	
 }

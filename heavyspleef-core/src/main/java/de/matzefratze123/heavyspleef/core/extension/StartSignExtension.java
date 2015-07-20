@@ -19,11 +19,11 @@ package de.matzefratze123.heavyspleef.core.extension;
 
 import org.bukkit.Location;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameManager;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;

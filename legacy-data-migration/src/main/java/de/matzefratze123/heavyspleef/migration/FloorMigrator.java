@@ -34,9 +34,9 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 import com.sk89q.worldedit.world.World;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.persistence.schematic.FloorAccessor;
 
 @SuppressWarnings("deprecation")

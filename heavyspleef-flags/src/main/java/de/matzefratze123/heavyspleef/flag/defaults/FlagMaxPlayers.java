@@ -19,9 +19,6 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameState;
-import de.matzefratze123.heavyspleef.core.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.GeneralSection;
@@ -30,6 +27,9 @@ import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameState;
+import de.matzefratze123.heavyspleef.core.game.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;

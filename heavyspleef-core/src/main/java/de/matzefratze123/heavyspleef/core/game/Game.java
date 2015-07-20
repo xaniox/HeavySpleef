@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.game;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -75,8 +75,8 @@ import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 
-import de.matzefratze123.heavyspleef.core.FlagManager.DefaultGamePropertyBundle;
-import de.matzefratze123.heavyspleef.core.FlagManager.GamePropertyBundle;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.GeneralSection;
@@ -106,6 +106,9 @@ import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionManager;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
+import de.matzefratze123.heavyspleef.core.flag.FlagManager;
+import de.matzefratze123.heavyspleef.core.flag.FlagManager.DefaultGamePropertyBundle;
+import de.matzefratze123.heavyspleef.core.flag.FlagManager.GamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.hook.WorldEditHook;
@@ -116,6 +119,7 @@ import de.matzefratze123.heavyspleef.core.player.PlayerStateHolder;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.core.script.Variable;
 import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
+import de.matzefratze123.heavyspleef.core.stats.StatisticRecorder;
 
 public class Game implements VariableSuppliable {
 	

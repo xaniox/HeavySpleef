@@ -38,8 +38,6 @@ import org.bukkit.material.MaterialData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.SimpleBasicTask;
@@ -51,6 +49,8 @@ import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate.SpectateEnteredEvent;

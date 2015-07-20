@@ -66,13 +66,13 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionLobbyWall.SignRow.SignRowValidationException;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
 import de.matzefratze123.heavyspleef.core.floor.SimpleClipboardFloor;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAntiCamping;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAutostart;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagBowspleef;

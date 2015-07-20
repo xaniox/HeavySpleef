@@ -26,8 +26,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.dom4j.DocumentException;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.Statistic;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.stats.Statistic;
 
 public interface ReadWriteHandler {
 	

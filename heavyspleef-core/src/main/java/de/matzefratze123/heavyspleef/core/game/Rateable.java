@@ -15,25 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.event;
+package de.matzefratze123.heavyspleef.core.game;
 
-import de.matzefratze123.heavyspleef.core.game.Game;
-import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-
-public class PlayerJoinGameEvent extends PlayerGameEvent {
-
-	private boolean startGame;
+public interface Rateable {
 	
-	public PlayerJoinGameEvent(Game game, SpleefPlayer player) {
-		super(game, player);
-	}
+	public double getRating();
 	
-	public boolean getStartGame() {
-		return startGame;
-	}
-	
-	public void setStartGame(boolean startGame) {
-		this.startGame = startGame;
-	}
+	public void setRating(double rating);
 
 }

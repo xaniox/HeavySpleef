@@ -23,9 +23,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import de.matzefratze123.heavyspleef.addon.AddOnModule;
 import de.matzefratze123.heavyspleef.commands.CommandModule;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.module.Module;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.flag.FlagModule;

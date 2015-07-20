@@ -19,13 +19,13 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameState;
-import de.matzefratze123.heavyspleef.core.QuitCause;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeftGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameState;
+import de.matzefratze123.heavyspleef.core.game.QuitCause;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;

@@ -39,7 +39,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandManager;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.collection.DualKeyBiMap;
@@ -49,6 +48,7 @@ import de.matzefratze123.heavyspleef.core.collection.DualMaps;
 import de.matzefratze123.heavyspleef.core.collection.DualMaps.Mapper;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;

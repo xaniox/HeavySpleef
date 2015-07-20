@@ -22,9 +22,9 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate.SpectateEnteredEvent;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;

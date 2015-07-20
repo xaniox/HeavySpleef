@@ -17,8 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameState;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameState;
 
 public class GameStateChangeEvent extends GameEvent {
 

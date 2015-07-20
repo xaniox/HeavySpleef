@@ -15,25 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core.event;
+package de.matzefratze123.heavyspleef.core.game;
 
-import de.matzefratze123.heavyspleef.core.game.Game;
-import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import java.util.List;
 
-public class PlayerJoinGameEvent extends PlayerGameEvent {
+import org.bukkit.Location;
+import org.bukkit.World;
 
-	private boolean startGame;
+import com.sk89q.worldedit.regions.Region;
+
+public interface SpawnpointGenerator<T extends Region> {
 	
-	public PlayerJoinGameEvent(Game game, SpleefPlayer player) {
-		super(game, player);
-	}
+	public void generateSpawnpoints(T region, World world, List<Location> spawnpoints, int n);
 	
-	public boolean getStartGame() {
-		return startGame;
-	}
-	
-	public void setStartGame(boolean startGame) {
-		this.startGame = startGame;
-	}
-
 }

@@ -17,7 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
-import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.game.Game;
 
 public class GameEnableEvent extends GameEvent {
 

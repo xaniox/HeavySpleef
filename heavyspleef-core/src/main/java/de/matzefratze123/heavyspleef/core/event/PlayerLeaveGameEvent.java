@@ -22,8 +22,8 @@ import lombok.Setter;
 
 import org.bukkit.Location;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.QuitCause;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.QuitCause;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 @Getter

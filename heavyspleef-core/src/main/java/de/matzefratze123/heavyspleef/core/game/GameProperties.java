@@ -15,17 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.game;
 
-import java.util.List;
+import java.util.Map;
 
-import org.bukkit.Location;
-import org.bukkit.World;
+import com.google.common.collect.Maps;
 
-import com.sk89q.worldedit.regions.Region;
-
-public interface SpawnpointGenerator<T extends Region> {
+public class GameProperties {
 	
-	public void generateSpawnpoints(T region, World world, List<Location> spawnpoints, int n);
+	private Map<GameProperty, Object> properties;
+	
+	public GameProperties() {
+		this.properties = Maps.newHashMap();
+		
+		setDefaults();
+	}
+	
+	public void setDefaults() {
+		properties.put(GameProperty.INSTANT_BREAK, true);
+	}
 	
 }

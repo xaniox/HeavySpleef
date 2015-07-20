@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.dom4j.Element;
 
-import de.matzefratze123.heavyspleef.core.GameProperty;
+import de.matzefratze123.heavyspleef.core.game.GameProperty;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class NullFlag extends AbstractFlag<Void> {

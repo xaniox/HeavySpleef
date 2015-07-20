@@ -19,7 +19,7 @@ package de.matzefratze123.heavyspleef.core.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 @Getter @Setter

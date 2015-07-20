@@ -15,11 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.game;
 
 import lombok.Getter;
 
 import org.bukkit.plugin.Plugin;
+
+import de.matzefratze123.heavyspleef.core.SimpleBasicTask;
 
 public class CountdownTask extends SimpleBasicTask {
 	

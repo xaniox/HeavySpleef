@@ -27,15 +27,15 @@ import org.bukkit.World;
 import com.google.common.collect.Maps;
 import com.sk89q.worldedit.regions.Region;
 
-import de.matzefratze123.heavyspleef.core.FlagManager;
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameState;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.Event;
 import de.matzefratze123.heavyspleef.core.event.EventBus;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionManager;
+import de.matzefratze123.heavyspleef.core.flag.FlagManager;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameState;
 
 public class SafeGameCreator {
 	

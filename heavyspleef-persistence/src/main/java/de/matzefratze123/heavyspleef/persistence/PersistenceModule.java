@@ -24,12 +24,12 @@ import java.util.Properties;
 import java.util.UUID;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DatabaseConfig;
 import de.matzefratze123.heavyspleef.core.config.DatabaseConnection;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
+import de.matzefratze123.heavyspleef.core.stats.Statistic;
 import de.matzefratze123.heavyspleef.core.uuid.UUIDManager;
 import de.matzefratze123.heavyspleef.persistence.handler.CachingReadWriteHandler;
 import de.matzefratze123.heavyspleef.persistence.handler.ForwardingAsyncReadWriteHandler;

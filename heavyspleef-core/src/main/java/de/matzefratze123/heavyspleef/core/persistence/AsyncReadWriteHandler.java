@@ -24,9 +24,9 @@ import java.util.UUID;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.Statistic;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.persistence.OperationBatch.BatchResult;
+import de.matzefratze123.heavyspleef.core.stats.Statistic;
 
 public interface AsyncReadWriteHandler {
 	

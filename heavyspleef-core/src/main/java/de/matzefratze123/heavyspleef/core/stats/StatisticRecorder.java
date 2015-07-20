@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.stats;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -31,13 +31,19 @@ import org.bukkit.block.Block;
 
 import com.google.common.util.concurrent.FutureCallback;
 
-import de.matzefratze123.heavyspleef.core.RatingCompute.RatingResult;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.game.DefaultRatingCompute;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameState;
+import de.matzefratze123.heavyspleef.core.game.QuitCause;
+import de.matzefratze123.heavyspleef.core.game.RatingCompute;
+import de.matzefratze123.heavyspleef.core.game.RatingCompute.RatingResult;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;

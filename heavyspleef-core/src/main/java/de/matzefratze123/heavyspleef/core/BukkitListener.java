@@ -42,6 +42,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameManager;
 import de.matzefratze123.heavyspleef.core.player.PlayerManager;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 

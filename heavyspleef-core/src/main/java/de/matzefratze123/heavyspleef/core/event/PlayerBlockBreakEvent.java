@@ -19,7 +19,7 @@ package de.matzefratze123.heavyspleef.core.event;
 
 import org.bukkit.block.Block;
 
-import de.matzefratze123.heavyspleef.core.Game;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public class PlayerBlockBreakEvent extends PlayerGameEvent implements Cancellable {

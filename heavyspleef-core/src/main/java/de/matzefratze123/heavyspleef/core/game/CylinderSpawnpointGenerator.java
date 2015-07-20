@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.game;
 
 import java.util.List;
 
@@ -23,29 +23,34 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.Vector2D;
+import com.sk89q.worldedit.regions.CylinderRegion;
 
-public class CuboidSpawnpointGenerator implements SpawnpointGenerator<CuboidRegion> {
+public class CylinderSpawnpointGenerator implements SpawnpointGenerator<CylinderRegion> {
 
 	@Override
-	public void generateSpawnpoints(CuboidRegion region, World world, List<Location> spawnpoints, int n) {
-		Vector min = region.getMinimumPoint();
-		Vector max = region.getMaximumPoint();
+	public void generateSpawnpoints(CylinderRegion region, World world, List<Location> spawnpoints, int n) {
+		Vector center = region.getCenter();
+		Vector2D radius = region.getRadius();
+		int radx = radius.getBlockX();
+		int radz = radius.getBlockZ();
 		
-		int dx = max.getBlockX() - min.getBlockX();
-		int dz = max.getBlockZ() - min.getBlockZ();
-		int py = max.getBlockY() + 1;
+		int y = region.getMaximumY() + 1;
 		
 		for (int i = 0; i < n; i++) {
-			int rx = (int) (Math.random() * dx);
-			int rz = (int) (Math.random() * dz);
+			double a = Math.random() * 2 * Math.PI;
+			double randomradx = Math.random() * radx;
+			double randomradz = Math.random() * radz;
 			
-			int px = min.getBlockX() + rx;
-			int pz = min.getBlockZ() + rz;
+			int rx = (int) (randomradx * Math.sin(a));
+			int rz = (int) (randomradz * Math.cos(a));
 			
-			Location location = new Location(world, px + 0.5, py, pz + 0.5);
+			int px = center.getBlockX() + rx;
+			int pz = center.getBlockZ() + rz;
+			
+			Location location = new Location(world, px, y, pz);
 			spawnpoints.add(location);
 		}
 	}
-
+	
 }

@@ -20,11 +20,11 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Map;
 
-import de.matzefratze123.heavyspleef.core.GameProperty;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Required;
+import de.matzefratze123.heavyspleef.core.game.GameProperty;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 
 @Flag(name = "lobby")

@@ -37,13 +37,13 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.Statistic;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.persistence.MoreFutures;
 import de.matzefratze123.heavyspleef.core.persistence.OperationBatch;
 import de.matzefratze123.heavyspleef.core.persistence.ReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.persistence.OperationBatch.BatchResult;
+import de.matzefratze123.heavyspleef.core.stats.Statistic;
 
 public class ForwardingAsyncReadWriteHandler implements AsyncReadWriteHandler {
 	

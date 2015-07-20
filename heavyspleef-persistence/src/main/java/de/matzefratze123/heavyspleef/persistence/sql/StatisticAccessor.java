@@ -28,7 +28,7 @@ import java.util.UUID;
 
 import com.google.common.collect.Maps;
 
-import de.matzefratze123.heavyspleef.core.Statistic;
+import de.matzefratze123.heavyspleef.core.stats.Statistic;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLAccessor.Field.Type;
 import de.matzefratze123.heavyspleef.persistence.sql.SQLDatabaseContext.SQLImplementation;
 

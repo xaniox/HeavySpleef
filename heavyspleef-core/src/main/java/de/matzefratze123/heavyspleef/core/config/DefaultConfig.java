@@ -30,7 +30,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import com.google.common.collect.Lists;
 
-import de.matzefratze123.heavyspleef.core.GameProperty;
+import de.matzefratze123.heavyspleef.core.game.GameProperty;
 
 public class DefaultConfig extends ConfigurationObject {
 	

@@ -28,11 +28,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Lists;
 
-import de.matzefratze123.heavyspleef.core.Game;
-import de.matzefratze123.heavyspleef.core.GameManager;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.JoinRequester;
-import de.matzefratze123.heavyspleef.core.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.event.GameCountdownChangeEvent;
 import de.matzefratze123.heavyspleef.core.event.GameRenameEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
@@ -41,6 +37,10 @@ import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameManager;
+import de.matzefratze123.heavyspleef.core.game.JoinRequester;
+import de.matzefratze123.heavyspleef.core.game.JoinRequester.JoinValidationException;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;

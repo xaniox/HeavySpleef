@@ -50,7 +50,6 @@ import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.PlayerOnly;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.PlayerPostActionHandler;
-import de.matzefratze123.heavyspleef.core.Statistic;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DatabaseConfig;
 import de.matzefratze123.heavyspleef.core.config.SignLayoutConfiguration;
@@ -65,6 +64,7 @@ import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.core.script.Variable;
+import de.matzefratze123.heavyspleef.core.stats.Statistic;
 
 @Extension(name = "leaderboard-wall", hasCommands = true)
 public class ExtensionLeaderboardWall extends GameExtension {

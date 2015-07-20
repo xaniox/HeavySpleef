@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.flag;
 
 import java.lang.reflect.Method;
 import java.util.EnumMap;
@@ -43,14 +43,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
-import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
-import de.matzefratze123.heavyspleef.core.flag.Flag;
-import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
-import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
-import de.matzefratze123.heavyspleef.core.flag.NullFlag;
-import de.matzefratze123.heavyspleef.core.flag.UnloadedFlag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority.Priority;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameProperty;
 
 public class FlagManager {
 	

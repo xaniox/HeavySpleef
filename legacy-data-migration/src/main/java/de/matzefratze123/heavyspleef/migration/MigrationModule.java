@@ -47,8 +47,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;

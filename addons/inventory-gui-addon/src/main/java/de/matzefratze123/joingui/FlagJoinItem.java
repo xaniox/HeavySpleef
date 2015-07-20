@@ -24,13 +24,13 @@ import org.bukkit.inventory.ItemStack;
 import de.matzefratze123.heavyspleef.commands.SpleefCommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyExecution;
-import de.matzefratze123.heavyspleef.core.Game;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
+import de.matzefratze123.heavyspleef.core.game.Game;
 
 @Flag(name = "join-item")
 public class FlagJoinItem extends SingleItemStackFlag {

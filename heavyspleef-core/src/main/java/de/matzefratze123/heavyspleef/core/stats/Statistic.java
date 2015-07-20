@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.matzefratze123.heavyspleef.core;
+package de.matzefratze123.heavyspleef.core.stats;
 
 import java.util.Set;
 import java.util.UUID;
 
+import de.matzefratze123.heavyspleef.core.game.Rateable;
 import de.matzefratze123.heavyspleef.core.script.Variable;
 import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
 import lombok.Getter;
