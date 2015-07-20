@@ -218,6 +218,7 @@ player:
   lost-rating: "&7Your new rating is: &6$[new-rating] &7(&c$[change]&7)"
   
   max-players-in-team-reached: "&cThe maximum amount of players in this team is reached!"
+  update-available: "&6An update is available for HeavySpleef (&av$[new-version]&6)\nUse '&a/spleef update&6' to update to the latest version"
 help:
   description:
     clearcache: "Clears the statistic cache"
