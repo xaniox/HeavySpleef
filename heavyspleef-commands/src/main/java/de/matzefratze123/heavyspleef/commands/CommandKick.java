@@ -69,7 +69,7 @@ public class CommandKick {
 		if (argsLength > 1) {
 			StringBuilder builder = new StringBuilder();
 			
-			for (int i = 0; i < argsLength; i++) {
+			for (int i = 1; i < argsLength; i++) {
 				builder.append(context.getString(i));
 				
 				if (i + 1 < argsLength) {
