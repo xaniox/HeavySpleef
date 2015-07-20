@@ -34,8 +34,13 @@ import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.json.simple.JSONArray;
@@ -47,9 +52,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.MoreFutures;
 
-public class Updater {
+public class Updater implements Listener {
 	
 	private static final int THREAD_POOL_SIZE = 1;
 	private static final int PROJECT_ID = 51622;
@@ -58,6 +66,7 @@ public class Updater {
 	private static final String USER_AGENT = "HeavySpleef-Updater";
 	private static final int BUFFER_SIZE = 1024;
 	
+	private final I18N i18n = I18NManager.getGlobal();
 	private final JSONParser parser = new JSONParser();
 	private final ListeningExecutorService service;
 	private final Plugin plugin;
@@ -71,6 +80,8 @@ public class Updater {
 		this.plugin = plugin;
 		this.desc = plugin.getDescription();
 		this.updateFolder = plugin.getServer().getUpdateFolderFile();
+		
+		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	
 	public ListenableFuture<CheckResult> check(FutureCallback<CheckResult> callback) {
@@ -98,6 +109,23 @@ public class Updater {
 		}
 		
 		return future;
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		if (!player.hasPermission(Permissions.PERMISSION_UPDATE)) {
+			return;
+		}
+		
+		if (result == null || !result.isUpdateAvailable()) {
+			return;
+		}
+		
+		player.sendMessage(i18n.getVarString(Messages.Player.UPDATE_AVAILABLE)
+				.setVariable("new-version", result.getVersion().toString())
+				.setVariable("this-version", plugin.getDescription().getVersion())
+				.toString());
 	}
 	
 	private class CheckCallable implements Callable<CheckResult> {
