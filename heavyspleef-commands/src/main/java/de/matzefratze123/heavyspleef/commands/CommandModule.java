@@ -30,9 +30,8 @@ public class CommandModule extends SimpleModule {
 	public void enable() {
 		// Bukkit keeps a reference of the CommandManagerService
 		SpleefCommandManager manager = new SpleefCommandManager(getHeavySpleef());
-		manager.init();
-		
 		getHeavySpleef().setCommandManager(manager);
+		manager.init();
 	}
 	
 	@Override
