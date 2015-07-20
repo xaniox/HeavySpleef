@@ -43,7 +43,7 @@ public class CommandVersion {
 		
 		sender.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "HeavySpleef " + ChatColor.GREEN + "v" + desc.getVersion() + ChatColor.GRAY
 				+ " by " + ChatColor.GREEN + "Matze" + ChatColor.GRAY + " (matzefratze123)");
-		sender.sendMessage(ChatColor.GRAY + "Visit http://dev.bukkit.org/bukkit-plugins/heavyspleef/ for more information");
+		sender.sendMessage(ChatColor.GRAY + "Visit http://dev.bukkit.org/bukkit-plugins/heavyspleef for more information");
 	}
 
 }
