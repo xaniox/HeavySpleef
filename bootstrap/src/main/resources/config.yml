@@ -18,6 +18,7 @@ general:
   - money
   - msg
   - tell
+  - r
   
   # This is the prefix for players
   # who have the status 'vip'
