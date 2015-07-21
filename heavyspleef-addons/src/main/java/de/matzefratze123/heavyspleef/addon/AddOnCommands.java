@@ -17,6 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.addon;
 
+import java.util.Set;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,11 +36,12 @@ public class AddOnCommands {
 	
 	private static final String LOAD_ACTION = "load";
 	private static final String UNLOAD_ACTION = "unload";
+	private static final String LIST_ACTION = "list";
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "add-on", descref = Messages.Help.Description.ADDONS,
-			usage = "/spleef add-on <load|unload> <add-on>", minArgs = 2,
+			usage = "/spleef add-on <[load|unload> <add-on>]|list>", minArgs = 2,
 			permission = Permissions.PERMISSION_ADDON)
 	public void onAddOnCommand(CommandContext context, HeavySpleef heavySpleef, AddOnManager manager) throws CommandException {
 		CommandSender sender = context.getSender();
@@ -72,6 +75,26 @@ public class AddOnCommands {
 			sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_UNLOADED)
 					.setVariable("addon", addonName)
 					.toString());
+		} else if (action.equalsIgnoreCase(LIST_ACTION)) {
+			Set<AddOn> addOns = manager.getAddOns();
+			
+			if (addOns.isEmpty()) {
+				sender.sendMessage(i18n.getString(Messages.Command.NO_ADDONS_INSTALLED));
+			} else {
+				sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_LIST_HEADER)
+						.setVariable("amount", String.valueOf(addOns.size()))
+						.toString());
+				
+				for (AddOn addOn : addOns) {
+					AddOnProperties properties = addOn.getProperties();
+					
+					sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_LIST_ENTRY)
+							.setVariable("addon", addOn.getName())
+							.setVariable("version", properties.getVersion())
+							.setVariable("author", properties.getAuthor())
+							.toString());
+				}
+			}
 		} else {
 			throw new CommandException(context.getCommand().getUsage());
 		}

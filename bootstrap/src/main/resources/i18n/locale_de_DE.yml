@@ -142,8 +142,11 @@ command:
   
   addon-not-enabled: "&cAdd-on $[addon] ist nicht aktiviert!"
   addon-already-enabled: "&cAdd-on $[addon] ist bereits aktiviert!"
-  addon-unloaded: "&cAdd-on $[addon] wurde deaktiviert."
-  addon-loaded: "&cAdd-on $[addon] wurde aktiviert."
+  addon-unloaded: "&7Add-on &a$[addon] &7wurde deaktiviert."
+  addon-loaded: "&7Add-on &a$[addon] &7wurde aktiviert."
+  no-addons-installed: "&cEs wurden noch keine Add-ons installiert!"
+  addon-list-header: "&6-------- &8&l[&aInstallierte Add-ons &8&l] &6--------"
+  addon-list-entry: "&7- $[addon] &7(&6$[version]&7)"
 broadcast:
   player-left-game: "&a$[player] &7hat das Spiel verlassen"
   game-started: "&7Spiel &a$[game] &7gestartet. Viel Glück!"
@@ -227,7 +230,7 @@ player:
   update-available: "&6Ein Update ist für HeavySpleef verfügbar (&av$[new-version]&6)!\nBenutze '&a/spleef update&6' um HeavySpleef automatisch auf die neueste Version zu aktualisieren."
 help:
   description:
-    addon: "Aktiviert oder deaktiviert ein Add-On"
+    addon: "Aktiviert, deaktiviert ein Add-On oder listet alle installierten Add-ons"
     clearcache: "Leert den Statistik-Cache"
     create: "Erstellt ein neues Spiel mit Namen"
     delete: "Löscht ein Spiel mit Namen"

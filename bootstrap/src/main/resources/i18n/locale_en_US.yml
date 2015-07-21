@@ -142,8 +142,9 @@ command:
   
   addon-not-enabled: "&cAdd-on $[addon] is not enabled!"
   addon-already-enabled: "&cAdd-on $[addon] is already enabled!"
-  addon-unloaded: "&cAdd-on $[addon] has been unloaded"
-  addon-loaded: "&cAdd-on $[addon] has been loaded"
+  addon-unloaded: "&7Add-on &a$[addon] &7has been unloaded"
+  addon-loaded: "&7Add-on &a$[addon] &7has been loaded"
+  no-addons-installed: "&cNo add-ons have been installed yet!"
 broadcast:
   player-left-game: "&a$[player] &7left the game"
   game-started: "&7The game &a$[game] &7has started. Good luck!"
@@ -226,7 +227,7 @@ player:
   update-available: "&6An update is available for HeavySpleef (&av$[new-version]&6)\nUse '&a/spleef update&6' to update to the latest version"
 help:
   description:
-    addon: "Loads and enables or disables and unloads an add-on"
+    addon: "Loads, unloads an add-on or lists all installed add-ons"
     clearcache: "Clears the statistic cache"
     create: "Creates a new spleef game with a name"
     delete: "Deletes the game with a name"

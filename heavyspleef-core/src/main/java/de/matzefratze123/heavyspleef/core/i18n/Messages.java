@@ -167,6 +167,9 @@ public interface Messages {
 		public static final String ADDON_ALREADY_ENABLED = PREFIX + "addon-already-enabled";
 		public static final String ADDON_UNLOADED = PREFIX + "addon-unloaded";
 		public static final String ADDON_LOADED = PREFIX + "addon-loaded";
+		public static final String NO_ADDONS_INSTALLED = PREFIX + "no-addons-installed";
+		public static final String ADDON_LIST_HEADER = PREFIX + "addon-list-header";
+		public static final String ADDON_LIST_ENTRY = PREFIX + "addon-list-entry";
 		
 	}
 	
