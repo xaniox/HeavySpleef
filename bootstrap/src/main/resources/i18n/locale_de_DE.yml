@@ -227,6 +227,7 @@ player:
   update-available: "&6Ein Update ist für HeavySpleef verfügbar (&av$[new-version]&6)!\nBenutze '&a/spleef update&6' um HeavySpleef automatisch auf die neueste Version zu aktualisieren."
 help:
   description:
+    addon: "Aktiviert oder deaktiviert ein Add-On"
     clearcache: "Leert den Statistik-Cache"
     create: "Erstellt ein neues Spiel mit Namen"
     delete: "Löscht ein Spiel mit Namen"

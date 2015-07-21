@@ -226,6 +226,7 @@ player:
   update-available: "&6An update is available for HeavySpleef (&av$[new-version]&6)\nUse '&a/spleef update&6' to update to the latest version"
 help:
   description:
+    addon: "Loads and enables or disables and unloads an add-on"
     clearcache: "Clears the statistic cache"
     create: "Creates a new spleef game with a name"
     delete: "Deletes the game with a name"
