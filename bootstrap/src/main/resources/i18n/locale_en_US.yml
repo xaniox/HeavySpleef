@@ -139,6 +139,11 @@ command:
   rating-disabled: "&7You disabled the distribution of rating for the game &a$[game]"
   
   no-games-exist: "&aNo spleef games exist yet"
+  
+  addon-not-enabled: "&cAdd-on $[addon] is not enabled!"
+  addon-already-enabled: "&cAdd-on $[addon] is already enabled!"
+  addon-unloaded: "&cAdd-on $[addon] has been unloaded"
+  addon-loaded: "&cAdd-on $[addon] has been loaded"
 broadcast:
   player-left-game: "&a$[player] &7left the game"
   game-started: "&7The game &a$[game] &7has started. Good luck!"

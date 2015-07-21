@@ -139,6 +139,11 @@ command:
   rating-disabled: "&7Du hast das Verteilen von Rating für das Spiel &a$[game] &7deaktiviert"
   
   no-games-exist: "&cEs existieren noch keine Spleef Spiele."
+  
+  addon-not-enabled: "&cAdd-on $[addon] ist nicht aktiviert!"
+  addon-already-enabled: "&cAdd-on $[addon] ist bereits aktiviert!"
+  addon-unloaded: "&cAdd-on $[addon] wurde deaktiviert."
+  addon-loaded: "&cAdd-on $[addon] wurde aktiviert."
 broadcast:
   player-left-game: "&a$[player] &7hat das Spiel verlassen"
   game-started: "&7Spiel &a$[game] &7gestartet. Viel Glück!"

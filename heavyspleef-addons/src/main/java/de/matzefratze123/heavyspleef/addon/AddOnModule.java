@@ -21,6 +21,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 
+import lombok.Getter;
 import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
@@ -33,7 +34,7 @@ public class AddOnModule extends SimpleModule {
 
 	private static final String BASEDIR_FILE_NAME = "addons";
 	
-	private File baseDir;
+	private @Getter File baseDir;
 	private AddOnManager manager;
 	private final Injector<AbstractFlag<?>> addOnInjector = new Injector<AbstractFlag<?>>() {
 		
@@ -80,6 +81,9 @@ public class AddOnModule extends SimpleModule {
 		manager.loadAddOns(baseDir);
 		manager.enableAddOns();
 		getLogger().log(Level.INFO, "Add-On load complete. Enabled " + manager.getAddOns().size() + " add-ons");
+		
+		heavySpleef.getCommandManager().getService().addArgument(manager);
+		heavySpleef.getCommandManager().registerSpleefCommands(AddOnCommands.class);
 	}
 
 	@Override

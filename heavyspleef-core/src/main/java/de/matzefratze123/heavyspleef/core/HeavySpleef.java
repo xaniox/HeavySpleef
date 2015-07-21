@@ -100,7 +100,7 @@ public final class HeavySpleef {
 	private static final String I18N_CLASSPATH_FOLDER = "i18n/";
 	
 	private Map<ConfigType, ConfigurationObject> configurations;
-	private ModuleManager moduleManager;
+	private @Getter ModuleManager moduleManager;
 	private File localeDir;
 	
 	private @Getter final JavaPlugin plugin;

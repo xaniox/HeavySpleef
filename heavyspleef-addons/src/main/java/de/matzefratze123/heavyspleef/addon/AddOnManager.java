@@ -105,7 +105,33 @@ public final class AddOnManager {
 			
 			addOnMap.put(addOn.getName(), addOn);
 		} catch (InvalidAddOnException e) {
-			logger.log(Level.SEVERE, "Could not load add-on " + addOnFile.getName() + "", e);
+			logger.log(Level.SEVERE, "Could not load add-on " + addOnFile.getName(), e);
+		}
+	}
+	
+	public void searchAndLoad(File baseDir, String name) {
+		if (!baseDir.exists()) {
+			throw new IllegalArgumentException("Directory '" + baseDir.getName() + "' does not exist");
+		}
+		
+		JavaAddOnLoader javaLoader = (JavaAddOnLoader) loader;
+		
+		for (File addonFile : baseDir.listFiles()) {
+			if (!addonFile.getName().toLowerCase().endsWith(".jar")) {
+				continue;
+			}
+			
+			try {
+				AddOnProperties properties = javaLoader.loadProperties(addonFile);
+				String addonName = properties.getName();
+				if (!name.equals(addonName)) {
+					continue;
+				}
+				
+				loadAddOn(addonFile);
+			} catch (InvalidAddOnException e) {
+				logger.log(Level.SEVERE, "Could not load add-on " + addonFile.getName(), e);
+			}
 		}
 	}
 	
@@ -166,6 +192,15 @@ public final class AddOnManager {
 		
 		//Clear class cache
 		classContext.unregister(addOn);
+	}
+	
+	public boolean isAddOnEnabled(String name) {
+		if (!addOnMap.containsKey(name)) {
+			return false;
+		}
+		
+		BasicAddOn addon = (BasicAddOn) addOnMap.get(name);
+		return addon.isEnabled();
 	}
 	
 	public void enableAddOns() {

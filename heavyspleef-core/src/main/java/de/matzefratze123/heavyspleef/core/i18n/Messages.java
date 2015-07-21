@@ -162,6 +162,11 @@ public interface Messages {
 
 		public static final String NO_GAMES_EXIST = PREFIX + "no-games-exist";
 		public static final String NEED_STATISTICS_ENABLED = PREFIX + "need-statistics-enabled";
+
+		public static final String ADDON_NOT_ENABLED = PREFIX + "addon-not-enabled";
+		public static final String ADDON_ALREADY_ENABLED = PREFIX + "addon-already-enabled";
+		public static final String ADDON_UNLOADED = PREFIX + "addon-unloaded";
+		public static final String ADDON_LOADED = PREFIX + "addon-loaded";
 		
 	}
 	
@@ -269,6 +274,7 @@ public interface Messages {
 			
 			public static final String PREFIX = Help.PREFIX + "description.";
 			
+			public static final String ADDONS = PREFIX + "addon";
 			public static final String CLEARCACHE = PREFIX + "clearcache";
 			public static final String CREATE = PREFIX + "create";
 			public static final String DELETE = PREFIX + "delete";

@@ -81,5 +81,17 @@ public class ModuleManager {
 			}
 		}
 	}
+
+	public Module getModule(Class<? extends Module> clazz) {
+		for (Module module : modules.keySet()) {
+			if (module.getClass() != clazz) {
+				continue;
+			}
+			
+			return module;
+		}
+		
+		return null;
+	}
 	
 }
