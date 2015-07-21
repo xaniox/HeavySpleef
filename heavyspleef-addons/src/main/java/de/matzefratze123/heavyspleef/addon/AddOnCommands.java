@@ -41,7 +41,7 @@ public class AddOnCommands {
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "add-on", descref = Messages.Help.Description.ADDONS,
-			usage = "/spleef add-on <[load|unload> <add-on>]|list>", minArgs = 2,
+			usage = "/spleef add-on <[load|unload> <add-on>]|list>", minArgs = 1,
 			permission = Permissions.PERMISSION_ADDON)
 	public void onAddOnCommand(CommandContext context, HeavySpleef heavySpleef, AddOnManager manager) throws CommandException {
 		CommandSender sender = context.getSender();
@@ -50,7 +50,7 @@ public class AddOnCommands {
 		}
 		
 		String action = context.getString(0);
-		String addonName = context.getString(1);
+		String addonName = context.getStringSafely(1);
 		
 		if (action.equalsIgnoreCase(LOAD_ACTION)) {
 			CommandValidate.isTrue(!manager.isAddOnEnabled(addonName), i18n.getVarString(Messages.Command.ADDON_ALREADY_ENABLED)
