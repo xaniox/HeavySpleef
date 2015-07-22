@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -49,6 +50,8 @@ import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy;
 import de.matzefratze123.heavyspleef.core.module.LoadPolicy.Lifecycle;
 import de.matzefratze123.heavyspleef.core.module.SimpleModule;
@@ -112,11 +115,26 @@ public class MigrationModule extends SimpleModule {
 		getLogger().info("Detected old configurations and databases!");
 		getLogger().info("Migrating data to a newer version for use by HeavySpleef!");
 		
+		//Emulate i18n access
+		Field globalI18nField = null;
+		boolean accessible = false;
+		
+		try {
+			globalI18nField = I18NManager.class.getDeclaredField("global");
+			accessible = globalI18nField.isAccessible();
+			globalI18nField.setAccessible(true);
+			
+			I18N i18n = new I18N();
+			globalI18nField.set(null, i18n);
+		} catch (Exception e) {
+			getLogger().log(Level.SEVERE, "Could not set i18n", e);
+			return;
+		}
+		
 		File persistenceFolder = new File(dataFolder, "persistence");
 		if (!persistenceFolder.exists()) {
 			persistenceFolder.mkdir();
 		}
-		
 		
 		boolean statisticMigrationSuccess = false;
 		
@@ -192,6 +210,10 @@ public class MigrationModule extends SimpleModule {
 					}
 				}
 				
+				if (game == null) {
+					continue;
+				}
+				
 				File floorFolder = new File(schematicFolder, gameName);
 				if (!floorFolder.exists()) {
 					floorFolder.mkdir();
@@ -244,6 +266,18 @@ public class MigrationModule extends SimpleModule {
 			Files.delete(configFile.toPath());
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Could not delete legacy folders and files", e);
+		}
+		
+		if (globalI18nField != null) {
+			try {
+				globalI18nField.set(null, (I18N)null);
+			} catch (Exception e) {
+				getLogger().log(Level.SEVERE, "Could not reset i18n", e);
+			} finally {
+				if (globalI18nField != null) {
+					globalI18nField.setAccessible(accessible);
+				}
+			}
 		}
 		
 		getLogger().info("Migration successfully finished!");
