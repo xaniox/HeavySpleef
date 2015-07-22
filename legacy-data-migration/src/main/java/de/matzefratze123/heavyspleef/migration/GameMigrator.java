@@ -101,6 +101,7 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamColor;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTimeout;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagWinPoint;
 import de.matzefratze123.heavyspleef.flag.presets.BooleanFlag;
+import de.matzefratze123.heavyspleef.flag.presets.DoubleFlag;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 import de.matzefratze123.heavyspleef.flag.presets.ItemStackFlag;
 import de.matzefratze123.heavyspleef.flag.presets.ItemStackListFlag;
@@ -401,6 +402,8 @@ public class GameMigrator implements Migrator<Configuration, File> {
 			result = (T) extractFlagValue(legacyValue, Boolean.class, null);
 		} else if (IntegerFlag.class.isAssignableFrom(flagClazz)) {
 			result = (T) extractFlagValue(legacyValue, Integer.class, null);
+		} else if (DoubleFlag.class.isAssignableFrom(flagClazz)) {
+			result = (T) extractFlagValue(legacyValue, Double.class, null);
 		} else if (ItemStackFlag.class.isAssignableFrom(flagClazz)) {
 			result = (T) extractFlagValue(legacyValue, ItemStack.class, null);
 		} else if (ItemStackListFlag.class.isAssignableFrom(flagClazz)) {
@@ -435,6 +438,8 @@ public class GameMigrator implements Migrator<Configuration, File> {
 			value = (T)(Boolean) Boolean.parseBoolean(valueString);
 		} else if (expected == Integer.class) {
 			value = (T)(Integer)Integer.parseInt(valueString);
+		} else if (expected == Double.class) {
+			value = (T)(Double)Double.parseDouble(valueString);
 		} else if (expected == Location.class) {
 			value = (T)legacyStringToLocation(valueString);
 		} else if (expected == ItemStack.class) {
