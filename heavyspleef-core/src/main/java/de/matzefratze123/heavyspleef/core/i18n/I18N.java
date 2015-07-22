@@ -41,6 +41,8 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.NoArgsConstructor;
+
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.file.YamlConfigurationOptions;
@@ -54,6 +56,7 @@ import com.google.common.collect.Lists;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage.MessageVariable;
 
+@NoArgsConstructor
 public class I18N {
 	
 	public static final Charset UTF8_CHARSET = StandardCharsets.UTF_8;
@@ -76,11 +79,11 @@ public class I18N {
 	
 	private Locale locale;
 	private ClassLoader classLoader;
-	private final Logger logger;
+	private Logger logger;
 	private LoadingMode mode;
-	private final YMLControl defaultControl;
-	private final File fileSystemFolder;
-	private final String classpathFolder;
+	private YMLControl defaultControl;
+	private File fileSystemFolder;
+	private String classpathFolder;
 	private I18N parent;
 	private ResourceBundle bundle;
 	
