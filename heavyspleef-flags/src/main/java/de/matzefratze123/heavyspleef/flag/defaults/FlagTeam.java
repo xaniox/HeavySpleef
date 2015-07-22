@@ -157,8 +157,11 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	@Override
 	public void onFlagAdd(Game game) {
 		StatisticRecorder recorder = game.getStatisticRecorder();
-		RatingCompute compute = new TeamRatingCompute();
-		recorder.setRatingCompute(compute);
+		
+		if (recorder != null) {
+			RatingCompute compute = new TeamRatingCompute();
+			recorder.setRatingCompute(compute);
+		}
 	}
 	
 	@Override
