@@ -51,7 +51,7 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 	private static final String TEMP_TABLE_NAME = "heavyspleef_statistics_temp";
 	private static final int RECORD_BUFFER_SIZE = 1000;
 	private static final double ESTIMATED_TIME_PER_STATISTIC = 0.25;
-	private static final String CREATE_TABLE_SQL = "CREATE TABLE %s ("
+	private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS %s ("
 			+ "id INTEGER NOT NULL PRIMARY KEY %s, "
 			+ "uuid CHAR(36) UNIQUE, "
 			+ "last_name CHAR(16), "
@@ -121,13 +121,11 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 			int limit = i + 1 < requests ? RECORD_BUFFER_SIZE : size - ((requests - 1) * RECORD_BUFFER_SIZE);
 			
 			final String selectSql = "SELECT * FROM " + TABLE_NAME + " LIMIT " + offset + "," + limit;
-			String[] names = new String[limit];
+			List<String> names = Lists.newArrayList();
 			List<LegacyStatisticProfile> profiles = Lists.newLinkedList();
 			
 			try (Statement selectStatement = inputSource.createStatement();
 					ResultSet result = selectStatement.executeQuery(selectSql)) {
-				int index = 0;
-				
 				while (result.next()) {
 					String name = result.getString("owner");
 					int wins = result.getInt("wins");
@@ -135,9 +133,14 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 					int knockouts = result.getInt("knockouts");
 					int gamesPlayed = result.getInt("games");
 					
+					if (name.contains(" ")) {
+						//Some sort of an illegal name
+						continue;
+					}
+					
 					LegacyStatisticProfile profile = new LegacyStatisticProfile(name, wins, losses, knockouts, gamesPlayed);
 					profiles.add(profile);
-					names[index++] = name;
+					names.add(name);
 				}
 			} catch (SQLException e) {
 				throw new MigrationException(e);
@@ -146,7 +149,7 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 			List<GameProfile> gameProfiles;
 			
 			try {
-				gameProfiles = uuidManager.getProfiles(names, true, true);
+				gameProfiles = uuidManager.getProfiles(names.toArray(new String[names.size()]), true, true);
 			} catch (ExecutionException e) {
 				throw new MigrationException(e);
 			}
