@@ -20,6 +20,9 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Set;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -38,6 +41,7 @@ import com.google.common.collect.Sets;
 import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerGameEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveQueueEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
@@ -118,12 +122,22 @@ public class FlagQueueLobby extends LocationFlag {
 			return;
 		}
 		
+		Game game = event.getGame();
+		QueueLobbyLeaveEvent lobbyLeaveEvent = new QueueLobbyLeaveEvent(game, player);
+		game.getEventBus().callEvent(lobbyLeaveEvent);
+		
+		Location teleportTo = lobbyLeaveEvent.getTeleportTo();
+		
 		PlayerStateHolder state = player.removePlayerState(this);
 		if (state != null) {
-			state.apply(player.getBukkitPlayer(), true);
+			state.apply(player.getBukkitPlayer(), teleportTo == null);
 		} else {
 			//Ugh, something went wrong
 			player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+		}
+		
+		if (teleportTo != null) {
+			player.teleport(teleportTo);
 		}
 	}
 	
@@ -197,6 +211,17 @@ public class FlagQueueLobby extends LocationFlag {
 				}
 			}
 		}, 10L);
+	}
+	
+	@Getter @Setter
+	public static class QueueLobbyLeaveEvent extends PlayerGameEvent {
+		
+		private Location teleportTo;
+		
+		public QueueLobbyLeaveEvent(Game game, SpleefPlayer player) {
+			super(game, player);
+		}
+		
 	}
 
 }

@@ -41,6 +41,7 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagMinPlayers;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagMinTeamSize;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagMultiSpawnpoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagQueueLobby;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagQueueLobbyLeavePoint;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagRegen;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagReward;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard;
@@ -97,6 +98,7 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagMultiSpawnpoint.FlagAddSpawnpoint.class);
 		registry.registerFlag(FlagMultiSpawnpoint.FlagRemoveSpawnpoint.class);
 		registry.registerFlag(FlagQueueLobby.class);
+		registry.registerFlag(FlagQueueLobbyLeavePoint.class);
 		registry.registerFlag(FlagRegen.class);
 		registry.registerFlag(FlagReward.class);
 		registry.registerFlag(FlagScoreboard.class);
