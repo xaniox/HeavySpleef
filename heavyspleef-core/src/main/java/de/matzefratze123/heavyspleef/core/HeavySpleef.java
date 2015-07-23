@@ -124,6 +124,7 @@ public final class HeavySpleef {
 	private @Getter I18NManager i18NManager;
 	private @Getter boolean gamesLoaded;
 	private @Getter PvPTimerManager pvpTimerManager;
+	private @Getter Metrics metrics;
 	private Set<GamesLoadCallback> gamesLoadCallbacks;
 	
 	public HeavySpleef(JavaPlugin plugin) {
@@ -178,6 +179,12 @@ public final class HeavySpleef {
 		globalEventBus = new GlobalEventBus(logger);
 		
 		extensionRegistry = new ExtensionRegistry(this);
+		
+		try {
+			metrics = new Metrics(getPlugin());
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Unable to create an instance of Metrics", e);
+		}
 	}
 	
 	public void enable() {
@@ -256,9 +263,8 @@ public final class HeavySpleef {
 		}
 		
 		try {
-			Metrics metrics = new Metrics(getPlugin());
 			metrics.start();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			getLogger().log(Level.SEVERE, "Failed to start metrics: " + e);
 		}
 	}

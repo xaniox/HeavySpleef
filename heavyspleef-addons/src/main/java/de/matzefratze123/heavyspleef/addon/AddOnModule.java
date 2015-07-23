@@ -22,6 +22,10 @@ import java.lang.reflect.Field;
 import java.util.logging.Level;
 
 import lombok.Getter;
+
+import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
+
 import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
@@ -32,6 +36,7 @@ import de.matzefratze123.heavyspleef.core.module.SimpleModule;
 
 public class AddOnModule extends SimpleModule {
 
+	private static final String ADDON_GRAPH_NAME = "Add-on Usages";
 	private static final String BASEDIR_FILE_NAME = "addons";
 	
 	private @Getter File baseDir;
@@ -84,6 +89,14 @@ public class AddOnModule extends SimpleModule {
 		
 		heavySpleef.getCommandManager().getService().addArgument(manager);
 		heavySpleef.getCommandManager().registerSpleefCommands(AddOnCommands.class);
+		
+		Metrics metrics = heavySpleef.getMetrics();
+		Graph graph = metrics.createGraph(ADDON_GRAPH_NAME);
+		
+		for (AddOn addon : manager.getAddOns()) {
+			AddOnProperties properties = addon.getProperties();
+			graph.addPlotter(new AddOnPlotter(properties));
+		}
 	}
 
 	@Override
