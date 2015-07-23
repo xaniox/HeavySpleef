@@ -38,7 +38,7 @@ public class FlagSection {
 		this.autostartVote = section.getInt("autostart-vote", 75);
 		this.anticampingWarn = section.getInt("anticamping-warn", 3);
 		this.anticampingDoWarn = section.getBoolean("anticamping-do-warn", true);
-		this.anticampingTeleport = section.getInt("anticamping-teleported", 6);
+		this.anticampingTeleport = section.getInt("anticamping-teleport", 6);
 		
 		String readyBlockStr = section.getString("ready-block", "IRON_BLOCK");
 		MaterialDataMatcher matcher = MaterialDataMatcher.newMatcher(readyBlockStr);
