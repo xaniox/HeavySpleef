@@ -73,7 +73,7 @@ public class PlayerStateHolder {
 		
 		ItemStack[] inventoryArray = new ItemStack[INVENTORY_SIZE];
 		System.arraycopy(contents, 0, inventoryArray, 0, contents.length);
-		System.arraycopy(armor, 0, inventoryArray, inventoryArray.length - ARMOR_INVENTORY_SIZE - 1, armor.length);
+		System.arraycopy(armor, 0, inventoryArray, inventoryArray.length - ARMOR_INVENTORY_SIZE, armor.length);
 		
 		/* Initialize the state with the current player state */
 		stateHolder.setInventory(inventoryArray);
@@ -124,6 +124,7 @@ public class PlayerStateHolder {
 	public static void applyDefaultState(Player player) {
 		player.setGameMode(GameMode.SURVIVAL);
 		player.getInventory().clear();
+		player.getInventory().setArmorContents(new ItemStack[4]);
 		player.updateInventory();
 		player.setHealth(20.0);
 		player.setFoodLevel(20);
@@ -159,7 +160,7 @@ public class PlayerStateHolder {
 		ItemStack[] armorContents = new ItemStack[ARMOR_INVENTORY_SIZE];
 		
 		System.arraycopy(inventory, 0, inventoryContents, 0, inventoryContents.length);
-		System.arraycopy(inventory, inventory.length - 5, armorContents, 0, armorContents.length);
+		System.arraycopy(inventory, inventory.length - ARMOR_INVENTORY_SIZE, armorContents, 0, armorContents.length);
 		
 		playerInv.setContents(inventoryContents);
 		playerInv.setArmorContents(armorContents);
