@@ -266,6 +266,7 @@ public interface Messages {
 
 		public static final String MAX_PLAYERS_IN_TEAM_REACHED = PREFIX + "max-players-in-team-reached";
 		public static final String UPDATE_AVAILABLE = PREFIX + "update-available";
+		public static final String RECEIVED_REWARD = PREFIX + "received-reward";
 		
 	}
 	

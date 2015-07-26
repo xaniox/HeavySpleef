@@ -305,7 +305,9 @@ public class Game implements VariableSuppliable {
 				
 				@Override
 				public void onCountdownCount(CountdownTask task) {
-					GameCountdownChangeEvent event = new GameCountdownChangeEvent(Game.this, countdownTask);
+					boolean broadcast = task.getRemaining() % 10 == 0 || task.getRemaining() <= 5;
+					
+					GameCountdownChangeEvent event = new GameCountdownChangeEvent(Game.this, countdownTask, broadcast);
 					eventBus.callEvent(event);
 					
 					float percent = (float)task.getRemaining() / task.getLength();
@@ -314,7 +316,7 @@ public class Game implements VariableSuppliable {
 						player.getBukkitPlayer().setExp(percent);
 					}
 					
-					if (task.getRemaining() % 10 == 0 || task.getRemaining() <= 5) {
+					if (broadcast) {
 						broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
 							.setVariable("remaining", String.valueOf(task.getRemaining()))
 							.toString());

@@ -26,6 +26,7 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagAutoSpectate;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagAutostart;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagBowspleef;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagCountdown;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagCountdownTitles;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagEntryFee;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagFireworks;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagFreeze;
@@ -77,6 +78,7 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagAutostart.class);
 		registry.registerFlag(FlagBowspleef.class);
 		registry.registerFlag(FlagCountdown.class);
+		registry.registerFlag(FlagCountdownTitles.class);
 		registry.registerFlag(FlagEntryFee.class);
 		registry.registerFlag(FlagFireworks.class);
 		registry.registerFlag(FlagFireworks.FlagAddFirework.class);

@@ -17,21 +17,21 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
+import lombok.Getter;
 import de.matzefratze123.heavyspleef.core.game.CountdownTask;
 import de.matzefratze123.heavyspleef.core.game.Game;
 
+@Getter
 public class GameCountdownChangeEvent extends GameEvent {
 
 	private CountdownTask countdown;
+	private boolean broadcast;
 	
-	public GameCountdownChangeEvent(Game game, CountdownTask countdown) {
+	public GameCountdownChangeEvent(Game game, CountdownTask countdown, boolean broadcast) {
 		super(game);
 		
 		this.countdown = countdown;
-	}
-	
-	public CountdownTask getCountdown() {
-		return countdown;
+		this.broadcast = broadcast;
 	}
 	
 }
