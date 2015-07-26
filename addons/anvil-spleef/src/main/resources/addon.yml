@@ -1,0 +1,9 @@
+name: AnvilSpleef
+version: ${project.version}
+
+author: matzefratze123
+main: de.matzefratze123.anvilspleef.AnvilSpleefAddOn
+i18n: dynamic
+
+flags:
+- de.matzefratze123.anvilspleef.FlagAnvilSpleef

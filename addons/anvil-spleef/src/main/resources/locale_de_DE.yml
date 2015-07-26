@@ -1,0 +1,3 @@
+anvil-spleef-game-floor-limited: "&cDu kannst nur eine Ebene für ein Spiel definieren, bei dem Anvil Spleef aktiviert wurde!"
+spawn-rate-limits: "&cDie Spawnrate muss zwischen einschließlich 10 und 150 liegen"
+anvil-death-broadcast-message: "&c$[player] &7wurde von einem Amboss zerquetscht und ist ausgeschieden!"
