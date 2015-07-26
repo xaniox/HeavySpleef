@@ -18,7 +18,7 @@
 package de.matzefratze123.heavyspleef.flag.defaults;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +36,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 
 import de.matzefratze123.heavyspleef.core.MetadatableItemStack;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
@@ -65,10 +65,10 @@ public class FlagQueueLobby extends LocationFlag {
 	private Game game;
 	@Inject
 	private DefaultConfig config;
-	private Set<SpleefPlayer> died;
+	private Map<SpleefPlayer, Location> died;
 	
 	public FlagQueueLobby() {
-		this.died = Sets.newHashSet();
+		this.died = Maps.newHashMap();
 	}
 	
 	@Override
@@ -118,7 +118,7 @@ public class FlagQueueLobby extends LocationFlag {
 	public void onQueueLeave(PlayerLeaveQueueEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		
-		if (died.contains(player)) {
+		if (died.containsKey(player)) {
 			return;
 		}
 		
@@ -128,16 +128,20 @@ public class FlagQueueLobby extends LocationFlag {
 		
 		Location teleportTo = lobbyLeaveEvent.getTeleportTo();
 		
-		PlayerStateHolder state = player.removePlayerState(this);
-		if (state != null) {
-			state.apply(player.getBukkitPlayer(), teleportTo == null);
+		if (!player.getBukkitPlayer().isDead()) {
+			PlayerStateHolder state = player.removePlayerState(this);
+			if (state != null) {
+				state.apply(player.getBukkitPlayer(), teleportTo == null);
+			} else {
+				//Ugh, something went wrong
+				player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+			}
+			
+			if (teleportTo != null) {
+				player.teleport(teleportTo);
+			}
 		} else {
-			//Ugh, something went wrong
-			player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
-		}
-		
-		if (teleportTo != null) {
-			player.teleport(teleportTo);
+			died.put(player, teleportTo);
 		}
 	}
 	
@@ -179,7 +183,6 @@ public class FlagQueueLobby extends LocationFlag {
 			return;
 		}
 		
-		died.add(player);
 		game.unqueue(player);
 		player.sendMessage(getI18N().getVarString(Messages.Player.REMOVED_FROM_QUEUE_DEATH)
 				.setVariable("game", game.getName())
@@ -190,9 +193,11 @@ public class FlagQueueLobby extends LocationFlag {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		final SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
 		
-		if (!died.contains(player)) {
+		if (!died.containsKey(player)) {
 			return;
 		}
+		
+		final Location teleportTo = died.remove(player);
 		
 		Bukkit.getScheduler().runTaskLater(getHeavySpleef().getPlugin(), new Runnable() {
 			
@@ -202,15 +207,19 @@ public class FlagQueueLobby extends LocationFlag {
 					return;
 				}
 				
-				PlayerStateHolder state = player.removePlayerState(this);
+				PlayerStateHolder state = player.removePlayerState(FlagQueueLobby.this);
 				if (state != null) {
-					state.apply(player.getBukkitPlayer(), true);
+					state.apply(player.getBukkitPlayer(), teleportTo == null);
 				} else {
 					//Ugh, something went wrong
 					player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
 				}
+				
+				if (teleportTo != null) {
+					player.teleport(teleportTo);
+				}
 			}
-		}, 10L);
+		}, 5L);
 	}
 	
 	@Getter @Setter
