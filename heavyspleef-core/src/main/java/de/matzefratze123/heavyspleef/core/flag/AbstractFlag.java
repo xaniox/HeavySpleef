@@ -57,6 +57,8 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 	
 	public void validateInput(T input) throws ValidationException {}
 	
+	public void validateInput(T input, Game game) throws ValidationException {}
+	
 	public void setI18N(I18N i18n) {
 		this.i18n = i18n;
 	}

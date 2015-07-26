@@ -62,7 +62,7 @@ public class CommandFlag {
 			descref = Messages.Help.Description.FLAG,
 			permission = Permissions.PERMISSION_FLAG)
 	@PlayerOnly
-	public <T> void onFlagCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
+	public void onFlagCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
 		FlagRegistry registry = heavySpleef.getFlagRegistry();
 		
@@ -167,6 +167,7 @@ public class CommandFlag {
 			try {
 				value = flag.parseInput(player, inputBuilder.toString());
 				flag.validateInput(value);
+				flag.validateInput(value, game);
 			} catch (InputParseException e) {
 				String message = e.getMessage();
 				
