@@ -25,6 +25,7 @@ import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
@@ -46,6 +47,9 @@ public class FlagReward extends IntegerFlag {
 		
 		for (SpleefPlayer winner : event.getWinners()) {
 			economy.depositPlayer(winner.getBukkitPlayer(), depositValue);
+			winner.sendMessage(getI18N().getVarString(Messages.Player.RECEIVED_REWARD)
+					.setVariable("amount", economy.format(depositValue))
+					.toString());
 		}
 	}
 	

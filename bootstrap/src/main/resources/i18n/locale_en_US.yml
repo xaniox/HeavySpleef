@@ -227,6 +227,7 @@ player:
   
   max-players-in-team-reached: "&cThe maximum amount of players in this team is reached!"
   update-available: "&6An update is available for HeavySpleef (&av$[new-version]&6)\nUse '&a/spleef update&6' to update to the latest version"
+  received-reward: "&7You received a money reward of &a$[amount] for winning this Spleef game!"
 help:
   description:
     addon: "Loads, unloads an add-on or lists all installed add-ons"
