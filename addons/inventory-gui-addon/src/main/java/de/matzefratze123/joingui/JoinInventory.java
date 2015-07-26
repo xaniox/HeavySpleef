@@ -104,6 +104,11 @@ public class JoinInventory extends GuiInventory implements SpleefListener {
 		Collections.sort(games, COMPARATOR);
 		
 		if (!games.equals(recentRegisteredGames)) {
+			int lines = (int) Math.ceil(games.size() / 9d);
+			if (lines != getLines()) {
+				setLines(lines == 0 ? 1 : lines);
+			}
+			
 			//Games have been added or deleted
 			//Clear and wipe the entire inventory
 			clearInventory();
