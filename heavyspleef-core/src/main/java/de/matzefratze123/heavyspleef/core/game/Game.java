@@ -632,56 +632,61 @@ public class Game implements VariableSuppliable {
 					.toString();
 			String playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
 			
-			switch (cause) {
-			case KICK:
-				CommandSender clientPlayer = null;
-				String message = null;
-				
-				int messageIndex = 0;
-				if (args != null && args.length > 0 && args[0] instanceof CommandSender) {
-					// Caller gave us a client player
-					clientPlayer = (CommandSender) args[0];
-					messageIndex = 1;
-				}
-				
-				if (args != null && args.length > messageIndex && args[messageIndex] instanceof String) {
-					// Caller gave us a kick message
-					message = (String) args[1];
-				}
-				
-				playerMessage = i18n.getVarString(Messages.Player.PLAYER_KICK)
-						.setVariable("message", message != null ? message : "No reason provided")
-						.setVariable("kicker", clientPlayer != null ? clientPlayer.getName() : "Unknown")
-						.toString();
-				break;
-			case SELF:
-				playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
-				break;
-			case STOP:
-				playerMessage = i18n.getString(Messages.Player.GAME_STOPPED);
-				break;
-			case LOSE:
-				if (killer != null) {
-					broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
-							.setVariable("player", player.getDisplayName())
-							.setVariable("killer", killer.getDisplayName())
+			if (event.getPlayerMessage() != null && event.getBroadcastMessage() != null) {
+				playerMessage = event.getPlayerMessage();
+				broadcastMessage = event.getBroadcastMessage();
+			} else {
+				switch (cause) {
+				case KICK:
+					CommandSender clientPlayer = null;
+					String message = null;
+					
+					int messageIndex = 0;
+					if (args != null && args.length > 0 && args[0] instanceof CommandSender) {
+						// Caller gave us a client player
+						clientPlayer = (CommandSender) args[0];
+						messageIndex = 1;
+					}
+					
+					if (args != null && args.length > messageIndex && args[messageIndex] instanceof String) {
+						// Caller gave us a kick message
+						message = (String) args[1];
+					}
+					
+					playerMessage = i18n.getVarString(Messages.Player.PLAYER_KICK)
+							.setVariable("message", message != null ? message : "No reason provided")
+							.setVariable("kicker", clientPlayer != null ? clientPlayer.getName() : "Unknown")
 							.toString();
-				} else {
-					broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME_UNKNOWN_KILLER)
+					break;
+				case SELF:
+					playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
+					break;
+				case STOP:
+					playerMessage = i18n.getString(Messages.Player.GAME_STOPPED);
+					break;
+				case LOSE:
+					if (killer != null) {
+						broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME)
+								.setVariable("player", player.getDisplayName())
+								.setVariable("killer", killer.getDisplayName())
+								.toString();
+					} else {
+						broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_LOST_GAME_UNKNOWN_KILLER)
+								.setVariable("player", player.getDisplayName())
+								.toString();
+					}
+					
+					playerMessage = i18n.getString(Messages.Player.PLAYER_LOSE);
+					break;
+				case WIN:
+					broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_WON_GAME)
 							.setVariable("player", player.getDisplayName())
 							.toString();
+					
+					playerMessage = i18n.getString(Messages.Player.PLAYER_WIN);
+				default:
+					break;
 				}
-				
-				playerMessage = i18n.getString(Messages.Player.PLAYER_LOSE);
-				break;
-			case WIN:
-				broadcastMessage = i18n.getVarString(Messages.Broadcast.PLAYER_WON_GAME)
-						.setVariable("player", player.getDisplayName())
-						.toString();
-				
-				playerMessage = i18n.getString(Messages.Player.PLAYER_WIN);
-			default:
-				break;
 			}
 			
 			broadcast(broadcastMessage);
@@ -1212,7 +1217,7 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void onPlayerDeath(PlayerDeathEvent event, SpleefPlayer dead) {
-		requestLose(dead, QuitCause.SELF);
+		requestLose(dead, QuitCause.LOSE);
 	}
 
 	public void onPlayerRespawn(PlayerRespawnEvent event, final SpleefPlayer respawning) {
@@ -1226,7 +1231,7 @@ public class Game implements VariableSuppliable {
 			@Override
 			public void run() {
 				if (respawning.isOnline()) {
-					PlayerStateHolder playerState = respawning.getPlayerState(this);
+					PlayerStateHolder playerState = respawning.getPlayerState(Game.this);
 					if (playerState != null) {
 						playerState.apply(respawning.getBukkitPlayer(), true);
 					} else {
@@ -1235,7 +1240,7 @@ public class Game implements VariableSuppliable {
 					}
 				}
 			}
-		}, 10L);
+		}, 5L);
 	}
 	
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event, SpleefPlayer player) {
