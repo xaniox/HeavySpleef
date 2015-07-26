@@ -45,6 +45,11 @@ public class PlayerManager implements Listener {
 		this.heavySpleef = heavySpleef;
 		
 		Bukkit.getPluginManager().registerEvents(this, heavySpleef.getPlugin());
+		
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			SpleefPlayer spleefPlayer = new SpleefPlayer(player, heavySpleef);
+			onlineSpleefPlayers.add(spleefPlayer);
+		}
 	}
 	
 	public SpleefPlayer getSpleefPlayer(final Player bukkitPlayer) {
