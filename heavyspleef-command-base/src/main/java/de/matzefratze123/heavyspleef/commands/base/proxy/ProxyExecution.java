@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.commands.base.CommandContainer;
 import de.matzefratze123.heavyspleef.commands.base.CommandContext;
+import de.matzefratze123.heavyspleef.commands.base.CommandException;
 import de.matzefratze123.heavyspleef.commands.base.CommandExecution;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
 import de.matzefratze123.heavyspleef.commands.base.MessageBundle;
@@ -75,7 +76,13 @@ public class ProxyExecution implements CommandExecution {
 			Proxy proxy = holder.proxy;
 			ProxyContext proxyContext = new ProxyContext(context);
 			
-			proxy.execute(proxyContext, executionArgs);	
+			try {
+				proxy.execute(proxyContext, executionArgs);
+			} catch (CommandException e) {
+				context.getSender().sendMessage(e.getMessage());
+				continue;
+			}
+			
 			redirection = proxyContext.redirection();
 		}
 		

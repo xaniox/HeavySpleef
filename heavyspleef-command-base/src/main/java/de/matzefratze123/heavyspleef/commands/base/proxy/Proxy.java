@@ -17,8 +17,10 @@
  */
 package de.matzefratze123.heavyspleef.commands.base.proxy;
 
+import de.matzefratze123.heavyspleef.commands.base.CommandException;
+
 public interface Proxy {
 
-	public void execute(ProxyContext context, Object[] executionArgs);
+	public void execute(ProxyContext context, Object[] executionArgs) throws CommandException;
 	
 }
