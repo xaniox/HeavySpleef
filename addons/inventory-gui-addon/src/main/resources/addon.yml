@@ -1,5 +1,5 @@
 name: JoinGUI
-version: 1.0
+version: ${project.version}
 
 author: matzefratze123
 main: de.matzefratze123.joingui.JoinGuiAddOn
