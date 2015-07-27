@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,6 +55,7 @@ import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
@@ -64,6 +67,7 @@ import de.matzefratze123.heavyspleef.core.game.GameProperty;
 import de.matzefratze123.heavyspleef.core.game.QuitCause;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard.GetScoreboardDisplayNameEvent;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "anvil-spleef", hasGameProperties = true)
@@ -208,6 +212,11 @@ public class FlagAnvilSpleef extends IntegerFlag {
 		for (FallingBlock block : fallingAnvils) {
 			block.remove();
 		}
+	}
+	
+	@Subscribe(priority = Priority.HIGH)
+	public void onGetScoreboardDisplayName(GetScoreboardDisplayNameEvent event) {
+		event.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Anvil Spleef");
 	}
 	
 	private void initHurtEntitiesField(FallingBlock block) {

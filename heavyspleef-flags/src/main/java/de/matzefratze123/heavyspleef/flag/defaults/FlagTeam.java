@@ -76,6 +76,7 @@ import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.core.stats.Statistic;
 import de.matzefratze123.heavyspleef.core.stats.StatisticRecorder;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard.GetScoreboardDisplayNameEvent;
 import de.matzefratze123.heavyspleef.flag.presets.EnumListFlag;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 import de.matzefratze123.inventoryguilib.GuiInventory;
@@ -496,6 +497,11 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	public void onGameEnd(GameEndEvent event) {
 		deadPlayers.clear();
 		deadTeams.clear();
+	}
+	
+	@Subscribe
+	public void onGetScoreboardDisplayName(GetScoreboardDisplayNameEvent event) {
+		event.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Team Spleef");
 	}
 	
 	private void updateScoreboard() {

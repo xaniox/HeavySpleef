@@ -53,6 +53,7 @@ import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
@@ -60,6 +61,7 @@ import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.game.GameProperty;
 import de.matzefratze123.heavyspleef.core.game.GameState;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard.GetScoreboardDisplayNameEvent;
 import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 
 @Flag(name = "bowspleef", hasGameProperties = true)
@@ -108,6 +110,11 @@ public class FlagBowspleef extends BaseFlag {
 			
 			player.getBukkitPlayer().updateInventory();
 		}
+	}
+	
+	@Subscribe(priority = Priority.HIGH)
+	public void onGetScoreboardDisplayNameEvent(GetScoreboardDisplayNameEvent event) {
+		event.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Bowspleef");
 	}
 	
 	@EventHandler

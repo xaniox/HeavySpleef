@@ -20,6 +20,9 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -31,6 +34,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.Lists;
 
+import de.matzefratze123.heavyspleef.core.event.Event;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
@@ -48,7 +52,7 @@ public class FlagScoreboard extends BaseFlag {
 	private static final String SCOREBOARD_NAME = "heavyspleef";
 	private static final String SCOREBOARD_CRITERIA = "dummy";
 	
-	private static final String OBJECTIVE_NAME = ChatColor.GOLD + "Kills";
+	private static final String DEFAULT_OBJECTIVE_NAME = ChatColor.GOLD + "" + ChatColor.BOLD + "Spleef";
 	private static final int MAX_OBJECTIVE_ENTRIES = 16;
 	
 	private static final String IS_ALIVE_SYMBOL = ChatColor.GREEN + "✔ " + ChatColor.WHITE;
@@ -79,8 +83,12 @@ public class FlagScoreboard extends BaseFlag {
 		scoreboard = manager.getNewScoreboard();
 		objective = scoreboard.registerNewObjective(SCOREBOARD_NAME, SCOREBOARD_CRITERIA);
 		
+		GetScoreboardDisplayNameEvent getDisplayNameEvent = new GetScoreboardDisplayNameEvent();
+		event.getGame().getEventBus().callEvent(getDisplayNameEvent);
+		String displayName = getDisplayNameEvent.getDisplayName();
+		
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		objective.setDisplayName(OBJECTIVE_NAME);
+		objective.setDisplayName(displayName != null ? displayName : DEFAULT_OBJECTIVE_NAME);
 		
 		int index = 0;
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
@@ -134,6 +142,13 @@ public class FlagScoreboard extends BaseFlag {
 		//Remove that reference
 		scoreboard = null;
 		playersTracked.clear();
+	}
+	
+	@Getter @Setter
+	public static class GetScoreboardDisplayNameEvent extends Event {
+		
+		private String displayName;
+		
 	}
 
 }

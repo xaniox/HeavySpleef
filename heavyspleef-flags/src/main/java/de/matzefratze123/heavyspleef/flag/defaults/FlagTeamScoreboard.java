@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -32,7 +33,10 @@ import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
+import de.matzefratze123.heavyspleef.core.flag.Inject;
+import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard.GetScoreboardDisplayNameEvent;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.PlayerSelectedTeamEvent;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamColor;
 import de.matzefratze123.heavyspleef.flag.defaults.FlagTeam.TeamScoreboardInitializeEvent;
@@ -41,6 +45,11 @@ import de.matzefratze123.heavyspleef.flag.presets.BaseFlag;
 @Flag(name = "scoreboard", parent = FlagTeam.class)
 public class FlagTeamScoreboard extends BaseFlag {
 
+	private static final String DEFAULT_OBJECTIVE_NAME = ChatColor.GOLD + "" + ChatColor.BOLD + "Team Spleef";
+	
+	@Inject
+	private Game game;
+	
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Enables the sidebar scoreboard for team games");
@@ -60,8 +69,12 @@ public class FlagTeamScoreboard extends BaseFlag {
 			return;
 		}
 		
+		GetScoreboardDisplayNameEvent getDisplayNameEvent = new GetScoreboardDisplayNameEvent();
+		game.getEventBus().callEvent(getDisplayNameEvent);
+		String displayName = getDisplayNameEvent.getDisplayName();
+		
 		Objective objective = board.getObjective(FlagTeam.OBJECTIVE_NAME);
-		objective.setDisplayName("Spleef Teams");
+		objective.setDisplayName(displayName != null ? displayName : DEFAULT_OBJECTIVE_NAME);
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 	}
 	
@@ -110,8 +123,6 @@ public class FlagTeamScoreboard extends BaseFlag {
 			String localizedName = flag.getLocalizedColorName(entry.getKey());
 			objective.getScore(entry.getKey().getChatColor() + localizedName).setScore(entry.getValue());
 		}
-		
-		
 	}
 
 }
