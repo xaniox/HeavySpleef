@@ -11,7 +11,7 @@
 	<inceptionYear>2014-2015</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<worldedit.version>6.0.2-SNAPSHOT</worldedit.version>
+		<worldedit.version>6.0.0-SNAPSHOT</worldedit.version>
 	</properties>
 	<developers>
 		<developer>
@@ -66,9 +66,9 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>bukkit-repo</id>
-			<name>Bukkit's repository</name>
-			<url>http://repo.bukkit.org/content/groups/public</url>
+			<id>spigot-repo</id>
+			<name>Spigot's repository</name>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<id>vault-repo</id>
@@ -90,31 +90,26 @@
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.5</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>3.6.4-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.8-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.8.7-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-core</artifactId>
 			<version>${worldedit.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
 			<version>${worldedit.version}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
