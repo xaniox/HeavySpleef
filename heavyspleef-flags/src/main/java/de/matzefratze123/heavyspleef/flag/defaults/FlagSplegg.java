@@ -17,7 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.flag.defaults;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
