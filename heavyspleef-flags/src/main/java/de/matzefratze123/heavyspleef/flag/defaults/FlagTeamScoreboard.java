@@ -49,6 +49,7 @@ public class FlagTeamScoreboard extends BaseFlag {
 	
 	@Inject
 	private Game game;
+	private Objective objective;
 	
 	@Override
 	public void getDescription(List<String> description) {
@@ -73,8 +74,8 @@ public class FlagTeamScoreboard extends BaseFlag {
 		game.getEventBus().callEvent(getDisplayNameEvent);
 		String displayName = getDisplayNameEvent.getDisplayName();
 		
-		Objective objective = board.getObjective(FlagTeam.OBJECTIVE_NAME);
-		objective.setDisplayName(displayName != null ? displayName : DEFAULT_OBJECTIVE_NAME);
+		objective = board.getObjective(FlagTeam.OBJECTIVE_NAME);
+		objective.setDisplayName(displayName);
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 	}
 	
@@ -86,6 +87,16 @@ public class FlagTeamScoreboard extends BaseFlag {
 	@Subscribe(priority = Priority.HIGH)
 	public void onPlayerLeaveGame(PlayerLeaveGameEvent event) {
 		updateScoreboard();
+	}
+	
+	@Subscribe(priority = Priority.LOW)
+	public void onGetScoreboardDisplayName(GetScoreboardDisplayNameEvent event) {
+		event.setDisplayName(DEFAULT_OBJECTIVE_NAME);
+	}
+	
+	@Subscribe
+	public void onSetScoreboardDisplayName(GetScoreboardDisplayNameEvent event) {
+		objective.setDisplayName(event.getDisplayName());
 	}
 	
 	private void updateScoreboard() {

@@ -39,6 +39,7 @@ import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.game.GameProperty;
@@ -88,7 +89,7 @@ public class FlagScoreboard extends BaseFlag {
 		String displayName = getDisplayNameEvent.getDisplayName();
 		
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		objective.setDisplayName(displayName != null ? displayName : DEFAULT_OBJECTIVE_NAME);
+		objective.setDisplayName(displayName);
 		
 		int index = 0;
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
@@ -105,6 +106,16 @@ public class FlagScoreboard extends BaseFlag {
 			player.getBukkitPlayer().setScoreboard(scoreboard);
 			index++;
 		}
+	}
+	
+	@Subscribe(priority = Priority.LOW)
+	public void onGetScoreboardDisplayName(GetScoreboardDisplayNameEvent event) {
+		event.setDisplayName(DEFAULT_OBJECTIVE_NAME);
+	}
+	
+	@Subscribe
+	public void onSetScoreboardDisplayName(SetScoreboardDisplayNameEvent event) {
+		objective.setDisplayName(event.getDisplayName());
 	}
 	
 	@Subscribe
@@ -146,6 +157,13 @@ public class FlagScoreboard extends BaseFlag {
 	
 	@Getter @Setter
 	public static class GetScoreboardDisplayNameEvent extends Event {
+		
+		private String displayName;
+		
+	}
+	
+	@Getter @Setter
+	public static class SetScoreboardDisplayNameEvent extends Event {
 		
 		private String displayName;
 		

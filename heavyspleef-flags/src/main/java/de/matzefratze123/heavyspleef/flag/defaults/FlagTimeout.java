@@ -17,9 +17,11 @@
  */
 package de.matzefratze123.heavyspleef.flag.defaults;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -34,6 +36,8 @@ import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.i18n.ParsedMessage;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard.GetScoreboardDisplayNameEvent;
+import de.matzefratze123.heavyspleef.flag.defaults.FlagScoreboard.SetScoreboardDisplayNameEvent;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 
 @Flag(name = "timeout")
@@ -41,6 +45,8 @@ public class FlagTimeout extends IntegerFlag {
 
 	private static final long TICKS_MULTIPLIER = 20L;
 	private final BukkitScheduler scheduler;
+	private final DecimalFormat secondFormat = new DecimalFormat("00");
+	private final DecimalFormat minuteFormat = new DecimalFormat("0");
 	private BukkitTask task;
 	
 	public FlagTimeout() {
@@ -79,11 +85,16 @@ public class FlagTimeout extends IntegerFlag {
 		private Game game;
 		private int secondsLeft;
 		private final int length;
+		private String scoreboardTitle;
 		
 		public TimeoutRunnable(Game game) {
 			this.game = game;
 			this.length = getValue();
 			this.secondsLeft = length;
+			
+			GetScoreboardDisplayNameEvent event = new GetScoreboardDisplayNameEvent();
+			game.getEventBus().callEvent(event);
+			this.scoreboardTitle = event.getDisplayName();
 		}
 		
 		@Override
@@ -97,8 +108,14 @@ public class FlagTimeout extends IntegerFlag {
 				task.cancel();
 			} else if ((secondsLeft > 60 && secondsLeft % 60 == 0) || (secondsLeft <= 60 && secondsLeft % 30 == 0) || secondsLeft <= 5) {
 				String message = getTimeString();
+				
 				game.broadcast(message);
 			}
+			
+			String scoreboardString = getScoreboardTitle();
+			SetScoreboardDisplayNameEvent event = new SetScoreboardDisplayNameEvent();
+			event.setDisplayName(scoreboardString);
+			game.getEventBus().callEvent(event);
 			
 			for (SpleefPlayer player : game.getPlayers()) {
 				Player bukkitPlayer = player.getBukkitPlayer();
@@ -121,10 +138,18 @@ public class FlagTimeout extends IntegerFlag {
 			if (minutes == 0) {
 				parsedMessage.setVariable("timeout", seconds + " " + timeUnitStrings[0]);
 			} else {
-				parsedMessage.setVariable("timeout", minutes + ":" + seconds + " " + timeUnitStrings[1]);
+				parsedMessage.setVariable("timeout", minuteFormat.format(minutes) + ":" + secondFormat.format(seconds) + " " + timeUnitStrings[1]);
 			}
 			
 			return parsedMessage.toString();
+		}
+		
+		private String getScoreboardTitle() {
+			int minutes = secondsLeft / 60;
+			int seconds = secondsLeft % 60;
+			
+			return scoreboardTitle + "     " + ChatColor.GRAY + (minutes > 0 ? minuteFormat.format(minutes) + ":" : "")
+					+ secondFormat.format(seconds);
 		}
 		
 	}
