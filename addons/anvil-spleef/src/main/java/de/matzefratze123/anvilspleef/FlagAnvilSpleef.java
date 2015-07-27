@@ -70,7 +70,7 @@ import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
 @BukkitListener
 public class FlagAnvilSpleef extends IntegerFlag {
 
-	private static final int MAX_SPAWN_RATE = 200;
+	private static final int MAX_SPAWN_RATE = 150;
 	private static final int MIN_SPAWN_RATE = 10;
 	private static final int DEFAULT_SPAWN_RATE = 50;
 	private static Method GET_HANDLE_METHOD;
