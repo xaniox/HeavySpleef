@@ -8,7 +8,7 @@ Thank you for your interest in helping to test HeavySpleef 2.0. Please make sure
 
 You may find downloads for compiled versions for HeavySpleef 2.0 below:
 
-[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/)&nbsp;&nbsp;Visit the <a href="http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/" target="_blank">Jenkins Build Server</a>
+[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef/)&nbsp;&nbsp;Visit the <a href="http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/" target="_blank">Jenkins Build Server</a>
 
 ##### Addons
 
