@@ -56,8 +56,13 @@ public class FlagManager {
 	private Set<GamePropertyBundle> propertyBundles;
 	private DefaultGamePropertyBundle requestedProperties;
 	private GamePropertyBundle defaults;
+	private boolean migrateManager;
 	
 	public FlagManager(JavaPlugin plugin, GamePropertyBundle defaults) {
+		this(plugin, defaults, false);
+	}
+	
+	public FlagManager(JavaPlugin plugin, GamePropertyBundle defaults, boolean migrateManager) {
 		this.plugin = plugin;
 		this.defaults = defaults;
 		this.flags = HashBiMap.create();
@@ -65,6 +70,7 @@ public class FlagManager {
 		this.unloadedFlags = Lists.newArrayList();
 		this.propertyBundles = Sets.newTreeSet();
 		this.requestedProperties = new DefaultGamePropertyBundle(Maps.newEnumMap(GameProperty.class));
+		this.migrateManager = migrateManager;
 	}
 	
 	public void addFlag(AbstractFlag<?> flag) {
@@ -104,7 +110,7 @@ public class FlagManager {
 			} else {
 				flags.put(path, flag);
 				
-				if (clazz.isAnnotationPresent(BukkitListener.class)) {
+				if (clazz.isAnnotationPresent(BukkitListener.class) && !migrateManager) {
 					Bukkit.getPluginManager().registerEvents(flag, plugin);
 				}
 				

@@ -125,7 +125,7 @@ public class SafeGameCreator {
 			floorsField.set(game, floorMap);
 			deathzonesField.set(game, deathzoneMap);
 			
-			FlagManager flagManager = new FlagManager(heavySpleef.getPlugin(), null);
+			FlagManager flagManager = new FlagManager(heavySpleef.getPlugin(), null, true);
 			flagManagerField.set(game, flagManager);
 			
 			EventBus eventBus = new NullEventBus();
@@ -143,7 +143,7 @@ public class SafeGameCreator {
 	private static class AccessibleExtensionManager extends ExtensionManager {
 
 		public AccessibleExtensionManager(HeavySpleef heavySpleef, EventBus eventManager) {
-			super(heavySpleef, eventManager);
+			super(heavySpleef, eventManager, true);
 		}
 		
 	}

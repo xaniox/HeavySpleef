@@ -31,13 +31,19 @@ import de.matzefratze123.heavyspleef.core.event.EventBus;
 public class ExtensionManager {
 	
 	private final HeavySpleef heavySpleef;
-	private final EventBus eventManager;
+	private final EventBus eventBus;
 	private Set<GameExtension> extensions;
+	private boolean migrateManager;
 	
-	protected ExtensionManager(HeavySpleef heavySpleef, EventBus eventManager) {
+	protected ExtensionManager(HeavySpleef heavySpleef, EventBus eventBus) {
+		this(heavySpleef, eventBus, false);
+	}
+	
+	protected ExtensionManager(HeavySpleef heavySpleef, EventBus eventBus, boolean migrateManager) {
 		this.heavySpleef = heavySpleef;
-		this.eventManager = eventManager;
+		this.eventBus = eventBus;
 		this.extensions = Sets.newHashSet();
+		this.migrateManager = migrateManager;
 	}
 	
 	public void addExtension(GameExtension extension) {
@@ -46,14 +52,18 @@ public class ExtensionManager {
 		}
 		
 		extension.setHeavySpleef(heavySpleef);
-		Bukkit.getPluginManager().registerEvents(extension, heavySpleef.getPlugin());
-		eventManager.registerListener(extension);
+		
+		if (!migrateManager) {
+			Bukkit.getPluginManager().registerEvents(extension, heavySpleef.getPlugin());
+		}
+		
+		eventBus.registerListener(extension);
 		extensions.add(extension);
 	}
 	
 	public void removeExtension(GameExtension extension) {
 		HandlerList.unregisterAll(extension);
-		eventManager.unregister(extension);
+		eventBus.unregister(extension);
 		extensions.remove(extension);
 	}
 	
