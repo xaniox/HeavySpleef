@@ -235,7 +235,7 @@ public class UUIDManager {
 							OfflinePlayer player = Bukkit.getOfflinePlayer(loadingName);
 							UUID uuid = player.getUniqueId();
 							
-							profiles.add(new GameProfile(uuid, player.getName()));
+							found = new GameProfile(uuid, loadingName);
 						}
 					}
 					
