@@ -19,6 +19,7 @@ package de.matzefratze123.heavyspleef.core.game;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -776,7 +777,10 @@ public class Game implements VariableSuppliable {
 			}
 		}
 		
-		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players);
+		List<SpleefPlayer> dead = Lists.newArrayList(this.deadPlayers);
+		Collections.reverse(dead);
+		
+		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players, dead);
 		eventBus.callEvent(event);
 		
 		resetGame();

@@ -171,6 +171,8 @@ public interface Messages {
 		public static final String ADDON_LIST_HEADER = PREFIX + "addon-list-header";
 		public static final String ADDON_LIST_ENTRY = PREFIX + "addon-list-entry";
 		
+		public static final String NEED_AT_LEAST_ONE_NUMBER = PREFIX + "need-at-least-one-number";
+		
 	}
 	
 	public interface Broadcast {
@@ -266,7 +268,7 @@ public interface Messages {
 
 		public static final String MAX_PLAYERS_IN_TEAM_REACHED = PREFIX + "max-players-in-team-reached";
 		public static final String UPDATE_AVAILABLE = PREFIX + "update-available";
-		public static final String RECEIVED_REWARD = PREFIX + "received-reward";
+		public static final String RECEIVED_REWARD_PLACE = PREFIX + "received-reward-place";
 		
 	}
 	
@@ -323,6 +325,7 @@ public interface Messages {
 		public static final String TEAM_COLOR_ARRAY = PREFIX + "team-color-array";
 		public static final String TIME_UNIT_ARRAY = PREFIX + "time-unit-array";
 		public static final String GAME_STATE_ARRAY = PREFIX + "game-state-array";
+		public static final String PLACES = PREFIX + "places";
 		
 	}
 	

@@ -227,7 +227,8 @@ player:
   
   max-players-in-team-reached: "&cThe maximum amount of players in this team is reached!"
   update-available: "&6An update is available for HeavySpleef (&av$[new-version]&6)\nUse '&a/spleef update&6' to update to the latest version"
-  received-reward: "&7You received a money reward of &a$[amount] for winning this Spleef game!"
+  received-reward-place: "&7You received a money reward of &a$[amount] for reaching the $[place] place!"
+  not-a-number: "&cThis is not a valid number!"
 help:
   description:
     addon: "Loads, unloads an add-on or lists all installed add-ons"
@@ -282,3 +283,19 @@ arrays:
   - "Lobby"
   - "Starting"
   - "Ingame"
+  places:
+  - "1st"
+  - "2nd"
+  - "3rd"
+  - "4th"
+  - "5th"
+  - "6th"
+  - "7th"
+  - "8th"
+  - "9th"
+  - "10th"
+  - "11th"
+  - "12th"
+  - "13th"
+  - "14th"
+  - "15th"
