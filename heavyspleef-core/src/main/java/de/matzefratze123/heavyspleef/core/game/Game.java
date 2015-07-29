@@ -1028,10 +1028,11 @@ public class Game implements VariableSuppliable {
 				int broadcastRadius = getPropertyValue(GameProperty.BROADCAST_RADIUS);
 				
 				for (Player player : Bukkit.getOnlinePlayers()) {
+					SpleefPlayer spleefPlayer = heavySpleef.getSpleefPlayer(player);
 					Vector playerVec = BukkitUtil.toVector(player.getLocation());
 					
 					double distanceSq = center.distanceSq(playerVec);
-					if (distanceSq <= Math.pow(broadcastRadius, 2)) {
+					if (distanceSq <= Math.pow(broadcastRadius, 2) || isIngame(spleefPlayer)) {
 						player.sendMessage(heavySpleef.getSpleefPrefix() + message);
 					}
 				}
