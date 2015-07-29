@@ -152,6 +152,7 @@ public class Game implements VariableSuppliable {
 	private Queue<SpleefPlayer> queuedPlayers;
 	private @Getter CountdownTask countdownTask;
 	private @Getter StatisticRecorder statisticRecorder;
+	private Queue<Location> spawnLocationQueue;
 	
 	private @Getter String name;
 	private @Getter World world;
@@ -186,6 +187,7 @@ public class Game implements VariableSuppliable {
 		this.blocksBroken = HashBiMap.create();
 		this.killDetector = new DefaultKillDetector();
 		this.queuedPlayers = new LinkedList<SpleefPlayer>();
+		this.spawnLocationQueue = new LinkedList<Location>();
 		
 		//Concurrent map for database schematics
 		this.floors = new ConcurrentHashMap<String, Floor>();
@@ -257,12 +259,11 @@ public class Game implements VariableSuppliable {
 		
 		int listIndex = 0;
 		int randomIndex = 0;
+		List<Location> spawnLocations = event.getSpawnLocations();
+		Map<SpleefPlayer, Location> spawnLocationMap = event.getSpawnLocationMap();
 		
 		for (SpleefPlayer player : ingamePlayers) {
-			Location location;
-			
-			Map<SpleefPlayer, Location> spawnLocationMap = event.getSpawnLocationMap();
-			List<Location> spawnLocations = event.getSpawnLocations();
+			Location location;			
 			
 			if (spawnLocationMap != null && spawnLocationMap.containsKey(player)) {
 				location = spawnLocationMap.get(player);
@@ -274,6 +275,12 @@ public class Game implements VariableSuppliable {
 			}
 			
 			player.getBukkitPlayer().teleport(location);
+		}
+		
+		spawnLocationQueue.clear();
+		for (int i = listIndex; i < spawnLocations.size(); i++) {
+			Location next = spawnLocations.get(i);
+			spawnLocationQueue.offer(next);
 		}
 		
 		boolean countdownEnabled = event.isCountdownEnabled();
@@ -388,6 +395,7 @@ public class Game implements VariableSuppliable {
 		
 		blocksBroken.clear();
 		deadPlayers.clear();
+		spawnLocationQueue.clear();
 		setGameState(GameState.WAITING);
 		
 		//Stop the countdown if necessary
@@ -516,7 +524,31 @@ public class Game implements VariableSuppliable {
 		player.savePlayerState(this, gameMode);
 		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
 		
-		Location location = event.getTeleportationLocation();
+		Location location;
+		
+		if (gameState.isGameActive()) {
+			location = spawnLocationQueue.poll();
+			
+			if (location == null) {
+				// Generate a random spawnpoint
+				Floor topFloor = null;
+				for (Floor floor : floors.values()) {
+					if (topFloor == null || floor.getRegion().getMaximumPoint().getBlockY() > topFloor.getRegion().getMaximumPoint().getBlockY()) {
+						topFloor = floor;
+					}
+				}
+				
+				Region region = topFloor.getRegion();
+				
+				List<Location> randomLocations = Lists.newArrayList();
+				generateSpawnpoints(region, randomLocations, 1);
+				
+				location = randomLocations.get(0);
+			}
+		} else {
+			location = event.getTeleportationLocation();
+		}
+		
 		player.teleport(location);
 		
 		//This event is called when the player actually joins the game
