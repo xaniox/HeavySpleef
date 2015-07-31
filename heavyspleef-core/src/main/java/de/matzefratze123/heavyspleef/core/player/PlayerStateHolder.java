@@ -116,7 +116,7 @@ public class PlayerStateHolder {
 	 * and all other various player attributes
 	 * 
 	 * It is recommended to save the player state
-	 * with {@link PlayerStateHolder#create(Player)}
+	 * with {@link PlayerStateHolder#create(Player, GameMode)}
 	 * and store a reference to it before invoking this method
 	 * 
 	 * @param player

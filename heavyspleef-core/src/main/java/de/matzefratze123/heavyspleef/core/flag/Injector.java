@@ -34,7 +34,7 @@ public interface Injector<T> {
 	 * <b>Note:</b> The fields given are already accessible so you 
 	 * do not have to call {@link Field#setAccessible(boolean)} again
 	 * 
-	 * @param clazz The class containg the fields
+	 * @param instance An instance containing the fields
 	 * @param injectableFields The fields to be value-injected
 	 * @param cookie An optional object given by the caller
 	 * 

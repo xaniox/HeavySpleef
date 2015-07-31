@@ -47,7 +47,7 @@ public class UnloadedFlag extends NullFlag {
 	 * Sets any xml content of this unloaded flag which
 	 * will be used for loading the flag if necessary
 	 * 
-	 * @param xml The actual flag value in form of a xml element
+	 * @param element The actual flag value in form of a xml element
 	 */
 	public void setXmlElement(Element element) {
 		this.xmlElement = element;
