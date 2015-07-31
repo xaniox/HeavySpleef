@@ -177,7 +177,7 @@
 		              <artifactId>maven-source-plugin</artifactId>
 		              <version>2.4</version>
 		              <configuration>
-		                <finalName>HeavySpleef</finalName>
+		                <finalName>heavyspleef</finalName>
 		              </configuration>
 		            </plugin>
 				</plugins>
