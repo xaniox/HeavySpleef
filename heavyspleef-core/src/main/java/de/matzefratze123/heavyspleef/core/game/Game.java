@@ -279,9 +279,11 @@ public class Game implements VariableSuppliable {
 		}
 		
 		spawnLocationQueue.clear();
-		for (int i = listIndex; i < spawnLocations.size(); i++) {
-			Location next = spawnLocations.get(i);
-			spawnLocationQueue.offer(next);
+		if (spawnLocations != null) {
+			for (int i = listIndex; i < spawnLocations.size(); i++) {
+				Location next = spawnLocations.get(i);
+				spawnLocationQueue.offer(next);
+			}
 		}
 		
 		boolean countdownEnabled = event.isCountdownEnabled();
