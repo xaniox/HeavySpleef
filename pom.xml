@@ -154,7 +154,7 @@
 											<setpropertiesfalse>
 												<setproperty>
 													<property>deploy.url</property>
-													<value>http://matzefratze123.de/artifactory/release/</value>
+													<value>http://matzefratze123.de/artifactory/snapshots/</value>
 												</setproperty>
 											</setpropertiesfalse>
 										</operation>
@@ -176,21 +176,52 @@
 		              <groupId>org.apache.maven.plugins</groupId>
 		              <artifactId>maven-source-plugin</artifactId>
 		              <version>2.4</version>
-		              <executions>
-		                <execution>
-		                  <id>attach-sources</id>
-		                  <phase>package</phase>
-		                  <goals>
-		                    <goal>aggregate</goal>
-		                  </goals>
-		                  <configuration>
-		                    <finalName>heavyspleef</finalName>
-		                  </configuration>
-		                </execution>
-		              </executions>
+		              <configuration>
+		                <finalName>HeavySpleef</finalName>
+		              </configuration>
 		            </plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+		  <id>deploy-heavyspleef</id>
+		  <build>
+		    <plugins>
+		      <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<configuration>
+				  <file>bootstrap/target/HeavySpleef.jar</file>
+				  <pomFile>bootstrap/install-pom.xml</pomFile>
+				  <repositoryId>matzes-artifactory</repositoryId>
+				  <url>${deploy.url}</url>
+				  <javadoc>target/heavyspleef-javadoc.jar</javadoc>
+				  <sources>target/heavyspleef-sources.jar</sources>
+				</configuration>
+			  </plugin>
+		    </plugins>
+		  </build>
+		</profile>
+		<profile>
+		  <id>deploy-api</id>
+		  <build>
+		    <plugins>
+		      <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+		        <configuration>
+		          <file>heavyspleef-api/target/heavyspleef-api.jar</file>
+				  <pomFile>heavyspleef-api/install-pom.xml</pomFile>
+				  <repositoryId>matzes-artifactory</repositoryId>
+				  <url>${deploy.url}</url>
+				  <javadoc>target/heavyspleef-javadoc.jar</javadoc>
+				  <sources>target/heavyspleef-sources.jar</sources>
+				</configuration>
+		      </plugin>
+		    </plugins>
+		  </build>
 		</profile>
 	</profiles>
 	<pluginRepositories>
