@@ -19,12 +19,8 @@ package de.matzefratze123.heavyspleef.addon;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Lists;
 
@@ -40,7 +36,7 @@ public class AddOnProperties {
 	private String mainClass;
 	private I18N.LoadingMode loadingMode;
 	private List<String> contributors;
-	private List<CommandConfiguration> commands;
+	private List<String> commands;
 	private List<String> flags;
 	private List<String> extensions;
 	
@@ -87,21 +83,15 @@ public class AddOnProperties {
 			}
 		}
 		
-		if (yamlMap.containsKey("commandClasses")) {
+		if (yamlMap.containsKey("commands")) {
 			commands = Lists.newArrayList();
 			Object commandsObj = yamlMap.get("commands");
-			if (!(commandsObj instanceof Map<?, ?>)) {
+			if (!(commandsObj instanceof Iterable<?>)) {
 				throw new InvalidPropertiesException("commands are of wrong type");
 			}
 			
-			for (Entry<?, ?> entry : ((Map<?, ?>) yamlMap.get("commands")).entrySet()) {
-				String name = (String) entry.getKey();
-				if (!(entry.getValue() instanceof Map<?, ?>)) {
-					throw new InvalidPropertiesException("Command " + name + "'s values are not a mapping");
-				}
-				
-				Map<?, ?> commandValues = (Map<?, ?>) entry.getValue();
-				commands.add(CommandConfiguration.parse(name, commandValues));
+			for (Object clazzObj : (Iterable<?>) commandsObj) {
+				commands.add(clazzObj.toString());
 			}
 		}
 		
@@ -112,7 +102,7 @@ public class AddOnProperties {
 				throw new InvalidPropertiesException("extensions are of wrong type");
 			}
 			
-			for (Object ext : (Iterable<?>) yamlMap.get("extensions")) {
+			for (Object ext : (Iterable<?>) extensionsObj) {
 				extensions.add(ext.toString());
 			}
 		}
@@ -124,26 +114,10 @@ public class AddOnProperties {
 				throw new InvalidPropertiesException("flags are of wrong type");
 			}
 			
-			for (Object flag : (Iterable<?>) yamlMap.get("flags")) {
+			for (Object flag : (Iterable<?>) flagObj) {
 				flags.add(flag.toString());
 			}
 		}
-	}
-	
-	@Getter
-	@AllArgsConstructor
-	public static class CommandConfiguration {
-				
-		private String name;
-		private String className;
-		
-		public static CommandConfiguration parse(String name, Map<?, ?> commandMap) {
-			Validate.isTrue(commandMap.containsKey("class"), "");
-			String className = (String) commandMap.get("class");
-			
-			return new CommandConfiguration(name, className);
-		}
-		
 	}
 	
 }

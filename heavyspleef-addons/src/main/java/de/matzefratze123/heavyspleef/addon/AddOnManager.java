@@ -34,7 +34,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 
-import de.matzefratze123.heavyspleef.addon.AddOnProperties.CommandConfiguration;
 import de.matzefratze123.heavyspleef.addon.access.CommandManagerAccess;
 import de.matzefratze123.heavyspleef.addon.access.ExtensionRegistryAccess;
 import de.matzefratze123.heavyspleef.addon.access.FlagRegistryAccess;
@@ -234,7 +233,7 @@ public final class AddOnManager {
 		
 		AddOnProperties properties = addOn.getProperties();
 		
-		List<CommandConfiguration> commands = properties.getCommands();
+		List<String> commands = properties.getCommands();
 		List<String> flags = properties.getFlags();
 		List<String> extensions = properties.getExtensions();
 		ClassLoader loader = ((BasicAddOn)addOn).getClassLoader();
@@ -242,11 +241,11 @@ public final class AddOnManager {
 		logger.log(Level.INFO, "Enabling add-on " + properties.getName() + " v" + properties.getVersion());
 		
 		if (commands != null) {
-			for (CommandConfiguration config : commands) {
+			for (String clazzStr : commands) {
 				Class<?> clazz;
 			
 				try {
-					clazz = Class.forName(config.getClassName(), true, loader);
+					clazz = Class.forName(clazzStr, true, loader);
 				} catch (ClassNotFoundException e) {
 					throw new IllegalArgumentException("Add-On " + addOn.getName() + " defines an unknown command class", e);
 				}
