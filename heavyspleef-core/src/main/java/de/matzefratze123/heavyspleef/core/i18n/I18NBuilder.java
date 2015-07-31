@@ -21,8 +21,6 @@ import java.io.File;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
 
 /**
@@ -30,7 +28,6 @@ import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
  * 
  * @author matzefratze123
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class I18NBuilder {
 
 	private Locale locale;
@@ -43,6 +40,8 @@ public final class I18NBuilder {
 	public static I18NBuilder builder() {
 		return new I18NBuilder();
 	}
+	
+	private I18NBuilder() {}
 	
 	public I18N build() {
 		ClassLoader loader = classLoader;

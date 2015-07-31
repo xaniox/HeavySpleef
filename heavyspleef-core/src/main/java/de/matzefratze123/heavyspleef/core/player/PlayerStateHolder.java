@@ -18,10 +18,9 @@
 package de.matzefratze123.heavyspleef.core.player;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import lombok.Data;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -34,7 +33,6 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import com.google.common.collect.Lists;
 
-@Data
 public class PlayerStateHolder {
 	
 	/* Saving the inventory and the armor contents */
@@ -61,7 +59,7 @@ public class PlayerStateHolder {
 	
 	private Location location;
 	
-	/* Post initialization via #create(Player) */
+	/* Post initialization via #create(Player, GameMode) */
 	private PlayerStateHolder() {}
 	
 	public static PlayerStateHolder create(Player player, GameMode gameMode) {
@@ -221,6 +219,238 @@ public class PlayerStateHolder {
 		}
 		
 		player.setGameMode(gamemode);
+	}
+
+	public ItemStack[] getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(ItemStack[] inventory) {
+		this.inventory = inventory;
+	}
+
+	public GameMode getGamemode() {
+		return gamemode;
+	}
+
+	public void setGamemode(GameMode gamemode) {
+		this.gamemode = gamemode;
+	}
+
+	public double getHealth() {
+		return health;
+	}
+
+	public void setHealth(double health) {
+		this.health = health;
+	}
+
+	public int getFoodLevel() {
+		return foodLevel;
+	}
+
+	public void setFoodLevel(int foodLevel) {
+		this.foodLevel = foodLevel;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public float getExperience() {
+		return experience;
+	}
+
+	public void setExperience(float experience) {
+		this.experience = experience;
+	}
+
+	public boolean isAllowFlight() {
+		return allowFlight;
+	}
+
+	public void setAllowFlight(boolean allowFlight) {
+		this.allowFlight = allowFlight;
+	}
+
+	public boolean isFlying() {
+		return isFlying;
+	}
+
+	public void setFlying(boolean isFlying) {
+		this.isFlying = isFlying;
+	}
+
+	public Collection<PotionEffect> getActiveEffects() {
+		return activeEffects;
+	}
+
+	public void setActiveEffects(Collection<PotionEffect> activeEffects) {
+		this.activeEffects = activeEffects;
+	}
+
+	public float getExhaustion() {
+		return exhaustion;
+	}
+
+	public void setExhaustion(float exhaustion) {
+		this.exhaustion = exhaustion;
+	}
+
+	public float getSaturation() {
+		return saturation;
+	}
+
+	public void setSaturation(float saturation) {
+		this.saturation = saturation;
+	}
+
+	public float getFallDistance() {
+		return fallDistance;
+	}
+
+	public void setFallDistance(float fallDistance) {
+		this.fallDistance = fallDistance;
+	}
+
+	public int getFireTicks() {
+		return fireTicks;
+	}
+
+	public void setFireTicks(int fireTicks) {
+		this.fireTicks = fireTicks;
+	}
+
+	public List<WeakReference<Player>> getCantSee() {
+		return cantSee;
+	}
+
+	public void setCantSee(List<WeakReference<Player>> cantSee) {
+		this.cantSee = cantSee;
+	}
+
+	public Scoreboard getScoreboard() {
+		return scoreboard;
+	}
+
+	public void setScoreboard(Scoreboard scoreboard) {
+		this.scoreboard = scoreboard;
+	}
+
+	public Location getCompassTarget() {
+		return compassTarget;
+	}
+
+	public void setCompassTarget(Location compassTarget) {
+		this.compassTarget = compassTarget;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((activeEffects == null) ? 0 : activeEffects.hashCode());
+		result = prime * result + (allowFlight ? 1231 : 1237);
+		result = prime * result + ((cantSee == null) ? 0 : cantSee.hashCode());
+		result = prime * result + ((compassTarget == null) ? 0 : compassTarget.hashCode());
+		result = prime * result + Float.floatToIntBits(exhaustion);
+		result = prime * result + Float.floatToIntBits(experience);
+		result = prime * result + Float.floatToIntBits(fallDistance);
+		result = prime * result + fireTicks;
+		result = prime * result + foodLevel;
+		result = prime * result + ((gamemode == null) ? 0 : gamemode.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(health);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + Arrays.hashCode(inventory);
+		result = prime * result + (isFlying ? 1231 : 1237);
+		result = prime * result + level;
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		result = prime * result + Float.floatToIntBits(saturation);
+		result = prime * result + ((scoreboard == null) ? 0 : scoreboard.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlayerStateHolder other = (PlayerStateHolder) obj;
+		if (activeEffects == null) {
+			if (other.activeEffects != null)
+				return false;
+		} else if (!activeEffects.equals(other.activeEffects))
+			return false;
+		if (allowFlight != other.allowFlight)
+			return false;
+		if (cantSee == null) {
+			if (other.cantSee != null)
+				return false;
+		} else if (!cantSee.equals(other.cantSee))
+			return false;
+		if (compassTarget == null) {
+			if (other.compassTarget != null)
+				return false;
+		} else if (!compassTarget.equals(other.compassTarget))
+			return false;
+		if (Float.floatToIntBits(exhaustion) != Float.floatToIntBits(other.exhaustion))
+			return false;
+		if (Float.floatToIntBits(experience) != Float.floatToIntBits(other.experience))
+			return false;
+		if (Float.floatToIntBits(fallDistance) != Float.floatToIntBits(other.fallDistance))
+			return false;
+		if (fireTicks != other.fireTicks)
+			return false;
+		if (foodLevel != other.foodLevel)
+			return false;
+		if (gamemode != other.gamemode)
+			return false;
+		if (Double.doubleToLongBits(health) != Double.doubleToLongBits(other.health))
+			return false;
+		if (!Arrays.equals(inventory, other.inventory))
+			return false;
+		if (isFlying != other.isFlying)
+			return false;
+		if (level != other.level)
+			return false;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (Float.floatToIntBits(saturation) != Float.floatToIntBits(other.saturation))
+			return false;
+		if (scoreboard == null) {
+			if (other.scoreboard != null)
+				return false;
+		} else if (!scoreboard.equals(other.scoreboard))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "PlayerStateHolder [inventory=" + Arrays.toString(inventory) + ", gamemode=" + gamemode + ", health=" + health + ", foodLevel="
+				+ foodLevel + ", level=" + level + ", experience=" + experience + ", allowFlight=" + allowFlight + ", isFlying=" + isFlying
+				+ ", activeEffects=" + activeEffects + ", exhaustion=" + exhaustion + ", saturation=" + saturation + ", fallDistance=" + fallDistance
+				+ ", fireTicks=" + fireTicks + ", cantSee=" + cantSee + ", scoreboard=" + scoreboard + ", compassTarget=" + compassTarget
+				+ ", location=" + location + "]";
 	}
 	
 }

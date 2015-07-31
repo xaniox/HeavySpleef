@@ -24,8 +24,6 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.logging.Level;
 
-import lombok.Getter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -67,9 +65,7 @@ public abstract class SignExtension extends GameExtension {
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	private PrefixType prefixType;
-	@Getter
 	private Location location;
-	@Getter
 	private SignLayout layout;
 	
 	protected SignExtension() {}
@@ -121,6 +117,14 @@ public abstract class SignExtension extends GameExtension {
 			layout = retrieveSignLayout();
 		}
 		
+		return layout;
+	}
+	
+	public Location getLocation() {
+		return location;
+	}
+	
+	public SignLayout getLayout() {
 		return layout;
 	}
 	
@@ -201,10 +205,14 @@ public abstract class SignExtension extends GameExtension {
 		SPLEEF("[spleef]"),
 		SPLEGG("[splegg]");
 		
-		private @Getter String prefixString;
+		private String prefixString;
 		
 		private PrefixType(String prefixString) {
 			this.prefixString = prefixString;
+		}
+		
+		public String getPrefixString() {
+			return prefixString;
 		}
 		
 		protected String getConfigString(DefaultConfig config) {

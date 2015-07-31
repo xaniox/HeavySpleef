@@ -23,9 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Comparator;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ProxyPriority {
@@ -41,11 +38,14 @@ public @interface ProxyPriority {
 		HIGHEST(4),
 		MONITOR(5);
 		
-		@Getter(AccessLevel.PACKAGE)
 		private int priorityInt;
 		
 		private Priority(int priorityInt) {
 			this.priorityInt = priorityInt;
+		}
+		
+		int getPriorityInt() {
+			return priorityInt;
 		}
 		
 		public static class PriorityComparator implements Comparator<Priority> {

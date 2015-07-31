@@ -17,11 +17,8 @@
  */
 package de.matzefratze123.heavyspleef.core.config;
 
-import lombok.Getter;
-
 import org.bukkit.configuration.ConfigurationSection;
 
-@Getter
 public class QueueSection {
 
 	private boolean useQueues;
@@ -30,6 +27,14 @@ public class QueueSection {
 	public QueueSection(ConfigurationSection section) {
 		this.useQueues = section.getBoolean("use-queues", true);
 		this.commandsInQueue = section.getBoolean("commands-in-queues", false);
+	}
+
+	public boolean isUseQueues() {
+		return useQueues;
+	}
+
+	public boolean isCommandsInQueue() {
+		return commandsInQueue;
 	}
 	
 }

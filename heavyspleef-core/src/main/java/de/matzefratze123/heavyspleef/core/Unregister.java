@@ -25,14 +25,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import lombok.experimental.UtilityClass;
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Unregister {
 	
-	@UtilityClass
 	public static class Unregisterer {
+		
+		private Unregisterer() {
+			throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+		}
 		
 		public static void runUnregisterMethods(Class<?> clazz, HeavySpleef heavySpleef, boolean validateStatic, boolean parents) {
 			Class<?> currentClass = clazz;

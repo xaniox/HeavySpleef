@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.Setter;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,13 +34,17 @@ public class DefaultCommandExecution implements CommandExecution {
 
 	private static final String[] HELP_IDENTIFIERS = {"?", "help"};
 	
-	private @Setter String prefix;
+	private String prefix;
 	private Plugin plugin;
 	private Logger logger;
 	
 	public DefaultCommandExecution(Plugin plugin, String prefix) {
 		this.plugin = plugin;
 		this.logger = plugin.getLogger();
+		this.prefix = prefix;
+	}
+	
+	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 	

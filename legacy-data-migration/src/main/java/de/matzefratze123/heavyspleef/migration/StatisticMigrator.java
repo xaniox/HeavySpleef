@@ -34,10 +34,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -69,11 +65,15 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 	private long watchdogTimeoutTime;
 	private boolean watchdogRestart;
 	private Method watchdogDoStartMethod;
-	private @Getter int countMigrated;
+	private int countMigrated;
 	
 	public StatisticMigrator(String db, Logger logger) {
 		this.db = db;
 		this.logger = logger;
+	}
+	
+	public int getCountMigrated() {
+		return countMigrated;
 	}
 	
 	@Override
@@ -308,8 +308,6 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 		countMigrated = size;
 	}
 	
-	@Data
-	@AllArgsConstructor
 	private static class LegacyStatisticProfile {
 		
 		private String owner;
@@ -317,6 +315,77 @@ public class StatisticMigrator implements Migrator<Connection, Connection> {
 		private int losses;
 		private int knockouts;
 		private int gamesPlayed;
+		
+		public LegacyStatisticProfile(String owner, int wins, int losses, int knockouts, int gamesPlayed) {
+			this.owner = owner;
+			this.wins = wins;
+			this.losses = losses;
+			this.knockouts = knockouts;
+			this.gamesPlayed = gamesPlayed;
+		}
+
+		public String getOwner() {
+			return owner;
+		}
+
+		public int getWins() {
+			return wins;
+		}
+
+		public int getLosses() {
+			return losses;
+		}
+
+		public int getKnockouts() {
+			return knockouts;
+		}
+
+		public int getGamesPlayed() {
+			return gamesPlayed;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + gamesPlayed;
+			result = prime * result + knockouts;
+			result = prime * result + losses;
+			result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+			result = prime * result + wins;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			LegacyStatisticProfile other = (LegacyStatisticProfile) obj;
+			if (gamesPlayed != other.gamesPlayed)
+				return false;
+			if (knockouts != other.knockouts)
+				return false;
+			if (losses != other.losses)
+				return false;
+			if (owner == null) {
+				if (other.owner != null)
+					return false;
+			} else if (!owner.equals(other.owner))
+				return false;
+			if (wins != other.wins)
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "LegacyStatisticProfile [owner=" + owner + ", wins=" + wins + ", losses=" + losses + ", knockouts=" + knockouts + ", gamesPlayed="
+					+ gamesPlayed + "]";
+		}
 		
 	}
 

@@ -22,11 +22,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinecraftVersion {
 	
 	public static final int V1_6 = 1;
@@ -34,9 +29,11 @@ public class MinecraftVersion {
 	public static final int V1_8 = 3;
 	public static final int UNKNOWN_VERSION = -1;
 	
-	private static @Getter int implementationVersion = UNKNOWN_VERSION;
-	private static @Getter String implementationVersionString;
-	private static @Getter boolean spigot;
+	private static int implementationVersion = UNKNOWN_VERSION;
+	private static String implementationVersionString;
+	private static boolean spigot;
+
+	private MinecraftVersion() {}
 	
 	static void initialize(Logger logger) {
 		String bukkitVersion = Bukkit.getBukkitVersion();
@@ -106,6 +103,18 @@ public class MinecraftVersion {
 		}
 		
 		return versionString;
+	}
+	
+	public static int getImplementationVersion() {
+		return implementationVersion;
+	}
+
+	public static String getImplementationVersionString() {
+		return implementationVersionString;
+	}
+
+	public static boolean isSpigot() {
+		return spigot;
 	}
 
 }

@@ -23,11 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -67,11 +62,11 @@ import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.flag.InputParseException;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.game.GameProperty;
 import de.matzefratze123.heavyspleef.core.game.GameState;
 import de.matzefratze123.heavyspleef.core.game.QuitCause;
 import de.matzefratze123.heavyspleef.core.game.RatingCompute;
-import de.matzefratze123.heavyspleef.core.game.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.core.stats.Statistic;
@@ -104,13 +99,13 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	private static final String TEAM_SELECT_ITEM_KEY = "team_select";
 	public static final String OBJECTIVE_NAME = "spleef_teams";
 	
-	private @Getter Map<SpleefPlayer, TeamColor> players;
+	private Map<SpleefPlayer, TeamColor> players;
 	private Map<SpleefPlayer, TeamColor> deadPlayers;
 	private List<TeamColor> deadTeams;
 	private Map<TeamColor, Location> spawnpoints;
 	private boolean updateInventory;
 	private GuiInventory teamChooser;
-	private @Getter Scoreboard scoreboard;
+	private Scoreboard scoreboard;
 	private @Inject Game game;
 	
 	public FlagTeam() {
@@ -119,6 +114,14 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		deadTeams = Lists.newArrayList();
 		spawnpoints = Maps.newHashMap();
 		updateInventory = true;
+	}
+	
+	public Map<SpleefPlayer, TeamColor> getPlayers() {
+		return players;
+	}
+	
+	public Scoreboard getScoreboard() {
+		return scoreboard;
 	}
 	
 	@Override
@@ -609,24 +612,62 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	
 	static class GetMaxPlayersEvent extends Event {
 		
-		private @Getter @Setter int maxPlayers;
+		private int maxPlayers;
+		
+		public int getMaxPlayers() {
+			return maxPlayers;
+		}
+		
+		public void setMaxPlayers(int maxPlayers) {
+			this.maxPlayers = maxPlayers;
+		}
 		
 	}
 	
-	@RequiredArgsConstructor
 	static class ValidateTeamsEvent extends Event implements Cancellable {
 		
-		private @Getter @Setter boolean cancelled;
-		private @Getter @Setter String errorMessage;
-		private @Getter @NonNull List<TeamSizeHolder> teams;
+		private boolean cancelled;
+		private String errorMessage;
+		private List<TeamSizeHolder> teams;
+		
+		public ValidateTeamsEvent(List<TeamSizeHolder> teams) {
+			this.teams = teams;
+		}
+
+		public boolean isCancelled() {
+			return cancelled;
+		}
+
+		public void setCancelled(boolean cancelled) {
+			this.cancelled = cancelled;
+		}
+
+		public String getErrorMessage() {
+			return errorMessage;
+		}
+
+		public void setErrorMessage(String errorMessage) {
+			this.errorMessage = errorMessage;
+		}
+
+		public List<TeamSizeHolder> getTeams() {
+			return teams;
+		}
 		
 	}
 	
-	@Getter
 	static class TeamSizeHolder implements Comparable<TeamSizeHolder> {
 
 		private TeamColor color;
 		private int size;
+		
+		public TeamColor getColor() {
+			return color;
+		}
+		
+		public int getSize() {
+			return size;
+		}
 		
 		@Override
 		public int compareTo(TeamSizeHolder o) {
@@ -635,7 +676,6 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		
 	}
 	
-	@Getter
 	public static class PlayerSelectedTeamEvent extends PlayerGameEvent {
 
 		private TeamColor colorSelected;
@@ -646,19 +686,44 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			this.colorSelected = color;
 		}
 		
+		public TeamColor getColorSelected() {
+			return colorSelected;
+		}
+		
 	}
 	
-	@Getter
 	public static class PlayerSelectTeamEvent extends PlayerGameEvent implements Cancellable {
 
-		private @Setter boolean cancelled;
-		private @Setter String failMessage;
+		private boolean cancelled;
+		private String failMessage;
 		private TeamColor colorSelected;
 		
 		public PlayerSelectTeamEvent(Game game, SpleefPlayer who, TeamColor color) {
 			super(game, who);
 			
 			this.colorSelected = color;
+		}
+		
+		@Override
+		public boolean isCancelled() {
+			return cancelled;
+		}
+		
+		@Override
+		public void setCancelled(boolean cancel) {
+			this.cancelled = cancel;
+		}
+		
+		public String getFailMessage() {
+			return failMessage;
+		}
+		
+		public void setFailMessage(String failMessage) {
+			this.failMessage = failMessage;
+		}
+		
+		public TeamColor getColorSelected() {
+			return colorSelected;
 		}
 		
 	}

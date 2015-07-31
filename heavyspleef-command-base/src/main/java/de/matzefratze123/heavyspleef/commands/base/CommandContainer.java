@@ -24,26 +24,18 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
 import com.google.common.collect.Sets;
 
 public class CommandContainer {
 	
 	private Command command;
-	@Getter @Setter
 	private CommandExecution execution;
-	@Getter @Setter(value = AccessLevel.PROTECTED)
 	private Set<CommandContainer> childCommands;
-	private @Getter boolean playerOnly;
-	private @Getter CommandContainer parent;
-	@Getter(AccessLevel.PROTECTED)
+	private boolean playerOnly;
+	private CommandContainer parent;
 	private Method commandMethod;
-	@Getter(AccessLevel.PROTECTED)
 	private Method tabCompleteMethod;
-	private @Getter Object commandClassInstance;
+	private Object commandClassInstance;
 	
 	protected CommandContainer(Method method, Method tabCompleteMethod, Object instance, Command command, boolean playerOnly, CommandExecution execution) {
 		this.commandMethod = method;
@@ -57,6 +49,46 @@ public class CommandContainer {
 		this(method, tabCompleteMethod, instance, command, playerOnly, execution);
 		
 		this.parent = parent;
+	}
+	
+	public CommandExecution getExecution() {
+		return execution;
+	}
+	
+	public void setExecution(CommandExecution execution) {
+		this.execution = execution;
+	}
+	
+	public Set<CommandContainer> getChildCommands() {
+		return childCommands;
+	}
+	
+	protected void setChildCommands(Set<CommandContainer> childCommands) {
+		this.childCommands = childCommands;
+	}
+	
+	public boolean isPlayerOnly() {
+		return playerOnly;
+	}
+	
+	public CommandContainer getParent() {
+		return parent;
+	}
+	
+	protected void setParent(CommandContainer parent) {
+		this.parent = parent;
+	}
+	
+	protected Method getCommandMethod() {
+		return commandMethod;
+	}
+	
+	protected Method getTabCompleteMethod() {
+		return tabCompleteMethod;
+	}
+	
+	public Object getCommandClassInstance() {
+		return commandClassInstance;
 	}
 	
 	public String getName() {

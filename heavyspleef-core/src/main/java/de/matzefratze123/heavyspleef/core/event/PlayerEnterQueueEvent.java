@@ -17,18 +17,25 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
-import lombok.Getter;
-import lombok.Setter;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@Getter @Setter
 public class PlayerEnterQueueEvent extends PlayerGameEvent implements Cancellable {
 
 	private boolean cancelled;
 	
 	public PlayerEnterQueueEvent(Game game, SpleefPlayer player) {
 		super(game, player);
+	}
+	
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
+	
+	@Override
+	public void setCancelled(boolean cancel) {
+		this.cancelled = cancel;
 	}
 
 }

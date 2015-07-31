@@ -17,8 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.core.flag;
 
-import lombok.Getter;
-
 import org.apache.commons.lang.Validate;
 import org.dom4j.Element;
 
@@ -32,8 +30,8 @@ import org.dom4j.Element;
  */
 public class UnloadedFlag extends NullFlag {
 		
-	private @Getter String flagName;
-	private @Getter Element xmlElement;
+	private String flagName;
+	private Element xmlElement;
 
 	/**
 	 * Checks wether or not the actual flag's class is available
@@ -76,6 +74,14 @@ public class UnloadedFlag extends NullFlag {
 	@Override
 	public String getValueAsString() {
 		return "Add-On currently not installed";
+	}
+	
+	public String getFlagName() {
+		return flagName;
+	}
+	
+	public Element getXmlElement() {
+		return xmlElement;
 	}
 	
 }

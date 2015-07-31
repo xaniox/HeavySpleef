@@ -27,8 +27,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
-import lombok.Getter;
-
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -39,7 +37,7 @@ public class JoinGuiAddOn extends BasicAddOn {
 	private static final String CONFIG_FILE_NAME = "gui-entry-layout.yml";
 	private static final String UTF_8 = "UTF-8";
 
-	private @Getter InventoryEntryConfig inventoryEntryConfig;
+	private InventoryEntryConfig inventoryEntryConfig;
 	
 	@Override
 	public void load() {
@@ -79,6 +77,10 @@ public class JoinGuiAddOn extends BasicAddOn {
 			getLogger().log(Level.SEVERE, "Shutting add-on down...");
 			getAddOnManager().disableAddOn(this);
 		}
+	}
+	
+	public InventoryEntryConfig getInventoryEntryConfig() {
+		return inventoryEntryConfig;
 	}
 
 }

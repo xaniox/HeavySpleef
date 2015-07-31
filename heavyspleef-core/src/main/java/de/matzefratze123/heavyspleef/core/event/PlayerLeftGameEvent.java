@@ -17,12 +17,10 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
-import lombok.Getter;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.game.QuitCause;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@Getter
 public class PlayerLeftGameEvent extends PlayerGameEvent {
 
 	private QuitCause cause;
@@ -33,6 +31,14 @@ public class PlayerLeftGameEvent extends PlayerGameEvent {
 		
 		this.killer = killer;
 		this.cause = cause;
+	}
+
+	public QuitCause getCause() {
+		return cause;
+	}
+
+	public SpleefPlayer getKiller() {
+		return killer;
 	}
 	
 }

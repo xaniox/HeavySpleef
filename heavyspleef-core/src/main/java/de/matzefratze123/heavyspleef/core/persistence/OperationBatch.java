@@ -20,13 +20,10 @@ package de.matzefratze123.heavyspleef.core.persistence;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import lombok.Setter;
-
 import com.google.common.collect.Lists;
 
 public abstract class OperationBatch implements Callable<OperationBatch.BatchResult> {
 	
-	@Setter
 	private ReadWriteHandler handler;
 	
 	@Override
@@ -37,16 +34,23 @@ public abstract class OperationBatch implements Callable<OperationBatch.BatchRes
 		return result;
 	}
 	
+	public void setHandler(ReadWriteHandler handler) {
+		this.handler = handler;
+	}
+	
 	public abstract void executeBatch(ReadWriteHandler handler, BatchResult resultWriter) throws Exception;
 	
 	public static class BatchResult {
 		
-		@Setter
 		private int readCursor;
 		private final List<Object> results;
 		
 		public BatchResult() {
 			results = Lists.newArrayList();
+		}
+		
+		public void setReadCursor(int readCursor) {
+			this.readCursor = readCursor;
 		}
 		
 		public void write(Object result) {

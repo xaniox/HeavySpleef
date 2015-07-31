@@ -20,9 +20,6 @@ package de.matzefratze123.heavyspleef.core.config;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 
-import lombok.Getter;
-
-@Getter
 public class SignSection {
 	
 	private static final String DEFAULT_PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "%s" + ChatColor.DARK_GRAY + "]";
@@ -33,6 +30,14 @@ public class SignSection {
 	public SignSection(ConfigurationSection section) {
 		this.spleefPrefix = section.getString("spleef-prefix", String.format(DEFAULT_PREFIX, "Spleef"));
 		this.spleggPrefix = section.getString("splegg-prefix", String.format(DEFAULT_PREFIX, "Splegg"));
+	}
+
+	public String getSpleefPrefix() {
+		return spleefPrefix;
+	}
+
+	public String getSpleggPrefix() {
+		return spleggPrefix;
 	}
 
 }

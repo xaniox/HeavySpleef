@@ -20,8 +20,6 @@ package de.matzefratze123.joingui;
 import java.text.ParseException;
 import java.util.List;
 
-import lombok.Getter;
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,10 +36,14 @@ public class InventoryEntryConfig extends ThrowingConfigurationObject<ParseExcep
 			+ ChatColor.GREEN + "\"}$[players]" + ChatColor.DARK_GRAY + ChatColor.BOLD + "/" + ChatColor.GREEN
 			+ "{if (has_flag:max-players) then \"$[flag_value:max-players]\" else \"∞\"}", ChatColor.AQUA + "" + ChatColor.BOLD + "$[state]");
 	
-	private @Getter InventoryEntryLayout layout;
+	private InventoryEntryLayout layout;
 	
 	public InventoryEntryConfig(Configuration config) {
 		super(config);
+	}
+	
+	public InventoryEntryLayout getLayout() {
+		return layout;
 	}
 
 	@Override

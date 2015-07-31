@@ -20,9 +20,6 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Set;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -489,10 +486,20 @@ public class FlagSpectate extends LocationFlag {
 	
 	public static class SpectateEnterEvent extends PlayerGameEvent implements Cancellable {
 
-		private @Getter @Setter boolean cancelled;
+		private boolean cancelled;
 		
 		public SpectateEnterEvent(Game game, SpleefPlayer player) {
 			super(game, player);
+		}
+		
+		@Override
+		public boolean isCancelled() {
+			return cancelled;
+		}
+		
+		@Override
+		public void setCancelled(boolean cancel) {
+			this.cancelled = cancel;
 		}
 		
 	}

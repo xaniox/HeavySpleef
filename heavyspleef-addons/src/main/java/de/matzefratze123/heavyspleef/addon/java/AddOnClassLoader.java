@@ -24,9 +24,6 @@ import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.Maps;
@@ -39,13 +36,13 @@ import de.matzefratze123.heavyspleef.core.i18n.I18N;
 
 public class AddOnClassLoader extends URLClassLoader {
 	
-	private @Getter final BasicAddOn addOn;
+	private final BasicAddOn addOn;
 	private final AddOnProperties properties;
 	private final SharedClassContext classContext;
 	private final Map<String, Class<?>> classes = Maps.newHashMap();
 	private final File dataFolder;
 	private final File file;
-	private @Setter I18N i18N;
+	private I18N i18N;
 	private final AddOnManager manager;
 	
 	public AddOnClassLoader(File file, ClassLoader parent, AddOnProperties properties, AddOnManager manager, SharedClassContext ctx, File dataFolder)
@@ -82,6 +79,14 @@ public class AddOnClassLoader extends URLClassLoader {
 		} catch (InstantiationException e) {
 			throw new InvalidAddOnException("Main class \"" + mainClassName + "\" could not be instantiated", e);
 		}
+	}
+	
+	public BasicAddOn getAddOn() {
+		return addOn;
+	}
+	
+	public void setI18N(I18N i18n) {
+		i18N = i18n;
 	}
 	
 	@Override

@@ -19,7 +19,6 @@ package de.matzefratze123.heavyspleef.core.game;
 
 import java.util.Map;
 
-import lombok.Getter;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.core.stats.Statistic;
 
@@ -33,11 +32,14 @@ public interface RatingCompute {
 	
 	public static class RatingResult {
 		
-		@Getter
 		private Map<String, Double> newRating;
 		
 		public RatingResult(Map<String, Double> newRating) {
 			this.newRating = newRating;
+		}
+		
+		public Map<String, Double> getNewRating() {
+			return newRating;
 		}
 		
 	}

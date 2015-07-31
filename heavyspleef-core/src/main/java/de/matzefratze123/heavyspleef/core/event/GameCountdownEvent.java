@@ -20,15 +20,11 @@ package de.matzefratze123.heavyspleef.core.event;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@Getter @Setter
 public class GameCountdownEvent extends GameEvent implements Cancellable {
 	
 	private boolean cancelled;
@@ -42,6 +38,54 @@ public class GameCountdownEvent extends GameEvent implements Cancellable {
 		super(game);
 		
 		countdownEnabled = true;
-	}	
+	}
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public List<Location> getSpawnLocations() {
+		return spawnLocations;
+	}
+
+	public void setSpawnLocations(List<Location> spawnLocations) {
+		this.spawnLocations = spawnLocations;
+	}
+
+	public Map<SpleefPlayer, Location> getSpawnLocationMap() {
+		return spawnLocationMap;
+	}
+
+	public void setSpawnLocationMap(Map<SpleefPlayer, Location> spawnLocationMap) {
+		this.spawnLocationMap = spawnLocationMap;
+	}
+
+	public int getCountdownLength() {
+		return countdownLength;
+	}
+
+	public void setCountdownLength(int countdownLength) {
+		this.countdownLength = countdownLength;
+	}
+
+	public boolean isCountdownEnabled() {
+		return countdownEnabled;
+	}
+
+	public void setCountdownEnabled(boolean countdownEnabled) {
+		this.countdownEnabled = countdownEnabled;
+	}
+
+	public String getErrorBroadcast() {
+		return errorBroadcast;
+	}
+
+	public void setErrorBroadcast(String errorBroadcast) {
+		this.errorBroadcast = errorBroadcast;
+	}
 
 }

@@ -17,16 +17,14 @@
  */
 package de.matzefratze123.heavyspleef.core.game;
 
-import lombok.Getter;
-
 import org.bukkit.plugin.Plugin;
 
 import de.matzefratze123.heavyspleef.core.SimpleBasicTask;
 
 public class CountdownTask extends SimpleBasicTask {
 	
-	private @Getter final int length;
-	private @Getter int remaining;
+	private final int length;
+	private int remaining;
 	private CountdownCallback callback;
 	
 	public CountdownTask(Plugin plugin, int length, CountdownCallback callback) {
@@ -35,6 +33,14 @@ public class CountdownTask extends SimpleBasicTask {
 		this.length = length;
 		this.remaining = length;
 		this.callback = callback;
+	}
+	
+	public int getLength() {
+		return length;
+	}
+	
+	public int getRemaining() {
+		return remaining;
 	}
 	
 	@Override

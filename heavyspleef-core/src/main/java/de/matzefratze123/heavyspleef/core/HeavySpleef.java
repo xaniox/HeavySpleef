@@ -37,9 +37,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -75,14 +72,14 @@ import de.matzefratze123.heavyspleef.core.extension.StartSignExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
+import de.matzefratze123.heavyspleef.core.flag.FlagRegistry.InitializationPolicy;
 import de.matzefratze123.heavyspleef.core.flag.NullFlag;
 import de.matzefratze123.heavyspleef.core.flag.UnloadedFlag;
-import de.matzefratze123.heavyspleef.core.flag.FlagRegistry.InitializationPolicy;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.game.GameManager;
 import de.matzefratze123.heavyspleef.core.game.JoinRequester;
-import de.matzefratze123.heavyspleef.core.game.LoseCheckerTask;
 import de.matzefratze123.heavyspleef.core.game.JoinRequester.PvPTimerManager;
+import de.matzefratze123.heavyspleef.core.game.LoseCheckerTask;
 import de.matzefratze123.heavyspleef.core.hook.HookManager;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
@@ -100,31 +97,31 @@ public final class HeavySpleef {
 	private static final String I18N_CLASSPATH_FOLDER = "i18n/";
 	
 	private Map<ConfigType, ConfigurationObject> configurations;
-	private @Getter ModuleManager moduleManager;
+	private ModuleManager moduleManager;
 	private File localeDir;
 	
-	private @Getter final JavaPlugin plugin;
-	private @Getter final Logger logger;
+	private final JavaPlugin plugin;
+	private final Logger logger;
 	
-	private @Getter String spleefPrefix;
-	private @Getter String vipPrefix;
-	private @Getter FlagRegistry flagRegistry;
-	private @Getter ExtensionRegistry extensionRegistry;
-	private @Getter @Setter CommandManager commandManager;
-	private @Getter @Setter AsyncReadWriteHandler databaseHandler;
+	private String spleefPrefix;
+	private String vipPrefix;
+	private FlagRegistry flagRegistry;
+	private ExtensionRegistry extensionRegistry;
+	private CommandManager commandManager;
+	private AsyncReadWriteHandler databaseHandler;
 
-	private @Getter HookManager hookManager;
-	private @Getter GameManager gameManager;
-	private @Getter PlayerManager playerManager;
-	private @Getter BukkitListener bukkitListener;
-	private @Getter RegionVisualizer regionVisualizer;
-	private @Getter Updater updater;
-	private @Getter PlayerPostActionHandler postActionHandler;
-	private @Getter GlobalEventBus globalEventBus;
-	private @Getter I18NManager i18NManager;
-	private @Getter boolean gamesLoaded;
-	private @Getter PvPTimerManager pvpTimerManager;
-	private @Getter Metrics metrics;
+	private HookManager hookManager;
+	private GameManager gameManager;
+	private PlayerManager playerManager;
+	private BukkitListener bukkitListener;
+	private RegionVisualizer regionVisualizer;
+	private Updater updater;
+	private PlayerPostActionHandler postActionHandler;
+	private GlobalEventBus globalEventBus;
+	private I18NManager i18NManager;
+	private boolean gamesLoaded;
+	private PvPTimerManager pvpTimerManager;
+	private Metrics metrics;
 	private Set<GamesLoadCallback> gamesLoadCallbacks;
 	
 	public HeavySpleef(JavaPlugin plugin) {
@@ -481,6 +478,102 @@ public final class HeavySpleef {
 	
 	public void addGamesLoadCallback(GamesLoadCallback callback) {
 		gamesLoadCallbacks.add(callback);
+	}
+	
+	public ExtensionRegistry getExtensionRegistry() {
+		return extensionRegistry;
+	}
+
+	public void setExtensionRegistry(ExtensionRegistry extensionRegistry) {
+		this.extensionRegistry = extensionRegistry;
+	}
+
+	public CommandManager getCommandManager() {
+		return commandManager;
+	}
+
+	public void setCommandManager(CommandManager commandManager) {
+		this.commandManager = commandManager;
+	}
+
+	public AsyncReadWriteHandler getDatabaseHandler() {
+		return databaseHandler;
+	}
+
+	public void setDatabaseHandler(AsyncReadWriteHandler databaseHandler) {
+		this.databaseHandler = databaseHandler;
+	}
+
+	public ModuleManager getModuleManager() {
+		return moduleManager;
+	}
+
+	public JavaPlugin getPlugin() {
+		return plugin;
+	}
+
+	public Logger getLogger() {
+		return logger;
+	}
+
+	public String getSpleefPrefix() {
+		return spleefPrefix;
+	}
+
+	public String getVipPrefix() {
+		return vipPrefix;
+	}
+
+	public FlagRegistry getFlagRegistry() {
+		return flagRegistry;
+	}
+
+	public HookManager getHookManager() {
+		return hookManager;
+	}
+
+	public GameManager getGameManager() {
+		return gameManager;
+	}
+
+	public PlayerManager getPlayerManager() {
+		return playerManager;
+	}
+
+	public BukkitListener getBukkitListener() {
+		return bukkitListener;
+	}
+
+	public RegionVisualizer getRegionVisualizer() {
+		return regionVisualizer;
+	}
+
+	public Updater getUpdater() {
+		return updater;
+	}
+
+	public PlayerPostActionHandler getPostActionHandler() {
+		return postActionHandler;
+	}
+
+	public GlobalEventBus getGlobalEventBus() {
+		return globalEventBus;
+	}
+
+	public I18NManager getI18NManager() {
+		return i18NManager;
+	}
+
+	public boolean isGamesLoaded() {
+		return gamesLoaded;
+	}
+
+	public PvPTimerManager getPvpTimerManager() {
+		return pvpTimerManager;
+	}
+
+	public Metrics getMetrics() {
+		return metrics;
 	}
 	
 	public interface GamesLoadCallback {

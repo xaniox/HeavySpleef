@@ -25,9 +25,6 @@ import java.io.OutputStream;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.commons.lang.Validate;
 
 import com.google.common.io.Closer;
@@ -45,15 +42,15 @@ public class BasicAddOn implements AddOn {
 	
 	private static final int BUFFER_SIZE = 1024;
 	
-	private @Getter HeavySpleef heavySpleef;
-	private @Getter AddOnManager addOnManager;
-	private @Getter File dataFolder;
-	private @Getter AddOnProperties properties;
-	private @Getter Logger logger;
-	private @Getter @Setter boolean enabled;
-	private @Getter File file;
-	private @Getter ClassLoader classLoader;
-	private @Getter I18N i18n;
+	private HeavySpleef heavySpleef;
+	private AddOnManager addOnManager;
+	private File dataFolder;
+	private AddOnProperties properties;
+	private Logger logger;
+	private boolean enabled;
+	private File file;
+	private ClassLoader classLoader;
+	private I18N i18n;
 	
 	protected BasicAddOn() {}
 	
@@ -125,6 +122,46 @@ public class BasicAddOn implements AddOn {
 		this.logger = logger;
 	}
 	
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public HeavySpleef getHeavySpleef() {
+		return heavySpleef;
+	}
+
+	public AddOnManager getAddOnManager() {
+		return addOnManager;
+	}
+
+	public File getDataFolder() {
+		return dataFolder;
+	}
+
+	public AddOnProperties getProperties() {
+		return properties;
+	}
+
+	public Logger getLogger() {
+		return logger;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	public I18N getI18n() {
+		return i18n;
+	}
+
 	public static class AddOnLogger extends Logger {
 		
 		private String loggerPrefix;

@@ -17,16 +17,12 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.game.Game.JoinResult;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@Getter @Setter
 public class PlayerPreJoinGameEvent extends PlayerGameEvent {
 
 	private String message;
@@ -37,6 +33,30 @@ public class PlayerPreJoinGameEvent extends PlayerGameEvent {
 		super(game, player);
 		
 		this.joinResult = JoinResult.ALLOW;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Location getTeleportationLocation() {
+		return teleportationLocation;
+	}
+
+	public void setTeleportationLocation(Location teleportationLocation) {
+		this.teleportationLocation = teleportationLocation;
+	}
+
+	public JoinResult getJoinResult() {
+		return joinResult;
+	}
+
+	public void setJoinResult(JoinResult joinResult) {
+		this.joinResult = joinResult;
 	}
 
 }

@@ -17,9 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.core.extension;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.event.Listener;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -27,10 +24,25 @@ import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.persistence.XMLMarshallable;
 
-@Getter @Setter
 public abstract class GameExtension implements SpleefListener, Listener, XMLMarshallable {
 	
 	protected HeavySpleef heavySpleef;
 	protected Game game;
+	
+	public HeavySpleef getHeavySpleef() {
+		return heavySpleef;
+	}
+	
+	public void setHeavySpleef(HeavySpleef heavySpleef) {
+		this.heavySpleef = heavySpleef;
+	}
+	
+	public Game getGame() {
+		return game;
+	}
+	
+	public void setGame(Game game) {
+		this.game = game;
+	}
 	
 }

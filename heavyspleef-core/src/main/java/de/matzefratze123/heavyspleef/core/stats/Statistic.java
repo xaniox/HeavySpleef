@@ -23,30 +23,19 @@ import java.util.UUID;
 import de.matzefratze123.heavyspleef.core.game.Rateable;
 import de.matzefratze123.heavyspleef.core.script.Variable;
 import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
-import lombok.Getter;
-import lombok.Setter;
 
 public class Statistic implements Comparable<Statistic>, Rateable, VariableSuppliable {
 
 	private static final double START_RATING = 1000D;
 	
-	@Getter
 	private UUID uniqueIdentifier;
-	@Getter @Setter
 	private String lastName;
-	@Getter @Setter
 	private int wins;
-	@Getter @Setter
 	private int losses;
-	@Getter @Setter
 	private int knockouts;
-	@Getter @Setter
 	private int gamesPlayed;
-	@Getter @Setter
 	private long timePlayed;
-	@Getter @Setter
 	private int blocksBroken;
-	@Getter @Setter
 	private double rating = START_RATING;
 	
 	public Statistic() {}
@@ -55,6 +44,74 @@ public class Statistic implements Comparable<Statistic>, Rateable, VariableSuppl
 		this.uniqueIdentifier = uuid;
 	}
 	
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public int getWins() {
+		return wins;
+	}
+
+	public void setWins(int wins) {
+		this.wins = wins;
+	}
+
+	public int getLosses() {
+		return losses;
+	}
+
+	public void setLosses(int losses) {
+		this.losses = losses;
+	}
+
+	public int getKnockouts() {
+		return knockouts;
+	}
+
+	public void setKnockouts(int knockouts) {
+		this.knockouts = knockouts;
+	}
+
+	public int getGamesPlayed() {
+		return gamesPlayed;
+	}
+
+	public void setGamesPlayed(int gamesPlayed) {
+		this.gamesPlayed = gamesPlayed;
+	}
+
+	public long getTimePlayed() {
+		return timePlayed;
+	}
+
+	public void setTimePlayed(long timePlayed) {
+		this.timePlayed = timePlayed;
+	}
+
+	public int getBlocksBroken() {
+		return blocksBroken;
+	}
+
+	public void setBlocksBroken(int blocksBroken) {
+		this.blocksBroken = blocksBroken;
+	}
+
+	public double getRating() {
+		return rating;
+	}
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+	public UUID getUniqueIdentifier() {
+		return uniqueIdentifier;
+	}
+
 	@Override
 	public int compareTo(Statistic o) {
 		return Double.valueOf(rating).compareTo(o.rating);

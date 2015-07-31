@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.Getter;
-
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -38,14 +36,14 @@ public class DefaultConfig extends ConfigurationObject {
 	public static final int CURRENT_CONFIG_VERSION = 5;
 	
 	private Map<GameProperty, Object> defaultGameProperties;
-	private @Getter GeneralSection generalSection;
-	private @Getter QueueSection queueSection;
-	private @Getter Localization localization;
-	private @Getter FlagSection flagSection;
-	private @Getter SignSection signSection;
-	private @Getter UpdateSection updateSection;
-	private @Getter int configVersion;
-	
+	private GeneralSection generalSection;
+	private QueueSection queueSection;
+	private Localization localization;
+	private FlagSection flagSection;
+	private SignSection signSection;
+	private UpdateSection updateSection;
+	private int configVersion;
+
 	public DefaultConfig(Configuration config) {
 		super(config);
 	}
@@ -143,6 +141,34 @@ public class DefaultConfig extends ConfigurationObject {
 		}
 		
 		return null;
+	}
+	
+	public GeneralSection getGeneralSection() {
+		return generalSection;
+	}
+
+	public QueueSection getQueueSection() {
+		return queueSection;
+	}
+
+	public Localization getLocalization() {
+		return localization;
+	}
+
+	public FlagSection getFlagSection() {
+		return flagSection;
+	}
+
+	public SignSection getSignSection() {
+		return signSection;
+	}
+
+	public UpdateSection getUpdateSection() {
+		return updateSection;
+	}
+
+	public int getConfigVersion() {
+		return configVersion;
 	}
 	
 }

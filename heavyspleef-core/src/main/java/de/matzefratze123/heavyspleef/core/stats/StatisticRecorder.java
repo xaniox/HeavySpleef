@@ -24,9 +24,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.block.Block;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -60,13 +57,21 @@ public class StatisticRecorder implements SpleefListener {
 	private RatingCompute ratingCompute;
 	private Map<String, Statistic> loadedStatistics;
 	private long gameStartedAt;
-	private @Getter @Setter boolean enableRating;
+	private boolean enableRating;
 	
 	public StatisticRecorder(HeavySpleef heavySpleef, Logger logger) {
 		this.heavySpleef = heavySpleef;
 		this.logger = logger;
 		this.ratingCompute = new DefaultRatingCompute();
 		this.enableRating = true;
+	}
+	
+	public boolean isEnableRating() {
+		return enableRating;
+	}
+	
+	public void setEnableRating(boolean enableRating) {
+		this.enableRating = enableRating;
 	}
 	
 	public void setRatingCompute(RatingCompute ratingCompute) {

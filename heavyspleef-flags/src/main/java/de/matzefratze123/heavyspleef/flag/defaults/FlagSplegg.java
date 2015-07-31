@@ -20,8 +20,6 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Map;
 
-import lombok.AllArgsConstructor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -250,10 +248,13 @@ public class FlagSplegg extends BaseFlag {
 		}
 	}
 	
-	@AllArgsConstructor
 	private static class GlobalFlagListener implements Listener {
 		
 		private HeavySpleef heavySpleef;
+		
+		public GlobalFlagListener(HeavySpleef heavySpleef) {
+			this.heavySpleef = heavySpleef;
+		}
 		
 		@EventHandler
 		public void onPlayerEggThrow(PlayerEggThrowEvent event) {

@@ -29,8 +29,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-import lombok.Getter;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -145,11 +143,15 @@ public class GameMigrator implements Migrator<Configuration, File> {
 	private final JDeserialize jdeserialize = new JDeserialize();
 	private final SafeGameCreator gameCreator;
 	private HeavySpleef heavySpleef;
-	private @Getter int countMigrated;
+	private int countMigrated;
 	
 	public GameMigrator(HeavySpleef heavySpleef) {
 		this.heavySpleef = heavySpleef;
 		this.gameCreator = new SafeGameCreator(heavySpleef);
+	}
+	
+	public int getCountMigrated() {
+		return countMigrated;
 	}
 	
 	@SuppressWarnings("unchecked")

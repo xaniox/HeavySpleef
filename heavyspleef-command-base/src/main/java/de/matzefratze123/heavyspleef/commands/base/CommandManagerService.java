@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,7 +44,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 	
 	private final JavaPlugin plugin;
 	private final Logger logger;
-	private final @Getter DefaultCommandExecution execution;
+	private final DefaultCommandExecution execution;
 	private List<Object> args;
 	private Instantiator instantiator;
 	private MessageBundle messageBundle;
@@ -64,6 +62,10 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		this.messageBundle = new MessageBundle(messageProvider, defaultMessagesStream);
 		this.permissionChecker = permissionChecker;
 		this.execution = new DefaultCommandExecution(plugin, null);
+	}
+	
+	public DefaultCommandExecution getExecution() {
+		return execution;
 	}
 	
 	public static <T> void registerTransformer(Class<T> returnType, Transformer<T> transformer) {
@@ -280,11 +282,18 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 		return result;
 	}
 	
-	@Getter
 	public class SearchResult {
 		
 		private CommandContainer container;
 		private int deepness;
+		
+		public CommandContainer getContainer() {
+			return container;
+		}
+		
+		public int getDeepness() {
+			return deepness;
+		}
 		
 	}
  	

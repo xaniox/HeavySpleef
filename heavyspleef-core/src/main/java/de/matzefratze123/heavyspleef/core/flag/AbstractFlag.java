@@ -20,10 +20,6 @@ package de.matzefratze123.heavyspleef.core.flag;
 import java.util.List;
 import java.util.Map;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.event.Listener;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
@@ -37,9 +33,8 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
 public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMarshallable {
 	
-	private @Getter @Setter T value;
-	private @Getter @Setter AbstractFlag<?> parent;
-	@Getter(value = AccessLevel.PROTECTED) @Setter(value = AccessLevel.PROTECTED)
+	private T value;
+	private AbstractFlag<?> parent;
 	private HeavySpleef heavySpleef;
 	private I18N i18n;
 	
@@ -59,8 +54,32 @@ public abstract class AbstractFlag<T> implements Listener, SpleefListener, XMLMa
 	
 	public void validateInput(T input, Game game) throws ValidationException {}
 	
+	public T getValue() {
+		return value;
+	}
+	
+	public void setValue(T value) {
+		this.value = value;
+	}
+	
 	public void setI18N(I18N i18n) {
 		this.i18n = i18n;
+	}
+	
+	public AbstractFlag<?> getParent() {
+		return parent;
+	}
+	
+	public void setParent(AbstractFlag<?> parent) {
+		this.parent = parent;
+	}
+	
+	protected HeavySpleef getHeavySpleef() {
+		return heavySpleef;
+	}
+	
+	protected void setHeavySpleef(HeavySpleef heavySpleef) {
+		this.heavySpleef = heavySpleef;
 	}
 	
 	protected I18N getI18N() {

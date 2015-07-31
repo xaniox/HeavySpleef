@@ -17,8 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
-import lombok.Getter;
-
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
 
@@ -28,8 +26,8 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 public class PlayerInteractGameEvent extends PlayerGameEvent implements Cancellable {
 
 	private boolean cancel;
-	private @Getter Block block;
-	private @Getter Action action;
+	private Block block;
+	private Action action;
 	
 	public PlayerInteractGameEvent(Game game, SpleefPlayer player, Block block, Action action) {
 		super(game, player);
@@ -46,6 +44,14 @@ public class PlayerInteractGameEvent extends PlayerGameEvent implements Cancella
 	@Override
 	public boolean isCancelled() {
 		return cancel;
+	}
+	
+	public Block getBlock() {
+		return block;
+	}
+	
+	public Action getAction() {
+		return action;
 	}
 
 }

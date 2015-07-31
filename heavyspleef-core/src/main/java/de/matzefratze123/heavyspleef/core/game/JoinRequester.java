@@ -21,9 +21,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -130,13 +127,17 @@ public class JoinRequester {
 	private final I18N i18n = I18NManager.getGlobal();
 	private final PvPTimerManager pvpTimerManager;
 	private final Map<SpleefPlayer, JoinFutureCallback> callbacks;
-	private @Setter boolean pvpTimerMode;
+	private boolean pvpTimerMode;
 	private Game game;
 	
 	protected JoinRequester(Game game, PvPTimerManager pvpTimerManager) {
 		this.game = game;
 		this.pvpTimerManager = pvpTimerManager;
 		this.callbacks = Maps.newHashMap();
+	}
+	
+	public void setPvpTimerMode(boolean pvpTimerMode) {
+		this.pvpTimerMode = pvpTimerMode;
 	}
 	
 	public long request(SpleefPlayer player, JoinFutureCallback callback) throws JoinValidationException {
@@ -179,12 +180,16 @@ public class JoinRequester {
 	public static class JoinValidationException extends Exception {
 
 		private static final long serialVersionUID = -2124169192955966100L;
-		private @Getter JoinResult result;
+		private JoinResult result;
 
 		public JoinValidationException(String message, JoinResult result) {
 			super(message);
 			
 			this.result = result;
+		}
+		
+		public JoinResult getResult() {
+			return result;
 		}
 		
 	}
@@ -194,12 +199,20 @@ public class JoinRequester {
 		private final HeavySpleef heavySpleef;
 		private final Map<SpleefPlayer, Holder> checking;
 		private final CheckTask checkTask;
-		private @Getter @Setter long ticksNeeded;
+		private long ticksNeeded;
 		
 		public PvPTimerManager(HeavySpleef heavySpleef) {
 			this.heavySpleef = heavySpleef;
 			this.checking = Maps.newHashMap();
 			this.checkTask = new CheckTask();
+		}
+		
+		public long getTicksNeeded() {
+			return ticksNeeded;
+		}
+		
+		public void setTicksNeeded(long ticksNeeded) {
+			this.ticksNeeded = ticksNeeded;
 		}
 		
 		public void startTimer(SpleefPlayer player, PvPTimerCallback callback) {

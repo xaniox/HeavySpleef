@@ -20,14 +20,11 @@ package de.matzefratze123.heavyspleef.addon;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Getter;
-
 import com.google.common.collect.Lists;
 
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18N.LoadingMode;
 
-@Getter
 public class AddOnProperties {
 	
 	private String name;
@@ -118,6 +115,42 @@ public class AddOnProperties {
 				flags.add(flag.toString());
 			}
 		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public String getMainClass() {
+		return mainClass;
+	}
+
+	public I18N.LoadingMode getLoadingMode() {
+		return loadingMode;
+	}
+
+	public List<String> getContributors() {
+		return contributors;
+	}
+
+	public List<String> getCommands() {
+		return commands;
+	}
+
+	public List<String> getFlags() {
+		return flags;
+	}
+
+	public List<String> getExtensions() {
+		return extensions;
 	}
 	
 }

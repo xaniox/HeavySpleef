@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Level;
 
-import lombok.Getter;
-
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.dom4j.DocumentException;
@@ -39,12 +37,11 @@ public class LeaderboardAddOn extends BasicAddOn {
 
 	public static final String I18N_REFERENCE = "LeaderboardExtensions";
 	
-	@Getter
 	private ExtensionManager globalExtensionManager;
 	private ExtensionXmlHandler xmlHandler;
 	
-	private @Getter SignLayoutConfiguration podiumConfig;
-	private @Getter SignLayoutConfiguration wallConfig;
+	private SignLayoutConfiguration podiumConfig;
+	private SignLayoutConfiguration wallConfig;
 	
 	private File podiumFile;
 	private File wallFile;
@@ -114,6 +111,18 @@ public class LeaderboardAddOn extends BasicAddOn {
 	@Override
 	public void disable() {
 		saveExtensions();
+	}
+	
+	public ExtensionManager getGlobalExtensionManager() {
+		return globalExtensionManager;
+	}
+	
+	public SignLayoutConfiguration getPodiumConfig() {
+		return podiumConfig;
+	}
+	
+	public SignLayoutConfiguration getWallConfig() {
+		return wallConfig;
 	}
 
 	public void saveExtensions() {

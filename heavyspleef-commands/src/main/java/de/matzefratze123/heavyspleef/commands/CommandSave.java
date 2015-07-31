@@ -20,9 +20,6 @@ package de.matzefratze123.heavyspleef.commands;
 import java.util.Collection;
 import java.util.logging.Level;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -122,14 +119,16 @@ public class CommandSave {
 			return null;
 		}
 		
-		@RequiredArgsConstructor
 		public class SaveOperationCallback<T> implements FutureCallback<T> {
 
 			private final I18N i18n = I18NManager.getGlobal();
-			@NonNull
 			private HeavySpleef heavySpleef;
-			@NonNull
 			private CommandSender receiver;
+			
+			public SaveOperationCallback(HeavySpleef heavySpleef, CommandSender receiver) {
+				this.heavySpleef = heavySpleef;
+				this.receiver = receiver;
+			}
 			
 			@Override
 			public void onSuccess(T result) {

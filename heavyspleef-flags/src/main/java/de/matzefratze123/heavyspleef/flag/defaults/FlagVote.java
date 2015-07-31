@@ -20,9 +20,6 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Set;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -230,11 +227,14 @@ public class FlagVote extends BaseFlag {
 		
 	}
 	
-	@RequiredArgsConstructor
 	private static class BlockVoteListener implements Listener {
 		
 		private I18N i18n = I18NManager.getGlobal();
-		private @NonNull HeavySpleef heavySpleef;
+		private HeavySpleef heavySpleef;
+		
+		public BlockVoteListener(HeavySpleef heavySpleef) {
+			this.heavySpleef = heavySpleef;
+		}
 		
 		@SuppressWarnings("deprecation")
 		@EventHandler

@@ -25,8 +25,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-
 import org.apache.commons.lang.Validate;
 
 import com.google.common.base.Predicate;
@@ -48,15 +46,15 @@ import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 
 public final class AddOnManager {
 	
-	private final @Getter HeavySpleef heavySpleef;
-	private final @Getter Logger logger;
+	private final HeavySpleef heavySpleef;
+	private final Logger logger;
 	private final BiMap<String, AddOn> addOnMap;
-	private final @Getter SharedClassContext classContext;
+	private final SharedClassContext classContext;
 	private final AddOnLoader loader = new JavaAddOnLoader(this);
 	
-	private final @Getter FlagRegistryAccess flagRegistryAccess;
-	private final @Getter ExtensionRegistryAccess extensionRegistryAccess;
-	private final @Getter CommandManagerAccess commandManagerAccess;
+	private final FlagRegistryAccess flagRegistryAccess;
+	private final ExtensionRegistryAccess extensionRegistryAccess;
+	private final CommandManagerAccess commandManagerAccess;
 	
 	public AddOnManager(HeavySpleef heavySpleef) {
 		this.addOnMap = HashBiMap.create();
@@ -67,6 +65,30 @@ public final class AddOnManager {
 		this.flagRegistryAccess = new FlagRegistryAccess(heavySpleef.getFlagRegistry());
 		this.extensionRegistryAccess = new ExtensionRegistryAccess(heavySpleef.getExtensionRegistry());
 		this.commandManagerAccess = new CommandManagerAccess(heavySpleef.getCommandManager());
+	}
+	
+	public HeavySpleef getHeavySpleef() {
+		return heavySpleef;
+	}
+	
+	public Logger getLogger() {
+		return logger;
+	}
+	
+	public SharedClassContext getClassContext() {
+		return classContext;
+	}
+	
+	public FlagRegistryAccess getFlagRegistryAccess() {
+		return flagRegistryAccess;
+	}
+	
+	public ExtensionRegistryAccess getExtensionRegistryAccess() {
+		return extensionRegistryAccess;
+	}
+	
+	public CommandManagerAccess getCommandManagerAccess() {
+		return commandManagerAccess;
 	}
 	
 	public void loadAddOns(File baseDir) {

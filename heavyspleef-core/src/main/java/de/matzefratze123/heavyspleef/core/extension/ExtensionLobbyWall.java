@@ -21,8 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import lombok.Getter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -387,7 +385,6 @@ public class ExtensionLobbyWall extends GameExtension {
 		row.unmarshal(element);
 	}
 	
-	@Getter
 	public static class SignRow {
 		
 		/* The world this wall is in */
@@ -467,6 +464,22 @@ public class ExtensionLobbyWall extends GameExtension {
 		
 		public int getLength() {
 			return length;
+		}
+		
+		public World getWorld() {
+			return world;
+		}
+
+		public Location getStart() {
+			return start;
+		}
+
+		public Location getEnd() {
+			return end;
+		}
+
+		public BlockFace2D getDirection() {
+			return direction;
 		}
 		
 		public void loopSigns(SignLooper looper) {
@@ -604,7 +617,7 @@ public class ExtensionLobbyWall extends GameExtension {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		public interface SignLooper {
 			
 			public LoopReturn loop(int index, Sign sign);

@@ -20,18 +20,16 @@ package de.matzefratze123.heavyspleef.core;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
-import lombok.NonNull;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MaterialDataMatcher {
 
 	private static final String DATA_DELIMITER = ":";
 	
-	@NonNull
 	private String input;
 	private MaterialData result;
+	
+	private MaterialDataMatcher(String input) {
+		this.input = input;
+	}
 	
 	public static MaterialDataMatcher newMatcher(String input) {
 		return new MaterialDataMatcher(input);

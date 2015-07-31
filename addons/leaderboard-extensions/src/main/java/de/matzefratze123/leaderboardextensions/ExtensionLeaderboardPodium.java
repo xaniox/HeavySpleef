@@ -41,13 +41,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -89,8 +82,6 @@ import de.matzefratze123.heavyspleef.core.stats.Statistic;
 import de.matzefratze123.heavyspleef.core.stats.StatisticRecorder;
 
 @Extension(name = "winner-podium", hasCommands = true)
-@RequiredArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ExtensionLeaderboardPodium extends GameExtension {
 	
 	@Command(name = "addpodium", descref = LEMessages.ADDPODIUM, 
@@ -192,12 +183,29 @@ public class ExtensionLeaderboardPodium extends GameExtension {
 	
 	private static final byte SKULL_ON_FLOOR = 1;
 	
-	private @NonNull @Getter String name;
-	private @NonNull Location baseLocation;
-	private @NonNull BlockFace2D direction;
-	private @NonNull PodiumSize size;
-	private @Setter SignLayoutConfiguration layoutConfig;
+	private String name;
+	private Location baseLocation;
+	private BlockFace2D direction;
+	private PodiumSize size;
+	private SignLayoutConfiguration layoutConfig;
 	
+	public ExtensionLeaderboardPodium(String name, Location baseLocation, BlockFace2D direction, PodiumSize size) {
+		this.name = name;
+		this.baseLocation = baseLocation;
+		this.direction = direction;
+		this.size = size;
+	}
+	
+	protected ExtensionLeaderboardPodium() {}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setLayoutConfig(SignLayoutConfiguration layoutConfig) {
+		this.layoutConfig = layoutConfig;
+	}
+
 	@Subscribe(priority = Priority.MONITOR)
 	public void onGameEnd(GameEndEvent event) {
 		Game game = event.getGame();
@@ -356,17 +364,20 @@ public class ExtensionLeaderboardPodium extends GameExtension {
 		direction = BlockFace2D.valueOf(element.elementText("direction"));
 		size = PodiumSize.valueOf(element.elementText("size"));
 	}
-	
+
 	public enum PodiumSize {
 		
 		SMALL(3),
 		LARGE(5);
 		
-		@Getter
 		private int statisticAmount;
 		
 		private PodiumSize(int statisticAmount) {
 			this.statisticAmount = statisticAmount;
+		}
+		
+		public int getStatisticAmount() {
+			return statisticAmount;
 		}
 		
 		public static PodiumSize byName(String name) {

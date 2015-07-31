@@ -28,8 +28,6 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
-import lombok.Getter;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.PluginManager;
 
@@ -585,7 +583,6 @@ public class FlagRegistry {
 		}
 	};
 	
-	@Getter
 	public class FlagClassHolder {
 		
 		private Class<? extends AbstractFlag<?>> flagClass;
@@ -594,6 +591,30 @@ public class FlagRegistry {
 		private Object cookie;
 		private boolean staticFieldsInjected;
 		private boolean staticMethodsInitialized;
+		
+		public Class<? extends AbstractFlag<?>> getFlagClass() {
+			return flagClass;
+		}
+		
+		public Field[] getInjectingFields() {
+			return injectingFields;
+		}
+		
+		public I18NSupplier getSupplier() {
+			return supplier;
+		}
+		
+		public Object getCookie() {
+			return cookie;
+		}
+		
+		public boolean isStaticFieldsInjected() {
+			return staticFieldsInjected;
+		}
+		
+		public boolean isStaticMethodsInitialized() {
+			return staticMethodsInitialized;
+		}
 		
 	}
 

@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
-import lombok.Getter;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -142,27 +140,27 @@ public class Game implements VariableSuppliable {
 	private final I18N i18n;
 	
 	private final EditSessionFactory editSessionFactory;
-	private @Getter HeavySpleef heavySpleef;
-	private @Getter EventBus eventBus;
+	private HeavySpleef heavySpleef;
+	private EventBus eventBus;
 	private Set<SpleefPlayer> ingamePlayers;
-	private @Getter List<SpleefPlayer> deadPlayers;
+	private List<SpleefPlayer> deadPlayers;
 	private List<SpleefPlayer> killedPlayers;
-	private @Getter BiMap<SpleefPlayer, Set<Block>> blocksBroken;
+	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
-	private @Getter JoinRequester joinRequester;
+	private JoinRequester joinRequester;
 	private Queue<SpleefPlayer> queuedPlayers;
-	private @Getter CountdownTask countdownTask;
-	private @Getter StatisticRecorder statisticRecorder;
+	private CountdownTask countdownTask;
+	private StatisticRecorder statisticRecorder;
 	private Queue<Location> spawnLocationQueue;
 	
-	private @Getter String name;
-	private @Getter World world;
+	private String name;
+	private World world;
 	private com.sk89q.worldedit.world.World worldEditWorld;
-	private @Getter FlagManager flagManager;
+	private FlagManager flagManager;
 	private ExtensionManager extensionManager;
-	private @Getter GameState gameState;
+	private GameState gameState;
 	private Map<String, Floor> floors;
-	private @Getter Map<String, Region> deathzones;
+	private Map<String, Region> deathzones;
 	
 	public Game(HeavySpleef heavySpleef, String name, World world) {
 		this.heavySpleef = heavySpleef;
@@ -203,9 +201,17 @@ public class Game implements VariableSuppliable {
 		this.joinRequester.setPvpTimerMode(generalSection.getPvpTimer() > 0);
 	}
 	
+	public HeavySpleef getHeavySpleef() {
+		return heavySpleef;
+	}
+	
 	public void setHeavySpleef(HeavySpleef heavySpleef) {
 		Validate.notNull(heavySpleef, "HeavySpleef instance cannot be null");
 		this.heavySpleef = heavySpleef;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	void setName(String newName) {
@@ -214,6 +220,46 @@ public class Game implements VariableSuppliable {
 		
 		GameRenameEvent event = new GameRenameEvent(this, old);
 		eventBus.callEvent(event);
+	}
+	
+	public World getWorld() {
+		return world;
+	}
+	
+	public GameState getGameState() {
+		return gameState;
+	}
+	
+	public EventBus getEventBus() {
+		return eventBus;
+	}
+	
+	public FlagManager getFlagManager() {
+		return flagManager;
+	}
+	
+	public Map<String, Region> getDeathzones() {
+		return deathzones;
+	}
+	
+	public List<SpleefPlayer> getDeadPlayers() {
+		return deadPlayers;
+	}
+	
+	public BiMap<SpleefPlayer, Set<Block>> getBlocksBroken() {
+		return blocksBroken;
+	}
+	
+	public JoinRequester getJoinRequester() {
+		return joinRequester;
+	}
+	
+	public CountdownTask getCountdownTask() {
+		return countdownTask;
+	}
+	
+	public StatisticRecorder getStatisticRecorder() {
+		return statisticRecorder;
 	}
 	
 	public boolean countdown() {

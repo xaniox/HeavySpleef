@@ -25,10 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -486,14 +482,35 @@ public class FlagManager {
 		
 	}
 	
-	@Getter
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Conflict {
 		
 		private Class<?> conflictSource;
 		private Flag conflictSourceAnnotation;
 		private Class<?> conflictWith;
 		private Flag conflictWithAnnotation;
+		
+		public Conflict(Class<?> conflictSource, Flag conflictSourceAnnotation, Class<?> conflictWith, Flag conflictWithAnnotation) {
+			this.conflictSource = conflictSource;
+			this.conflictSourceAnnotation = conflictSourceAnnotation;
+			this.conflictWith = conflictWith;
+			this.conflictWithAnnotation = conflictWithAnnotation;
+		}
+
+		public Class<?> getConflictSource() {
+			return conflictSource;
+		}
+
+		public Flag getConflictSourceAnnotation() {
+			return conflictSourceAnnotation;
+		}
+
+		public Class<?> getConflictWith() {
+			return conflictWith;
+		}
+
+		public Flag getConflictWithAnnotation() {
+			return conflictWithAnnotation;
+		}
 		
 	}
 	

@@ -20,9 +20,6 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -222,13 +219,20 @@ public class FlagQueueLobby extends LocationFlag {
 		}, 5L);
 	}
 	
-	@Getter @Setter
 	public static class QueueLobbyLeaveEvent extends PlayerGameEvent {
 		
 		private Location teleportTo;
 		
 		public QueueLobbyLeaveEvent(Game game, SpleefPlayer player) {
 			super(game, player);
+		}
+		
+		public Location getTeleportTo() {
+			return teleportTo;
+		}
+		
+		public void setTeleportTo(Location teleportTo) {
+			this.teleportTo = teleportTo;
 		}
 		
 	}

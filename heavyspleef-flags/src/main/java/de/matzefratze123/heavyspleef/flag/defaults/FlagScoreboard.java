@@ -20,9 +20,6 @@ package de.matzefratze123.heavyspleef.flag.defaults;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -155,17 +152,31 @@ public class FlagScoreboard extends BaseFlag {
 		playersTracked.clear();
 	}
 	
-	@Getter @Setter
 	public static class GetScoreboardDisplayNameEvent extends Event {
 		
 		private String displayName;
 		
+		public String getDisplayName() {
+			return displayName;
+		}
+		
+		public void setDisplayName(String displayName) {
+			this.displayName = displayName;
+		}
+		
 	}
 	
-	@Getter @Setter
 	public static class SetScoreboardDisplayNameEvent extends Event {
 		
 		private String displayName;
+		
+		public String getDisplayName() {
+			return displayName;
+		}
+		
+		public void setDisplayName(String displayName) {
+			this.displayName = displayName;
+		}
 		
 	}
 

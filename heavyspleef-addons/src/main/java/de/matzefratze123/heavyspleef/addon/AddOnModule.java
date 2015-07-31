@@ -21,8 +21,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 
-import lombok.Getter;
-
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
@@ -39,7 +37,7 @@ public class AddOnModule extends SimpleModule {
 	private static final String ADDON_GRAPH_NAME = "Add-on Usages";
 	private static final String BASEDIR_FILE_NAME = "addons";
 	
-	private @Getter File baseDir;
+	private File baseDir;
 	private AddOnManager manager;
 	private final Injector<AbstractFlag<?>> addOnInjector = new Injector<AbstractFlag<?>>() {
 		
@@ -67,6 +65,10 @@ public class AddOnModule extends SimpleModule {
 	
 	public AddOnModule(HeavySpleef heavySpleef) {
 		super(heavySpleef);
+	}
+	
+	public File getBaseDir() {
+		return baseDir;
 	}
 
 	@Override

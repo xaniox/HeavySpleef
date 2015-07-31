@@ -17,23 +17,19 @@
  */
 package de.matzefratze123.heavyspleef.core.event;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Location;
 
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.game.QuitCause;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@Getter
 public class PlayerLeaveGameEvent extends PlayerGameEvent implements Cancellable {
 
-	private @Setter boolean cancelled;
-	private @Setter Location teleportationLocation;
-	private @Setter boolean sendMessages = true;
-	private @Setter String playerMessage;
-	private @Setter String broadcastMessage;
+	private boolean cancelled;
+	private Location teleportationLocation;
+	private boolean sendMessages = true;
+	private String playerMessage;
+	private String broadcastMessage;
 	private QuitCause cause;
 	private SpleefPlayer killer;
 	
@@ -42,6 +38,56 @@ public class PlayerLeaveGameEvent extends PlayerGameEvent implements Cancellable
 		
 		this.killer = killer;
 		this.cause = cause;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public Location getTeleportationLocation() {
+		return teleportationLocation;
+	}
+
+	public void setTeleportationLocation(Location teleportationLocation) {
+		this.teleportationLocation = teleportationLocation;
+	}
+
+	public boolean isSendMessages() {
+		return sendMessages;
+	}
+
+	public void setSendMessages(boolean sendMessages) {
+		this.sendMessages = sendMessages;
+	}
+
+	public String getPlayerMessage() {
+		return playerMessage;
+	}
+
+	public void setPlayerMessage(String playerMessage) {
+		this.playerMessage = playerMessage;
+	}
+
+	public String getBroadcastMessage() {
+		return broadcastMessage;
+	}
+
+	public void setBroadcastMessage(String broadcastMessage) {
+		this.broadcastMessage = broadcastMessage;
+	}
+
+	public QuitCause getCause() {
+		return cause;
+	}
+
+	public SpleefPlayer getKiller() {
+		return killer;
 	}
 	
 }

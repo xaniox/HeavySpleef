@@ -17,14 +17,11 @@
  */
 package de.matzefratze123.heavyspleef.core.config;
 
-import lombok.Getter;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.material.MaterialData;
 
 import de.matzefratze123.heavyspleef.core.MaterialDataMatcher;
 
-@Getter
 public class FlagSection {
 	
 	private int autostartVote;
@@ -51,6 +48,30 @@ public class FlagSection {
 		matcher.match();
 		
 		leaveItem = matcher.result();
+	}
+	
+	public int getAutostartVote() {
+		return autostartVote;
+	}
+
+	public int getAnticampingWarn() {
+		return anticampingWarn;
+	}
+
+	public boolean isAnticampingDoWarn() {
+		return anticampingDoWarn;
+	}
+
+	public int getAnticampingTeleport() {
+		return anticampingTeleport;
+	}
+
+	public MaterialData getReadyBlock() {
+		return readyBlock;
+	}
+
+	public MaterialData getLeaveItem() {
+		return leaveItem;
 	}
 
 }

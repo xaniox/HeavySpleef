@@ -24,9 +24,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -227,9 +224,9 @@ public class ExtensionLeaderboardWall extends GameExtension {
 		player.sendMessage(addon.getI18n().getString(LEMessages.CLICK_ON_SIGN));
 	}
 	
-	private @Getter String name;
-	private @Setter SignLayoutConfiguration layoutConfig;
-	private @Getter List<SignRow> rows;
+	private String name;
+	private SignLayoutConfiguration layoutConfig;
+	private List<SignRow> rows;
 	
 	protected ExtensionLeaderboardWall() {
 		this.rows = Lists.newArrayList();
@@ -238,6 +235,18 @@ public class ExtensionLeaderboardWall extends GameExtension {
 	public ExtensionLeaderboardWall(String name) {
 		this();
 		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setLayoutConfig(SignLayoutConfiguration layoutConfig) {
+		this.layoutConfig = layoutConfig;
+	}
+	
+	public List<SignRow> getRows() {
+		return rows;
 	}
 	
 	public void addRow(SignRow row) {
@@ -324,11 +333,15 @@ public class ExtensionLeaderboardWall extends GameExtension {
 	private class WallSignLooper implements SignLooper {
 
 		private Iterator<Entry<String, Statistic>> iterator;
-		private @Getter int index;
+		private int index;
 		
 		public WallSignLooper(Iterator<Entry<String, Statistic>> iterator, int index) {
 			this.iterator = iterator;
 			this.index = index;
+		}
+		
+		public int getIndex() {
+			return index;
 		}
 		
 		@Override

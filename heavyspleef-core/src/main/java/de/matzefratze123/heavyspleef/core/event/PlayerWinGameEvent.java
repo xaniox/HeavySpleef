@@ -19,25 +19,38 @@ package de.matzefratze123.heavyspleef.core.event;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 
-@Getter
 public class PlayerWinGameEvent extends GameEndEvent {
 
 	public static final double NO_EXPECTATION = -1;
 	
 	private SpleefPlayer[] winners;
 	private List<SpleefPlayer> losePlaces;
-	private @Setter double ratingExpectiation = -1D;
+	private double ratingExpectiation = -1D;
 	
 	public PlayerWinGameEvent(Game game, SpleefPlayer[] winners, List<SpleefPlayer> losePlaces) {
 		super(game);
 		
 		this.winners = winners;
 		this.losePlaces = losePlaces;
+	}
+
+	public SpleefPlayer[] getWinners() {
+		return winners;
+	}
+
+	public List<SpleefPlayer> getLosePlaces() {
+		return losePlaces;
+	}
+
+	public double getRatingExpectiation() {
+		return ratingExpectiation;
+	}
+	
+	public void setRatingExpectiation(double ratingExpectiation) {
+		this.ratingExpectiation = ratingExpectiation;
 	}
 
 }

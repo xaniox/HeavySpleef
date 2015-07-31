@@ -31,9 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -71,9 +68,9 @@ public class Updater implements Listener {
 	private final ListeningExecutorService service;
 	private final Plugin plugin;
 	private final PluginDescriptionFile desc;
-	private @Getter final File updateFolder;
-	private @Getter CheckResult result;
-	
+	private final File updateFolder;
+	private CheckResult result;
+
 	public Updater(Plugin plugin) {
 		ExecutorService execService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 		this.service = MoreExecutors.listeningDecorator(execService);
@@ -126,6 +123,14 @@ public class Updater implements Listener {
 				.setVariable("new-version", result.getVersion().toString())
 				.setVariable("this-version", plugin.getDescription().getVersion())
 				.toString());
+	}
+	
+	public File getUpdateFolder() {
+		return updateFolder;
+	}
+
+	public CheckResult getResult() {
+		return result;
 	}
 	
 	private class CheckCallable implements Callable<CheckResult> {
@@ -187,10 +192,13 @@ public class Updater implements Listener {
 		
 	}
 	
-	@AllArgsConstructor
 	private class UpdateCallable implements Callable<Void> {
 
 		private CommandSender messageReceiver;
+		
+		public UpdateCallable(CommandSender messageReceiver) {
+			this.messageReceiver = messageReceiver;
+		}
 		
 		@Override
 		public Void call() throws Exception {
@@ -369,14 +377,35 @@ public class Updater implements Listener {
 		
 	}
 	
-	@AllArgsConstructor
-	@Getter
 	public class CheckResult {
 		
 		private boolean updateAvailable;
 		private String downloadUrl;
 		private String fileName;
 		private Version version;
+		
+		public CheckResult(boolean updateAvailable, String downloadUrl, String fileName, Version version) {
+			this.updateAvailable = updateAvailable;
+			this.downloadUrl = downloadUrl;
+			this.fileName = fileName;
+			this.version = version;
+		}
+
+		public boolean isUpdateAvailable() {
+			return updateAvailable;
+		}
+
+		public String getDownloadUrl() {
+			return downloadUrl;
+		}
+
+		public String getFileName() {
+			return fileName;
+		}
+
+		public Version getVersion() {
+			return version;
+		}
 		
 	}
 

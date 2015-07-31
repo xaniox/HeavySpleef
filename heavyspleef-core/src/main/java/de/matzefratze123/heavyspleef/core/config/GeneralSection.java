@@ -19,12 +19,9 @@ package de.matzefratze123.heavyspleef.core.config;
 
 import java.util.List;
 
-import lombok.Getter;
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 
-@Getter
 public class GeneralSection {
 	
 	private static final char TRANSLATE_CHAR = '&';
@@ -53,6 +50,26 @@ public class GeneralSection {
 		
 		this.vipJoinFull = section.getBoolean("vip-join-full", true);
 		this.pvpTimer = section.getInt("pvp-timer", 0);
+	}
+	
+	public String getSpleefPrefix() {
+		return spleefPrefix;
+	}
+
+	public List<String> getWhitelistedCommands() {
+		return whitelistedCommands;
+	}
+
+	public String getVipPrefix() {
+		return vipPrefix;
+	}
+
+	public boolean isVipJoinFull() {
+		return vipJoinFull;
+	}
+
+	public int getPvpTimer() {
+		return pvpTimer;
 	}
 	
 }
