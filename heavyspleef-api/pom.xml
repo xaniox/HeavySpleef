@@ -115,6 +115,8 @@
 									<pomFile>install-pom.xml</pomFile>
 									<repositoryId>matzes-artifactory</repositoryId>
 									<url>${deploy.url}</url>
+									<javadoc>${basedir}/../target/heavyspleef-javadoc.jar</javadoc>
+						            <sources>${basedir}/../target/heavyspleef-sources.jar</sources>
 								</configuration>
 							</execution>
 						</executions>

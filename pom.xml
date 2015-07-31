@@ -176,6 +176,7 @@
 			  		  <version>2.9.1</version>
 			  		  <configuration>
 			    	 	<quiet>true</quiet>
+			            <finalName>heavyspleef</finalName>
 			  		  </configuration>
 					</plugin>
 					<plugin>
@@ -189,6 +190,9 @@
 		                  <goals>
 		                    <goal>aggregate</goal>
 		                  </goals>
+		                  <configuration>
+		                    <finalName>heavyspleef</finalName>
+		                  </configuration>
 		                </execution>
 		              </executions>
 		            </plugin>
