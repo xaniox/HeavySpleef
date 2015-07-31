@@ -155,6 +155,13 @@ public class JoinRequester {
 		}
 		
 		GameManager manager = game.getHeavySpleef().getGameManager();
+		for (Game other : manager.getGames()) {
+			if (other.isQueued(player)) {
+				throw new JoinValidationException(i18n.getVarString(Messages.Command.ALREADY_QUEUED)
+						.setVariable("game", other.getName())
+						.toString(), JoinResult.PERMANENT_DENY);
+			}
+		}
 		
 		if (manager.getGame(player) != null) {
 			throw new JoinValidationException(i18n.getString(Messages.Command.ALREADY_PLAYING), JoinResult.PERMANENT_DENY);

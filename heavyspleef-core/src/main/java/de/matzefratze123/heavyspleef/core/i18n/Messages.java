@@ -172,6 +172,7 @@ public interface Messages {
 		public static final String ADDON_LIST_ENTRY = PREFIX + "addon-list-entry";
 		
 		public static final String NEED_AT_LEAST_ONE_NUMBER = PREFIX + "need-at-least-one-number";
+		public static final String ALREADY_QUEUED = PREFIX + "already-queued";
 		
 	}
 	
