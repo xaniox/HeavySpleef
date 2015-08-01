@@ -394,6 +394,7 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 		if (validateEvent.isCancelled()) {
 			event.setCancelled(true);
 			event.setErrorBroadcast(validateEvent.getErrorMessage());
+			return;
 		}
 		
 		//Enough players to start the game, set the temporary assigns to real ones
@@ -415,7 +416,12 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 				inventory.remove(stack);
 			}
 			
+			TeamColor color = players.get(player);
+			
 			player.getBukkitPlayer().updateInventory();
+			player.sendMessage(getI18N().getVarString(Messages.Player.TEAM_CHOOSEN)
+					.setVariable("team", color.getChatColor() + getLocalizedColorName(color))
+					.toString());
 		}
 		
 		//Determine spawnpoints for teams
