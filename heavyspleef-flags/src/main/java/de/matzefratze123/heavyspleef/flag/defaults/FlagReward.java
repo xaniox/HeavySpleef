@@ -24,8 +24,6 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.dom4j.Element;
 
-import com.google.common.collect.Lists;
-
 import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
@@ -106,7 +104,7 @@ public class FlagReward extends ListFlag<Double> {
 	public void onGameWin(PlayerWinGameEvent event) {
 		//Call the method to potentially lazy-initialize the economy plugin
 		Economy economy = getEconomy();
-		List<Double> rewards = Lists.newArrayList();
+		List<Double> rewards = getValue();
 		double winnerReward = rewards.get(0);
 		String[] places = getI18N().getStringArray(Messages.Arrays.PLACES);
 		
@@ -123,7 +121,7 @@ public class FlagReward extends ListFlag<Double> {
 			double reward = rewards.get(i + 1);
 			SpleefPlayer loser = losePlaces.get(i);
 			
-			String placeString = places.length < i + 1 ? places[i + 1] : String.valueOf(i + 1) + '.';
+			String placeString = i + 1 < places.length ? places[i + 1] : String.valueOf(i + 1) + '.';
 			
 			economy.depositPlayer(loser.getBukkitPlayer(), reward);
 			loser.sendMessage(getI18N().getVarString(Messages.Player.RECEIVED_REWARD_PLACE)

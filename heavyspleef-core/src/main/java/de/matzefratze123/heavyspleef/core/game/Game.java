@@ -825,7 +825,7 @@ public class Game implements VariableSuppliable {
 			}
 		}
 		
-		List<SpleefPlayer> dead = Lists.newArrayList(this.deadPlayers);
+		List<SpleefPlayer> dead = Lists.newArrayList(this.deadPlayers.subList(0, this.deadPlayers.size() - players.length));
 		Collections.reverse(dead);
 		
 		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players, dead);
