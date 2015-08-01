@@ -289,13 +289,15 @@ public class I18N {
 	public String getString(String key) {
 		String msg;
 		
-		try {
-			msg = bundle.getString(key);
-		} catch (MissingResourceException e) {
-			if (parent != null) {
-				msg = parent.getString(key);
-			} else {
-				throw e;
+		synchronized (bundle) {
+			try {
+				msg = bundle.getString(key);
+			} catch (MissingResourceException e) {
+				if (parent != null) {
+					msg = parent.getString(key);
+				} else {
+					throw e;
+				}
 			}
 		}
 		
@@ -320,13 +322,15 @@ public class I18N {
 	public String[] getStringArray(String key) {
 		String[] array;
 		
-		try {
-			array = bundle.getStringArray(key);
-		} catch (MissingResourceException e) {
-			if (parent != null) {
-				array = parent.getStringArray(key);
-			} else {
-				throw e;
+		synchronized (bundle) {
+			try {
+				array = bundle.getStringArray(key);
+			} catch (MissingResourceException e) {
+				if (parent != null) {
+					array = parent.getStringArray(key);
+				} else {
+					throw e;
+				}
 			}
 		}
 		
