@@ -45,9 +45,12 @@ public class GameManager {
 	
 	public void addGame(Game game, boolean save) {
 		String name = game.getName();
-		Validate.isTrue(!games.containsKey(name));
 		
-		games.put(game.getName(), game);
+		synchronized (games) {
+			Validate.isTrue(!games.containsKey(name));
+			
+			games.put(game.getName(), game);
+		}
 		
 		if (save) {
 			heavySpleef.getDatabaseHandler().saveGame(game, null);
@@ -55,30 +58,42 @@ public class GameManager {
 	}
 	
 	public Game deleteGame(String name) {
-		Game game = games.remove(getRealGameName(name));
+		Game game;
+		
+		synchronized (games) {
+			game = games.remove(getRealGameName(name));
+		}
 		
 		heavySpleef.getDatabaseHandler().deleteGame(game, null);
 		return game;
 	}
 	
 	public void renameGame(final Game game, final String to, FutureCallback<Void> callback) {
-		Validate.isTrue(!hasGame(to), "A game with the name '" + to + "' already exists");
+		String oldName;
 		
-		String oldName = game.getName();
-		game.setName(to);
-		
-		games.remove(oldName);
-		games.put(to, game);
+		synchronized (games) {
+			Validate.isTrue(!hasGame(to), "A game with the name '" + to + "' already exists");
+			
+			oldName = game.getName();
+			game.setName(to);
+			
+			games.remove(oldName);
+			games.put(to, game);
+		}
 		
 		heavySpleef.getDatabaseHandler().renameGame(game, oldName, to, callback);
 	}
 	
 	public boolean hasGame(String name) {
-		return games.containsKey(getRealGameName(name));
+		synchronized (games) {
+			return games.containsKey(getRealGameName(name));
+		}
 	}
 	
 	public Game getGame(String name) {
-		return games.get(getRealGameName(name));
+		synchronized (games) {
+			return games.get(getRealGameName(name));
+		}
 	}
 	
 	private String getRealGameName(String name) {
@@ -92,9 +107,11 @@ public class GameManager {
 	}
 	
 	public Game getGame(SpleefPlayer player) {
-		for (Game game : games.values()) {
-			if (game.getPlayers().contains(player)) {
-				return game;
+		synchronized (games) {
+			for (Game game : games.values()) {
+				if (game.getPlayers().contains(player)) {
+					return game;
+				}
 			}
 		}
 		
@@ -102,16 +119,20 @@ public class GameManager {
 	}
 	
 	public List<Game> getGames() {
-		return ImmutableList.copyOf(games.values());
+		synchronized (games) {
+			return ImmutableList.copyOf(games.values());
+		}
 	}
 
 	public void shutdown() {
-		for (Game game : games.values()) {
-			if (!game.getGameState().isGameActive() && game.getGameState() != GameState.LOBBY) {
-				return;
+		synchronized (games) {
+			for (Game game : games.values()) {
+				if (!game.getGameState().isGameActive() && game.getGameState() != GameState.LOBBY) {
+					return;
+				}
+				
+				game.stop();
 			}
-			
-			game.stop();
 		}
 	}
 	
