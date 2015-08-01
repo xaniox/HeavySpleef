@@ -1035,7 +1035,7 @@ public class Game implements VariableSuppliable {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T getPropertyValue(GameProperty property) {
+	public synchronized <T> T getPropertyValue(GameProperty property) {
 		return (T) flagManager.getProperty(property);
 	}
 	
