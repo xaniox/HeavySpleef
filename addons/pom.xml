@@ -11,6 +11,7 @@
 		<module>inventory-gui-addon</module>
 		<module>leaderboard-extensions</module>
 		<module>anvil-spleef</module>
+		<module>bungeemode</module>
 	</modules>
 	<build>
 		<plugins>
@@ -19,7 +20,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
-					<finalName>${addon.final.name}</finalName>
+					<finalName>addon_${addon.final.name}</finalName>
 					<artifactSet>
 						<excludes>
 							<exclude>com.google.guava:guava</exclude>
