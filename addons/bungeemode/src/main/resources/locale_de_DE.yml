@@ -1,0 +1,6 @@
+kick-message-ingame: '&cDas Spleef Spiel auf diesem Server läuft bereits!'
+kick-message-disabled: '&cDieser Spleef Server ist derzeit deaktiviert!'
+kick-message-not-yet-ready: '&cDieser Spleef Server ist noch am starten!'
+
+server-restart-countdown: '&7Der Server startet in &a$[left] &7Sekunden neu!'
+server-restart: '&aStarte Server neu...'

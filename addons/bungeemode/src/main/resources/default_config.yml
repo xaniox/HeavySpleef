@@ -1,0 +1,38 @@
+# Bungeemode adds BungeeCord support for HeavySpleef
+
+# Specify wether bungeemode is enabled on this server or not
+enabled: false
+
+# If bungeemode is enabled you have to choose 
+# a game the player will join once he joins the server
+#
+# This should be the name of the game created by /spleef create
+game: Spleef
+
+# Wether players are able to spectate the game when it's already ingame
+spectate-when-ingame: true
+
+# Specifies at which game phase the player should be sent back
+# Valid values:
+# - finish -> Sends back players when the game has finished.
+#             If you choose this option, make sure to enable
+#             the spectate flag and the spectate:autospectate flag.
+# - lose -> Players are sent back to the server once they lose in Spleef
+#           (Note that they will not see the winner then)
+send-back-on: finish
+
+# Specify the name of the server where players are sent back
+# once they meet the above criteria
+send-back-to: lobby
+
+# Wether the server should restart when the spleef game ends
+# This requires to setup a Spigot restart script otherwise
+# the server will just shutdown
+restart: true
+
+# When restart is set to true, this specifies the countdown
+# until the server is restarted
+restart-countdown: 15
+
+# Do not change this unless you want this config to be resetted
+config-version: 0
