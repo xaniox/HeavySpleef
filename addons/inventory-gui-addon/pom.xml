@@ -6,7 +6,7 @@
 		<version>2.1</version>
 	</parent>
 	<properties>
-		<addon.final.name>AddOn-InventoryGUI</addon.final.name>
+		<addon.final.name>JoinGUI</addon.final.name>
 	</properties>
 	<artifactId>inventory-gui-addon</artifactId>
 </project>
