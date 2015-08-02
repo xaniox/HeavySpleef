@@ -460,6 +460,9 @@ public class Game implements VariableSuppliable {
 		//Flush the queue
 		while (!queuedPlayers.isEmpty()) {
 			SpleefPlayer player = queuedPlayers.poll();
+			if (!player.isOnline()) {
+				continue;
+			}
 			
 			PlayerQueueFlushEvent event = new PlayerQueueFlushEvent(this, player);
 			eventBus.callEvent(event);
