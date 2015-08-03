@@ -690,6 +690,7 @@ public class Game implements VariableSuppliable {
 			PlayerStateHolder playerState = player.getPlayerState(this);
 			if (playerState != null) {
 				playerState.apply(player.getBukkitPlayer(), tpLoc == null);
+				player.removePlayerState(this);
 			} else {
 				//Ugh, something went wrong
 				player.sendMessage(i18n.getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
