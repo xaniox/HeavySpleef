@@ -30,6 +30,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.PluginManager;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.BiMap;
@@ -173,6 +175,28 @@ public class FlagRegistry {
 		
 		holder.injectingFields = instanceInjectableFields;
 		registeredFlagsMap.put(path, flagAnnotation, holder);
+		
+		if (heavySpleef.isGamesLoaded()) {
+			for (Game game : heavySpleef.getGameManager().getGames()) {
+				for (AbstractFlag<?> flag : game.getFlagManager().getFlags()) {
+					if (!(flag instanceof UnloadedFlag)) {
+						continue;
+					}
+					
+					UnloadedFlag unloaded = (UnloadedFlag) flag;
+					if (!unloaded.getFlagName().equals(path)) {
+						continue;
+					}
+					
+					game.removeFlag(path);
+					
+					AbstractFlag<?> newFlag = newFlagInstance(path, AbstractFlag.class, game);
+					newFlag.unmarshal(unloaded.getXmlElement());
+					
+					game.addFlag(newFlag);
+				}
+			}
+		}
 	}
 	
 	public void unregister(Class<? extends AbstractFlag<?>> flagClass) {
@@ -200,8 +224,24 @@ public class FlagRegistry {
 			}
 			
 			Unregister.Unregisterer.runUnregisterMethods(flagClass, heavySpleef, true, true);
-			
 			path = entry.getKey().getPrimaryKey();
+			
+			for (Game game : heavySpleef.getGameManager().getGames()) {
+				if (!game.isFlagPresent(flagClass)) {
+					continue;
+				}
+				
+				AbstractFlag<?> flag = game.getFlag(flagClass);
+				game.removeFlag(flagClass);
+				
+				Element element = DocumentHelper.createElement("flag");
+				element.addAttribute("name", path);
+				flag.marshal(element);
+				
+				UnloadedFlag unloaded = new UnloadedFlag();
+				unloaded.setXmlElement(element);
+				game.addFlag(unloaded, false);
+			}
 			break;
 		}
 		
