@@ -41,8 +41,10 @@ import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.GeneralSection;
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.PlayerLeftGameEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
 import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
+import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
 import de.matzefratze123.heavyspleef.core.game.CountdownTask;
 import de.matzefratze123.heavyspleef.core.game.Game;
@@ -60,9 +62,14 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate.SpectateLeaveEve
 public class BungeemodeListener implements Listener, SpleefListener {
 
 	private BungeemodeAddon addon;
+	private boolean restarting;
 	
 	public BungeemodeListener(BungeemodeAddon addon) {
 		this.addon = addon;
+	}
+	
+	public boolean isRestarting() {
+		return restarting;
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
@@ -83,6 +90,10 @@ public class BungeemodeListener implements Listener, SpleefListener {
 		}
 		
 		Game game = manager.getGame(gameName);
+		if (restarting) {
+			//Don't join the game when we're restarting
+			return;
+		}
 		
 		try {
 			game.getJoinRequester().request(player, new JoinFutureCallback() {
@@ -171,6 +182,17 @@ public class BungeemodeListener implements Listener, SpleefListener {
 		handleSendBack(event.getPlayer(), config.getSendBackTo());
 	}
 	
+	@Subscribe
+	public void onQueueFlush(PlayerQueueFlushEvent event) {
+		BungeemodeConfig config = addon.getConfig();
+		
+		if (!config.isEnabled()) {
+			return;
+		}
+		
+		event.setResult(FlushResult.DENY);
+	}
+	
 	@Subscribe(priority = Priority.MONITOR)
 	public void onGameEnd(final GameEndEvent event) {
 		final BungeemodeConfig config = addon.getConfig();
@@ -180,8 +202,9 @@ public class BungeemodeListener implements Listener, SpleefListener {
 		
 		DefaultConfig defaultConfig = addon.getHeavySpleef().getConfiguration(ConfigType.DEFAULT_CONFIG);
 		final GeneralSection generalSection = defaultConfig.getGeneralSection();
+		restarting = true;
 		
-		if (config.isRestart() && addon.getHeavySpleef().getPlugin().isEnabled()) {
+		if (addon.getHeavySpleef().getPlugin().isEnabled()) {
 			int restartCountdown = config.getRestartCountdown();
 			
 			new CountdownTask(addon.getHeavySpleef().getPlugin(), restartCountdown, new CountdownTask.CountdownCallback() {
@@ -195,7 +218,18 @@ public class BungeemodeListener implements Listener, SpleefListener {
 						handleSendBack(spleefPlayer, config.getSendBackTo());
 					}
 					
-					restartServer();
+					if (config.isRestart()) {
+						Bukkit.getScheduler().runTaskLater(addon.getHeavySpleef().getPlugin(), new Runnable() {
+							
+							@Override
+							public void run() {								
+								restartServer();
+								restarting = false;
+							}
+						}, 10L);
+					} else {
+						restarting = false;
+					}
 				}
 				
 				@Override

@@ -7,3 +7,4 @@ i18n: dynamic
 
 flags:
 - de.matzefratze123.bungeemode.FlagTeleportAll
+- de.matzefratze123.bungeemode.FlagBungeeAutospectate

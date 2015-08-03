@@ -21,7 +21,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class BungeemodeConfig {
 	
-	public static final int CURRENT_CONFIG_VERSION = 0;
+	public static final int CURRENT_CONFIG_VERSION = 1;
 	
 	private boolean enabled;
 	private String game;

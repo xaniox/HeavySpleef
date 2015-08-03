@@ -1,4 +1,11 @@
 # Bungeemode adds BungeeCord support for HeavySpleef
+# !!! IMPORTANT NOTICE: If using this add-on, make sure       !!!
+# !!! to set settings -> late-bind to true in your spigot.yml !!!
+# !!! otherwise HeavySpleef may not be able to handle joins   !!!
+# !!! when the plugin has been loaded yet                     !!!
+#
+# Also: If you want to use the spectate:autospectate flag for the game
+#       make sure to use the bungee optimized flag for it instead
 
 # Specify wether bungeemode is enabled on this server or not
 enabled: false
@@ -16,7 +23,7 @@ spectate-when-ingame: true
 # Valid values:
 # - finish -> Sends back players when the game has finished.
 #             If you choose this option, make sure to enable
-#             the spectate flag and the spectate:autospectate flag.
+#             the spectate flag and the spectate:bungee-autospectate flag.
 # - lose -> Players are sent back to the server once they lose in Spleef
 #           (Note that they will not see the winner then)
 send-back-on: finish
@@ -30,9 +37,10 @@ send-back-to: lobby
 # the server will just shutdown
 restart: true
 
-# When restart is set to true, this specifies the countdown
-# until the server is restarted
+# This sets the countdown after how many seconds players are sent back
+# to the lobby server after the game ends and the server restarts
+# if configured above
 restart-countdown: 15
 
 # Do not change this unless you want this config to be resetted
-config-version: 0
+config-version: 1

@@ -30,13 +30,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.google.common.collect.Sets;
 
 import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
-import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
 import de.matzefratze123.heavyspleef.core.MinecraftVersion;
+import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
+import de.matzefratze123.heavyspleef.core.flag.FlagRegistry;
+import de.matzefratze123.heavyspleef.core.flag.UnloadedFlag;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.game.GameManager;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
@@ -92,9 +97,36 @@ public class BungeemodeAddon extends BasicAddOn {
 
 		if (heavySpleef.isGamesLoaded()) {
 			callback.onGamesLoaded(null);
+			
+			//Fix for HeavySpleef version 2.1 or below
+			//that doesn't load unloaded flags on add-on enable
+			FlagRegistry reg = getHeavySpleef().getFlagRegistry();
+			String path = reg.getFlagPath(FlagTeleportAll.class);
+			
+			for (Game game : heavySpleef.getGameManager().getGames()) {
+				for (AbstractFlag<?> flag : game.getFlagManager().getFlags()) {
+					if (!(flag instanceof UnloadedFlag)) {
+						continue;
+					}
+					
+					UnloadedFlag unloaded = (UnloadedFlag) flag;
+					
+					
+					if (!unloaded.getFlagName().equals(path)) {
+						continue;
+					}
+					
+					game.removeFlag(path);
+					
+					FlagTeleportAll newFlag = reg.newFlagInstance(path, FlagTeleportAll.class, game);
+					newFlag.unmarshal(unloaded.getXmlElement());
+					
+					game.addFlag(newFlag);
+				}
+			}
 		} else {
 			heavySpleef.addGamesLoadCallback(callback);
-		}
+		} 
 	}
 	
 	private void registerGameListener() {
@@ -120,6 +152,27 @@ public class BungeemodeAddon extends BasicAddOn {
 		
 		Bukkit.getMessenger().unregisterOutgoingPluginChannel(getHeavySpleef().getPlugin(), BUNGEECORD_CHANNEL);
 		HandlerList.unregisterAll(listener);
+		
+		//Fix for HeavySpleef version 2.1 or below
+		//that doesn't unload flags on add-on disable
+		FlagRegistry reg = getHeavySpleef().getFlagRegistry();
+		
+		for (Game game : manager.getGames()) {
+			if (!game.isFlagPresent(FlagTeleportAll.class)) {
+				continue;
+			}
+			
+			FlagTeleportAll flag = game.getFlag(FlagTeleportAll.class);
+			game.removeFlag(flag.getClass());
+			
+			Element element = DocumentHelper.createElement("flag");
+			element.addAttribute("name", reg.getFlagPath(FlagTeleportAll.class));
+			flag.marshal(element);
+			
+			UnloadedFlag unloaded = new UnloadedFlag();
+			unloaded.setXmlElement(element);
+			game.addFlag(unloaded, false);
+		}
 	}
 	
 	private boolean checkCopyConfig() throws IOException {

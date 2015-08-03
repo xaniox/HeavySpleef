@@ -19,11 +19,16 @@ package de.matzefratze123.bungeemode;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.event.Subscribe.Priority;
+import de.matzefratze123.heavyspleef.core.flag.BukkitListener;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.game.Game;
@@ -32,6 +37,7 @@ import de.matzefratze123.heavyspleef.flag.defaults.FlagSpectate;
 import de.matzefratze123.heavyspleef.flag.presets.LocationFlag;
 
 @Flag(name = "teleport-all")
+@BukkitListener
 public class FlagTeleportAll extends LocationFlag {
 
 	@Inject
@@ -39,7 +45,7 @@ public class FlagTeleportAll extends LocationFlag {
 	
 	@Override
 	public void getDescription(List<String> description) {
-		description.add("Teleport all players that participated in the game to a specific location at the end of it");
+		description.add("Teleport all players on the server to a specific location at the end of the game, clearing their inventory");
 		description.add("This leaves the spectator mode if necessary");
 		description.add("Intended for use with the bungee-mode");
 	}
@@ -51,10 +57,8 @@ public class FlagTeleportAll extends LocationFlag {
 		
 		FlagSpectate spectate = game.isFlagPresent(FlagSpectate.class) ? game.getFlag(FlagSpectate.class) : null;
 		
-		for (SpleefPlayer player : game.getDeadPlayers()) {
-			if (!player.isOnline()) {
-				continue;
-			}
+		for (Player bukkitPlayer : Bukkit.getOnlinePlayers()) {
+			SpleefPlayer player = getHeavySpleef().getSpleefPlayer(bukkitPlayer);
 			
 			if (spectate != null && spectate.isSpectating(player)) {
 				addon.getSendBackExceptions().add(player);
@@ -62,13 +66,16 @@ public class FlagTeleportAll extends LocationFlag {
 			}
 			
 			player.getBukkitPlayer().teleport(teleportTo);
+			player.getBukkitPlayer().getInventory().clear();
+			player.getBukkitPlayer().updateInventory();
 		}
-		
-		//Also teleport all other spectators which were not involved in the game
-		for (SpleefPlayer spectator : spectate.getSpectators()) {
-			addon.getSendBackExceptions().add(spectator);
-			spectate.leave(spectator);
-			spectator.getBukkitPlayer().teleport(teleportTo);
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		BungeemodeListener listener = addon.getListener();
+		if (listener != null && listener.isRestarting()) {
+			event.getPlayer().teleport(getValue());
 		}
 	}
 
