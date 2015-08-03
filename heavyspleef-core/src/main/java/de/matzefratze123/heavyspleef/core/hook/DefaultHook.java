@@ -17,8 +17,6 @@
  */
 package de.matzefratze123.heavyspleef.core.hook;
 
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -28,7 +26,7 @@ import org.bukkit.plugin.ServicesManager;
 public class DefaultHook implements Hook {
 
 	private final PluginManager pluginManager;
-	private final ServicesManager servicesManager;
+	protected final ServicesManager servicesManager;
 	
 	private String pluginName;
 	
@@ -52,25 +50,18 @@ public class DefaultHook implements Hook {
 	public boolean isProvided() {
 		return pluginManager.isPluginEnabled(pluginName);
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getService(Class<T> registrationClass) {
+	
+	public <T> T getService(Class<T> service) {
 		if (!isProvided()) {
 			throw new IllegalStateException("Hook is not provided");
 		}
 		
-		List<RegisteredServiceProvider<?>> providers = servicesManager.getRegistrations(getPlugin());
-		
-		for (RegisteredServiceProvider<?> provider : providers) {
-			if (provider.getService() != registrationClass) {
-				continue;
-			}
-			
-			return (T) provider.getProvider();
+		RegisteredServiceProvider<T> provider = servicesManager.getRegistration(service);
+		if (provider == null) {
+			throw new IllegalStateException("RegisteredServiceProvider is null for service " + service.getName());
 		}
 		
-		return null;
+		return provider.getProvider();
 	}
 
 }
