@@ -231,6 +231,9 @@ player:
   update-available: "&6Ein Update ist für HeavySpleef verfügbar (&av$[new-version]&6)!\nBenutze '&a/spleef update&6' um HeavySpleef automatisch auf die neueste Version zu aktualisieren."
   received-reward-place: "&7Du hast &a$[amount] als Belohnung erhalten da du den $[place] Platz belegt hast!"
   not-a-number: "&cDies ist keine gültige Zahl!"
+  
+  leave-game-displayname: "&c&lSpiel verlassen"
+  leave-game-lore: "&aRechtsklicken &7um das Spiel zu verlassen"
 help:
   description:
     addon: "Aktiviert, deaktiviert ein Add-On oder listet alle installierten Add-ons"

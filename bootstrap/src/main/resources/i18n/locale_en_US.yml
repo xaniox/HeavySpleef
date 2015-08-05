@@ -230,6 +230,9 @@ player:
   update-available: "&6An update is available for HeavySpleef (&av$[new-version]&6)\nUse '&a/spleef update&6' to update to the latest version"
   received-reward-place: "&7You received a money reward of &a$[amount] for reaching the $[place] place!"
   not-a-number: "&cThis is not a valid number!"
+  
+  leave-game-displayname: "&c&lLeave Game"
+  leave-game-lore: "&aRight-Click &7to leave the game"
 help:
   description:
     addon: "Loads, unloads an add-on or lists all installed add-ons"

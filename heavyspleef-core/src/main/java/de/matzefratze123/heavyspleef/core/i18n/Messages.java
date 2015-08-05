@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core.i18n;
 
+
 public interface Messages {
 	
 	public interface Command {
@@ -270,6 +271,9 @@ public interface Messages {
 		public static final String MAX_PLAYERS_IN_TEAM_REACHED = PREFIX + "max-players-in-team-reached";
 		public static final String UPDATE_AVAILABLE = PREFIX + "update-available";
 		public static final String RECEIVED_REWARD_PLACE = PREFIX + "received-reward-place";
+
+		public static final String LEAVE_GAME_DISPLAYNAME = PREFIX + "leave-game-displayname";
+		public static final String LEAVE_GAME_LORE = PREFIX + "leave-game-lore";
 		
 	}
 	
