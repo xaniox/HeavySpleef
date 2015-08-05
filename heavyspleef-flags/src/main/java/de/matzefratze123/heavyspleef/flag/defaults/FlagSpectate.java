@@ -27,6 +27,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -345,6 +346,10 @@ public class FlagSpectate extends LocationFlag {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
 		if (!isSpectating(player)) {
+			return;
+		}
+		
+		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
 		
