@@ -96,7 +96,7 @@ public class RatingCommands {
 				.toString());
 		
 		Game game = manager.getGame(gameName);
-		game.getStatisticRecorder().setEnableRating(true);
+		game.getStatisticRecorder().setEnableRating(false);
 		sender.sendMessage(i18n.getVarString(Messages.Command.RATING_DISABLED)
 				.setVariable("game", game.getName())
 				.toString());
