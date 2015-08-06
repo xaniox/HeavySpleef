@@ -119,25 +119,29 @@ public final class AddOnManager {
 		}
 	}
 	
-	public void loadAddOn(File addOnFile) {
+	public AddOn loadAddOn(File addOnFile) {
+		AddOn addOn = null;
+		
 		try {
-			AddOn addOn = loader.load(addOnFile);
+			addOn = loader.load(addOnFile);
 			addOn.load();
 			
 			addOnMap.put(addOn.getName(), addOn);
 		} catch (InvalidAddOnException e) {
 			logger.log(Level.SEVERE, "Could not load add-on " + addOnFile.getName(), e);
 		}
+		
+		return addOn;
 	}
 	
-	public boolean searchAndLoad(File baseDir, String name, boolean casesensitive) {
+	public AddOn searchAndLoad(File baseDir, String name, boolean casesensitive) {
 		if (!baseDir.exists()) {
 			throw new IllegalArgumentException("Directory '" + baseDir.getName() + "' does not exist");
 		}
 		
 		JavaAddOnLoader javaLoader = (JavaAddOnLoader) loader;
 		
-		boolean success = false;
+		AddOn addon = null;
 		for (File addonFile : baseDir.listFiles()) {
 			if (!addonFile.getName().toLowerCase().endsWith(".jar")) {
 				continue;
@@ -150,15 +154,14 @@ public final class AddOnManager {
 					continue;
 				}
 				
-				loadAddOn(addonFile);
-				success = true;
+				addon = loadAddOn(addonFile);
 				break;
 			} catch (InvalidAddOnException e) {
 				logger.log(Level.SEVERE, "Could not load add-on " + addonFile.getName(), e);
 			}
 		}
 		
-		return success;
+		return addon;
 	}
 	
 	void loadAddOnSafely(File addOnFile) {
@@ -367,8 +370,16 @@ public final class AddOnManager {
 		extensionRegistryAccess.unregister(addOn);
 	}
 	
-	public AddOn getAddOn(String name) {
-		return addOnMap.get(name);
+	public AddOn getAddOn(final String name) {
+		Set<AddOn> addons = getAddOns(new Predicate<AddOn>() {
+
+			@Override
+			public boolean apply(AddOn input) {
+				return input.getName().equalsIgnoreCase(name);
+			}
+		});
+		
+		return addons.size() > 0 ? addons.iterator().next() : null;
 	}
 	
 	public Set<AddOn> getAddOns() {

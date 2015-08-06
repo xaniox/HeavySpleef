@@ -53,17 +53,20 @@ public class AddOnCommands {
 		String addonName = context.getStringSafely(1);
 		
 		if (action.equalsIgnoreCase(LOAD_ACTION)) {
-			CommandValidate.isTrue(!manager.isAddOnEnabled(addonName), i18n.getVarString(Messages.Command.ADDON_ALREADY_ENABLED)
-					.setVariable("addon", addonName)
+			AddOn existingAddon = manager.getAddOn(addonName);
+			
+			CommandValidate.isTrue(existingAddon == null, i18n.getVarString(Messages.Command.ADDON_ALREADY_ENABLED)
+					.setVariable("addon", existingAddon.getName())
 					.toString());
 			
 			AddOnModule module = (AddOnModule) heavySpleef.getModuleManager().getModule(AddOnModule.class);
 			
-			if (manager.searchAndLoad(module.getBaseDir(), addonName, false)) {
-				manager.enableAddOn(addonName);
+			AddOn addon = manager.searchAndLoad(module.getBaseDir(), addonName, false);
+			if (addon != null) {
+				manager.enableAddOn(addon.getName());
 				
 				sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_LOADED)
-						.setVariable("addon", addonName)
+						.setVariable("addon", addon.getName())
 						.toString());
 			} else {
 				throw new CommandException(i18n.getVarString(Messages.Command.ADDON_NOT_EXISTING)
@@ -71,15 +74,17 @@ public class AddOnCommands {
 						.toString());
 			}
 		} else if (action.equalsIgnoreCase(UNLOAD_ACTION)) {
-			CommandValidate.isTrue(manager.isAddOnEnabled(addonName), i18n.getVarString(Messages.Command.ADDON_NOT_ENABLED)
+			AddOn addon = manager.getAddOn(addonName);
+			
+			CommandValidate.isTrue(addon != null, i18n.getVarString(Messages.Command.ADDON_NOT_ENABLED)
 					.setVariable("addon", addonName)
 					.toString());
 			
-			manager.disableAddOn(addonName);
-			manager.unloadAddOn(addonName);
+			manager.disableAddOn(addon.getName());
+			manager.unloadAddOn(addon.getName());
 			
 			sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_UNLOADED)
-					.setVariable("addon", addonName)
+					.setVariable("addon", addon.getName())
 					.toString());
 		} else if (action.equalsIgnoreCase(LIST_ACTION)) {
 			Set<AddOn> addOns = manager.getAddOns();
