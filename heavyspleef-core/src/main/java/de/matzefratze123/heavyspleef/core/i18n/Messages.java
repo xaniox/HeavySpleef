@@ -174,6 +174,8 @@ public interface Messages {
 		
 		public static final String NEED_AT_LEAST_ONE_NUMBER = PREFIX + "need-at-least-one-number";
 		public static final String ALREADY_QUEUED = PREFIX + "already-queued";
+
+		public static final String ADDON_NOT_EXISTING = PREFIX + "addon-not-existing";
 		
 	}
 	

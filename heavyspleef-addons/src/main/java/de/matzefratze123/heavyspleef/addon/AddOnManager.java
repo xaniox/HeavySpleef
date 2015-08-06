@@ -130,13 +130,14 @@ public final class AddOnManager {
 		}
 	}
 	
-	public void searchAndLoad(File baseDir, String name) {
+	public boolean searchAndLoad(File baseDir, String name, boolean casesensitive) {
 		if (!baseDir.exists()) {
 			throw new IllegalArgumentException("Directory '" + baseDir.getName() + "' does not exist");
 		}
 		
 		JavaAddOnLoader javaLoader = (JavaAddOnLoader) loader;
 		
+		boolean success = false;
 		for (File addonFile : baseDir.listFiles()) {
 			if (!addonFile.getName().toLowerCase().endsWith(".jar")) {
 				continue;
@@ -145,15 +146,19 @@ public final class AddOnManager {
 			try {
 				AddOnProperties properties = javaLoader.loadProperties(addonFile);
 				String addonName = properties.getName();
-				if (!name.equals(addonName)) {
+				if ((!name.equals(addonName) && casesensitive) || !name.equalsIgnoreCase(addonName)) {
 					continue;
 				}
 				
 				loadAddOn(addonFile);
+				success = true;
+				break;
 			} catch (InvalidAddOnException e) {
 				logger.log(Level.SEVERE, "Could not load add-on " + addonFile.getName(), e);
 			}
 		}
+		
+		return success;
 	}
 	
 	void loadAddOnSafely(File addOnFile) {

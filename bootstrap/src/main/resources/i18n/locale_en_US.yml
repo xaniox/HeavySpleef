@@ -147,6 +147,7 @@ command:
   no-addons-installed: "&cNo add-ons have been installed yet!"
   addon-list-header: "&6-------- &8&l[&aInstalled Add-ons &8&l] &6--------"
   addon-list-entry: "&7- $[addon] &7(&6$[version]&7)"
+  addon-not-existing: "&cAn add-on with the name $[addon] does not exist in the add-on folder!"
   already-queued: "&cYou are already queued for the game '$[game]'! Use /spleef leave to leave the queue."
 broadcast:
   player-left-game: "&a$[player] &7left the game"

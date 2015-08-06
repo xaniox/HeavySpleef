@@ -58,12 +58,18 @@ public class AddOnCommands {
 					.toString());
 			
 			AddOnModule module = (AddOnModule) heavySpleef.getModuleManager().getModule(AddOnModule.class);
-			manager.searchAndLoad(module.getBaseDir(), addonName);
-			manager.enableAddOn(addonName);
 			
-			sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_LOADED)
-					.setVariable("addon", addonName)
-					.toString());
+			if (manager.searchAndLoad(module.getBaseDir(), addonName, false)) {
+				manager.enableAddOn(addonName);
+				
+				sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_LOADED)
+						.setVariable("addon", addonName)
+						.toString());
+			} else {
+				throw new CommandException(i18n.getVarString(Messages.Command.ADDON_NOT_EXISTING)
+						.setVariable("addon", addonName)
+						.toString());
+			}
 		} else if (action.equalsIgnoreCase(UNLOAD_ACTION)) {
 			CommandValidate.isTrue(manager.isAddOnEnabled(addonName), i18n.getVarString(Messages.Command.ADDON_NOT_ENABLED)
 					.setVariable("addon", addonName)

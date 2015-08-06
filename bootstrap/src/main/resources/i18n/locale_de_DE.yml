@@ -147,6 +147,7 @@ command:
   no-addons-installed: "&cEs wurden noch keine Add-ons installiert!"
   addon-list-header: "&6-------- &8&l[&aInstallierte Add-ons &8&l] &6--------"
   addon-list-entry: "&7- $[addon] &7(&6$[version]&7)"
+  addon-not-existing: "&cEin Add-on mit dem Namen $[addon] existiert nicht im Add-on Installationsordner!"
   already-queued: "&cDu bist bereits in der Warteschlange für das Spiel '$[game]'! Benutze /spleef leave um die Warteschlange zu verlassen."
 broadcast:
   player-left-game: "&a$[player] &7hat das Spiel verlassen"
