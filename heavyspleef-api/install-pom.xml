@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.matzefratze123</groupId>
 	<artifactId>heavyspleef-api</artifactId>
-	<version>2.1</version>
+	<version>2.1.1</version>
 	<packaging>jar</packaging>
 	<name>HeavySpleef-API</name>
 	<description>Add-On API for the Spleef plugin HeavySpleef</description>
