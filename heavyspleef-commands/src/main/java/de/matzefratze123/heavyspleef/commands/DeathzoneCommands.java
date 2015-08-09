@@ -79,7 +79,7 @@ public class DeathzoneCommands {
 		Region region;
 		
 		try {
-			region = selector.getRegion();
+			region = selector.getRegion().clone();
 		} catch (IncompleteRegionException e) {
 			player.sendMessage(i18n.getString(Messages.Command.DEFINE_FULL_WORLDEDIT_REGION));
 			return;
