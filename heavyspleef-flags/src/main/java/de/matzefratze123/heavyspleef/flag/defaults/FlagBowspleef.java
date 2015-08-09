@@ -39,6 +39,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -115,6 +116,25 @@ public class FlagBowspleef extends BaseFlag {
 	@Subscribe(priority = Priority.HIGH)
 	public void onGetScoreboardDisplayNameEvent(GetScoreboardDisplayNameEvent event) {
 		event.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Bowspleef");
+	}
+	
+	@EventHandler
+	public void onProjectileLaunchEvent(ProjectileLaunchEvent event) {
+		Projectile projectile = event.getEntity();
+		ProjectileSource source = projectile.getShooter();
+		
+		if (!(source instanceof Player)) {
+			return;
+		}
+		
+		SpleefPlayer shooter = getHeavySpleef().getSpleefPlayer(((Player) source));
+		if (!game.isIngame(shooter)) {
+			return;
+		}
+		
+		ItemStack stack = shooter.getBukkitPlayer().getItemInHand();
+		stack.setDurability((short)0);
+		shooter.getBukkitPlayer().setItemInHand(stack);
 	}
 	
 	@EventHandler

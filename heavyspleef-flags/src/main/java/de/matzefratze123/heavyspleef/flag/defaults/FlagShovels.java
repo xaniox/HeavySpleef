@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
+import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.GamePropertyPriority;
@@ -74,6 +75,19 @@ public class FlagShovels extends BaseFlag {
 			inv.addItem(stack);
 			
 			bukkitPlayer.updateInventory();
+		}
+	}
+	
+	@Subscribe
+	public void onPlayerBreakBlock(PlayerBlockBreakEvent event) {
+		for (SpleefPlayer player : event.getGame().getPlayers()) {
+			ItemStack stack = player.getBukkitPlayer().getItemInHand();
+			if (stack.getType() != Material.DIAMOND_SPADE) {
+				continue;
+			}
+			
+			stack.setDurability((short)0);
+			player.getBukkitPlayer().setItemInHand(stack);
 		}
 	}
 	
