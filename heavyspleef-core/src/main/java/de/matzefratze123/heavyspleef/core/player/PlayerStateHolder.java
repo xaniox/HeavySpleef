@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -41,6 +42,7 @@ public class PlayerStateHolder {
 	private static final int INVENTORY_SIZE = SIMPLE_INVENTORY_SIZE + ARMOR_INVENTORY_SIZE; 
 	
 	private ItemStack[] inventory;
+	private ItemStack onCursor;
 	private GameMode gamemode;
 	private double health;
 	private int foodLevel;
@@ -75,6 +77,7 @@ public class PlayerStateHolder {
 		
 		/* Initialize the state with the current player state */
 		stateHolder.setInventory(inventoryArray);
+		stateHolder.setOnCursor(player.getItemOnCursor());
 		stateHolder.setGamemode(gameMode != null ? gameMode : player.getGameMode());
 		stateHolder.setHealth(player.getHealth());
 		stateHolder.setFoodLevel(player.getFoodLevel());
@@ -123,6 +126,7 @@ public class PlayerStateHolder {
 		player.setGameMode(GameMode.SURVIVAL);
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);
+		player.setItemOnCursor(null);
 		player.updateInventory();
 		player.setHealth(20.0);
 		player.setFoodLevel(20);
@@ -162,6 +166,12 @@ public class PlayerStateHolder {
 		
 		playerInv.setContents(inventoryContents);
 		playerInv.setArmorContents(armorContents);
+		player.setItemOnCursor(null);
+		Map<Integer, ItemStack> exceeded = playerInv.addItem(onCursor);
+		for (ItemStack stack : exceeded.values()) {
+			player.getWorld().dropItem(player.getLocation(), stack);
+		}
+		
 		player.updateInventory();
 		
 		player.setHealth(health);
@@ -197,6 +207,7 @@ public class PlayerStateHolder {
 		}
 		
 		Location compassTarget = this.compassTarget;
+		
 		if (compassTarget == null) {
 			compassTarget = player.getWorld().getSpawnLocation();
 		}
@@ -227,6 +238,14 @@ public class PlayerStateHolder {
 
 	public void setInventory(ItemStack[] inventory) {
 		this.inventory = inventory;
+	}
+	
+	public ItemStack getOnCursor() {
+		return onCursor;
+	}
+	
+	public void setOnCursor(ItemStack onCursor) {
+		this.onCursor = onCursor;
 	}
 
 	public GameMode getGamemode() {
