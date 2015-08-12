@@ -40,6 +40,12 @@ general:
   # Given in seconds, use 0 to disable the timer.
   pvp-timer: 0
   
+  # Decide wether you want a message
+  # to be broadcasted to all players
+  # on the server when a Spleef game
+  # is about to start
+  broadcast-game-start: true
+  
 queues:
   # Wether players are able to use queues if they
   # are not allowed to join the game (when it is ingame

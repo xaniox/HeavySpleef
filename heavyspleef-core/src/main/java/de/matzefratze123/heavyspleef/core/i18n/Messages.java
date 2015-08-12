@@ -176,6 +176,7 @@ public interface Messages {
 		public static final String ALREADY_QUEUED = PREFIX + "already-queued";
 
 		public static final String ADDON_NOT_EXISTING = PREFIX + "addon-not-existing";
+		public static final String ADDON_RELOADED = PREFIX + "addon-reloaded";
 		
 	}
 	
@@ -204,6 +205,8 @@ public interface Messages {
 		public static final String TEAMS_LEFT = PREFIX + "teams-left";
 		public static final String TEAM_WON = PREFIX + "team-won";
 		public static final String PLAYER_VOTED = PREFIX + "player-voted";
+		
+		public static final String BROADCAST_GAME_START = PREFIX + "broadcast-game-start";
 		
 	}
 	

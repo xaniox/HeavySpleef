@@ -284,6 +284,15 @@ public class Game implements VariableSuppliable {
 			return false;
 		}
 		
+		DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+		GeneralSection section = config.getGeneralSection();
+		
+		if (section.getBroadcastGameStart()) {
+			broadcast(BroadcastTarget.GLOBAL, i18n.getVarString(Messages.Broadcast.BROADCAST_GAME_START)
+					.setVariable("game", name)
+					.toString());
+		}
+		
 		EditSession editSession = editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
 		
 		// Regenerate all floors

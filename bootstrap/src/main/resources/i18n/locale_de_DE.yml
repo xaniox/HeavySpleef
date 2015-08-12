@@ -148,6 +148,7 @@ command:
   addon-list-header: "&6-------- &8&l[&aInstallierte Add-ons &8&l] &6--------"
   addon-list-entry: "&7- $[addon] &7(&6$[version]&7)"
   addon-not-existing: "&cEin Add-on mit dem Namen $[addon] existiert nicht im Add-on Installationsordner!"
+  addon-reloaded: "&7Add-on '&a$[addon]&7' neu geladen!"
   already-queued: "&cDu bist bereits in der Warteschlange für das Spiel '$[game]'! Benutze /spleef leave um die Warteschlange zu verlassen."
 broadcast:
   player-left-game: "&a$[player] &7hat das Spiel verlassen"
@@ -171,6 +172,8 @@ broadcast:
   teams-left: "&7Im Team $[team] &7verbleiben &a$[amount] &7Spieler"
   team-won: "&7Das Team $[team] &7hat das Spiel in der Arena &a$[game] &7gewonnen!"
   player-voted: "&7Der Spieler &a$[player] &7hat dafür gestimmt das Spiel zu &astarten&7!"
+  
+  broadcast-game-start: "&6Ein Spleef Spiel startet! Benutze /spleef join $[game] um mitzuspielen"
 player:
   player-leave: "&7Du hast das Spiel verlassen"
   player-kick: "&cDu wurdest von $[kicker] gekickt: $[message]"
