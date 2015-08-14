@@ -267,7 +267,7 @@ public class FlagTrackingSpectate extends BaseFlag {
 						return;
 					}
 					
-					player.getBukkitPlayer().teleport(to.getBukkitPlayer());
+					player.teleport(to.getBukkitPlayer().getLocation());
 					player.getBukkitPlayer().setCompassTarget(to.getBukkitPlayer().getLocation());
 					tracking.put(player, to);
 					

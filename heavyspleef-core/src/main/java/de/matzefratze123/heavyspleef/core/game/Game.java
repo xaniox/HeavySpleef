@@ -57,6 +57,8 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.metadata.MetadataValue;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -347,7 +349,7 @@ public class Game implements VariableSuppliable {
 				location = randomLocations.get(randomIndex++);
 			}
 			
-			player.getBukkitPlayer().teleport(location);
+			player.teleport(location);
 		}
 		
 		spawnLocationQueue.clear();
@@ -728,7 +730,7 @@ public class Game implements VariableSuppliable {
 		}
 		
 		if (tpLoc != null) {
-			player.getBukkitPlayer().teleport(tpLoc);
+			player.teleport(tpLoc);
 		}
 		
 		if (ingamePlayers.size() == 0 && gameState == GameState.LOBBY) {
@@ -1372,6 +1374,26 @@ public class Game implements VariableSuppliable {
 		
 		event.setCancelled(true);
 		player.sendMessage(i18n.getString(Messages.Player.CANNOT_CHANGE_GAMEMODE));
+	}
+	
+	public void onPlayerTeleport(PlayerTeleportEvent event, SpleefPlayer player) {
+		Player bukkitPlayer = player.getBukkitPlayer();
+		
+		if (bukkitPlayer.hasMetadata(SpleefPlayer.ALLOW_NEXT_TELEPORT_KEY)) {
+			List<MetadataValue> values = bukkitPlayer.getMetadata(SpleefPlayer.ALLOW_NEXT_TELEPORT_KEY);
+			
+			for (MetadataValue value : values) {
+				if (value.getOwningPlugin() != heavySpleef.getPlugin()) {
+					continue;
+				}
+				
+				if (value.asBoolean()) {
+					return;
+				}
+			}
+		}
+		
+		event.setCancelled(true);
 	}
 	
 	public enum JoinResult {

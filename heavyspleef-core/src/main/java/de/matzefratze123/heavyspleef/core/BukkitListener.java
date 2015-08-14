@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.matzefratze123.heavyspleef.core.game.Game;
@@ -146,6 +147,11 @@ public class BukkitListener implements Listener {
 		handlePlayerEvent(event.getPlayer(), event);
 	}
 	
+	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		handlePlayerEvent(event.getPlayer(), event);
+	}
+	
 	private void handleEntityDamageEvent(EntityDamageEvent event) {
 		Entity damagedEntity = event.getEntity();
 		if (!(damagedEntity instanceof Player)) {
@@ -204,6 +210,8 @@ public class BukkitListener implements Listener {
 			game.onPlayerRespawn((PlayerRespawnEvent)event, player);
 		} else if (event instanceof PlayerGameModeChangeEvent) {
 			game.onPlayerGameModeChange((PlayerGameModeChangeEvent)event, player);
+		} else if (event instanceof PlayerTeleportEvent) {
+			game.onPlayerTeleport((PlayerTeleportEvent)event, player);
 		}
 	}
 	

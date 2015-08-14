@@ -17,6 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.addon;
 
+import java.io.File;
 import java.util.Set;
 
 import org.bukkit.command.CommandSender;
@@ -37,11 +38,12 @@ public class AddOnCommands {
 	private static final String LOAD_ACTION = "load";
 	private static final String UNLOAD_ACTION = "unload";
 	private static final String LIST_ACTION = "list";
+	private static final String RELOAD_ACTION = "reload";
 	
 	private final I18N i18n = I18NManager.getGlobal();
 	
 	@Command(name = "add-on", descref = Messages.Help.Description.ADDONS,
-			usage = "/spleef add-on <[load|unload> <add-on>]|list>", minArgs = 1,
+			usage = "/spleef add-on <[load|unload|reload> <add-on>]|list>", minArgs = 1,
 			permission = Permissions.PERMISSION_ADDON)
 	public void onAddOnCommand(CommandContext context, HeavySpleef heavySpleef, AddOnManager manager) throws CommandException {
 		CommandSender sender = context.getSender();
@@ -84,6 +86,22 @@ public class AddOnCommands {
 			manager.unloadAddOn(addon.getName());
 			
 			sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_UNLOADED)
+					.setVariable("addon", addon.getName())
+					.toString());
+		} else if (action.equalsIgnoreCase(RELOAD_ACTION)) {
+			AddOn addon = manager.getAddOn(addonName);
+			
+			CommandValidate.isTrue(addon != null, i18n.getVarString(Messages.Command.ADDON_NOT_ENABLED)
+					.setVariable("addon", addonName)
+					.toString());
+
+			File file = addon.getFile();
+			
+			manager.disableAddOn(addon);
+			manager.unloadAddOn(addon.getName());
+			manager.loadAddOn(file);
+			manager.enableAddOn(addon.getName());
+			sender.sendMessage(i18n.getVarString(Messages.Command.ADDON_RELOADED)
 					.setVariable("addon", addon.getName())
 					.toString());
 		} else if (action.equalsIgnoreCase(LIST_ACTION)) {

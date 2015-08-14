@@ -28,6 +28,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -39,6 +40,8 @@ import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.Permissions;
 
 public class SpleefPlayer implements CommandSender {
+	
+	public static final String ALLOW_NEXT_TELEPORT_KEY = "spleef_teleport";
 	
 	/* Only keep a weak reference to avoid memory leaks.
 	 * Reference should be actually hold by Bukkit itself */
@@ -106,7 +109,14 @@ public class SpleefPlayer implements CommandSender {
 	
 	public void teleport(Location location) {
 		validateOnline();
+		Player bukkitPlayer = getBukkitPlayer();
+		
+		//Setting a metadata value to indicate that the next teleport is allowed
+		bukkitPlayer.setMetadata(ALLOW_NEXT_TELEPORT_KEY, new FixedMetadataValue(heavySpleef.getPlugin(), true));
 		getBukkitPlayer().teleport(location);
+		
+		//Remove previously set metadata key
+		bukkitPlayer.removeMetadata(ALLOW_NEXT_TELEPORT_KEY, heavySpleef.getPlugin());
 	}
 	
 	public void savePlayerState(Object key, GameMode gameMode) {

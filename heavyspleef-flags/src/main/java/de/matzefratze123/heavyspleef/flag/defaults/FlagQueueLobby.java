@@ -108,7 +108,7 @@ public class FlagQueueLobby extends LocationFlag {
 		bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
 		bukkitPlayer.updateInventory();
 		
-		bukkitPlayer.teleport(teleportPoint);
+		player.teleport(teleportPoint);
 	}
 	
 	@Subscribe

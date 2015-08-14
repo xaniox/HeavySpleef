@@ -65,7 +65,7 @@ public class FlagTeleportAll extends LocationFlag {
 				spectate.leave(player);
 			}
 			
-			player.getBukkitPlayer().teleport(teleportTo);
+			player.teleport(teleportTo);
 			player.getBukkitPlayer().getInventory().clear();
 			player.getBukkitPlayer().updateInventory();
 		}

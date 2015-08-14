@@ -219,7 +219,7 @@ public class FlagAntiCamping extends BaseFlag {
 						int maxY = region.getMaximumPoint().getBlockY();
 						
 						location.setY(maxY + 1.25);
-						player.getBukkitPlayer().teleport(location);
+						player.teleport(location);
 					}
 					
 					return true;
