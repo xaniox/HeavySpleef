@@ -36,6 +36,7 @@ public interface Floor {
 	
 	public boolean contains(Location location);
 	
+	@Deprecated
 	public void generate(EditSession session);
 	
 }

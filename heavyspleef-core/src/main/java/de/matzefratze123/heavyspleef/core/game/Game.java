@@ -108,7 +108,10 @@ import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
 import de.matzefratze123.heavyspleef.core.flag.FlagManager;
 import de.matzefratze123.heavyspleef.core.flag.FlagManager.DefaultGamePropertyBundle;
 import de.matzefratze123.heavyspleef.core.flag.FlagManager.GamePropertyBundle;
+import de.matzefratze123.heavyspleef.core.floor.DefaultFloorRegenerator;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.floor.FloorRegenerator;
+import de.matzefratze123.heavyspleef.core.floor.RegenerationCause;
 import de.matzefratze123.heavyspleef.core.hook.HookReference;
 import de.matzefratze123.heavyspleef.core.hook.WorldEditHook;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
@@ -151,6 +154,7 @@ public class Game implements VariableSuppliable {
 	private Queue<SpleefPlayer> queuedPlayers;
 	private CountdownTask countdownTask;
 	private StatisticRecorder statisticRecorder;
+	private FloorRegenerator floorRegenerator;
 	private Queue<Location> spawnLocationQueue;
 	
 	private String name;
@@ -172,6 +176,7 @@ public class Game implements VariableSuppliable {
 		this.deadPlayers = Lists.newArrayList();
 		this.eventBus = heavySpleef.getGlobalEventBus().newChildBus();
 		this.statisticRecorder = new StatisticRecorder(heavySpleef, heavySpleef.getLogger());
+		this.floorRegenerator = new DefaultFloorRegenerator();
 		this.killedPlayers = Lists.newArrayList();
 		
 		eventBus.registerListener(statisticRecorder);
@@ -262,6 +267,18 @@ public class Game implements VariableSuppliable {
 		return statisticRecorder;
 	}
 	
+	public FloorRegenerator getFloorRegenerator() {
+		return floorRegenerator;
+	}
+	
+	public void setFloorRegenerator(FloorRegenerator regenerator) {
+		if (regenerator == null) {
+			regenerator = new DefaultFloorRegenerator();
+		}
+		
+		this.floorRegenerator = regenerator;
+	}
+	
 	public boolean countdown() {
 		GameCountdownEvent event = new GameCountdownEvent(this);
 		eventBus.callEvent(event);
@@ -297,7 +314,7 @@ public class Game implements VariableSuppliable {
 		
 		// Regenerate all floors
 		for (Floor floor : floors.values()) {
-			floor.generate(editSession);
+			floorRegenerator.regenerate(floor, editSession, RegenerationCause.COUNTDOWN);
 		}
 		
 		// Generate a random spawnpoint
@@ -448,7 +465,7 @@ public class Game implements VariableSuppliable {
 	private void resetGame() {
 		EditSession editSession = editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
 		for (Floor floor : floors.values()) {
-			floor.generate(editSession);
+			floorRegenerator.regenerate(floor, editSession, RegenerationCause.RESET);
 		}
 		
 		blocksBroken.clear();

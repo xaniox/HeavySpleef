@@ -70,6 +70,7 @@ public class SimpleClipboardFloor implements Floor {
 	}
 
 	@Override
+	@Deprecated
 	public void generate(EditSession session) {
 		Region region = floorClipboard.getRegion();
 		World world = region.getWorld();

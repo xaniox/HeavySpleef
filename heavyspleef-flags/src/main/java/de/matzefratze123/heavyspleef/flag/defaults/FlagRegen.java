@@ -28,6 +28,8 @@ import de.matzefratze123.heavyspleef.core.event.Subscribe;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.ValidationException;
 import de.matzefratze123.heavyspleef.core.floor.Floor;
+import de.matzefratze123.heavyspleef.core.floor.FloorRegenerator;
+import de.matzefratze123.heavyspleef.core.floor.RegenerationCause;
 import de.matzefratze123.heavyspleef.core.game.Game;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.flag.presets.IntegerFlag;
@@ -84,9 +86,10 @@ public class FlagRegen extends IntegerFlag {
 		@Override
 		public void run() {
 			EditSession session = game.newEditSession();
+			FloorRegenerator regenerator = game.getFloorRegenerator();
 			
 			for (Floor floor : game.getFloors()) {
-				floor.generate(session);
+				regenerator.regenerate(floor, session, RegenerationCause.OTHER);
 			}
 			
 			game.broadcast(getI18N().getString(Messages.Broadcast.FLOORS_REGENERATED));
