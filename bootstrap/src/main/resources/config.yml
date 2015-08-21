@@ -46,6 +46,15 @@ general:
   # is about to start
   broadcast-game-start: true
   
+  # A list of worlds where global join
+  # broadcasts are not broadcasted
+  # This only has an effect when
+  # broadcast-game-start is set
+  # to true
+  broadcast-game-start-blacklist:
+  - some_world
+  - another_world
+  
 queues:
   # Wether players are able to use queues if they
   # are not allowed to join the game (when it is ingame

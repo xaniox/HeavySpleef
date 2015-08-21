@@ -307,9 +307,20 @@ public class Game implements VariableSuppliable {
 		GeneralSection section = config.getGeneralSection();
 		
 		if (section.getBroadcastGameStart()) {
-			broadcast(BroadcastTarget.GLOBAL, i18n.getVarString(Messages.Broadcast.BROADCAST_GAME_START)
+			List<String> blacklists = section.getBroadcastGameStartBlacklist();
+			String message = i18n.getVarString(Messages.Broadcast.BROADCAST_GAME_START)
 					.setVariable("game", name)
-					.toString());
+					.toString();
+			
+			for (Player globalPlayer : Bukkit.getOnlinePlayers()) {
+				World globalPlayerWorld = globalPlayer.getWorld();
+				
+				if (blacklists.contains(globalPlayerWorld.getName())) {
+					continue;
+				}
+				
+				globalPlayer.sendMessage(section.getSpleefPrefix() + message);
+			}
 		}
 		
 		EditSession editSession = editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
