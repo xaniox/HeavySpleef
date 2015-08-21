@@ -12,7 +12,7 @@ For more information about the plugin itself and how to setup and use it and of 
 
 Development builds may be accessed by our Jenkins server. Please note that these builds may be unstable.
 
-[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef/)&nbsp;&nbsp;Visit the <a href="http://matzefratze123.de/jenkins/job/HeavySpleef%202.0/" target="_blank">Jenkins Build Server</a>
+[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef/)&nbsp;&nbsp;Visit the <a href="http://matzefratze123.de/jenkins/job/HeavySpleef/" target="_blank">Jenkins Build Server</a>
 
 ##### Addons
 
