@@ -6,8 +6,8 @@ command:
   unknown-command: "&7Unbekannter Spleef-Befehl. Nutze /spleef help für Hilfe"
   
   game-created: "&7Das Spiel '&a$[game]&7' wurde erstellt."
-  game-already-exist: "&cDieses Spiel exestiert bereits!"
-  game-doesnt-exist: "&cDieses Spiel exestiert nicht!"
+  game-already-exist: "&cDieses Spiel existiert bereits!"
+  game-doesnt-exist: "&cDieses Spiel existiert nicht!"
   game-discarded: "&7Das Spiel '&a$[game]&7' wurde gelöscht."
   game-already-disabled: "&cDieses Spiel ist bereits deaktiviert!"
   game-already-enabled: "&cDieses Spiel ist bereits aktiviert!"
@@ -40,6 +40,7 @@ command:
   region-visualized: "&7Die Region wird nun visualisiert dargestellt."
   
   deathzone-not-present: "&cEine Todeszone mit diesem Namen existiert nicht!"
+  deathzone-removed: "&7Die Todeszone mit dem Namen '&a$[deathzonename]&7' wurde entfernt."
   deathzone-removed: "&7Die Todeszone mit dem Namen '&a$[deathzonename]&7' wurde entfernt."
   deathzone-added: "&7Eine Todeszone mit dem Namen '&a$[deathzonename]&7' wurde zum Spiel hinzugefügt."
   
