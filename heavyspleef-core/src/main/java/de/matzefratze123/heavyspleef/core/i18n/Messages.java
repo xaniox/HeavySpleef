@@ -207,6 +207,8 @@ public interface Messages {
 		public static final String PLAYER_VOTED = PREFIX + "player-voted";
 		
 		public static final String BROADCAST_GAME_START = PREFIX + "broadcast-game-start";
+
+		public static final String NEED_MORE_PLAYERS = PREFIX + "need-more-players";
 		
 	}
 	

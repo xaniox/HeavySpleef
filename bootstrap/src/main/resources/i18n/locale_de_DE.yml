@@ -175,6 +175,7 @@ broadcast:
   player-voted: "&7Der Spieler &a$[player] &7hat dafür gestimmt das Spiel zu &astarten&7!"
   
   broadcast-game-start: "&6Ein Spleef Spiel startet! Benutze /spleef join $[game] um mitzuspielen"
+  need-more-players: "&7Warte auf weitere &a$[amount] &7um das Spiel zu beginnen..."
 player:
   player-leave: "&7Du hast das Spiel verlassen"
   player-kick: "&cDu wurdest von $[kicker] gekickt: $[message]"

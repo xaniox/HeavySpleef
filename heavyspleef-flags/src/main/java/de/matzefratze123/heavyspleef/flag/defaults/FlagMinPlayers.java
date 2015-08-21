@@ -49,6 +49,11 @@ public class FlagMinPlayers extends IntegerFlag {
 		Game game = event.getGame();
 		if (!isStartAllowed(game)) {
 			event.setStartGame(false);
+			
+			int stillNeeded = getValue() - game.getPlayers().size();
+			game.broadcast(getI18N().getVarString(Messages.Broadcast.NEED_MORE_PLAYERS)
+					.setVariable("amount", String.valueOf(stillNeeded))
+					.toString());
 		}
 	}
 	
