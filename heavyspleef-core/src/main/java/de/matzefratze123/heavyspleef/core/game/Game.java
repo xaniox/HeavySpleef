@@ -29,6 +29,12 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -77,6 +83,7 @@ import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.MinecraftVersion;
 import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
@@ -312,6 +319,17 @@ public class Game implements VariableSuppliable {
 					.setVariable("game", name)
 					.toString();
 			
+			Object baseComponent = null;
+			
+			if (MinecraftVersion.isSpigot()) {
+				baseComponent = new ComponentBuilder(message)
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+							TextComponent.fromLegacyText(i18n.getString(Messages.Command.CLICK_TO_JOIN))))
+					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef join " + name))
+					.color(net.md_5.bungee.api.ChatColor.GOLD)
+					.create();
+			}
+			
 			for (Player globalPlayer : Bukkit.getOnlinePlayers()) {
 				World globalPlayerWorld = globalPlayer.getWorld();
 				
@@ -319,7 +337,11 @@ public class Game implements VariableSuppliable {
 					continue;
 				}
 				
-				globalPlayer.sendMessage(section.getSpleefPrefix() + message);
+				if (MinecraftVersion.isSpigot()) {
+					globalPlayer.spigot().sendMessage((BaseComponent[]) baseComponent);
+				} else {
+					globalPlayer.sendMessage(section.getSpleefPrefix() + message);
+				}
 			}
 		}
 		
