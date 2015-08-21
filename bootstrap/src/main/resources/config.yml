@@ -55,6 +55,11 @@ general:
   - some_world
   - another_world
   
+  # If enabled the win message will
+  # also be send to players who participated
+  # but are already out of the game
+  win-message-to-all: true
+  
 queues:
   # Wether players are able to use queues if they
   # are not allowed to join the game (when it is ingame
@@ -150,7 +155,8 @@ default-game-properties:
   
 localization:
   # The language this plugin is using. Currently
-  # an english and a german translation is available
+  # an english, german, dutch and a part russian
+  # translation is available
   # 
   # Possible values:
   # en_US - English

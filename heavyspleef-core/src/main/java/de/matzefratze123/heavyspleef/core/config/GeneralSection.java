@@ -33,6 +33,7 @@ public class GeneralSection {
 	private int pvpTimer;
 	private boolean broadcastGameStart;
 	private List<String> broadcastGameStartBlacklist;
+	private boolean winMessageToAll;
 	
 	public GeneralSection(ConfigurationSection section) {
 		String prefix = section.getString("spleef-prefix");
@@ -54,6 +55,7 @@ public class GeneralSection {
 		this.pvpTimer = section.getInt("pvp-timer", 0);
 		this.broadcastGameStart = section.getBoolean("broadcast-game-start", true);
 		this.broadcastGameStartBlacklist = section.getStringList("broadcast-game-start-blacklist");
+		this.winMessageToAll = section.getBoolean("win-message-to-all", true);
 	}
 	
 	public String getSpleefPrefix() {
@@ -82,6 +84,10 @@ public class GeneralSection {
 	
 	public List<String> getBroadcastGameStartBlacklist() {
 		return broadcastGameStartBlacklist;
+	}
+	
+	public boolean isWinMessageToAllEnabled() {
+		return winMessageToAll;
 	}
 	
 }

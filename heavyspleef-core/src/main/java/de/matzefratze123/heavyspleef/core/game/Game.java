@@ -785,6 +785,7 @@ public class Game implements VariableSuppliable {
 					.setVariable("player", player.getDisplayName())
 					.toString();
 			String playerMessage = i18n.getString(Messages.Player.PLAYER_LEAVE);
+			BroadcastTarget broadcastMessageTarget = BroadcastTarget.AROUND_GAME;
 			
 			if (event.getPlayerMessage() != null && event.getBroadcastMessage() != null) {
 				playerMessage = event.getPlayerMessage();
@@ -837,13 +838,20 @@ public class Game implements VariableSuppliable {
 							.setVariable("player", player.getDisplayName())
 							.toString();
 					
+					DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+					GeneralSection section = config.getGeneralSection();
+					
+					if (section.isWinMessageToAllEnabled()) {
+						broadcastMessageTarget = BroadcastTarget.PARTICIPATED;
+					}
+					
 					playerMessage = i18n.getString(Messages.Player.PLAYER_WIN);
 				default:
 					break;
 				}
 			}
 			
-			broadcast(broadcastMessage);
+			broadcast(broadcastMessageTarget, broadcastMessage);
 			player.sendMessage(playerMessage);
 		}
 		
@@ -1137,6 +1145,7 @@ public class Game implements VariableSuppliable {
 	
 	public void broadcast(BroadcastTarget target, String message) {
 		switch (target) {
+		case PARTICIPATED:
 		case AROUND_GAME:
 			//Use any floor as a fixpoint
 			Iterator<Floor> iterator = floors.values().iterator();
@@ -1151,7 +1160,8 @@ public class Game implements VariableSuppliable {
 					Vector playerVec = BukkitUtil.toVector(player.getLocation());
 					
 					double distanceSq = center.distanceSq(playerVec);
-					if (distanceSq <= Math.pow(broadcastRadius, 2) || isIngame(spleefPlayer)) {
+					if (distanceSq <= Math.pow(broadcastRadius, 2) || isIngame(spleefPlayer)
+							|| (target == BroadcastTarget.PARTICIPATED && deadPlayers.contains(spleefPlayer))) {
 						player.sendMessage(heavySpleef.getSpleefPrefix() + message);
 					}
 				}

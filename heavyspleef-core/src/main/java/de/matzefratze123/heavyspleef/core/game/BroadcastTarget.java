@@ -21,6 +21,7 @@ public enum BroadcastTarget {
 	
 	INGAME,
 	AROUND_GAME,
-	GLOBAL;
+	GLOBAL, 
+	PARTICIPATED;
 	
 }
