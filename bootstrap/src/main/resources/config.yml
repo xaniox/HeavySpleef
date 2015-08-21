@@ -232,4 +232,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 5
+config-version: 6
