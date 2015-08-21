@@ -99,6 +99,11 @@ public class SpleefPlayer implements CommandSender {
 	@Override
 	public void sendMessage(String message) {
 		validateOnline();
+		
+		if (message.isEmpty()) {
+			return;
+		}
+		
 		sendUnprefixedMessage(heavySpleef.getSpleefPrefix() + message);
 	}
 	
