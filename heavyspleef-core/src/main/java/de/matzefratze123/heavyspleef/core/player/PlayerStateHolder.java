@@ -61,50 +61,11 @@ public class PlayerStateHolder {
 	
 	private Location location;
 	
-	/* Post initialization via #create(Player, GameMode) */
-	private PlayerStateHolder() {}
+	public PlayerStateHolder() {}
 	
 	public static PlayerStateHolder create(Player player, GameMode gameMode) {
 		PlayerStateHolder stateHolder = new PlayerStateHolder();
-		
-		PlayerInventory inventory = player.getInventory();
-		ItemStack[] contents = inventory.getContents();
-		ItemStack[] armor = inventory.getArmorContents();
-		
-		ItemStack[] inventoryArray = new ItemStack[INVENTORY_SIZE];
-		System.arraycopy(contents, 0, inventoryArray, 0, contents.length);
-		System.arraycopy(armor, 0, inventoryArray, inventoryArray.length - ARMOR_INVENTORY_SIZE, armor.length);
-		
-		/* Initialize the state with the current player state */
-		stateHolder.setInventory(inventoryArray);
-		stateHolder.setOnCursor(player.getItemOnCursor());
-		stateHolder.setGamemode(gameMode != null ? gameMode : player.getGameMode());
-		stateHolder.setHealth(player.getHealth());
-		stateHolder.setFoodLevel(player.getFoodLevel());
-		stateHolder.setLevel(player.getLevel());
-		stateHolder.setExperience(player.getExp());
-		stateHolder.setAllowFlight(player.getAllowFlight());
-		stateHolder.setFlying(player.isFlying());
-		stateHolder.setActiveEffects(player.getActivePotionEffects());
-		stateHolder.setExhaustion(player.getExhaustion());
-		stateHolder.setSaturation(player.getSaturation());
-		stateHolder.setFallDistance(player.getFallDistance());
-		stateHolder.setFireTicks(player.getFireTicks());
-		stateHolder.setLocation(player.getLocation());
-		stateHolder.setScoreboard(player.getScoreboard());
-		stateHolder.setCompassTarget(player.getCompassTarget());
-		
-		List<WeakReference<Player>> cantSee = Lists.newArrayList();
-		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-			if (player.canSee(onlinePlayer)) {
-				continue;
-			}
-			
-			WeakReference<Player> ref = new WeakReference<Player>(onlinePlayer);
-			cantSee.add(ref);
-		}
-		
-		stateHolder.setCantSee(cantSee);
+		stateHolder.updateState(player, true, gameMode);
 		
 		return stateHolder;
 	}
@@ -230,6 +191,51 @@ public class PlayerStateHolder {
 		}
 		
 		player.setGameMode(gamemode);
+	}
+	
+	public void updateState(Player player, boolean location, GameMode mode) {
+		PlayerInventory inventory = player.getInventory();
+		ItemStack[] contents = inventory.getContents();
+		ItemStack[] armor = inventory.getArmorContents();
+		
+		ItemStack[] inventoryArray = new ItemStack[INVENTORY_SIZE];
+		System.arraycopy(contents, 0, inventoryArray, 0, contents.length);
+		System.arraycopy(armor, 0, inventoryArray, inventoryArray.length - ARMOR_INVENTORY_SIZE, armor.length);
+		
+		/* Initialize the state with the current player state */
+		setInventory(inventoryArray);
+		setOnCursor(player.getItemOnCursor());
+		setGamemode(mode != null ? mode : player.getGameMode());
+		setHealth(player.getHealth());
+		setFoodLevel(player.getFoodLevel());
+		setLevel(player.getLevel());
+		setExperience(player.getExp());
+		setAllowFlight(player.getAllowFlight());
+		setFlying(player.isFlying());
+		setActiveEffects(player.getActivePotionEffects());
+		setExhaustion(player.getExhaustion());
+		setSaturation(player.getSaturation());
+		setFallDistance(player.getFallDistance());
+		setFireTicks(player.getFireTicks());
+		
+		if (location) {
+			setLocation(player.getLocation());
+		}
+		
+		setScoreboard(player.getScoreboard());
+		setCompassTarget(player.getCompassTarget());
+		
+		List<WeakReference<Player>> cantSee = Lists.newArrayList();
+		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+			if (player.canSee(onlinePlayer)) {
+				continue;
+			}
+			
+			WeakReference<Player> ref = new WeakReference<Player>(onlinePlayer);
+			cantSee.add(ref);
+		}
+		
+		setCantSee(cantSee);
 	}
 
 	public ItemStack[] getInventory() {

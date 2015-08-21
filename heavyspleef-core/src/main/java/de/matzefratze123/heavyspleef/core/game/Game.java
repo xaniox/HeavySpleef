@@ -595,14 +595,6 @@ public class Game implements VariableSuppliable {
 		if (gameState == GameState.WAITING) {
 			setGameState(GameState.LOBBY);
 		}
-
-		//Firstly set the players gamemode to provide compatibility with inventory plugins
-		//such as MultiInv
-		GameMode gameMode = player.getBukkitPlayer().getGameMode();
-		player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
-		//Store a reference to the player state
-		player.savePlayerState(this, gameMode);
-		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
 		
 		Location location;
 		
@@ -628,8 +620,22 @@ public class Game implements VariableSuppliable {
 		} else {
 			location = event.getTeleportationLocation();
 		}
+
+		PlayerStateHolder holder = new PlayerStateHolder();
+		holder.setLocation(player.getBukkitPlayer().getLocation());
+		holder.setGamemode(player.getBukkitPlayer().getGameMode());
 		
+		//Firstly set the players gamemode and teleport him
+		//to provide compatibility with inventory plugins such as MultiInv
+		//and xInventories
+		player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
 		player.teleport(location);
+		
+		//Store a reference to the player state
+		holder.updateState(player.getBukkitPlayer(), false, holder.getGamemode());
+		player.savePlayerState(this, holder);
+		
+		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
 		
 		//This event is called when the player actually joins the game
 		PlayerJoinGameEvent joinGameEvent = new PlayerJoinGameEvent(this, player);

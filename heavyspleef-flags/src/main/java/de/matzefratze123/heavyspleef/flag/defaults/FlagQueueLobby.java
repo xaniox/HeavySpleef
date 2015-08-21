@@ -91,9 +91,16 @@ public class FlagQueueLobby extends LocationFlag {
 		SpleefPlayer player = event.getPlayer();
 		Player bukkitPlayer = player.getBukkitPlayer();
 		
-		GameMode gameMode = player.getBukkitPlayer().getGameMode();
-		player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
-		player.savePlayerState(this, gameMode);
+		PlayerStateHolder holder = new PlayerStateHolder();
+		holder.setLocation(bukkitPlayer.getLocation());
+		holder.setGamemode(bukkitPlayer.getGameMode());
+		
+		bukkitPlayer.setGameMode(GameMode.SURVIVAL);
+		player.teleport(teleportPoint);
+		
+		holder.updateState(bukkitPlayer, false, holder.getGamemode());
+		player.savePlayerState(this, holder);
+		
 		PlayerStateHolder.applyDefaultState(bukkitPlayer);
 		
 		MaterialData data = config.getFlagSection().getLeaveItem();
@@ -107,8 +114,6 @@ public class FlagQueueLobby extends LocationFlag {
 		
 		bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
 		bukkitPlayer.updateInventory();
-		
-		player.teleport(teleportPoint);
 	}
 	
 	@Subscribe

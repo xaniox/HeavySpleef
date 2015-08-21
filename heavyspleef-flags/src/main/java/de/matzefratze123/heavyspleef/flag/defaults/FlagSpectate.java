@@ -375,9 +375,16 @@ public class FlagSpectate extends LocationFlag {
 		
 		final Player bukkitPlayer = player.getBukkitPlayer();
 		
-		GameMode gameMode = bukkitPlayer.getGameMode();
+		PlayerStateHolder holder = new PlayerStateHolder();
+		holder.setLocation(bukkitPlayer.getLocation());
+		holder.setGamemode(bukkitPlayer.getGameMode());
+		
 		bukkitPlayer.setGameMode(GameMode.SURVIVAL);
-		player.savePlayerState(this, gameMode);
+		player.teleport(getValue());
+		
+		holder.updateState(bukkitPlayer, false, holder.getGamemode());
+		player.savePlayerState(this, holder);
+		
 		PlayerStateHolder.applyDefaultState(bukkitPlayer);
 		
 		spectators.add(player);
@@ -399,8 +406,6 @@ public class FlagSpectate extends LocationFlag {
 				bukkitPlayer.updateInventory();
 			}
 		});
-		
-		player.teleport(getValue());
 		
 		SpectateEnteredEvent enteredEvent = new SpectateEnteredEvent(game, player);
 		game.getEventBus().callEvent(enteredEvent);

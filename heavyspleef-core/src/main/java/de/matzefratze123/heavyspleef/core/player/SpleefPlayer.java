@@ -126,6 +126,12 @@ public class SpleefPlayer implements CommandSender {
 		playerStates.put(key, holder);
 	}
 	
+	public void savePlayerState(Object key, PlayerStateHolder holder) {
+		validateOnline();
+		
+		playerStates.put(key, holder);
+	}
+	
 	public PlayerStateHolder getPlayerState(Object key) {
 		return playerStates.get(key);
 	}
