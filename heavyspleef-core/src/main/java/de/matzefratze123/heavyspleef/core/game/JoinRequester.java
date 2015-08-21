@@ -59,7 +59,7 @@ public class JoinRequester {
 			DefaultConfig config = game.getHeavySpleef().getConfiguration(ConfigType.DEFAULT_CONFIG);
 			QueueSection section = config.getQueueSection();
 			
-			if (result == JoinResult.TEMPORARY_DENY && section.isUseQueues()) {
+			if (result == JoinResult.TEMPORARY_DENY && section.isUseQueues() && !game.isIngame(player)) {
 				GameManager manager = game.getHeavySpleef().getGameManager();
 				
 				//Remove the player from all other queues
