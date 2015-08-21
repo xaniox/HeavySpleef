@@ -37,6 +37,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -359,8 +362,13 @@ public final class HeavySpleef {
 				URL configResource = getClass().getResource(ConfigType.DEFAULT_CONFIG.getClasspathResourceName());
 				
 				copyResource(configResource, configSource.toFile());
+				
+				ConsoleCommandSender sender = Bukkit.getConsoleSender();
+				sender.sendMessage(ChatColor.RED + "Due to a HeavySpleef update your old configuration has been renamed");
+				sender.sendMessage(ChatColor.RED + "to config_old.yml and a new one has been generated. Make sure to");
+				sender.sendMessage(ChatColor.RED + "apply your old changes to the new config");
 			} catch (IOException e) {
-				getLogger().log(Level.SEVERE, "Could not create updated configuration due to IOException", e);
+				getLogger().log(Level.SEVERE, "Could not create updated configuration due to an IOException", e);
 			}
 		}
 	}
