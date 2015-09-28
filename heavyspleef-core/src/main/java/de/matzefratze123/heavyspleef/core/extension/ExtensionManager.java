@@ -17,16 +17,14 @@
  */
 package de.matzefratze123.heavyspleef.core.extension;
 
-import java.util.Collections;
-import java.util.Set;
-
+import com.google.common.collect.Sets;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.event.EventBus;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
-import com.google.common.collect.Sets;
-
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.event.EventBus;
+import java.util.Collections;
+import java.util.Set;
 
 public class ExtensionManager {
 	
@@ -57,7 +55,7 @@ public class ExtensionManager {
 			Bukkit.getPluginManager().registerEvents(extension, heavySpleef.getPlugin());
 		}
 		
-		eventBus.registerListener(extension);
+		eventBus.registerListener(extension, true);
 		extensions.add(extension);
 	}
 	

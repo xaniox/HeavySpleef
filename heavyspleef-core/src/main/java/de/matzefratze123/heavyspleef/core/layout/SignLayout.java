@@ -17,18 +17,16 @@
  */
 package de.matzefratze123.heavyspleef.core.layout;
 
-import java.text.ParseException;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import de.matzefratze123.heavyspleef.core.script.Variable;
+import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import de.matzefratze123.heavyspleef.core.script.Variable;
-import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Set;
 
 public class SignLayout {
 	
@@ -47,13 +45,15 @@ public class SignLayout {
 		}
 	}
 	
-	public void inflate(Sign sign, Set<Variable> variables) {
+	public boolean inflate(Sign sign, Set<Variable> variables) {
 		for (int i = 0; i < lines.size() && i < LINE_COUNT; i++) {
 			CustomizableLine line = lines.get(i);
 			String lineString = line.generate(variables);
 			
 			sign.setLine(i, lineString);
 		}
+
+		return sign.update();
 	}
 	
 	public boolean inflate(Sign sign, VariableSuppliable suppliable) {

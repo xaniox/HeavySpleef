@@ -17,18 +17,22 @@
  */
 package de.matzefratze123.heavyspleef.core.extension;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.Set;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import com.google.common.collect.Sets;
+import de.matzefratze123.heavyspleef.core.HeavySpleef;
+import de.matzefratze123.heavyspleef.core.Permissions;
+import de.matzefratze123.heavyspleef.core.config.ConfigType;
+import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
+import de.matzefratze123.heavyspleef.core.config.SignSection;
+import de.matzefratze123.heavyspleef.core.event.*;
+import de.matzefratze123.heavyspleef.core.game.Game;
+import de.matzefratze123.heavyspleef.core.game.GameManager;
+import de.matzefratze123.heavyspleef.core.i18n.I18N;
+import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
+import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import de.matzefratze123.heavyspleef.core.layout.SignLayout;
+import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import de.matzefratze123.heavyspleef.core.script.Variable;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
@@ -41,23 +45,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
 import org.dom4j.Element;
 
-import com.google.common.collect.Sets;
-
-import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.Permissions;
-import de.matzefratze123.heavyspleef.core.config.ConfigType;
-import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
-import de.matzefratze123.heavyspleef.core.config.SignSection;
-import de.matzefratze123.heavyspleef.core.event.GameEvent;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
-import de.matzefratze123.heavyspleef.core.game.Game;
-import de.matzefratze123.heavyspleef.core.game.GameManager;
-import de.matzefratze123.heavyspleef.core.i18n.I18N;
-import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
-import de.matzefratze123.heavyspleef.core.i18n.Messages;
-import de.matzefratze123.heavyspleef.core.layout.SignLayout;
-import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
-import de.matzefratze123.heavyspleef.core.script.Variable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.Set;
+import java.util.logging.Level;
 
 public abstract class SignExtension extends GameExtension {
 	
@@ -127,10 +120,32 @@ public abstract class SignExtension extends GameExtension {
 	public SignLayout getLayout() {
 		return layout;
 	}
-	
-	//We update the sign on all game events
-	@Subscribe
-	public void onGameEvent(GameEvent event) {
+
+	@Subscribe(priority = Subscribe.Priority.MONITOR)
+	public void onGameStateChange(GameStateChangeEvent event) {
+		Game game = event.getGame();
+		updateSign();
+	}
+
+	@Subscribe(priority = Subscribe.Priority.MONITOR)
+	public void onPlayerJoin(PlayerJoinGameEvent event) {
+		Game game = event.getGame();
+		updateSign();
+	}
+
+	@Subscribe(priority = Subscribe.Priority.MONITOR)
+	public void onPlayerLeave(PlayerLeaveGameEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+
+		Game game = event.getGame();
+		updateSign();
+	}
+
+	@Subscribe(priority = Subscribe.Priority.MONITOR)
+	public void onGameEnd(GameEndEvent event) {
+		Game game = event.getGame();
 		updateSign();
 	}
 	
