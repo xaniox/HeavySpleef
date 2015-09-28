@@ -51,6 +51,7 @@
 		<developerConnection>scm:git:git@github.com:matzefratze123/HeavySpleef.git</developerConnection>
 	</scm>
 	<build>
+		<defaultGoal>clean package</defaultGoal>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
