@@ -17,35 +17,24 @@
  */
 package de.matzefratze123.heavyspleef.core.stats;
 
-import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.bukkit.block.Block;
-
 import com.google.common.util.concurrent.FutureCallback;
-
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
-import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.SpleefListener;
-import de.matzefratze123.heavyspleef.core.event.Subscribe;
-import de.matzefratze123.heavyspleef.core.game.DefaultRatingCompute;
-import de.matzefratze123.heavyspleef.core.game.Game;
-import de.matzefratze123.heavyspleef.core.game.GameState;
-import de.matzefratze123.heavyspleef.core.game.QuitCause;
-import de.matzefratze123.heavyspleef.core.game.RatingCompute;
+import de.matzefratze123.heavyspleef.core.event.*;
+import de.matzefratze123.heavyspleef.core.game.*;
 import de.matzefratze123.heavyspleef.core.game.RatingCompute.RatingResult;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.I18NManager;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
 import de.matzefratze123.heavyspleef.core.persistence.AsyncReadWriteHandler;
 import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
+import org.bukkit.block.Block;
+
+import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StatisticRecorder implements SpleefListener {
 
@@ -167,10 +156,13 @@ public class StatisticRecorder implements SpleefListener {
 			String ratingStr = FORMAT.format(rating);
 			
 			SpleefPlayer player = heavySpleef.getSpleefPlayer(name);
-			player.sendMessage(i18n.getVarString(ratingChange >= 0 ? Messages.Player.GAINED_RATING : Messages.Player.LOST_RATING)
-					.setVariable("change", ratingChange >= 0 ? "+" + ratingChangeStr : ratingChangeStr)
-					.setVariable("new-rating", String.valueOf(ratingStr))
-					.toString());
+
+			if (player != null) {
+				player.sendMessage(i18n.getVarString(ratingChange >= 0 ? Messages.Player.GAINED_RATING : Messages.Player.LOST_RATING)
+						.setVariable("change", ratingChange >= 0 ? "+" + ratingChangeStr : ratingChangeStr)
+						.setVariable("new-rating", String.valueOf(ratingStr))
+						.toString());
+			}
 		}
 		
 		AsyncReadWriteHandler databaseHandler = heavySpleef.getDatabaseHandler();

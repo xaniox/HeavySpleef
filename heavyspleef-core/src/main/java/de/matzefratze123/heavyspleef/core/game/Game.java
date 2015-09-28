@@ -17,60 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core.game;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentHashMap;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.metadata.MetadataValue;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EditSessionFactory;
 import com.sk89q.worldedit.Vector;
@@ -81,7 +28,6 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
-
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.MinecraftVersion;
 import de.matzefratze123.heavyspleef.core.Permissions;
@@ -89,28 +35,8 @@ import de.matzefratze123.heavyspleef.core.config.ConfigType;
 import de.matzefratze123.heavyspleef.core.config.DefaultConfig;
 import de.matzefratze123.heavyspleef.core.config.GeneralSection;
 import de.matzefratze123.heavyspleef.core.config.QueueSection;
-import de.matzefratze123.heavyspleef.core.event.EventBus;
-import de.matzefratze123.heavyspleef.core.event.GameCountdownChangeEvent;
-import de.matzefratze123.heavyspleef.core.event.GameCountdownEvent;
-import de.matzefratze123.heavyspleef.core.event.GameDisableEvent;
-import de.matzefratze123.heavyspleef.core.event.GameEnableEvent;
-import de.matzefratze123.heavyspleef.core.event.GameEndEvent;
-import de.matzefratze123.heavyspleef.core.event.GameRenameEvent;
-import de.matzefratze123.heavyspleef.core.event.GameStartEvent;
-import de.matzefratze123.heavyspleef.core.event.GameStateChangeEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerBlockBreakEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerBlockPlaceEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerEnterQueueEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerInteractGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLeaveGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLeaveQueueEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerLeftGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerPreJoinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent;
+import de.matzefratze123.heavyspleef.core.event.*;
 import de.matzefratze123.heavyspleef.core.event.PlayerQueueFlushEvent.FlushResult;
-import de.matzefratze123.heavyspleef.core.event.PlayerWinGameEvent;
-import de.matzefratze123.heavyspleef.core.event.SpleefListener;
 import de.matzefratze123.heavyspleef.core.extension.ExtensionManager;
 import de.matzefratze123.heavyspleef.core.extension.GameExtension;
 import de.matzefratze123.heavyspleef.core.flag.AbstractFlag;
@@ -131,6 +57,22 @@ import de.matzefratze123.heavyspleef.core.player.SpleefPlayer;
 import de.matzefratze123.heavyspleef.core.script.Variable;
 import de.matzefratze123.heavyspleef.core.script.VariableSuppliable;
 import de.matzefratze123.heavyspleef.core.stats.StatisticRecorder;
+import net.md_5.bungee.api.chat.*;
+import org.apache.commons.lang.Validate;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.*;
+import org.bukkit.metadata.MetadataValue;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Game implements VariableSuppliable {
 	
@@ -903,8 +845,13 @@ public class Game implements VariableSuppliable {
 				requestLose(ingamePlayer, sendMessages, QuitCause.LOSE);
 			}
 		}
-		
-		List<SpleefPlayer> dead = Lists.newArrayList(this.deadPlayers.subList(0, this.deadPlayers.size() - players.length));
+
+		int toIndex = deadPlayers.size() - players.length;
+		if (toIndex < 0) {
+			toIndex = 0;
+		}
+
+		List<SpleefPlayer> dead = Lists.newArrayList(this.deadPlayers.subList(0, toIndex));
 		Collections.reverse(dead);
 		
 		PlayerWinGameEvent event = new PlayerWinGameEvent(this, players, dead);
