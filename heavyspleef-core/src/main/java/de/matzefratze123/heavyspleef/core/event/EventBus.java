@@ -34,21 +34,34 @@ public class EventBus {
 		this.logger = logger;
 		this.registeredEventListeners = Sets.newTreeSet();
 	}
-	
+
 	public void registerListener(SpleefListener listener) {
+		registerListener(listener, false);
+	}
+
+	public void registerListener(SpleefListener listener, boolean registerSuper) {
 		Class<? extends SpleefListener> clazz = listener.getClass();
-		
-		Method[] methods = clazz.getDeclaredMethods();
-		for (Method method : methods) {
-			if (!method.isAnnotationPresent(Subscribe.class)) {
-				continue;
+
+		do {
+			Method[] methods = clazz.getDeclaredMethods();
+			for (Method method : methods) {
+				if (!method.isAnnotationPresent(Subscribe.class)) {
+					continue;
+				}
+
+				validateMethod(method);
+
+				EventListenerMethod listenerMethodHolder = new EventListenerMethod(listener, method);
+				registeredEventListeners.add(listenerMethodHolder);
 			}
-			
-			validateMethod(method);
-			
-			EventListenerMethod listenerMethodHolder = new EventListenerMethod(listener, method);
-			registeredEventListeners.add(listenerMethodHolder);
-		}
+
+			Class<?> superclass = clazz.getSuperclass();
+			if (!SpleefListener.class.isAssignableFrom(superclass)) {
+				break;
+			}
+
+			clazz = superclass.asSubclass(SpleefListener.class);
+		} while (registerSuper);
 	}
 	
 	public void unregister(SpleefListener listener) {
