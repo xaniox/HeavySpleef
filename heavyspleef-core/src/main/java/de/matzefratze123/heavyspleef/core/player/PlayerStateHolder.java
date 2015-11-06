@@ -17,12 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.core.player;
 
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -32,7 +27,11 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.google.common.collect.Lists;
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class PlayerStateHolder {
 	
@@ -44,6 +43,7 @@ public class PlayerStateHolder {
 	private ItemStack[] inventory;
 	private ItemStack onCursor;
 	private GameMode gamemode;
+    private double maxHealth;
 	private double health;
 	private int foodLevel;
 	private int level;
@@ -89,6 +89,7 @@ public class PlayerStateHolder {
 		player.getInventory().setArmorContents(new ItemStack[4]);
 		player.setItemOnCursor(null);
 		player.updateInventory();
+        player.setMaxHealth(20.0);
 		player.setHealth(20.0);
 		player.setFoodLevel(20);
 		player.setLevel(0);
@@ -134,7 +135,8 @@ public class PlayerStateHolder {
 		}
 		
 		player.updateInventory();
-		
+
+        player.setMaxHealth(maxHealth);
 		player.setHealth(health);
 		player.setFoodLevel(foodLevel);
 		player.setLevel(level);
@@ -206,6 +208,7 @@ public class PlayerStateHolder {
 		setInventory(inventoryArray);
 		setOnCursor(player.getItemOnCursor());
 		setGamemode(mode != null ? mode : player.getGameMode());
+        setMaxHealth(player.getMaxHealth());
 		setHealth(player.getHealth());
 		setFoodLevel(player.getFoodLevel());
 		setLevel(player.getLevel());
@@ -262,7 +265,15 @@ public class PlayerStateHolder {
 		this.gamemode = gamemode;
 	}
 
-	public double getHealth() {
+    public double getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(double maxHealth) {
+        this.maxHealth = maxHealth;
+    }
+
+    public double getHealth() {
 		return health;
 	}
 
