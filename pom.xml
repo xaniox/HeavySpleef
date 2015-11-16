@@ -149,13 +149,13 @@
 											<setpropertiestrue>
 												<setproperty>
 													<property>deploy.url</property>
-													<value>http://repo.xaniox.de/snapshots/</value>
+													<value>http://repo.xaniox.de/artifactory/snapshots/</value>
 												</setproperty>
 											</setpropertiestrue>
 											<setpropertiesfalse>
 												<setproperty>
 													<property>deploy.url</property>
-													<value>http://repo.xaniox.de/snapshots/</value>
+													<value>http://repo.xaniox.de/artifactory/snapshots/</value>
 												</setproperty>
 											</setpropertiesfalse>
 										</operation>
@@ -229,7 +229,7 @@
 		<pluginRepository>
 			<id>matzes-repo</id>
 			<name>Matze's Repository</name>
-			<url>http://repo.xaniox.de/release/</url>
+			<url>http://repo.xaniox.de/artifactory/release/</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
@@ -241,7 +241,7 @@
 		<repository>
 			<id>matze-repo</id>
 			<name>matze's repository</name>
-			<url>http://repo.xaniox.de/release/</url>
+			<url>http://repo.xaniox.de/artifactory/release/</url>
 		</repository>
 		<repository>
 			<id>vault-repo</id>
