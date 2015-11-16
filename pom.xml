@@ -195,7 +195,7 @@
 				<configuration>
 				  <file>bootstrap/target/HeavySpleef.jar</file>
 				  <pomFile>bootstrap/install-pom.xml</pomFile>
-				  <repositoryId>matzes-artifactory</repositoryId>
+				  <repositoryId>xaniox-artifactory</repositoryId>
 				  <url>${deploy.url}</url>
 				  <javadoc>target/heavyspleef-javadoc.jar</javadoc>
 				  <sources>target/heavyspleef-sources.jar</sources>
@@ -215,7 +215,7 @@
 		        <configuration>
 		          <file>heavyspleef-api/target/heavyspleef-api.jar</file>
 				  <pomFile>heavyspleef-api/install-pom.xml</pomFile>
-				  <repositoryId>matzes-artifactory</repositoryId>
+				  <repositoryId>xaniox-artifactory</repositoryId>
 				  <url>${deploy.url}</url>
 				  <javadoc>target/heavyspleef-javadoc.jar</javadoc>
 				  <sources>target/heavyspleef-sources.jar</sources>
