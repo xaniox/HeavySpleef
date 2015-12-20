@@ -17,27 +17,21 @@
  */
 package de.matzefratze123.joingui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-
+import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
+import java.io.*;
+import java.util.logging.Level;
 
 public class JoinGuiAddOn extends BasicAddOn {
 	
-	private static final String CONFIG_FILE_NAME = "gui-entry-layout.yml";
+	private static final String JOIN_CONFIG_FILE_NAME = "gui-entry-layout.yml";
+    private static final String SPECTATE_CONFIG_FILE_NAME = "gui-entry-spectate-layout.yml";
 	private static final String UTF_8 = "UTF-8";
 
-	private InventoryEntryConfig inventoryEntryConfig;
+	private InventoryEntryConfig joinInventoryEntryConfig;
+    private InventoryEntryConfig spectateInventoryEntryConfig;
 	
 	@Override
 	public void load() {
@@ -46,41 +40,49 @@ public class JoinGuiAddOn extends BasicAddOn {
 			dataFolder.mkdir();
 		}
 
-		final File configFile = new File(dataFolder, CONFIG_FILE_NAME);
-		InputStream configIn = null;
-				
-		if (!configFile.exists()) {
-			try {
-				copyResource(CONFIG_FILE_NAME, configFile);
-				configIn = new FileInputStream(configFile);
-			} catch (IOException e) {
-				getLogger().log(Level.SEVERE, "Could not copy configuration for inventory entries", e);
-				getLogger().log(Level.SEVERE, "Using default, built-in layout");
-				configIn = getClass().getResourceAsStream("/" + CONFIG_FILE_NAME);
-			}
-		} else {
-			try {
-				configIn = new FileInputStream(configFile);
-			} catch (FileNotFoundException e) {
-				// We checked if this file exists
-				e.printStackTrace();
-			}
-		}
-
-		try {
-			Reader reader = new InputStreamReader(configIn, UTF_8);
-			Configuration config = YamlConfiguration.loadConfiguration(reader);
-
-			inventoryEntryConfig = new InventoryEntryConfig(config);
-		} catch (UnsupportedEncodingException e) {
-			getLogger().log(Level.SEVERE, "It seems like your system does not support UTF8 encoding, unable to read inventory entry layout");
-			getLogger().log(Level.SEVERE, "Shutting add-on down...");
-			getAddOnManager().disableAddOn(this);
-		}
+        try {
+            joinInventoryEntryConfig = readInventoryEntryConfig(JOIN_CONFIG_FILE_NAME, dataFolder);
+            spectateInventoryEntryConfig = readInventoryEntryConfig(SPECTATE_CONFIG_FILE_NAME, dataFolder);
+        } catch (UnsupportedEncodingException e) {
+            getLogger().log(Level.SEVERE, "It seems like your system does not support UTF8 encoding, unable to read inventory entry layout");
+            getLogger().log(Level.SEVERE, "Shutting add-on down...");
+            getAddOnManager().disableAddOn(this);
+        }
 	}
+
+    private InventoryEntryConfig readInventoryEntryConfig(String name, File dataFolder) throws UnsupportedEncodingException {
+        final File configFile = new File(dataFolder, name);
+        InputStream configIn = null;
+
+        if (!configFile.exists()) {
+            try {
+                copyResource(name, configFile);
+                configIn = new FileInputStream(configFile);
+            } catch (IOException e) {
+                getLogger().log(Level.SEVERE, "Could not copy configuration for inventory entries", e);
+                getLogger().log(Level.SEVERE, "Using default, built-in layout");
+                configIn = getClass().getResourceAsStream("/" + name);
+            }
+        } else {
+            try {
+                configIn = new FileInputStream(configFile);
+            } catch (FileNotFoundException e) {
+                // We checked if this file exists
+                e.printStackTrace();
+            }
+        }
+
+        Reader reader = new InputStreamReader(configIn, UTF_8);
+        Configuration config = YamlConfiguration.loadConfiguration(reader);
+
+        return new InventoryEntryConfig(config);
+    }
 	
-	public InventoryEntryConfig getInventoryEntryConfig() {
-		return inventoryEntryConfig;
+	public InventoryEntryConfig getJoinInventoryEntryConfig() {
+		return joinInventoryEntryConfig;
 	}
 
+    public InventoryEntryConfig getSpectateInventoryEntryConfig() {
+        return spectateInventoryEntryConfig;
+    }
 }

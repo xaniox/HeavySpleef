@@ -1,0 +1,5 @@
+layout:
+  title: "{if ($[state] == \"Ingame\") then \"&c\" else \"&a\"}&lSpectate &7$[name]"
+  lore:
+  - "{if ($[state] == \"Ingame\") then \"&c\" else \"&a\"}$[players]&8&l/&a{if ($[has_flag:max-players]) then \"$[flag_value:max-players]\" else \"∞\"}"
+  - "&b&l$[localized_state]"

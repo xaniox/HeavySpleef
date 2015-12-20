@@ -17,33 +17,29 @@
  */
 package de.matzefratze123.joingui;
 
-import org.bukkit.entity.Player;
-
-import de.matzefratze123.heavyspleef.commands.base.proxy.Filter;
+import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import de.matzefratze123.heavyspleef.commands.base.proxy.Proxy;
 import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyContext;
-import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyPriority;
-import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyPriority.Priority;
 import de.matzefratze123.heavyspleef.commands.base.proxy.Redirection;
-import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.i18n.I18N;
 import de.matzefratze123.heavyspleef.core.i18n.Messages;
+import org.bukkit.entity.Player;
 
-@Filter("spleef/join")
-@ProxyPriority(Priority.HIGH)
-public class JoinCommandProxy implements Proxy {
+public class CommandProxy implements Proxy {
 
 	private final I18N i18n;
-	private JoinInventory inventory;
+	private GameInventory inventory;
+    private String permission;
 	
-	public JoinCommandProxy(JoinInventory inventory, JoinGuiAddOn addOn) {
+	public CommandProxy(GameInventory inventory, BasicAddOn addOn, String permission) {
 		this.inventory = inventory;
 		this.i18n = addOn.getI18n();
+        this.permission = permission;
 	}
 	
 	@Override
 	public void execute(ProxyContext context, Object[] executionArgs) {
-		if (!context.getSender().hasPermission(Permissions.PERMISSION_JOIN)) {
+		if (!context.getSender().hasPermission(permission)) {
 			context.getSender().sendMessage(i18n.getString(Messages.Command.NO_PERMISSION));
 			return;
 		}

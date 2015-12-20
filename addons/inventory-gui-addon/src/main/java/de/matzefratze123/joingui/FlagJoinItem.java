@@ -17,27 +17,34 @@
  */
 package de.matzefratze123.joingui;
 
-import java.util.List;
-
-import org.bukkit.inventory.ItemStack;
-
+import de.matzefratze123.heavyspleef.addon.java.BasicAddOn;
 import de.matzefratze123.heavyspleef.commands.SpleefCommandManager;
 import de.matzefratze123.heavyspleef.commands.base.CommandManagerService;
+import de.matzefratze123.heavyspleef.commands.base.proxy.Filter;
 import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyExecution;
+import de.matzefratze123.heavyspleef.commands.base.proxy.ProxyPriority;
 import de.matzefratze123.heavyspleef.core.HeavySpleef;
 import de.matzefratze123.heavyspleef.core.HeavySpleef.GamesLoadCallback;
+import de.matzefratze123.heavyspleef.core.Permissions;
 import de.matzefratze123.heavyspleef.core.Unregister;
 import de.matzefratze123.heavyspleef.core.flag.Flag;
 import de.matzefratze123.heavyspleef.core.flag.FlagInit;
 import de.matzefratze123.heavyspleef.core.flag.Inject;
 import de.matzefratze123.heavyspleef.core.game.Game;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 @Flag(name = "join-item")
 public class FlagJoinItem extends SingleItemStackFlag {
 
-	private static ProxyExecution execution;
-	private static JoinInventory inventory;
-	private static JoinCommandProxy proxy;
+	private static ProxyExecution joinExecution;
+	private static JoinInventory joinInventory;
+	private static CommandProxy joinProxy;
+
+    private static ProxyExecution spectateExecution;
+    private static SpectateInventory spectateInventory;
+    private static CommandProxy spectateProxy;
 	
 	@Inject
 	private static JoinGuiAddOn addOn;
@@ -51,13 +58,22 @@ public class FlagJoinItem extends SingleItemStackFlag {
 				SpleefCommandManager manager = (SpleefCommandManager) heavySpleef.getCommandManager();
 				CommandManagerService service = manager.getService();
 				
-				inventory = new JoinInventory(addOn);
-				heavySpleef.getGlobalEventBus().registerListener(inventory);
+				joinInventory = new JoinInventory(addOn, addOn.getJoinInventoryEntryConfig());
+				heavySpleef.getGlobalEventBus().registerListener(joinInventory);
 				
-				proxy = new JoinCommandProxy(inventory, addOn);
+				joinProxy = new JoinCommandProxy(joinInventory, addOn);
 				
-				execution = ProxyExecution.inject(service, "spleef/join");
-				execution.attachProxy(proxy);
+				joinExecution = ProxyExecution.inject(service, "spleef/join");
+				joinExecution.attachProxy(joinProxy);
+
+
+                spectateInventory = new SpectateInventory(addOn, addOn.getSpectateInventoryEntryConfig());
+                heavySpleef.getGlobalEventBus().registerListener(spectateInventory);
+
+                spectateProxy = new SpectateCommandProxy(spectateInventory, addOn);
+
+                spectateExecution = ProxyExecution.inject(service, "spleef/spectate");
+                spectateExecution.attachProxy(spectateProxy);
 			}
 		};
 		
@@ -70,13 +86,21 @@ public class FlagJoinItem extends SingleItemStackFlag {
 	
 	@Unregister
 	public static void unattachCommandProxy(HeavySpleef heavySpleef) {
-		if (execution != null) {
-			execution.unattachProxy(proxy);
+		if (joinExecution != null) {
+			joinExecution.unattachProxy(joinProxy);
 		}
+
+        if (spectateExecution != null) {
+            spectateExecution.unattachProxy(spectateProxy);
+        }
 		
-		if (inventory != null) {
-			heavySpleef.getGlobalEventBus().unregister(inventory);
+		if (joinInventory != null) {
+			heavySpleef.getGlobalEventBus().unregister(joinInventory);
 		}
+
+        if (spectateInventory != null) {
+            heavySpleef.getGlobalEventBus().unregister(spectateInventory);
+        }
 	}
 	
 	@Override
@@ -88,9 +112,33 @@ public class FlagJoinItem extends SingleItemStackFlag {
 	public void setValue(ItemStack value) {
 		super.setValue(value);
 		
-		if (inventory != null) {
-			inventory.update();
+		if (joinInventory != null) {
+			joinInventory.update();
 		}
+
+        if (spectateInventory != null) {
+            spectateInventory.update();
+        }
 	}
+
+    @Filter("spleef/join")
+    @ProxyPriority(ProxyPriority.Priority.HIGH)
+    private static class JoinCommandProxy extends CommandProxy {
+
+        public JoinCommandProxy(GameInventory inventory, BasicAddOn addOn) {
+            super(inventory, addOn, Permissions.PERMISSION_JOIN);
+        }
+
+    }
+
+    @Filter("spleef/spectate")
+    @ProxyPriority(ProxyPriority.Priority.HIGH)
+    private static class SpectateCommandProxy extends CommandProxy {
+
+        public SpectateCommandProxy(GameInventory inventory, BasicAddOn addOn) {
+            super(inventory, addOn, Permissions.PERMISSION_SPECTATE);
+        }
+
+    }
 
 }
