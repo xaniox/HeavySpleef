@@ -17,6 +17,14 @@
  */
 package de.matzefratze123.heavyspleef.commands.base;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
+import org.apache.commons.lang.Validate;
+import org.bukkit.command.Command;
+import org.bukkit.command.*;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -24,19 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.Validate;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import de.matzefratze123.heavyspleef.commands.base.MessageBundle.MessageProvider;
 
 public class CommandManagerService implements CommandExecutor, TabCompleter {
 	
@@ -95,7 +90,7 @@ public class CommandManagerService implements CommandExecutor, TabCompleter {
 	public void registerCommands(Class<?> clazz, CommandContainer base) {
 		Validate.notNull(clazz);
 		
-		Set<CommandContainer> commands = CommandContainer.create(clazz, instantiator, execution, logger);
+		Set<CommandContainer> commands = CommandContainer.create(clazz, base, instantiator, execution, logger);
 		Iterator<CommandContainer> iterator = commands.iterator();
 		
 		while (iterator.hasNext()) {

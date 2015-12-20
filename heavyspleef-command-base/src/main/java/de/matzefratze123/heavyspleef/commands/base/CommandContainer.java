@@ -17,14 +17,14 @@
  */
 package de.matzefratze123.heavyspleef.commands.base;
 
+import com.google.common.collect.Sets;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.common.collect.Sets;
 
 public class CommandContainer {
 	
@@ -155,9 +155,14 @@ public class CommandContainer {
 	public List<String> tabComplete(CommandContext context, PermissionChecker permissionChecker, Object[] args) {
 		return execution.tabComplete(context, permissionChecker, args);
 	}
-	
-	public static Set<CommandContainer> create(Class<?> rootClass, Instantiator instantiator, CommandExecution execution, Logger logger) {
-		return buildHierarchy(new Class<?>[] {rootClass}, instantiator, null, logger, execution);
+
+    @Deprecated
+    public static Set<CommandContainer> create(Class<?> rootClass, Instantiator instantiator, CommandExecution execution, Logger logger) {
+        return create(rootClass, null, instantiator, execution, logger);
+    }
+
+    public static Set<CommandContainer> create(Class<?> rootClass, CommandContainer parent, Instantiator instantiator, CommandExecution execution, Logger logger) {
+		return buildHierarchy(new Class<?>[] {rootClass}, instantiator, parent, logger, execution);
 	}
 	
 	private static Set<CommandContainer> buildHierarchy(
