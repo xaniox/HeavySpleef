@@ -1,4 +1,4 @@
-# HeavySpleef-2.0
+# HeavySpleef-2.2
 
 This is a completely recoded and revamped version of HeavySpleef. Source code for versions below 2.0 can be found [here](https://github.com/matzefratze123/HeavySpleef-Legacy).
 
@@ -35,7 +35,7 @@ If you want to add HeavySpleef to your dependencies in order to develop an add-o
 <repositories>
   <repository>
     <id>matzes-repo</id>
-    <url>http://matzefratze123.de/artifactory/release/</url>
+    <url>http://repo.xaniox.de/artifactory/release/</url>
   </repository>
   <!-- And so on -->
 </repositories>
