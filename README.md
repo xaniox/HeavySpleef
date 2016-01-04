@@ -12,7 +12,7 @@ For more information about the plugin itself and how to setup and use it and of 
 
 Development builds may be accessed by our Jenkins server. Please note that these builds may be unstable.
 
-[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef/)&nbsp;&nbsp;Visit the <a href="http://matzefratze123.de/jenkins/job/HeavySpleef/" target="_blank">Jenkins Build Server</a>
+[![Build Status](https://ci.xaniox.de/job/HeavySpleef/badge/icon)](https://ci.xaniox.de/job/HeavySpleef/)&nbsp;&nbsp;Visit the <a href="https://ci.xaniox.de/job/HeavySpleef/" target="_blank">Jenkins Build Server</a>
 
 ##### Addons
 
@@ -48,7 +48,7 @@ And add HeavySpleef to your dependency list to automatically download the jar an
   <dependency>
     <groupId>de.matzefratze123</groupId>
     <artifactId>heavyspleef-api</artifactId>
-    <version>2.0</version>
+    <version>2.2</version>
     <scope>provided</scope>
   </dependency>
   <!-- And so on -->
