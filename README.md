@@ -1,4 +1,4 @@
-# HeavySpleef-2.0
+# HeavySpleef-2.2
 
 This is a completely recoded and revamped version of HeavySpleef. Source code for versions below 2.0 can be found [here](https://github.com/matzefratze123/HeavySpleef-Legacy).
 
@@ -12,7 +12,7 @@ For more information about the plugin itself and how to setup and use it and of 
 
 Development builds may be accessed by our Jenkins server. Please note that these builds may be unstable.
 
-[![Build Status](http://matzefratze123.de/jenkins/job/HeavySpleef/badge/icon)](http://matzefratze123.de/jenkins/job/HeavySpleef/)&nbsp;&nbsp;Visit the <a href="http://matzefratze123.de/jenkins/job/HeavySpleef/" target="_blank">Jenkins Build Server</a>
+[![Build Status](https://ci.xaniox.de/job/HeavySpleef/badge/icon)](https://ci.xaniox.de/job/HeavySpleef/)&nbsp;&nbsp;Visit the <a href="https://ci.xaniox.de/job/HeavySpleef/" target="_blank">Jenkins Build Server</a>
 
 ##### Addons
 
@@ -35,7 +35,7 @@ If you want to add HeavySpleef to your dependencies in order to develop an add-o
 <repositories>
   <repository>
     <id>matzes-repo</id>
-    <url>http://matzefratze123.de/artifactory/release/</url>
+    <url>http://repo.xaniox.de/artifactory/release/</url>
   </repository>
   <!-- And so on -->
 </repositories>
@@ -48,7 +48,7 @@ And add HeavySpleef to your dependency list to automatically download the jar an
   <dependency>
     <groupId>de.matzefratze123</groupId>
     <artifactId>heavyspleef-api</artifactId>
-    <version>2.0</version>
+    <version>2.2</version>
     <scope>provided</scope>
   </dependency>
   <!-- And so on -->
