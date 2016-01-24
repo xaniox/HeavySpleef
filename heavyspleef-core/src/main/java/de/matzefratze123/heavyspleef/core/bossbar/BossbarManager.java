@@ -35,8 +35,8 @@ public class BossbarManager {
         }
     }
 
-    public BossbarSession newSession() {
+    /*public BossbarSession newSession() {
         return null;
-    }
+    }*/
 
 }
