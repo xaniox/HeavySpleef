@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 
 public class BossbarManager {
 
-    private static int NON_INITIALIZED = -2;
+    private static int NON_INITIALIZED = -1;
     private int bossEntityId = NON_INITIALIZED;
 
     public BossbarManager() {
