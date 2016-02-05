@@ -180,7 +180,7 @@ player:
   player-kick: "&cYou were kicked by $[kicker]: $[message]"
   player-kick-no-reason: "&7No reason provided"
   player-lose: "&cYou are out of the game."
-  player-win: "&aYou won the game. Congratulation!"
+  player-win: "&aYou won the game. Congratulations!"
   game-stopped: "&cThe game has been stopped and you left the game"
   error-on-inventory-load: "&cYour inventory could not be loaded back. Please contact an administrator."
   error-no-lobby-point-set: "&cThere is no lobby point set for this game"
