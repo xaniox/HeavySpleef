@@ -17,12 +17,7 @@
  */
 package de.matzefratze123.heavyspleef.persistence.schematic;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Set;
 
 import de.matzefratze123.heavyspleef.persistence.DatabaseContext;
@@ -41,9 +36,12 @@ public class SchematicContext extends DatabaseContext<SchematicAccessor<?>> {
 		if (!file.exists()) {
 			throw new IllegalArgumentException("file does not exist");
 		}
-		
-		OutputStream out = new FileOutputStream(file);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 		write(out, object);
+        try (OutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(out.toByteArray());
+        }
 	}
 	
 	@SuppressWarnings("unchecked")
