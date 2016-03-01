@@ -138,7 +138,11 @@ public class FlagAnvilSpleef extends IntegerFlag {
 		Material material = under.getType();
 		under.setType(Material.AIR);
 		World world = under.getWorld();
-		world.playSound(block.getLocation(), Sound.ANVIL_LAND, 1.0f, 1.0f);
+
+        Sound anvilLandSound = Game.getSoundEnumType("ANVIL_LAND");
+        if (anvilLandSound != null) {
+            world.playSound(block.getLocation(), anvilLandSound, 1.0f, 1.0f);
+        }
 		
 		if (game.getPropertyValue(GameProperty.PLAY_BLOCK_BREAK)) {
 			world.playEffect(under.getLocation(), Effect.STEP_SOUND, material.getId());

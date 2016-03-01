@@ -72,12 +72,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Game implements VariableSuppliable {
-	
+
 	private static final String SPLEEF_COMMAND = "spleef";
 	private static final int NO_BLOCK_LIMIT = -1;
 	private static final int DEFAULT_COUNTDOWN = 10;
 	private static final String HAS_FLAG_PREFIX = "has_flag";
 	private static final String FLAG_VALUE_PREFIX = "flag_value";
+    private static final String NOTE_PLING_SEARCH = "NOTE_PLING";
+    private static final String[] LEVEL_UP_SEARCH = {"LEVEL_UP", "PLAYER_LEVELUP"};
 	private static final Map<Class<? extends Region>, SpawnpointGenerator<?>> SPAWNPOINT_GENERATORS;
 	
 	static {
@@ -351,7 +353,11 @@ public class Game implements VariableSuppliable {
 
 						bukkitPlayer.setLevel(0);
 						bukkitPlayer.setExp(0f);
-						bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.NOTE_PLING, 1.0f, 1.5f);
+
+                        Sound plingSound = getSoundEnumType(NOTE_PLING_SEARCH);
+                        if (plingSound != null) {
+                            bukkitPlayer.playSound(bukkitPlayer.getLocation(), plingSound, 1.0f, 1.5f);
+                        }
 					}
 					
 					start();
@@ -379,7 +385,11 @@ public class Game implements VariableSuppliable {
 						
 						for (SpleefPlayer player : ingamePlayers) {
 							Player bukkitPlayer = player.getBukkitPlayer();
-							bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+
+                            Sound plingSound = getSoundEnumType(NOTE_PLING_SEARCH);
+                            if (plingSound != null) {
+                                bukkitPlayer.playSound(bukkitPlayer.getLocation(), plingSound, 1.0f, 1.0f);
+                            }
 						}
 					}
 				}
@@ -398,6 +408,19 @@ public class Game implements VariableSuppliable {
 		
 		return true;
 	}
+
+    public static Sound getSoundEnumType(String... searchStrings) {
+        Sound[] sounds = Sound.values();
+        for (Sound sound : sounds) {
+            for (String search : searchStrings) {
+                if (sound.name().toUpperCase().contains(search)) {
+                    return sound;
+                }
+            }
+        }
+
+        return null;
+    }
 	
 	@SuppressWarnings("unchecked")
 	private <T extends Region> void generateSpawnpoints(T region, List<Location> spawnpoints, int n) {
@@ -716,7 +739,10 @@ public class Game implements VariableSuppliable {
 		}
 		
 		if (cause == QuitCause.WIN) {
-			player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            Sound levelUpSound = getSoundEnumType(LEVEL_UP_SEARCH);
+            if (levelUpSound != null) {
+                player.getBukkitPlayer().playSound(player.getBukkitPlayer().getLocation(), levelUpSound, 1.0f, 1.0f);
+            }
 		}
 		
 		if (sendMessages) {
@@ -797,7 +823,7 @@ public class Game implements VariableSuppliable {
 		PlayerLeftGameEvent leftEvent = new PlayerLeftGameEvent(this, player, killer, cause);
 		eventBus.callEvent(leftEvent);
 	}
-	
+
 	public void requestLose(SpleefPlayer player, QuitCause cause) {
 		Object[] args = null;
 		

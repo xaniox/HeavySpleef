@@ -50,6 +50,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Map;
@@ -133,9 +134,14 @@ public class FlagSplegg extends BaseFlag {
 		if (inHand.getType() != SPLEGG_LAUNCHER_ITEMSTACK.getType()) {
 			return;
 		}
-		
-		bukkitPlayer.launchProjectile(Egg.class);
-		bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.GHAST_FIREBALL, 0.4f, 2f);
+
+        Vector vector = bukkitPlayer.getLocation().getDirection();
+		bukkitPlayer.launchProjectile(Egg.class, vector);
+
+        Sound ghastFireballSound = Game.getSoundEnumType("GHAST_FIREBALL", "GHAST_SHOOT");
+        if (ghastFireballSound != null) {
+            bukkitPlayer.playSound(bukkitPlayer.getLocation(), ghastFireballSound, 0.4f, 2f);
+        }
 	}
 	
 	@Subscribe(priority = Subscribe.Priority.HIGH)
@@ -202,7 +208,10 @@ public class FlagSplegg extends BaseFlag {
 			tnt.setYield(3);
 			tnt.setFuseTicks(0);
 		} else {
-			projectile.getWorld().playSound(blockHit.getLocation(), Sound.CHICKEN_EGG_POP, 1.0f, 0.7f);
+            Sound chickenEggPopSound = Game.getSoundEnumType("CHICKEN_EGG_POP", "CHICKEN_EGG");
+            if (chickenEggPopSound != null) {
+                projectile.getWorld().playSound(blockHit.getLocation(), chickenEggPopSound, 1.0f, 0.7f);
+            }
 		}
 	}
 	
