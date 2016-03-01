@@ -55,10 +55,12 @@ public class AddOnCommands {
 		
 		if (action.equalsIgnoreCase(LOAD_ACTION)) {
 			AddOn existingAddon = manager.getAddOn(addonName);
-			
-			CommandValidate.isTrue(existingAddon == null, i18n.getVarString(Messages.Command.ADDON_ALREADY_ENABLED)
-					.setVariable("addon", existingAddon.getName())
-					.toString());
+
+            if (existingAddon != null) {
+                throw new CommandException(i18n.getVarString(Messages.Command.ADDON_ALREADY_ENABLED)
+                    .setVariable("addon", existingAddon.getName())
+                    .toString());
+            }
 			
 			AddOnModule module = (AddOnModule) heavySpleef.getModuleManager().getModule(AddOnModule.class);
 			
