@@ -2,8 +2,8 @@ name: JoinGUI
 version: ${project.version}
 
 author: matzefratze123
-main: de.matzefratze123.joingui.JoinGuiAddOn
+main: de.xaniox.joingui.JoinGuiAddOn
 i18n: dynamic
 
 flags:
-- de.matzefratze123.joingui.FlagJoinItem
+- de.xaniox.joingui.FlagJoinItem

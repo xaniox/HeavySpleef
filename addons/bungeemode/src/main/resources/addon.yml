@@ -2,9 +2,9 @@ name: Bungeemode
 version: ${project.parent.version}
 author: matzefratze123
 
-main: de.matzefratze123.bungeemode.BungeemodeAddon
+main: de.xaniox.bungeemode.BungeemodeAddon
 i18n: dynamic
 
 flags:
-- de.matzefratze123.bungeemode.FlagTeleportAll
-- de.matzefratze123.bungeemode.FlagBungeeAutospectate
+- de.xaniox.bungeemode.FlagTeleportAll
+- de.xaniox.bungeemode.FlagBungeeAutospectate

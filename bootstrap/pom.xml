@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>de.matzefratze123</groupId>
+		<groupId>de.xaniox</groupId>
 		<artifactId>heavyspleef</artifactId>
 		<version>2.2</version>
 	</parent>
 	<artifactId>bootstrap</artifactId>
 	<properties>
-		<main.class>de.matzefratze123.heavyspleef.HeavySpleefPlugin</main.class>
+		<main.class>de.xaniox.heavyspleef.HeavySpleefPlugin</main.class>
 		<shadedArtifact.name>HeavySpleef</shadedArtifact.name>
 	</properties>
 	<build>
@@ -130,32 +130,32 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>de.matzefratze123</groupId>
+			<groupId>de.xaniox</groupId>
 			<artifactId>heavyspleef-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.matzefratze123</groupId>
+			<groupId>de.xaniox</groupId>
 			<artifactId>heavyspleef-flags</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.matzefratze123</groupId>
+			<groupId>de.xaniox</groupId>
 			<artifactId>heavyspleef-commands</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.matzefratze123</groupId>
+			<groupId>de.xaniox</groupId>
 			<artifactId>heavyspleef-persistence</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.matzefratze123</groupId>
+			<groupId>de.xaniox</groupId>
 			<artifactId>heavyspleef-addons</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.matzefratze123</groupId>
+			<groupId>de.xaniox</groupId>
 			<artifactId>legacy-data-migration</artifactId>
 			<version>${project.version}</version>
 		</dependency>

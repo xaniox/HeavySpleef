@@ -2,9 +2,9 @@ name: LeaderboardExtensions
 version: ${project.version}
 
 author: matzefratze123
-main: de.matzefratze123.leaderboardextensions.LeaderboardAddOn
+main: de.xaniox.leaderboardextensions.LeaderboardAddOn
 i18n: dynamic
 
 extensions:
-- de.matzefratze123.leaderboardextensions.ExtensionLeaderboardPodium
-- de.matzefratze123.leaderboardextensions.ExtensionLeaderboardWall
+- de.xaniox.leaderboardextensions.ExtensionLeaderboardPodium
+- de.xaniox.leaderboardextensions.ExtensionLeaderboardWall

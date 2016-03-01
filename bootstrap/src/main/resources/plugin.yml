@@ -3,7 +3,7 @@ version: ${project.parent.version}
 prefix: ${project.parent.name}
 
 description: ${project.parent.description}
-author: matzefratze123
+author: xaniox
 website: ${project.parent.url}
 
 main: ${main.class}

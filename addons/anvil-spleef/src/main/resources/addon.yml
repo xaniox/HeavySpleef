@@ -2,8 +2,8 @@ name: AnvilSpleef
 version: ${project.version}
 
 author: matzefratze123
-main: de.matzefratze123.anvilspleef.AnvilSpleefAddOn
+main: de.xaniox.anvilspleef.AnvilSpleefAddOn
 i18n: dynamic
 
 flags:
-- de.matzefratze123.anvilspleef.FlagAnvilSpleef
+- de.xaniox.anvilspleef.FlagAnvilSpleef
