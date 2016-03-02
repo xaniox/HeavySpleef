@@ -26,6 +26,7 @@ import de.xaniox.heavyspleef.core.i18n.I18N;
 import de.xaniox.heavyspleef.core.i18n.I18NManager;
 import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
+import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
@@ -36,9 +37,8 @@ public class CommandStart {
 	@Command(name = "start", usage = "/spleef start [game]",
 			descref = Messages.Help.Description.START,
 			permission = Permissions.PERMISSION_START)
-	@PlayerOnly
 	public void onStartCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
-		SpleefPlayer player = heavySpleef.getSpleefPlayer(context.getSender());
+		CommandSender sender = context.getSender();
 		GameManager manager = heavySpleef.getGameManager();
 		
 		Game game;
@@ -49,7 +49,9 @@ public class CommandStart {
 					.setVariable("game", gameName)
 					.toString());
 		} else {
-			game = manager.getGame(player);
+            CommandValidate.isTrue(sender instanceof SpleefPlayer, i18n.getString(Messages.Command.PLAYER_ONLY));
+
+            game = manager.getGame((SpleefPlayer) sender);
 			CommandValidate.notNull(game, i18n.getString(Messages.Command.NOT_INGAME));
 		}
 		
@@ -60,7 +62,7 @@ public class CommandStart {
 		boolean success = game.countdown();
 		
 		if (success) {
-			player.sendMessage(i18n.getVarString(Messages.Command.GAME_STARTED)
+			sender.sendMessage(i18n.getVarString(Messages.Command.GAME_STARTED)
 					.setVariable("game", game.getName())
 					.toString());
 		}
