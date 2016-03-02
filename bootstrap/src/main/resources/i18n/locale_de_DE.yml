@@ -146,7 +146,7 @@ command:
   addon-unloaded: "&7Add-on &a$[addon] &7wurde deaktiviert."
   addon-loaded: "&7Add-on &a$[addon] &7wurde aktiviert."
   no-addons-installed: "&cEs wurden noch keine Add-ons installiert!"
-  addon-list-header: "&6-------- &8&l[&aInstallierte Add-ons &8&l] &6--------"
+  addon-list-header: "&6-------- &8&l[ &aInstallierte Add-ons &8&l] &6--------"
   addon-list-entry: "&7- $[addon] &7(&6$[version]&7)"
   addon-not-existing: "&cEin Add-on mit dem Namen $[addon] existiert nicht im Add-on Installationsordner!"
   addon-reloaded: "&7Add-on '&a$[addon]&7' neu geladen!"

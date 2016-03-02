@@ -145,7 +145,7 @@ command:
   addon-unloaded: "&7Дополнение &a$[addon] &7выгружено"
   addon-loaded: "&7Дополнение &a$[addon] &7загружено"
   no-addons-installed: "&cПока не установлени ни одного дополнения!"
-  addon-list-header: "&6-------- &8&l[&aУстановленные дополнения &8&l] &6--------"
+  addon-list-header: "&6-------- &8&l[ &aУстановленные дополнения &8&l] &6--------"
   addon-list-entry: "&7- $[addon] &7(&6$[version]&7)"
   addon-not-existing: "&cДополнения с именем $[addon] нет в папке дополнений!"
   addon-reloaded: "&7Дополнение '&a$[addon]&7' перезагружено!"
