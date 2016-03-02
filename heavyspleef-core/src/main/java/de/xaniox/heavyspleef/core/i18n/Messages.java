@@ -211,8 +211,17 @@ public interface Messages {
 		public static final String NEED_MORE_PLAYERS = PREFIX + "need-more-players";
         public static final String COUNTDOWN_TITLES_NUMBER_FORMAT = PREFIX + "countdown-titles-number-format";
         public static final String COUNTDOWN_TITLES_GO = PREFIX + "countdown-titles-go";
-		
-	}
+
+        public static final String BOSSBAR_PLAYER_JOINED = PREFIX + "bossbar-player-joined";
+        public static final String BOSSBAR_PLAYERS_NEEDED = PREFIX + "bossbar-players-needed";
+        public static final String BOSSBAR_PLAYER_LEFT = PREFIX + "bossbar-player-left";
+        public static final String BOSSBAR_PLAYER_LOST = PREFIX + "bossbar-player-lost";
+        public static final String BOSSBAR_COUNTDOWN = PREFIX + "bossbar-countdown";
+        public static final String BOSSBAR_PLAYING_ON = PREFIX + "bossbar-playing-on";
+        public static final String BOSSBAR_PLAYERS_LEFT = PREFIX + "bossbar-players-left";
+        public static final String BOSSBAR_GO = PREFIX + "bossbar-go";
+
+    }
 	
 	public interface Player {
 	

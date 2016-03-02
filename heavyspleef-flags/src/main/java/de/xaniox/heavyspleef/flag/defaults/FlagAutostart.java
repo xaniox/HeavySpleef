@@ -17,11 +17,11 @@
  */
 package de.xaniox.heavyspleef.flag.defaults;
 
-import de.xaniox.heavyspleef.core.event.PlayerJoinGameEvent;
-import de.xaniox.heavyspleef.core.event.Subscribe;
+import de.xaniox.heavyspleef.core.event.*;
 import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.flag.ValidationException;
 import de.xaniox.heavyspleef.core.game.Game;
+import de.xaniox.heavyspleef.core.game.GameState;
 import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.flag.presets.IntegerFlag;
 
@@ -51,5 +51,30 @@ public class FlagAutostart extends IntegerFlag {
 			event.setStartGame(true);
 		}
 	}
+
+    @Subscribe(priority = Subscribe.Priority.HIGH)
+    public void onBossbarUpdate(FlagBossbar.BossbarUpdateEvent event) {
+        Event trigger = event.getTrigger();
+        if (!(trigger instanceof GameEvent)) {
+            return;
+        }
+
+        GameEvent gameEvent = (GameEvent) trigger;
+        Game game = gameEvent.getGame();
+        if (game.getGameState() != GameState.LOBBY) {
+            return;
+        }
+
+        if (trigger instanceof PlayerJoinGameEvent || trigger instanceof PlayerLeaveGameEvent) {
+            if (trigger instanceof PlayerJoinGameEvent && ((PlayerJoinGameEvent)trigger).getStartGame()) {
+                return;
+            }
+
+            int stillNeeded = getValue() - game.getPlayers().size() - (trigger instanceof PlayerLeaveGameEvent ? 1 : 0);
+            event.setPermMessage(getI18N().getVarString(Messages.Broadcast.BOSSBAR_PLAYERS_NEEDED)
+                    .setVariable("needed", String.valueOf(stillNeeded))
+                    .toString());
+        }
+    }
 	
 }

@@ -178,6 +178,15 @@ broadcast:
   need-more-players: "&7Warte auf weitere &a$[amount] &7um das Spiel zu beginnen..."
   countdown-titles-number-format: "&6$[left]"
   countdown-titles-go: "&6&lGO!"
+
+  bossbar-player-joined: "$[player] &6ist dem Spiel beigetreten!"
+  bossbar-players-needed: "&7Noch &6&l$[left] &7Spieler benötigt"
+  bossbar-player-left: "$[player] &6hat das Spiel verlassen!"
+  bossbar-player-lost: "$[player] &cist ausgeschieden!"
+  bossbar-countdown: "&7Startet in &6&l$[left]&7..."
+  bossbar-playing-on: "&7Du spielst auf &6$[game]"
+  bossbar-players-left: "&7Noch &6&l$[left] &7Spieler übrig!"
+  bossbar-go: "&6&lGO!"
 player:
   player-leave: "&7Du hast das Spiel verlassen"
   player-kick: "&cDu wurdest von $[kicker] gekickt: $[message]"
