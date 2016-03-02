@@ -24,12 +24,14 @@ import com.comphenix.protocol.wrappers.EnumWrappers.TitleAction;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import de.xaniox.heavyspleef.core.MinecraftVersion;
 import de.xaniox.heavyspleef.core.event.GameCountdownChangeEvent;
+import de.xaniox.heavyspleef.core.event.GameStartEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
 import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.hook.HookManager;
 import de.xaniox.heavyspleef.core.hook.HookReference;
 import de.xaniox.heavyspleef.core.hook.ProtocolLibHook;
+import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.presets.BaseFlag;
 import org.bukkit.entity.Player;
@@ -67,12 +69,25 @@ public class FlagCountdownTitles extends BaseFlag {
 		
 		for (SpleefPlayer player : event.getGame().getPlayers()) {
 			try {
-				sendTitle(player, String.valueOf(event.getCountdown().getRemaining()), null);
+				sendTitle(player, getI18N().getVarString(Messages.Broadcast.COUNTDOWN_TITLES_NUMBER_FORMAT)
+                        .setVariable("left", String.valueOf(event.getCountdown().getRemaining()))
+                        .toString(), null);
 			} catch (InvocationTargetException e) {
 				getHeavySpleef().getLogger().log(Level.SEVERE, "Failed to send countdown title to player", e);
 			}
 		}
 	}
+
+    @Subscribe
+    public void onGameStart(GameStartEvent event) {
+        for (SpleefPlayer player : event.getGame().getPlayers()) {
+            try {
+                sendTitle(player, getI18N().getString(Messages.Broadcast.COUNTDOWN_TITLES_GO), null);
+            } catch (InvocationTargetException e) {
+                getHeavySpleef().getLogger().log(Level.SEVERE, "Failed to send countdown title to player", e);
+            }
+        }
+    }
 	
 	private void sendTitle(SpleefPlayer player, String title, String subtitle) throws InvocationTargetException {
 		Player bukkitPlayer = player.getBukkitPlayer();

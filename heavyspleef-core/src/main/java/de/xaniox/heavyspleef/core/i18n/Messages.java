@@ -209,6 +209,8 @@ public interface Messages {
 		public static final String BROADCAST_GAME_START = PREFIX + "broadcast-game-start";
 
 		public static final String NEED_MORE_PLAYERS = PREFIX + "need-more-players";
+        public static final String COUNTDOWN_TITLES_NUMBER_FORMAT = PREFIX + "countdown-titles-number-format";
+        public static final String COUNTDOWN_TITLES_GO = PREFIX + "countdown-titles-go";
 		
 	}
 	

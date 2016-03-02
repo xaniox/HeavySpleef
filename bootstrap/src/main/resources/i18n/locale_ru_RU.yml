@@ -172,6 +172,11 @@ broadcast:
   teams-left: "&a$[amount] &7игроков осталось в команде $[team]"
   team-won: "&7Команда $[team] &7выиграла матч на арене &a$[game]"
   player-voted: "&7Игрок &a$[player] &7проголосовал за начало игры!"
+
+  broadcast-game-start: "&6A Spleef game is about to start! Join the game with /spleef join $[game]"
+  need-more-players: "&7Waiting for &a$[amount] &7more players to start the game..."
+  countdown-titles-number-format: "&6$[left]"
+  countdown-titles-go: "&6&lGO!"
 player:
   player-leave: "&7Вы покинули игру."
   player-kick: "&cВы были кикнуты игроком $[kicker]: $[message]"

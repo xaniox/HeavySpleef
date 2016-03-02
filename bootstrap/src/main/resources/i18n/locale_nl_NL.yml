@@ -175,6 +175,8 @@ broadcast:
 
   broadcast-game-start: "&6Een Spleef spel gaat beginnen! Neem deel aan het spel met /spleef join $[game]"
   need-more-players: "&7Waiting for &a$[amount] &7more players to start the game..."
+  countdown-titles-number-format: "&6$[left]"
+  countdown-titles-go: "&6&lGO!"
 player:
   player-leave: "&7Je hebt het spel verlaten"
   player-kick: "&cJe bent gekickt door $[kicker]: $[message]"
