@@ -27,6 +27,7 @@ import de.xaniox.heavyspleef.core.i18n.I18NManager;
 import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -39,6 +40,10 @@ public class CommandStart {
 			permission = Permissions.PERMISSION_START)
 	public void onStartCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		CommandSender sender = context.getSender();
+        if (sender instanceof Player) {
+            sender = heavySpleef.getSpleefPlayer(sender);
+        }
+
 		GameManager manager = heavySpleef.getGameManager();
 		
 		Game game;
