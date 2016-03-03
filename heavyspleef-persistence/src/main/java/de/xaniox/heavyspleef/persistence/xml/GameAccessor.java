@@ -208,7 +208,7 @@ public class GameAccessor extends XMLAccessor<Game> {
 			}
 			
 			if (world == null) {
-				throw new RuntimeException("World \"" + worldName + " does not exist (game: " + name + ")");
+				throw new RuntimeException("World \"" + worldName + "\" does not exist (game: " + name + ")");
 			}
 			
 			game = new Game(heavySpleef, name, world);
