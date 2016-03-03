@@ -39,8 +39,7 @@ public class PlayerStateHolder {
 	/* Saving the inventory and the armor contents */
 	private static final int SIMPLE_INVENTORY_SIZE = 4 * 9;
 	private static final int ARMOR_INVENTORY_SIZE = 4;
-    private static final int OFFHAND_SIZE = 1;
-	private static final int INVENTORY_SIZE = SIMPLE_INVENTORY_SIZE + ARMOR_INVENTORY_SIZE; 
+	private static final int INVENTORY_SIZE = SIMPLE_INVENTORY_SIZE + ARMOR_INVENTORY_SIZE;
 	
 	private ItemStack[] inventory;
 	private ItemStack onCursor;
@@ -122,11 +121,12 @@ public class PlayerStateHolder {
 	public void apply(Player player, boolean teleport) {
 		PlayerInventory playerInv = player.getInventory();
 		boolean is1_9 = MinecraftVersion.getImplementationVersion() >= MinecraftVersion.V1_9;
+        boolean isSimpleSize = playerInv.getSize() <= SIMPLE_INVENTORY_SIZE;
 
-        ItemStack[] inventoryContents = new ItemStack[is1_9 ? INVENTORY_SIZE + OFFHAND_SIZE : SIMPLE_INVENTORY_SIZE];
+        ItemStack[] inventoryContents = new ItemStack[is1_9 && !isSimpleSize ? playerInv.getSize() : SIMPLE_INVENTORY_SIZE];
         System.arraycopy(inventory, 0, inventoryContents, 0, inventoryContents.length);
 
-        if (!is1_9) {
+        if (!is1_9 || isSimpleSize) {
             ItemStack[] armorContents = new ItemStack[ARMOR_INVENTORY_SIZE];
             System.arraycopy(inventory, inventory.length - ARMOR_INVENTORY_SIZE, armorContents, 0, armorContents.length);
             playerInv.setArmorContents(armorContents);
@@ -202,13 +202,14 @@ public class PlayerStateHolder {
 	}
 	
 	public void updateState(Player player, boolean location, GameMode mode) {
-        boolean is1_9 = MinecraftVersion.getImplementationVersion() >= MinecraftVersion.V1_9;
-
 		PlayerInventory inventory = player.getInventory();
-		ItemStack[] contents = inventory.getContents();
-        ItemStack[] inventoryArray = new ItemStack[INVENTORY_SIZE + (is1_9 ? OFFHAND_SIZE : 0)];
+        boolean is1_9 = MinecraftVersion.getImplementationVersion() >= MinecraftVersion.V1_9;
+        boolean isSimpleSize = inventory.getSize() <= SIMPLE_INVENTORY_SIZE;
 
-        if (!is1_9) {
+        ItemStack[] contents = inventory.getContents();
+        ItemStack[] inventoryArray = new ItemStack[is1_9 && !isSimpleSize ? inventory.getSize() : INVENTORY_SIZE];
+
+        if (!is1_9 || isSimpleSize) {
             ItemStack[] armor = inventory.getArmorContents();
             System.arraycopy(contents, 0, inventoryArray, 0, contents.length);
             System.arraycopy(armor, 0, inventoryArray, inventoryArray.length - ARMOR_INVENTORY_SIZE, armor.length);
