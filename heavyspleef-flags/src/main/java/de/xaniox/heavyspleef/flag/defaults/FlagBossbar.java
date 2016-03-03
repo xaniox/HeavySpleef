@@ -44,11 +44,11 @@ public class FlagBossbar extends BaseFlag {
 
     @Inject
     private Game game;
-    private BossBar bossBar;
+    private SafeContainer<BossBar> bossBar;
     private BasicTask lastMessageResetTask;
 
     private String baseTitle;
-    private BarColor baseColor = BossbarUpdateEvent.DEFAULT_COLOR;
+    private SafeContainer<BarColor> baseColor;
 
     @Override
     public void getDescription(List<String> description) {
@@ -60,9 +60,10 @@ public class FlagBossbar extends BaseFlag {
         baseTitle = getI18N().getVarString(Messages.Broadcast.BOSSBAR_PLAYING_ON)
                 .setVariable("game", game.getName())
                 .toString();
+        baseColor = new SafeContainer<>(BarColor.GREEN);
 
-        bossBar = Bukkit.getServer().createBossBar(baseTitle, baseColor, BarStyle.SOLID);
-        bossBar.setProgress(DEFAULT_PROGRESS);
+        bossBar = new SafeContainer<>(Bukkit.getServer().createBossBar(baseTitle, baseColor.value, BarStyle.SOLID));
+        bossBar.value.setProgress(DEFAULT_PROGRESS);
     }
 
     @Override
@@ -77,8 +78,8 @@ public class FlagBossbar extends BaseFlag {
 
     private void requestBaseUpdate(boolean force) {
         if (lastMessageResetTask == null && !force) {
-            bossBar.setTitle(baseTitle);
-            bossBar.setColor(baseColor);
+            bossBar.value.setTitle(baseTitle);
+            bossBar.value.setColor(baseColor.value);
         }
     }
 
@@ -95,9 +96,9 @@ public class FlagBossbar extends BaseFlag {
 
         BossbarUpdateEvent.Message message = bossbarUpdateEvent.getMessage();
         if (message != null) {
-            bossBar.setTitle(message.getTitle());
-            bossBar.setColor(message.getColor());
-            bossBar.setProgress(message.getProgress());
+            bossBar.value.setTitle(message.getTitle());
+            bossBar.value.setColor(message.getColor());
+            bossBar.value.setProgress(message.getProgress());
 
             BasicTask resetTask = new ResetBossbarTask(message.getDuration());
             resetTask.start();
@@ -212,16 +213,14 @@ public class FlagBossbar extends BaseFlag {
     }
 
     public void addToBossbar(SpleefPlayer player) {
-        bossBar.addPlayer(player.getBukkitPlayer());
+        bossBar.value.addPlayer(player.getBukkitPlayer());
     }
 
     public void removeFromBossbar(SpleefPlayer player) {
-        bossBar.removePlayer(player.getBukkitPlayer());
+        bossBar.value.removePlayer(player.getBukkitPlayer());
     }
 
     public static class BossbarUpdateEvent extends GameEvent {
-
-        public static final BarColor DEFAULT_COLOR = BarColor.GREEN;
 
         private Event triggeredBy;
         private String permMessage;
@@ -259,7 +258,7 @@ public class FlagBossbar extends BaseFlag {
             public static final long DEFAULT_DURATION = 3 * 20L;
 
             private String title;
-            private BarColor color;
+            private SafeContainer<BarColor> color;
             private double progress;
             private long duration;
 
@@ -269,7 +268,7 @@ public class FlagBossbar extends BaseFlag {
 
             public Message(String title, BarColor color, long duration, double progress) {
                 this.title = title;
-                this.color = color;
+                this.color = new SafeContainer<>(color);
                 this.progress = progress;
                 this.duration = duration;
             }
@@ -279,7 +278,7 @@ public class FlagBossbar extends BaseFlag {
             }
 
             public BarColor getColor() {
-                return color;
+                return color.value;
             }
 
             public long getDuration() {
@@ -302,12 +301,22 @@ public class FlagBossbar extends BaseFlag {
         @Override
         public void run() {
             //Reset to base title
-            bossBar.setColor(baseColor);
-            bossBar.setTitle(baseTitle);
+            bossBar.value.setColor(baseColor.value);
+            bossBar.value.setTitle(baseTitle);
             double baseProgress = DEFAULT_PROGRESS;
-            bossBar.setProgress(baseProgress);
+            bossBar.value.setProgress(baseProgress);
 
             lastMessageResetTask = null;
+        }
+
+    }
+
+    private static class SafeContainer<T> {
+
+        private T value;
+
+        public SafeContainer(T value) {
+            this.value = value;
         }
 
     }
