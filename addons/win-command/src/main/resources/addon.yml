@@ -1,0 +1,10 @@
+name: WinCommand
+version: ${project.version}
+
+author: xaniox
+main: de.xaniox.wincommand.WinCommandAddon
+
+flags:
+- de.xaniox.wincommand.FlagWinCommand
+- de.xaniox.wincommand.FlagWinCommand$FlagAddWinCommand
+- de.xaniox.wincommand.FlagWinCommand$FlagRemoveWinCommand

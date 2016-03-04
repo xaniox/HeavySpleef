@@ -12,7 +12,8 @@
 		<module>leaderboard-extensions</module>
 		<module>anvil-spleef</module>
 		<module>bungeemode</module>
-	</modules>
+        <module>win-command</module>
+    </modules>
 	<build>
 		<plugins>
 			<plugin>
