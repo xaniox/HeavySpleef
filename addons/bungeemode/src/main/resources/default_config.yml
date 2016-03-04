@@ -5,7 +5,7 @@
 # !!! when the plugin has been loaded yet                     !!!
 #
 # Also: If you want to use the spectate:autospectate flag for the game
-#       make sure to use the bungee optimized flag for it instead
+#       make sure to use the bungee optimized flag for it instead (bungee-autospectate)
 
 # Specify wether bungeemode is enabled on this server or not
 enabled: false
