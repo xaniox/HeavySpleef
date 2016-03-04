@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.xaniox</groupId>
 	<artifactId>heavyspleef-api</artifactId>
-	<version>2.2</version>
+	<version>2.3</version>
 	<packaging>jar</packaging>
 	<name>HeavySpleef-API</name>
 	<description>Add-On API for the Spleef plugin HeavySpleef</description>

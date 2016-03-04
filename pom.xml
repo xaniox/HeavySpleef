@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.xaniox</groupId>
 	<artifactId>heavyspleef</artifactId>
-	<version>2.2</version>
+	<version>2.3</version>
 	<name>HeavySpleef</name>
 	<description>Spleef plugin for Bukkit</description>
 	<packaging>pom</packaging>
