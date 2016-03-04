@@ -28,7 +28,7 @@ public class PlayerWinGameEvent extends GameEndEvent {
 	
 	private SpleefPlayer[] winners;
 	private List<SpleefPlayer> losePlaces;
-	private double ratingExpectiation = -1D;
+	private double ratingExpectation = -1D;
 	
 	public PlayerWinGameEvent(Game game, SpleefPlayer[] winners, List<SpleefPlayer> losePlaces) {
 		super(game);
@@ -45,12 +45,30 @@ public class PlayerWinGameEvent extends GameEndEvent {
 		return losePlaces;
 	}
 
+    public double getRatingExpectation() {
+        return ratingExpectation;
+    }
+
+    public void setRatingExpectation(double ratingExpectation) {
+        this.ratingExpectation = ratingExpectation;
+    }
+
+    /**
+     * Deprecated due to a typo<br>
+     * Use @{link #getRatingExpectation}.
+     */
+    @Deprecated
 	public double getRatingExpectiation() {
-		return ratingExpectiation;
+		return ratingExpectation;
 	}
-	
+
+    /**
+     * Deprecated due to a typo<br>
+     * Use @{link #setRatingExpectation}.
+     */
+    @Deprecated
 	public void setRatingExpectiation(double ratingExpectiation) {
-		this.ratingExpectiation = ratingExpectiation;
+		this.ratingExpectation = ratingExpectiation;
 	}
 
 }
