@@ -1,6 +1,6 @@
 name: Bungeemode
 version: ${project.parent.version}
-author: matzefratze123
+author: xaniox
 
 main: de.xaniox.bungeemode.BungeemodeAddon
 i18n: dynamic

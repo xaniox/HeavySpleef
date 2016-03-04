@@ -1,7 +1,7 @@
 name: AnvilSpleef
 version: ${project.version}
 
-author: matzefratze123
+author: xaniox
 main: de.xaniox.anvilspleef.AnvilSpleefAddOn
 i18n: dynamic
 

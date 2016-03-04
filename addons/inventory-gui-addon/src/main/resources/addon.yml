@@ -1,7 +1,7 @@
 name: JoinGUI
 version: ${project.version}
 
-author: matzefratze123
+author: xaniox
 main: de.xaniox.joingui.JoinGuiAddOn
 i18n: dynamic
 
