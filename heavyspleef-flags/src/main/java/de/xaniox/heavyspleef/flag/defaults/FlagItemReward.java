@@ -66,6 +66,10 @@ public class FlagItemReward extends ItemStackListFlag {
 			boolean invFull = false;
 			
 			for (ItemStack reward : getValue()) {
+                if (reward.getType() == Material.AIR) {
+                    continue;
+                }
+
 				if (invFull) {
 					world.dropItem(bukkitPlayer.getLocation(), reward);
 				} else {

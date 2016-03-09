@@ -22,6 +22,7 @@ import de.xaniox.heavyspleef.core.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -137,6 +138,10 @@ public class PlayerStateHolder {
 		player.setItemOnCursor(null);
 		Map<Integer, ItemStack> exceeded = playerInv.addItem(onCursor);
 		for (ItemStack stack : exceeded.values()) {
+            if (stack.getType() == Material.AIR) {
+                continue;
+            }
+            
 			player.getWorld().dropItem(player.getLocation(), stack);
 		}
 		
