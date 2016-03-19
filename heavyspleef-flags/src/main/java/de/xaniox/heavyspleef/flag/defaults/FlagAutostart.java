@@ -72,7 +72,7 @@ public class FlagAutostart extends IntegerFlag {
 
             int stillNeeded = getValue() - game.getPlayers().size() - (trigger instanceof PlayerLeaveGameEvent ? 1 : 0);
             event.setPermMessage(getI18N().getVarString(Messages.Broadcast.BOSSBAR_PLAYERS_NEEDED)
-                    .setVariable("needed", String.valueOf(stillNeeded))
+                    .setVariable("left", String.valueOf(stillNeeded))
                     .toString());
         }
     }
