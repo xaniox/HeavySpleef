@@ -309,7 +309,7 @@ public class GameMigrator implements Migrator<Configuration, File> {
 				ExtensionLobbyWall wall;
 				
 				try {
-					wall = new ExtensionLobbyWall(first, second);
+					wall = new ExtensionLobbyWall(first.getWorld(), first.toVector(), second.toVector());
 				} catch (SignRowValidationException e) {
 					throw new MigrationException(e);
 				}

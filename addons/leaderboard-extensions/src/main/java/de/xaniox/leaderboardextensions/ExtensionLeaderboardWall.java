@@ -45,7 +45,6 @@ import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.core.script.Variable;
 import de.xaniox.heavyspleef.core.stats.Statistic;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -191,8 +190,8 @@ public class ExtensionLeaderboardWall extends GameExtension {
 				} else {
 					for (Iterator<SignRow> iterator = wall.getRows().iterator(); iterator.hasNext();) {
 						SignRow candidate = iterator.next();
-						Location start = candidate.getStart();
-						Location end = candidate.getEnd();
+                        org.bukkit.util.Vector start = candidate.getStart();
+						org.bukkit.util.Vector end = candidate.getEnd();
 						
 						Vector startVec = BukkitUtil.toVector(start);
 						Vector endVec = BukkitUtil.toVector(end);
