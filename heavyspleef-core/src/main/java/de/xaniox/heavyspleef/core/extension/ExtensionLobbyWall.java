@@ -152,9 +152,9 @@ public class ExtensionLobbyWall extends GameExtension {
 				int removed = 0;
 				Set<ExtensionLobbyWall> candidates = game.getExtensionsByType(ExtensionLobbyWall.class);
 				for (ExtensionLobbyWall candidate : candidates) {
-					Location start = candidate.getStart();
-					Location end = candidate.getEnd();
-					
+					Vector start = candidate.getStart();
+					Vector end = candidate.getEnd();
+
 					com.sk89q.worldedit.Vector startVec = BukkitUtil.toVector(start);
 					com.sk89q.worldedit.Vector endVec = BukkitUtil.toVector(end);
 					com.sk89q.worldedit.Vector blockVec = BukkitUtil.toVector(clickedBlock);
@@ -191,19 +191,19 @@ public class ExtensionLobbyWall extends GameExtension {
 	@SuppressWarnings("unused")
 	private ExtensionLobbyWall() {}
 	
-	public ExtensionLobbyWall(Location start, Location end) throws SignRowValidationException {
-		this.row = new SignRow(start, end);
+	public ExtensionLobbyWall(World world, Vector start, Vector end) throws SignRowValidationException {
+		this.row = new SignRow(world, start, end);
 	}
 	
 	public ExtensionLobbyWall(SignRow row) {
 		this.row = row;
 	}
 	
-	public Location getStart() {
+	public Vector getStart() {
 		return row.getStart();
 	}
 	
-	public Location getEnd() {
+	public Vector getEnd() {
 		return row.getEnd();
 	}
 	
@@ -251,7 +251,7 @@ public class ExtensionLobbyWall extends GameExtension {
 			return;
 		}
 		
-		if (!clicked.getLocation().equals(row.getStart())) {
+		if (!clicked.getLocation().toVector().equals(row.getStart())) {
 			return;
 		}
 		
@@ -312,8 +312,8 @@ public class ExtensionLobbyWall extends GameExtension {
 							continue;
 						}
 						
-						String player = null;
-						String prefix = null;
+						String player;
+						String prefix;
 						
 						if (currentIterator.hasNext()) {
 							SpleefPlayer spleefPlayer = currentIterator.next();
@@ -373,9 +373,9 @@ public class ExtensionLobbyWall extends GameExtension {
 		/* The world this wall is in */
 		private World world;
 		/* The start location of this wall */
-		private Location start;
+		private Vector start;
 		/* The end location of this wall */
-		private Location end;
+		private Vector end;
 		/* The direction looking straight from start to end */
 		private BlockFace2D direction;
 		/* The length of this row */
@@ -383,8 +383,8 @@ public class ExtensionLobbyWall extends GameExtension {
 		
 		public SignRow() {}
 		
-		public SignRow(Location start, Location end) throws SignRowValidationException {
-			this.world = start.getWorld();
+		public SignRow(World world, Vector start, Vector end) throws SignRowValidationException {
+			this.world = world;
 			this.start = start;
 			this.end = end;
 			
@@ -432,7 +432,7 @@ public class ExtensionLobbyWall extends GameExtension {
 			}
 			
 			try {
-				return new SignRow(start, end);
+				return new SignRow(clicked.getWorld(), start.toVector(), end.toVector());
 			} catch (SignRowValidationException e) {
 				throw new RuntimeException(e);
 			}
@@ -453,11 +453,11 @@ public class ExtensionLobbyWall extends GameExtension {
 			return world;
 		}
 
-		public Location getStart() {
+		public Vector getStart() {
 			return start;
 		}
 
-		public Location getEnd() {
+		public Vector getEnd() {
 			return end;
 		}
 
@@ -553,14 +553,12 @@ public class ExtensionLobbyWall extends GameExtension {
 			Element xEndElement = endElement.addElement("x");
 			Element yEndElement = endElement.addElement("y");
 			Element zEndElement = endElement.addElement("z");
-			Element worldEndElement = endElement.addElement("world");
-			
-			worldStartElement.addText(start.getWorld().getName());
+
+			worldStartElement.addText(world.getName());
 			xStartElement.addText(String.valueOf(start.getBlockX()));
 			yStartElement.addText(String.valueOf(start.getBlockY()));
 			zStartElement.addText(String.valueOf(start.getBlockZ()));
 			
-			worldEndElement.addText(end.getWorld().getName());
 			xEndElement.addText(String.valueOf(end.getBlockX()));
 			yEndElement.addText(String.valueOf(end.getBlockY()));
 			zEndElement.addText(String.valueOf(end.getBlockZ()));
@@ -578,21 +576,19 @@ public class ExtensionLobbyWall extends GameExtension {
 			Element xEndElement = endElement.element("x");
 			Element yEndElement = endElement.element("y");
 			Element zEndElement = endElement.element("z");
-			Element worldEndElement = endElement.element("world");
-			
+
 			World startWorld = Bukkit.getWorld(worldStartElement.getText());
 			int startX = Integer.parseInt(xStartElement.getText());
 			int startY = Integer.parseInt(yStartElement.getText());
 			int startZ = Integer.parseInt(zStartElement.getText());
 			
-			World endWorld = Bukkit.getWorld(worldEndElement.getText());
 			int endX = Integer.parseInt(xEndElement.getText());
 			int endY = Integer.parseInt(yEndElement.getText());
 			int endZ = Integer.parseInt(zEndElement.getText());
 			
 			world = startWorld;
-			start = new Location(startWorld, startX, startY, startZ);
-			end = new Location(endWorld, endX, endY, endZ);
+			start = new Vector(startX, startY, startZ);
+			end = new Vector(endX, endY, endZ);
 			
 			try {
 				recalculate();
