@@ -21,6 +21,7 @@ import de.xaniox.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
 import de.xaniox.heavyspleef.core.flag.BukkitListener;
 import de.xaniox.heavyspleef.core.flag.Flag;
+import de.xaniox.heavyspleef.core.flag.Inject;
 import de.xaniox.heavyspleef.core.flag.ValidationException;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.game.GameManager;
@@ -37,7 +38,9 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -47,6 +50,9 @@ import java.util.List;
 @Flag(name = "snowballs")
 @BukkitListener
 public class FlagSnowballs extends IntegerFlag {
+
+    @Inject
+    private Game game;
 
 	@Override
 	public void getDescription(List<String> description) {
@@ -120,5 +126,20 @@ public class FlagSnowballs extends IntegerFlag {
 			blockHit.getWorld().playEffect(blockHit.getLocation(), Effect.STEP_SOUND, blockHit.getTypeId());
 		}
 	}
+
+    @EventHandler
+    public void onCraftItem(CraftItemEvent event) {
+        SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getWhoClicked());
+        if (!game.isIngame(player)) {
+            return;
+        }
+
+        Recipe recipe = event.getRecipe();
+        Material result = recipe.getResult().getType();
+
+        if (result == Material.SNOW_BLOCK) {
+            event.setCancelled(true);
+        }
+    }
 
 }
