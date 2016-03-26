@@ -86,7 +86,7 @@ public class PlayerStateHolder {
 	 * @param player
 	 */
 	public static void applyDefaultState(Player player) {
-		player.setGameMode(GameMode.SURVIVAL);
+		player.setGameMode(GameMode.ADVENTURE);
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);
 		player.setItemOnCursor(null);

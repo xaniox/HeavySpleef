@@ -433,7 +433,11 @@ public class Game implements VariableSuppliable {
 	public void start() {
 		GameStartEvent event = new GameStartEvent(this);
 		eventBus.callEvent(event);
-		
+
+        for (SpleefPlayer player : ingamePlayers) {
+            player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+        }
+
 		setGameState(GameState.INGAME);
 		broadcast(i18n.getVarString(Messages.Broadcast.GAME_STARTED)
 				.setVariable("game", name)
