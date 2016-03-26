@@ -1360,6 +1360,11 @@ public class Game implements VariableSuppliable {
 	
 	public void onPlayerDeath(PlayerDeathEvent event, SpleefPlayer dead) {
 		requestLose(dead, QuitCause.LOSE);
+
+        //Check if this player was queued
+        if (isQueued(dead)) {
+            unqueue(dead);
+        }
 	}
 
 	public void onPlayerRespawn(PlayerRespawnEvent event, final SpleefPlayer respawning) {

@@ -117,7 +117,7 @@ public class FlagQueueLobby extends LocationFlag {
 	public void onQueueLeave(PlayerLeaveQueueEvent event) {
 		SpleefPlayer player = event.getPlayer();
 		
-		if (died.containsKey(player)) {
+		if (died.containsKey(player) || player.getBukkitPlayer().isDead()) {
 			return;
 		}
 		
