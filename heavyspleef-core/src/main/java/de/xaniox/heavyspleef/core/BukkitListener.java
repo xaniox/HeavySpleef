@@ -154,7 +154,8 @@ public class BukkitListener implements Listener {
 		if (event instanceof PlayerRespawnEvent
 				|| event instanceof PlayerQuitEvent
 				|| event instanceof PlayerKickEvent
-				|| event instanceof PlayerCommandPreprocessEvent) {
+				|| event instanceof PlayerCommandPreprocessEvent
+                || event instanceof PlayerDeathEvent) {
 			for (Game game : gameManager.getGames()) {
 				invokeEvent(game, event, player);
 			}
