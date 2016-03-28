@@ -389,6 +389,43 @@ public class FlagSpectate extends LocationFlag {
 				.setVariable("game", game.getName())
 				.toString());
 	}
+
+    @Subscribe(priority = Subscribe.Priority.HIGH)
+    public void onGameStart(GameStartEvent event) {
+        boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
+        if (showScoreboard) {
+            Scoreboard scoreboard = getScoreboard();
+            for (SpleefPlayer player : spectators) {
+                player.getBukkitPlayer().setScoreboard(scoreboard);
+            }
+        }
+    }
+
+    @Subscribe(priority = Subscribe.Priority.LOW)
+    public void onGameEnd(GameEndEvent event) {
+        boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
+        if (showScoreboard) {
+            Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+
+            for (SpleefPlayer player : spectators) {
+                player.getBukkitPlayer().setScoreboard(mainScoreboard);
+            }
+        }
+    }
+
+    private Scoreboard getScoreboard() {
+        Scoreboard scoreboard = null;
+
+        if (game.isFlagPresent(FlagScoreboard.class)) {
+            FlagScoreboard flag = game.getFlag(FlagScoreboard.class);
+            scoreboard = flag.getScoreboard();
+        } else if (game.isFlagPresent(FlagTeamScoreboard.class)) {
+            FlagTeam flag = game.getFlag(FlagTeam.class);
+            scoreboard = flag.getScoreboard();
+        }
+
+        return scoreboard;
+    }
 	
 	public boolean spectate(SpleefPlayer player, Game game) {
 		SpectateEnterEvent enterEvent = new SpectateEnterEvent(game, player);
@@ -433,15 +470,7 @@ public class FlagSpectate extends LocationFlag {
 		});
 
         boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
-        Scoreboard scoreboard = null;
-
-        if (game.isFlagPresent(FlagScoreboard.class)) {
-            FlagScoreboard flag = game.getFlag(FlagScoreboard.class);
-            scoreboard = flag.getScoreboard();
-        } else if (game.isFlagPresent(FlagTeamScoreboard.class)) {
-            FlagTeam flag = game.getFlag(FlagTeam.class);
-            scoreboard = flag.getScoreboard();
-        }
+        Scoreboard scoreboard = getScoreboard();
 
         if (showScoreboard && scoreboard != null) {
             player.getBukkitPlayer().setScoreboard(scoreboard);
