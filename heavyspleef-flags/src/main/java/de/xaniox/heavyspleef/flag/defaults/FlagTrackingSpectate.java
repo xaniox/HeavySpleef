@@ -96,18 +96,28 @@ public class FlagTrackingSpectate extends BaseFlag {
 	
 	@Subscribe
 	public void onSpectateEnter(FlagSpectate.SpectateEnteredEvent event) {
-		MetadatableItemStack compass = new MetadatableItemStack(Material.COMPASS);
-		ItemMeta meta = compass.getItemMeta();
-		meta.setDisplayName(getI18N().getString(Messages.Player.TRACKER));
-		meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.TRACKER_LORE)));
-		compass.setItemMeta(meta);
-		compass.setMetadata(TRACKER_KEY, null);
-		
-		Player bukkitPlayer = event.getPlayer().getBukkitPlayer();
-		Inventory inventory = bukkitPlayer.getInventory();
-		inventory.setItem(ITEM_SLOT, compass);
-		bukkitPlayer.updateInventory();
-	}
+        Player bukkitPlayer = event.getPlayer().getBukkitPlayer();
+        addTrackingCompass(bukkitPlayer);
+    }
+
+    @Subscribe
+    public void onUpdateSpectateItems(FlagSpectate.UpdateSpectateItemsEvent event) {
+        Player bukkitPlayer = event.getPlayer().getBukkitPlayer();
+        addTrackingCompass(bukkitPlayer);
+    }
+
+    private void addTrackingCompass(Player player) {
+        MetadatableItemStack compass = new MetadatableItemStack(Material.COMPASS);
+        ItemMeta meta = compass.getItemMeta();
+        meta.setDisplayName(getI18N().getString(Messages.Player.TRACKER));
+        meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.TRACKER_LORE)));
+        compass.setItemMeta(meta);
+        compass.setMetadata(TRACKER_KEY, null);
+
+        Inventory inventory = player.getInventory();
+        inventory.setItem(ITEM_SLOT, compass);
+        player.updateInventory();
+    }
 	
 	@Subscribe
 	public void onSpectateLeave(FlagSpectate.SpectateLeaveEvent event) {

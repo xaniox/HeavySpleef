@@ -213,13 +213,14 @@ public class FlagSpectate extends LocationFlag {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getEntity());
 		if (!isSpectating(player)) {
-			return;
-		}
-		
+            return;
+        }
+
+        event.getDrops().clear();
 		deadPlayers.add(player);
 	}
 	
@@ -247,6 +248,17 @@ public class FlagSpectate extends LocationFlag {
 
                 if (!respawnInSpectate) {
                     leave(player);
+                } else {
+                    UpdateSpectateItemsEvent event = new UpdateSpectateItemsEvent(game, player);
+                    game.getEventBus().callEvent(event);
+
+                    addLeaveItem(player.getBukkitPlayer());
+                    Bukkit.getScheduler().runTaskLater(getHeavySpleef().getPlugin(), new Runnable() {
+                        @Override
+                        public void run() {
+                            player.getBukkitPlayer().updateInventory();
+                        }
+                    }, 20L);
                 }
 			}
 		}, 10L);
@@ -393,23 +405,35 @@ public class FlagSpectate extends LocationFlag {
     @Subscribe(priority = Subscribe.Priority.HIGH)
     public void onGameStart(GameStartEvent event) {
         boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
-        if (showScoreboard) {
-            Scoreboard scoreboard = getScoreboard();
-            for (SpleefPlayer player : spectators) {
-                player.getBukkitPlayer().setScoreboard(scoreboard);
-            }
+        if (!showScoreboard) {
+            return;
+        }
+
+        Scoreboard scoreboard = getScoreboard();
+        if (scoreboard == null) {
+            return;
+        }
+
+        for (SpleefPlayer player : spectators) {
+            player.getBukkitPlayer().setScoreboard(scoreboard);
         }
     }
 
     @Subscribe(priority = Subscribe.Priority.LOW)
     public void onGameEnd(GameEndEvent event) {
         boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
-        if (showScoreboard) {
-            Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        if (!showScoreboard) {
+            return;
+        }
 
-            for (SpleefPlayer player : spectators) {
-                player.getBukkitPlayer().setScoreboard(mainScoreboard);
-            }
+        Scoreboard scoreboard = getScoreboard();
+        if (scoreboard == null) {
+            return;
+        }
+
+        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        for (SpleefPlayer player : spectators) {
+            player.getBukkitPlayer().setScoreboard(scoreboard);
         }
     }
 
@@ -452,20 +476,9 @@ public class FlagSpectate extends LocationFlag {
 		spectators.add(player);
 		
 		Bukkit.getScheduler().runTask(game.getHeavySpleef().getPlugin(), new Runnable() {
-			
 			@Override
 			public void run() {
-				MaterialData data = config.getFlagSection().getLeaveItem();
-				MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
-				ItemMeta meta = stack.getItemMeta();
-				meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_SPECTATE_DISPLAYNAME));
-				meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_SPECTATE_LORE)));
-				stack.setItemMeta(meta);
-				
-				stack.setMetadata(LEAVE_ITEM_KEY, null);
-				
-				bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
-				bukkitPlayer.updateInventory();
+                addLeaveItem(bukkitPlayer);
 			}
 		});
 
@@ -480,6 +493,20 @@ public class FlagSpectate extends LocationFlag {
 		game.getEventBus().callEvent(enteredEvent);
 		return true;
 	}
+
+    private void addLeaveItem(Player player) {
+        MaterialData data = config.getFlagSection().getLeaveItem();
+        MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_SPECTATE_DISPLAYNAME));
+        meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_SPECTATE_LORE)));
+        stack.setItemMeta(meta);
+
+        stack.setMetadata(LEAVE_ITEM_KEY, null);
+
+        player.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
+        player.updateInventory();
+    }
 	
 	public void leave(SpleefPlayer player) {
 		SpectateLeaveEvent event = new SpectateLeaveEvent(game, player);
@@ -604,5 +631,13 @@ public class FlagSpectate extends LocationFlag {
 		}
 		
 	}
+
+    public static class UpdateSpectateItemsEvent extends PlayerGameEvent {
+
+        public UpdateSpectateItemsEvent(Game game, SpleefPlayer player) {
+            super(game, player);
+        }
+
+    }
 	
 }
