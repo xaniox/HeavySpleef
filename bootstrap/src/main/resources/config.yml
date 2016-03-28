@@ -224,6 +224,19 @@ signs:
   # This prefix may be shown on signs if
   # requested by writing [Splegg] in the first line
   splegg-prefix: '&8[&6Splegg&8]'
+
+spectate:
+  # Enables or disables pvp while in spectation mode
+  # (If it is of course not blocked by another plugin like WorldGuard)
+  enable-pvp: false
+
+  # Set to true if you want players who die while in spectation
+  # mode to respawn at the spectate point
+  respawn-in-spectate: false
+
+  # Wether to show the scoreboard (if set) to players
+  # which are spectating the game
+  show-scoreboard: true
   
 update:
   # Decide wether you want the plugin
@@ -238,4 +251,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 6
+config-version: 7

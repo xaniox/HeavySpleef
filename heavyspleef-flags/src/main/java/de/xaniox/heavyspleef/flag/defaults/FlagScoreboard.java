@@ -54,8 +54,12 @@ public class FlagScoreboard extends BaseFlag {
 		this.manager = Bukkit.getScoreboardManager();
 		this.playersTracked = Lists.newArrayList();
 	}
-	
-	@Override
+
+    public Scoreboard getScoreboard() {
+        return scoreboard;
+    }
+
+    @Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {}
 
 	@Override

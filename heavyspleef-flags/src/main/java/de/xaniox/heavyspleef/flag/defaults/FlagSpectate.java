@@ -53,14 +53,17 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.List;
 import java.util.Set;
@@ -228,6 +231,12 @@ public class FlagSpectate extends LocationFlag {
 		}
 		
 		deadPlayers.remove(player);
+        final boolean respawnInSpectate = config.getSpectateSection().isRespawnInSpectate();
+
+        if (respawnInSpectate) {
+            event.setRespawnLocation(getValue());
+        }
+
 		Bukkit.getScheduler().runTaskLater(getHeavySpleef().getPlugin(), new Runnable() {
 			
 			@Override
@@ -235,8 +244,10 @@ public class FlagSpectate extends LocationFlag {
 				if (!player.isOnline()) {
 					return;
 				}
-				
-				leave(player);
+
+                if (!respawnInSpectate) {
+                    leave(player);
+                }
 			}
 		}, 10L);
 	}
@@ -269,17 +280,47 @@ public class FlagSpectate extends LocationFlag {
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		Entity entity = event.getEntity();
-		if (!(entity instanceof Player)) {
-			return;
-		}
-		
-		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(entity);
-		if (!isSpectating(player)) {
-			return;
-		}
-		
+		if (!isEntitySpectating(entity)) {
+            return;
+        }
+
 		event.setCancelled(true);
 	}
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        Entity entity = event.getEntity();
+        if (!isEntitySpectating(entity)) {
+            return;
+        }
+
+        boolean enablePvp = config.getSpectateSection().isEnablePvp();
+        if (!enablePvp) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Entity damager = event.getDamager();
+        if (!(damager instanceof Player)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        event.setCancelled(false);
+    }
+
+    private boolean isEntitySpectating(Entity entity) {
+        if (!(entity instanceof Player)) {
+            return false;
+        }
+
+        SpleefPlayer player = getHeavySpleef().getSpleefPlayer(entity);
+        if (!isSpectating(player)) {
+            return false;
+        }
+
+        return true;
+    }
 	
 	@EventHandler
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -390,6 +431,21 @@ public class FlagSpectate extends LocationFlag {
 				bukkitPlayer.updateInventory();
 			}
 		});
+
+        boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
+        Scoreboard scoreboard = null;
+
+        if (game.isFlagPresent(FlagScoreboard.class)) {
+            FlagScoreboard flag = game.getFlag(FlagScoreboard.class);
+            scoreboard = flag.getScoreboard();
+        } else if (game.isFlagPresent(FlagTeamScoreboard.class)) {
+            FlagTeam flag = game.getFlag(FlagTeam.class);
+            scoreboard = flag.getScoreboard();
+        }
+
+        if (showScoreboard && scoreboard != null) {
+            player.getBukkitPlayer().setScoreboard(scoreboard);
+        }
 		
 		SpectateEnteredEvent enteredEvent = new SpectateEnteredEvent(game, player);
 		game.getEventBus().callEvent(enteredEvent);
@@ -399,7 +455,13 @@ public class FlagSpectate extends LocationFlag {
 	public void leave(SpleefPlayer player) {
 		SpectateLeaveEvent event = new SpectateLeaveEvent(game, player);
 		game.getEventBus().callEvent(event);
-		
+
+        boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
+        if (showScoreboard) {
+            Scoreboard mainBoard = Bukkit.getScoreboardManager().getMainScoreboard();
+            player.getBukkitPlayer().setScoreboard(mainBoard);
+        }
+
 		PlayerStateHolder state = player.getPlayerState(this);
 		if (state != null) {
 			state.apply(player.getBukkitPlayer(), true);
