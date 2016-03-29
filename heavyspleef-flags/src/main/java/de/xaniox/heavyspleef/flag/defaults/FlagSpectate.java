@@ -512,6 +512,10 @@ public class FlagSpectate extends LocationFlag {
 		SpectateLeaveEvent event = new SpectateLeaveEvent(game, player);
 		game.getEventBus().callEvent(event);
 
+        if (event.isCancelled()) {
+            return;
+        }
+
         boolean showScoreboard = config.getSpectateSection().isShowScoreboard();
         if (showScoreboard) {
             Scoreboard mainBoard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -624,13 +628,25 @@ public class FlagSpectate extends LocationFlag {
 		
 	}
 	
-	public static class SpectateLeaveEvent extends PlayerGameEvent {
-		
+	public static class SpectateLeaveEvent extends PlayerGameEvent implements Cancellable {
+
+        private boolean cancel;
+
 		public SpectateLeaveEvent(Game game, SpleefPlayer player) {
 			super(game, player);
 		}
-		
-	}
+
+        @Override
+        public void setCancelled(boolean cancel) {
+            this.cancel = cancel;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancel;
+        }
+
+    }
 
     public static class UpdateSpectateItemsEvent extends PlayerGameEvent {
 
