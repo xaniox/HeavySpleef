@@ -27,7 +27,7 @@ import java.util.*;
 public class DefaultConfig extends ConfigurationObject {
 	
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
-	public static final int CURRENT_CONFIG_VERSION = 7;
+	public static final int CURRENT_CONFIG_VERSION = 8;
 	
 	private Map<GameProperty, Object> defaultGameProperties;
 	private GeneralSection generalSection;
@@ -36,6 +36,7 @@ public class DefaultConfig extends ConfigurationObject {
 	private FlagSection flagSection;
 	private SignSection signSection;
     private SpectateSection spectateSection;
+    private LobbySection lobbySection;
 	private UpdateSection updateSection;
 	private int configVersion;
 
@@ -81,6 +82,9 @@ public class DefaultConfig extends ConfigurationObject {
 
         ConfigurationSection spectateSection = config.getConfigurationSection("spectate");
         this.spectateSection = new SpectateSection(spectateSection);
+
+        ConfigurationSection lobbySection = config.getConfigurationSection("lobby");
+        this.lobbySection = new LobbySection(lobbySection);
 		
 		ConfigurationSection updateSection = config.getConfigurationSection("update");
 		this.updateSection = new UpdateSection(updateSection);
@@ -163,6 +167,10 @@ public class DefaultConfig extends ConfigurationObject {
 
     public SpectateSection getSpectateSection() {
         return spectateSection;
+    }
+
+    public LobbySection getLobbySection() {
+        return lobbySection;
     }
 
     public UpdateSection getUpdateSection() {

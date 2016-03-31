@@ -237,6 +237,15 @@ spectate:
   # Wether to show the scoreboard (if set) to players
   # which are spectating the game
   show-scoreboard: true
+
+lobby:
+  # Enables or disables pvp while in a spleef lobby
+  # (If it is of course not blocked by another plugin like WorldGuard)
+  enable-pvp: false
+
+  # Set to true if you want players who die while in lobby
+  # mode to respawn at the lobby point
+  respawn-in-lobby: false
   
 update:
   # Decide wether you want the plugin
@@ -251,4 +260,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 7
+config-version: 8

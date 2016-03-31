@@ -31,10 +31,7 @@ import com.sk89q.worldedit.regions.Region;
 import de.xaniox.heavyspleef.core.HeavySpleef;
 import de.xaniox.heavyspleef.core.MinecraftVersion;
 import de.xaniox.heavyspleef.core.Permissions;
-import de.xaniox.heavyspleef.core.config.ConfigType;
-import de.xaniox.heavyspleef.core.config.DefaultConfig;
-import de.xaniox.heavyspleef.core.config.GeneralSection;
-import de.xaniox.heavyspleef.core.config.QueueSection;
+import de.xaniox.heavyspleef.core.config.*;
 import de.xaniox.heavyspleef.core.event.*;
 import de.xaniox.heavyspleef.core.extension.ExtensionManager;
 import de.xaniox.heavyspleef.core.extension.GameExtension;
@@ -98,6 +95,7 @@ public class Game implements VariableSuppliable {
 	private Set<SpleefPlayer> ingamePlayers;
 	private List<SpleefPlayer> deadPlayers;
 	private List<SpleefPlayer> killedPlayers;
+    private List<SpleefPlayer> killedLobbyPlayers;
 	private BiMap<SpleefPlayer, Set<Block>> blocksBroken;
 	private KillDetector killDetector;
 	private JoinRequester joinRequester;
@@ -128,6 +126,7 @@ public class Game implements VariableSuppliable {
 		this.statisticRecorder = new StatisticRecorder(heavySpleef, heavySpleef.getLogger());
 		this.floorRegenerator = new DefaultFloorRegenerator();
 		this.killedPlayers = Lists.newArrayList();
+        this.killedLobbyPlayers = Lists.newArrayList();
 		
 		eventBus.registerListener(statisticRecorder);
 		setGameState(GameState.WAITING);
@@ -1283,10 +1282,18 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void onEntityByEntityDamageEvent(EntityDamageByEntityEvent event, SpleefPlayer damagedPlayer) {
+        DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+        LobbySection lobbySection = config.getLobbySection();
+
 		boolean disablePvp = getPropertyValue(GameProperty.DISABLE_PVP);
 		boolean disableDamage = getPropertyValue(GameProperty.DISABLE_DAMAGE);
-		
-		if (event.getDamager() instanceof Player && disablePvp || !(event.getDamager() instanceof Player) && disableDamage) { 
+        boolean enableLobbyPvp = lobbySection.isEnablePvp();
+
+        if (enableLobbyPvp && event.getDamager() instanceof Player) {
+            return;
+        }
+
+		if (event.getDamager() instanceof Player && disablePvp || !(event.getDamager() instanceof Player) && disableDamage) {
 			event.setCancelled(true);
 		}
 	}
@@ -1360,7 +1367,13 @@ public class Game implements VariableSuppliable {
 	
 	public void onPlayerDeath(PlayerDeathEvent event, SpleefPlayer dead) {
         if (isIngame(dead)) {
-            requestLose(dead, QuitCause.LOSE);
+            if (gameState == GameState.LOBBY) {
+                killedLobbyPlayers.add(dead);
+            } else {
+                requestLose(dead, QuitCause.LOSE);
+            }
+
+            event.getDrops().clear();
         }
 
         //Check if this player was queued
@@ -1370,26 +1383,44 @@ public class Game implements VariableSuppliable {
 	}
 
 	public void onPlayerRespawn(PlayerRespawnEvent event, final SpleefPlayer respawning) {
-		if (!killedPlayers.contains(respawning)) {
-			return;
-		}
+		if (killedPlayers.contains(respawning)) {
+            killedPlayers.remove(respawning);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(heavySpleef.getPlugin(), new Runnable() {
+
+                @Override
+                public void run() {
+                    if (respawning.isOnline()) {
+                        PlayerStateHolder playerState = respawning.getPlayerState(Game.this);
+                        if (playerState != null) {
+                            playerState.apply(respawning.getBukkitPlayer(), true);
+                        } else {
+                            //Ugh, something went wrong
+                            respawning.sendMessage(i18n.getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+                        }
+                    }
+                }
+            }, 5L);
+		} else if (killedLobbyPlayers.contains(respawning)) {
+            killedLobbyPlayers.remove(respawning);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(heavySpleef.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    if (respawning.isOnline()) {
+                        UpdateLobbyItemsEvent event = new UpdateLobbyItemsEvent(Game.this, respawning);
+                        eventBus.callEvent(event);
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(heavySpleef.getPlugin(), new Runnable() {
+                            @Override
+                            public void run() {
+                                respawning.getBukkitPlayer().updateInventory();
+                            }
+                        }, 15L);
+                    }
+                }
+            }, 5L);
+        }
 		
-		killedPlayers.remove(respawning);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(heavySpleef.getPlugin(), new Runnable() {
-			
-			@Override
-			public void run() {
-				if (respawning.isOnline()) {
-					PlayerStateHolder playerState = respawning.getPlayerState(Game.this);
-					if (playerState != null) {
-						playerState.apply(respawning.getBukkitPlayer(), true);
-					} else {
-						//Ugh, something went wrong
-						respawning.sendMessage(i18n.getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
-					}
-				}
-			}
-		}, 5L);
+
 	}
 	
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event, SpleefPlayer player) {

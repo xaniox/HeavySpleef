@@ -23,6 +23,7 @@ import de.xaniox.heavyspleef.core.config.DefaultConfig;
 import de.xaniox.heavyspleef.core.event.GameStartEvent;
 import de.xaniox.heavyspleef.core.event.PlayerJoinGameEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
+import de.xaniox.heavyspleef.core.event.UpdateLobbyItemsEvent;
 import de.xaniox.heavyspleef.core.flag.BukkitListener;
 import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.flag.Inject;
@@ -62,19 +63,28 @@ public class FlagLeaveItem extends BaseFlag {
 	
 	@Subscribe
 	public void onPlayerJoinGame(PlayerJoinGameEvent event) {
-		MaterialData leaveItemData = config.getFlagSection().getLeaveItem();
-		MetadatableItemStack stack = new MetadatableItemStack(leaveItemData.toItemStack(1));
-		
-		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_GAME_DISPLAYNAME));
-		meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_GAME_LORE)));
-		stack.setItemMeta(meta);
-		stack.setMetadata(LEAVE_ITEM_KEY, null);
-		
-		Player bukkitPlayer = event.getPlayer().getBukkitPlayer();
-		bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
-		bukkitPlayer.updateInventory();
+		addLeaveItem(event.getPlayer());
 	}
+
+    @Subscribe
+    public void onLobbyItemsUpdate(UpdateLobbyItemsEvent event) {
+        addLeaveItem(event.getPlayer());
+    }
+
+    private void addLeaveItem(SpleefPlayer player) {
+        MaterialData leaveItemData = config.getFlagSection().getLeaveItem();
+        MetadatableItemStack stack = new MetadatableItemStack(leaveItemData.toItemStack(1));
+
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_GAME_DISPLAYNAME));
+        meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_GAME_LORE)));
+        stack.setItemMeta(meta);
+        stack.setMetadata(LEAVE_ITEM_KEY, null);
+
+        Player bukkitPlayer = player.getBukkitPlayer();
+        bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
+        bukkitPlayer.updateInventory();
+    }
 	
 	@Subscribe(priority = Subscribe.Priority.LOW)
 	public void onGameStart(GameStartEvent event) {
