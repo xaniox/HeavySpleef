@@ -311,8 +311,11 @@ public final class HeavySpleef {
 		
 		if (!destination.exists()) {
 			destination.getParentFile().mkdirs();
-			destination.createNewFile();
-		}
+		} else {
+            destination.delete();
+        }
+
+        destination.createNewFile();
 		
 		final int bufferSize = 1024;
 		
