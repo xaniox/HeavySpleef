@@ -288,6 +288,26 @@ public class FlagSpectate extends LocationFlag {
 		
 		event.setCancelled(true);
 	}
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+        if (!isSpectating(player)) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
+        if (!isSpectating(player)) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
