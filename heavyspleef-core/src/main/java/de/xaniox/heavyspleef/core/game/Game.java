@@ -1289,7 +1289,7 @@ public class Game implements VariableSuppliable {
 		boolean disableDamage = getPropertyValue(GameProperty.DISABLE_DAMAGE);
         boolean enableLobbyPvp = lobbySection.isEnablePvp();
 
-        if (enableLobbyPvp && event.getDamager() instanceof Player) {
+        if (enableLobbyPvp && event.getDamager() instanceof Player && gameState == GameState.LOBBY) {
             return;
         }
 
