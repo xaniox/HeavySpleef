@@ -145,7 +145,7 @@ public class CommandFlag {
 				flag = (AbstractFlag<Object>) game.getFlag(flagClass);
 				existingFlag = true;
 			} else {
-				flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath, flagClass, game);
+				flag = (AbstractFlag<Object>) registry.newFlagInstance(flagPath.toLowerCase(), flagClass, game);
 			}
 			
 			Object value = null;
