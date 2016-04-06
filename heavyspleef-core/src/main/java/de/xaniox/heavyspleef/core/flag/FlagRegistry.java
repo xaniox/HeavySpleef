@@ -309,8 +309,12 @@ public class FlagRegistry {
 		if (holder == null) {
 			throw new NoSuchFlagException(name);
 		}
-		
-		if (expected == null || !expected.isAssignableFrom(holder.flagClass)) {
+
+        if (expected == null) {
+            throw new IllegalArgumentException("expected cannot be null");
+        }
+
+		if (!expected.isAssignableFrom(holder.flagClass)) {
 			throw new NoSuchFlagException("Expected class " + expected.getName() + " is not compatible with " + holder.flagClass.getName());
 		}
 		
@@ -529,7 +533,7 @@ public class FlagRegistry {
 		Flag annotation = inverse.get(foundHolder).getSecondaryKey();
 		
 		Validate.isTrue(annotation != null, "ChildCandidate has not been registered");
-		boolean directChild = annotation.parent() != null && annotation.parent() != NullFlag.class && annotation.parent() == parent;
+		boolean directChild = annotation != null && annotation.parent() != NullFlag.class && annotation.parent() == parent;
 		if (directChild) {
 			return true;
 		}
@@ -537,7 +541,7 @@ public class FlagRegistry {
 		//Do a search on the path
 		Class<? extends AbstractFlag<?>> recentParent = annotation.parent();
 		
-		do {
+		loop: do {
 			if (recentParent == childCandidate) {
 				return true;
 			}
@@ -548,7 +552,7 @@ public class FlagRegistry {
 				}
 				
 				recentParent = holder.flagClass;
-				break;
+				continue loop;
 			}
 			
 			recentParent = null;
@@ -612,7 +616,7 @@ public class FlagRegistry {
 			int modifiers = input.getModifiers();
 			int result = (modifiers & Modifier.STATIC);
 			
-			return mode == 0 ? result == 0 : mode == 1 ? result != 0 : true;
+			return mode == 0 ? result == 0 : mode != 1 || result != 0;
 		}
 	};
 	
