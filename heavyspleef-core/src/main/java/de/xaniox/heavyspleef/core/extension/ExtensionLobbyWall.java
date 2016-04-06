@@ -473,6 +473,10 @@ public class ExtensionLobbyWall extends GameExtension {
 			
 			int maxDistance = Math.abs(direction == BlockFace2D.NORTH || direction == BlockFace2D.SOUTH ? endVec.getBlockZ() - startVec.getBlockZ()
 					: endVec.getBlockX() - startVec.getBlockX());
+            if (maxDistance == 0) {
+                maxDistance = 1;
+            }
+
 			BlockIterator iterator = new BlockIterator(world, startVec, directionVec, 0, maxDistance);
 			
 			for (int i = 0; iterator.hasNext(); i++) {
