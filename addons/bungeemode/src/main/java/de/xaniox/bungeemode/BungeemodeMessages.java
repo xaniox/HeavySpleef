@@ -26,4 +26,13 @@ public class BungeemodeMessages {
 	public static final String SERVER_RESTART_COUNTDOWN = "server-restart-countdown";
 	public static final String SERVER_RESTART = "server-restart";
 
+    public static final String MOTD_SERVER_STARTING = "motd-server-starting";
+    public static final String MOTD_WAITING = "motd-waiting";
+    public static final String MOTD_LOBBY = "motd-lobby";
+    public static final String MOTD_COUNTDOWN = "motd-countdown";
+    public static final String MOTD_INGAME = "motd-ingame";
+    public static final String MOTD_FINISH = "motd-finish";
+    public static final String MOTD_DISABLED = "motd-disabled";
+    public static final String MOTD_UNKNOWN = "motd-unknown";
+
 }

@@ -74,6 +74,11 @@ public class BungeemodeAddon extends BasicAddOn {
 			File configFile = new File(getDataFolder(), CONFIG_FILE_NAME);
 			
 			if (checkCopyConfig()) {
+                if (configFile.exists()) {
+                    configFile.delete();
+                }
+
+                configFile.createNewFile();
 				copyResource(CONFIG_RESOURCE_NAME, configFile);
 			}
 			

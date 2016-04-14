@@ -4,3 +4,12 @@ kick-message-not-yet-ready: '&cDieser Spleef Server ist noch am starten!'
 
 server-restart-countdown: '&7Der Server startet in &a$[left] &7Sekunden neu!'
 server-restart: '&aStarte Server neu...'
+
+motd-server-starting: 'Server startet'
+motd-waiting: 'Wartet'
+motd-lobby: 'Lobby'
+motd-countdown: 'Countdown'
+motd-ingame: 'Im Spiel'
+motd-finish: 'Spiel beendet'
+motd-disabled: 'Deaktiviert'
+motd-unknown: 'Status unbekannt'

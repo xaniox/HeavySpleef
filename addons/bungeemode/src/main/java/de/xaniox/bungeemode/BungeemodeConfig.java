@@ -21,10 +21,11 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class BungeemodeConfig {
 	
-	public static final int CURRENT_CONFIG_VERSION = 1;
+	public static final int CURRENT_CONFIG_VERSION = 2;
 	
 	private boolean enabled;
 	private String game;
+    private boolean useMotd;
 	private boolean spectateWhenIngame;
 	private SendBackCriteria sendBackOn;
 	private String sendBackTo;
@@ -40,6 +41,7 @@ public class BungeemodeConfig {
 	public void reload(ConfigurationSection config) {
 		this.enabled = config.getBoolean("enabled", false);
 		this.game = config.getString("game");
+        this.useMotd = config.getBoolean("use-motd", true);
 		this.spectateWhenIngame = config.getBoolean("spectate-when-ingame", true);
 		String sendBackOnStr = config.getString("send-back-on");
 		this.sendBackOn = SendBackCriteria.getCriteria(sendBackOnStr, SendBackCriteria.FINISH);
@@ -56,8 +58,12 @@ public class BungeemodeConfig {
 	public String getGame() {
 		return game;
 	}
-	
-	public boolean getSpectateWhenIngame() {
+
+    public boolean isUseMotd() {
+        return useMotd;
+    }
+
+    public boolean getSpectateWhenIngame() {
 		return spectateWhenIngame;
 	}
 

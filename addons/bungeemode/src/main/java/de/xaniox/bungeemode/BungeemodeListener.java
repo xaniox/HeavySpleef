@@ -40,6 +40,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.ServerListPingEvent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -125,12 +126,12 @@ public class BungeemodeListener implements Listener, SpleefListener {
 		}
 		
 		if (!addon.getHeavySpleef().isGamesLoaded()) {
-			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-			event.setKickMessage(addon.getI18n().getString(BungeemodeMessages.KICK_MESSAGE_NOT_YET_READY));
-			return;
-		}
-		
-		String gameName = config.getGame();
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage(addon.getI18n().getString(BungeemodeMessages.KICK_MESSAGE_NOT_YET_READY));
+            return;
+        }
+
+        String gameName = config.getGame();
 		GameManager manager = addon.getHeavySpleef().getGameManager();
 		
 		if (!manager.hasGame(gameName)) {
@@ -242,6 +243,55 @@ public class BungeemodeListener implements Listener, SpleefListener {
 			}
 		}
 	}
+
+    @EventHandler
+    public void onServerListPing(ServerListPingEvent event) {
+        BungeemodeConfig config = addon.getConfig();
+
+        if (!config.isEnabled() || !config.isUseMotd()) {
+            return;
+        }
+
+        if (!addon.getHeavySpleef().isGamesLoaded()) {
+            event.setMotd(addon.getI18n().getString(BungeemodeMessages.MOTD_SERVER_STARTING));
+            return;
+        }
+
+        String gameName = config.getGame();
+        GameManager manager = addon.getHeavySpleef().getGameManager();
+
+        if (!manager.hasGame(gameName)) {
+            addon.getLogger().log(Level.WARNING, "Cannot handle server list ping: Game " + gameName + " does not exist!");
+            return;
+        }
+
+        Game game = manager.getGame(gameName);
+        String motdKey;
+
+        switch (game.getGameState()) {
+            case DISABLED:
+                motdKey = BungeemodeMessages.MOTD_DISABLED;
+                break;
+            case WAITING:
+                motdKey = BungeemodeMessages.MOTD_WAITING;
+                break;
+            case LOBBY:
+                motdKey = BungeemodeMessages.MOTD_LOBBY;
+                break;
+            case STARTING:
+                motdKey = BungeemodeMessages.MOTD_COUNTDOWN;
+                break;
+            case INGAME:
+                motdKey = BungeemodeMessages.MOTD_INGAME;
+                break;
+            default:
+                motdKey = BungeemodeMessages.MOTD_UNKNOWN;
+                break;
+        }
+
+        String motd = addon.getI18n().getString(motdKey);
+        event.setMotd(motd);
+    }
 	
 	@Subscribe
 	public void onPlayerLeaveSpectate(SpectateLeaveEvent event) {

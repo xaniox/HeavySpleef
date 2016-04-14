@@ -16,6 +16,11 @@ enabled: false
 # This should be the name of the game created by /spleef create
 game: Spleef
 
+# When this is enabled, the server's motd changes to the
+# current status of the game. If you intend to change the motds
+# please open your language file under i18n/locale_COUNTRY_LANG.yml
+use-motd: true
+
 # Wether players are able to spectate the game when it's already ingame
 spectate-when-ingame: true
 
@@ -43,4 +48,4 @@ restart: true
 restart-countdown: 15
 
 # Do not change this unless you want this config to be resetted
-config-version: 1
+config-version: 2
