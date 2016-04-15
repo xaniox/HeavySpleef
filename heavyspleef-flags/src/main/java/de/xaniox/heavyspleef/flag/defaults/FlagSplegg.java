@@ -18,8 +18,11 @@
 package de.xaniox.heavyspleef.flag.defaults;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import de.xaniox.heavyspleef.core.HeavySpleef;
 import de.xaniox.heavyspleef.core.Unregister;
+import de.xaniox.heavyspleef.core.config.DefaultConfig;
+import de.xaniox.heavyspleef.core.event.GameEndEvent;
 import de.xaniox.heavyspleef.core.event.GameStartEvent;
 import de.xaniox.heavyspleef.core.event.PlayerInteractGameEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
@@ -67,7 +70,10 @@ public class FlagSplegg extends BaseFlag {
 	
 	@Inject
 	private Game game;
-	
+    @Inject
+    private DefaultConfig config;
+    private Map<SpleefPlayer, Long> spleggCooldownTimes;
+
 	static {
 		SPLEGG_LAUNCHER_ITEMSTACK = new ItemStack(Material.IRON_SPADE);
 		
@@ -88,8 +94,12 @@ public class FlagSplegg extends BaseFlag {
 	public static void unregisterListener() {
 		HandlerList.unregisterAll(listener);
 	}
-	
-	@Override
+
+    public FlagSplegg() {
+        this.spleggCooldownTimes = Maps.newHashMap();
+    }
+
+    @Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {
 		properties.put(GameProperty.INSTANT_BREAK, false);
 		properties.put(GameProperty.DISABLE_FLOOR_BREAK, true);
@@ -111,6 +121,11 @@ public class FlagSplegg extends BaseFlag {
 			player.getBukkitPlayer().updateInventory();
 		}
 	}
+
+    @Subscribe
+    public void onGameEnd(GameEndEvent event) {
+        spleggCooldownTimes.clear();
+    }
 	
 	@Subscribe
 	public void onPlayerInteractGame(PlayerInteractGameEvent event) {
@@ -135,7 +150,20 @@ public class FlagSplegg extends BaseFlag {
 			return;
 		}
 
+        if (spleggCooldownTimes.containsKey(player)) {
+            long cooldown = config.getFlagSection().getSpleggEggCooldown() * 50L;
+            long lastUse = spleggCooldownTimes.get(player);
+
+            if (System.currentTimeMillis() - lastUse < cooldown) {
+                return;
+            }
+        }
+
+        spleggCooldownTimes.put(player, System.currentTimeMillis());
         Vector vector = bukkitPlayer.getLocation().getDirection();
+        double vectorFactor = config.getFlagSection().getSpleggEggVelocityFactor();
+        vector.multiply(vectorFactor);
+
 		bukkitPlayer.launchProjectile(Egg.class, vector);
 
         Sound ghastFireballSound = Game.getSoundEnumType("GHAST_FIREBALL", "GHAST_SHOOT");

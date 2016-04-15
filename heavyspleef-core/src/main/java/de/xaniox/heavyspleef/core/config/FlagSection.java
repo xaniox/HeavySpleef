@@ -29,6 +29,8 @@ public class FlagSection {
 	private int anticampingTeleport;
 	private MaterialData readyBlock;
 	private MaterialData leaveItem;
+    private double spleggEggVelocityFactor;
+    private int spleggEggCooldown;
 	
 	public FlagSection(ConfigurationSection section) {
 		this.autostartVote = section.getInt("autostart-vote", 75);
@@ -47,6 +49,9 @@ public class FlagSection {
 		matcher.match();
 		
 		leaveItem = matcher.result();
+
+        this.spleggEggVelocityFactor = section.getDouble("splegg-egg-velocity-factor", 1d);
+        this.spleggEggCooldown = section.getInt("splegg-egg-cooldown", 0);
 	}
 	
 	public int getAutostartVote() {
@@ -72,5 +77,13 @@ public class FlagSection {
 	public MaterialData getLeaveItem() {
 		return leaveItem;
 	}
+
+    public double getSpleggEggVelocityFactor() {
+        return spleggEggVelocityFactor;
+    }
+
+    public int getSpleggEggCooldown() {
+        return spleggEggCooldown;
+    }
 
 }

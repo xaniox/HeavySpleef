@@ -27,7 +27,7 @@ import java.util.*;
 public class DefaultConfig extends ConfigurationObject {
 	
 	private static final List<Character> SKIP_CHARS = Lists.newArrayList('-', '_');
-	public static final int CURRENT_CONFIG_VERSION = 8;
+	public static final int CURRENT_CONFIG_VERSION = 9;
 	
 	private Map<GameProperty, Object> defaultGameProperties;
 	private GeneralSection generalSection;

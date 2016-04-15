@@ -215,6 +215,27 @@ flags:
   # An item the player can right-click to leave
   # the spectate mode or the queue lobby
   leave-item: MAGMA_CREAM
+
+  # Flag: splegg
+  #
+  # Defines a factor which is applied to the
+  # shooting vector of the egg i.e.:
+  # Setting this value to 2 doubles the egg shooting velocity
+  # while setting it to 4 quadruples it, etc...
+  # (Decimal values are allowed)
+  splegg-egg-velocity-factor: 1
+
+  # Flag: splegg
+  #
+  # Defines a cooldown the player has to wait before
+  # being able to shoot the next egg.
+  #
+  # This value is defined in server ticks
+  # 0.5 seconds = 10 ticks
+  # 1 seconds = 20 ticks
+  # 2 seconds = 40 ticks
+  # etc...
+  splegg-egg-cooldown: 0
   
 signs:
   # This prefix may be shown on signs if
@@ -260,4 +281,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 8
+config-version: 9
