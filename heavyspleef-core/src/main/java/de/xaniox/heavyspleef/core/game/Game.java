@@ -560,7 +560,7 @@ public class Game implements VariableSuppliable {
 			eventBus.callEvent(event);
 		}
 		
-		if (event.getTeleportationLocation() == null) {
+		if (event.getLobbyTeleportationLocation() == null) {
 			player.sendMessage(i18n.getString(Messages.Player.ERROR_NO_LOBBY_POINT_SET));
 			return JoinResult.PERMANENT_DENY;
 		}
@@ -609,14 +609,18 @@ public class Game implements VariableSuppliable {
 				}
 				
 				Region region = topFloor.getRegion();
-				
-				List<Location> randomLocations = Lists.newArrayList();
-				generateSpawnpoints(region, randomLocations, 1);
-				
-				location = randomLocations.get(0);
+
+                if (event.getGameTeleportationLocation() != null) {
+                    location = event.getGameTeleportationLocation();
+                } else {
+                    List<Location> randomLocations = Lists.newArrayList();
+                    generateSpawnpoints(region, randomLocations, 1);
+
+                    location = randomLocations.get(0);
+                }
 			}
 		} else {
-			location = event.getTeleportationLocation();
+			location = event.getLobbyTeleportationLocation();
 		}
 
 		PlayerStateHolder holder = new PlayerStateHolder();

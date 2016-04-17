@@ -19,9 +19,11 @@ package de.xaniox.heavyspleef.flag.defaults;
 
 import com.google.common.collect.Lists;
 import de.xaniox.heavyspleef.core.event.GameCountdownEvent;
+import de.xaniox.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
 import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.flag.presets.LocationFlag;
+import org.bukkit.Location;
 
 import java.util.List;
 
@@ -35,11 +37,22 @@ public class FlagSpawnpoint extends LocationFlag {
 	
 	@Subscribe
 	public void onGameCountdown(GameCountdownEvent event) {
-		if (getValue() == null) {
+        Location location = getValue();
+		if (location == null) {
 			return;
 		}
 		
-		event.setSpawnLocations(Lists.newArrayList(getValue()));
+		event.setSpawnLocations(Lists.newArrayList(location));
 	}
+
+    @Subscribe
+    public void onPlayerPreJoinGame(PlayerPreJoinGameEvent event) {
+        Location location = getValue();
+        if (location == null) {
+            return;
+        }
+
+        event.setGameTeleportationLocation(location);
+    }
 
 }

@@ -45,7 +45,7 @@ public class FlagLobby extends LocationFlag {
 			return;
 		}
 		
-		event.setTeleportationLocation(getValue());
+		event.setLobbyTeleportationLocation(getValue());
 	}
 
 }

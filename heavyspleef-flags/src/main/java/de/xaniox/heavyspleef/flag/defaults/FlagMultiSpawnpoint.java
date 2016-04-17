@@ -19,6 +19,7 @@ package de.xaniox.heavyspleef.flag.defaults;
 
 import com.google.common.collect.Lists;
 import de.xaniox.heavyspleef.core.event.GameCountdownEvent;
+import de.xaniox.heavyspleef.core.event.PlayerPreJoinGameEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
 import de.xaniox.heavyspleef.core.event.Subscribe.Priority;
 import de.xaniox.heavyspleef.core.flag.Flag;
@@ -32,9 +33,12 @@ import de.xaniox.heavyspleef.flag.presets.LocationListFlag;
 import org.bukkit.Location;
 
 import java.util.List;
+import java.util.Random;
 
 @Flag(name = "multi-spawn", ignoreParseException = true)
 public class FlagMultiSpawnpoint extends LocationListFlag {
+
+    private final Random random = new Random();
 
 	public FlagMultiSpawnpoint() {
 		List<Location> list = Lists.newArrayList();
@@ -57,6 +61,15 @@ public class FlagMultiSpawnpoint extends LocationListFlag {
 		List<Location> list = getValue();
 		event.setSpawnLocations(list);
 	}
+
+    @Subscribe(priority = Priority.HIGH)
+    public void onPlayerPreJoinGame(PlayerPreJoinGameEvent event) {
+        List<Location> list = getValue();
+        int randomIndex = random.nextInt(list.size());
+        Location randomLocation = list.get(randomIndex);
+
+        event.setGameTeleportationLocation(randomLocation);
+    }
 	
 	@Flag(name = "add", parent = FlagMultiSpawnpoint.class)
 	public static class FlagAddSpawnpoint extends LocationFlag {

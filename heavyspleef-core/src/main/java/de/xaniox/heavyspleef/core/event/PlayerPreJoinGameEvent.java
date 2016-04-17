@@ -25,7 +25,8 @@ import org.bukkit.Location;
 public class PlayerPreJoinGameEvent extends PlayerGameEvent {
 
 	private String message;
-	private Location teleportationLocation;
+	private Location lobbyTeleportationLocation;
+    private Location gameTeleportationLocation;
 	private JoinResult joinResult;
 	
 	public PlayerPreJoinGameEvent(Game game, SpleefPlayer player) {
@@ -42,15 +43,23 @@ public class PlayerPreJoinGameEvent extends PlayerGameEvent {
 		this.message = message;
 	}
 
-	public Location getTeleportationLocation() {
-		return teleportationLocation;
+	public Location getLobbyTeleportationLocation() {
+		return lobbyTeleportationLocation;
 	}
 
-	public void setTeleportationLocation(Location teleportationLocation) {
-		this.teleportationLocation = teleportationLocation;
+	public void setLobbyTeleportationLocation(Location lobbyTeleportationLocation) {
+		this.lobbyTeleportationLocation = lobbyTeleportationLocation;
 	}
 
-	public JoinResult getJoinResult() {
+    public Location getGameTeleportationLocation() {
+        return gameTeleportationLocation;
+    }
+
+    public void setGameTeleportationLocation(Location gameTeleportationLocation) {
+        this.gameTeleportationLocation = gameTeleportationLocation;
+    }
+
+    public JoinResult getJoinResult() {
 		return joinResult;
 	}
 
