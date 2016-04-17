@@ -59,6 +59,16 @@ general:
   # also be send to players who participated
   # but are already out of the game
   win-message-to-all: true
+
+  # If enabled players will be teleported one after one
+  # and not all at once. This can be useful if you are
+  # experiencing player invisibility glitches when the
+  # game switches to countdown mode / starts.
+  warmup-mode: false
+
+  # Warmup time in seconds (will be added to the countdown)
+  # (Values less than 10 seconds may break the invisibility glitch fix)
+  warmup-time: 10
   
 queues:
   # Wether players are able to use queues if they
@@ -281,4 +291,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 9
+config-version: 10

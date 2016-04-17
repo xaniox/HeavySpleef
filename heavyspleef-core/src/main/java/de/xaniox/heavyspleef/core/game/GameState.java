@@ -26,6 +26,7 @@ public enum GameState {
 	DISABLED(false, false),
 	WAITING(false, true),
 	LOBBY(false, true),
+    WARMUP(true, true),
 	STARTING(true, true),
 	INGAME(true, true);
 	

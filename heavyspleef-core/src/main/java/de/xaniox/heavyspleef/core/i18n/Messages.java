@@ -221,6 +221,8 @@ public interface Messages {
         public static final String BOSSBAR_PLAYERS_LEFT = PREFIX + "bossbar-players-left";
         public static final String BOSSBAR_GO = PREFIX + "bossbar-go";
 
+        public static final String WARMUP_STARTED = PREFIX + "warmup-started";
+
     }
 	
 	public interface Player {

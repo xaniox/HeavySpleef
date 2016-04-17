@@ -304,7 +304,8 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 	
 	@Subscribe
 	public void onPlayerPreJoinGame(PlayerPreJoinGameEvent event) {
-		if (event.getGame().getGameState() == GameState.STARTING) {
+        GameState state = event.getGame().getGameState();
+		if (state == GameState.STARTING || state == GameState.WARMUP) {
 			event.setJoinResult(JoinResult.TEMPORARY_DENY);
 			event.setMessage(getI18N().getVarString(Messages.Command.GAME_IS_INGAME)
 					.setVariable("game", game.getName())

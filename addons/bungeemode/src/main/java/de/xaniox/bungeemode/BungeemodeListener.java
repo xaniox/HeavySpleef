@@ -148,7 +148,8 @@ public class BungeemodeListener implements Listener, SpleefListener {
 		}
 		
 		boolean joinOnCountdown = game.getPropertyValue(GameProperty.JOIN_ON_COUNTDOWN);
-		if (game.getGameState() == GameState.INGAME || (game.getGameState() == GameState.STARTING && !joinOnCountdown)) {
+		if (game.getGameState() == GameState.INGAME || ((game.getGameState() == GameState.STARTING
+                || game.getGameState() == GameState.WARMUP) && !joinOnCountdown)) {
 			if (config.getSpectateWhenIngame()) {
 				if (game.isFlagPresent(FlagSpectate.class)) {
 					return;
@@ -279,6 +280,7 @@ public class BungeemodeListener implements Listener, SpleefListener {
                 motdKey = BungeemodeMessages.MOTD_LOBBY;
                 break;
             case STARTING:
+            case WARMUP:
                 motdKey = BungeemodeMessages.MOTD_COUNTDOWN;
                 break;
             case INGAME:

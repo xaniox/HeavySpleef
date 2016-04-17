@@ -22,7 +22,6 @@ import de.xaniox.heavyspleef.core.event.Subscribe;
 import de.xaniox.heavyspleef.core.event.Subscribe.Priority;
 import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.game.Game;
-import de.xaniox.heavyspleef.core.game.GameState;
 import de.xaniox.heavyspleef.core.game.QuitCause;
 import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
@@ -44,7 +43,7 @@ public class FlagAutoSpectate extends BaseFlag {
 		SpleefPlayer player = event.getPlayer();
 		Game game = event.getGame();
 		
-		if ((game.getGameState() != GameState.INGAME && game.getGameState() != GameState.STARTING) || event.getCause() != QuitCause.LOSE) {
+		if (!game.getGameState().isGameActive() || event.getCause() != QuitCause.LOSE) {
 			//Only auto-spectate when ingame
 			return;
 		}

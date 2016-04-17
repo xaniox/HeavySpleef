@@ -309,6 +309,9 @@ public class Game implements VariableSuppliable {
 		int randomIndex = 0;
 		List<Location> spawnLocations = event.getSpawnLocations();
 		Map<SpleefPlayer, Location> spawnLocationMap = event.getSpawnLocationMap();
+        Map<SpleefPlayer, Location> finalSpawns = Maps.newHashMap();
+
+        boolean isWarmupMode = config.getGeneralSection().isWarmupMode();
 		
 		for (SpleefPlayer player : ingamePlayers) {
 			Location location;			
@@ -321,92 +324,137 @@ public class Game implements VariableSuppliable {
 			} else {
 				location = randomLocations.get(randomIndex++);
 			}
-			
-			player.teleport(location);
-		}
-		
-		spawnLocationQueue.clear();
-		if (spawnLocations != null) {
-			for (int i = listIndex; i < spawnLocations.size(); i++) {
-				Location next = spawnLocations.get(i);
-				spawnLocationQueue.offer(next);
-			}
-		}
-		
-		boolean countdownEnabled = event.isCountdownEnabled();
-		int countdownLength = event.getCountdownLength();
-		
-		if (countdownLength <= 0) {
-			countdownLength = DEFAULT_COUNTDOWN;
-		}
-		
-		setGameState(GameState.STARTING);
-		
-		if (countdownEnabled && countdownLength > 0) {
-			countdownTask = new CountdownTask(heavySpleef.getPlugin(), countdownLength, new CountdownTask.CountdownCallback() {
-				
-				@Override
-				public void onCountdownFinish(CountdownTask task) {
-					for (SpleefPlayer player : ingamePlayers) {
-						Player bukkitPlayer = player.getBukkitPlayer();
 
-						bukkitPlayer.setLevel(0);
-						bukkitPlayer.setExp(0f);
+            if (!isWarmupMode) {
+                player.teleport(location);
+            } else {
+                finalSpawns.put(player, location);
+            }
+		}
+
+        spawnLocationQueue.clear();
+        if (spawnLocations != null) {
+            for (int i = listIndex; i < spawnLocations.size(); i++) {
+                Location next = spawnLocations.get(i);
+                spawnLocationQueue.offer(next);
+            }
+        }
+
+        final boolean countdownEnabled = event.isCountdownEnabled();
+        final int countdownLength = event.getCountdownLength();
+
+        if (isWarmupMode) {
+            setGameState(GameState.WARMUP);
+            int warmupTimeSeconds = config.getGeneralSection().getWarmupTime();
+            long warmupTimePeriod = (warmupTimeSeconds * 20L) / finalSpawns.size();
+
+            broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.WARMUP_STARTED)
+                .setVariable("length", String.valueOf(warmupTimeSeconds))
+                .toString());
+
+            WarmupTeleportTask warmupTask = new WarmupTeleportTask(heavySpleef.getPlugin(), finalSpawns, warmupTimePeriod);
+            warmupTask.start();
+
+            CountdownTask warmupCountdownTask = new CountdownTask(heavySpleef.getPlugin(), warmupTimeSeconds, new CountdownTask.CountdownCallback() {
+                @Override
+                public void onCountdownCount(CountdownTask task) {
+                    float percent = (float)task.getRemaining() / task.getLength();
+                    for (SpleefPlayer player : ingamePlayers) {
+                        player.getBukkitPlayer().setLevel(task.getRemaining());
+                        player.getBukkitPlayer().setExp(percent);
+                    }
+                }
+
+                @Override
+                public void onCountdownFinish(CountdownTask task) {
+                    for (SpleefPlayer player : ingamePlayers) {
+                        Player bukkitPlayer = player.getBukkitPlayer();
+
+                        bukkitPlayer.setLevel(0);
+                        bukkitPlayer.setExp(0f);
+                    }
+
+                    startCountdown(countdownEnabled, countdownLength);
+                }
+            });
+            warmupCountdownTask.start();
+        } else {
+            startCountdown(countdownEnabled, countdownLength);
+        }
+		
+		return true;
+	}
+
+    private void startCountdown(boolean countdownEnabled, int countdownLength) {
+        if (countdownLength <= 0) {
+            countdownLength = DEFAULT_COUNTDOWN;
+        }
+
+        setGameState(GameState.STARTING);
+
+        if (countdownEnabled && countdownLength > 0) {
+            countdownTask = new CountdownTask(heavySpleef.getPlugin(), countdownLength, new CountdownTask.CountdownCallback() {
+
+                @Override
+                public void onCountdownFinish(CountdownTask task) {
+                    for (SpleefPlayer player : ingamePlayers) {
+                        Player bukkitPlayer = player.getBukkitPlayer();
+
+                        bukkitPlayer.setLevel(0);
+                        bukkitPlayer.setExp(0f);
 
                         Sound plingSound = getSoundEnumType(NOTE_PLING_SEARCH);
                         if (plingSound != null) {
                             bukkitPlayer.playSound(bukkitPlayer.getLocation(), plingSound, 1.0f, 1.5f);
                         }
-					}
-					
-					start();
-					
-					countdownTask = null;
-				}
-				
-				@Override
-				public void onCountdownCount(CountdownTask task) {
-					boolean broadcast = task.getRemaining() % 10 == 0 || task.getRemaining() <= 5;
-					
-					GameCountdownChangeEvent event = new GameCountdownChangeEvent(Game.this, countdownTask, broadcast);
-					eventBus.callEvent(event);
-					
-					float percent = (float)task.getRemaining() / task.getLength();
-					for (SpleefPlayer player : ingamePlayers) {
-						player.getBukkitPlayer().setLevel(task.getRemaining());
-						player.getBukkitPlayer().setExp(percent);
-					}
-					
-					if (broadcast) {
-						broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
-							.setVariable("remaining", String.valueOf(task.getRemaining()))
-							.toString());
-						
-						for (SpleefPlayer player : ingamePlayers) {
-							Player bukkitPlayer = player.getBukkitPlayer();
+                    }
+
+                    start();
+
+                    countdownTask = null;
+                }
+
+                @Override
+                public void onCountdownCount(CountdownTask task) {
+                    boolean broadcast = task.getRemaining() % 10 == 0 || task.getRemaining() <= 5;
+
+                    GameCountdownChangeEvent event = new GameCountdownChangeEvent(Game.this, countdownTask, broadcast);
+                    eventBus.callEvent(event);
+
+                    float percent = (float)task.getRemaining() / task.getLength();
+                    for (SpleefPlayer player : ingamePlayers) {
+                        player.getBukkitPlayer().setLevel(task.getRemaining());
+                        player.getBukkitPlayer().setExp(percent);
+                    }
+
+                    if (broadcast) {
+                        broadcast(BroadcastTarget.INGAME, i18n.getVarString(Messages.Broadcast.GAME_COUNTDOWN_MESSAGE)
+                                .setVariable("remaining", String.valueOf(task.getRemaining()))
+                                .toString());
+
+                        for (SpleefPlayer player : ingamePlayers) {
+                            Player bukkitPlayer = player.getBukkitPlayer();
 
                             Sound plingSound = getSoundEnumType(NOTE_PLING_SEARCH);
                             if (plingSound != null) {
                                 bukkitPlayer.playSound(bukkitPlayer.getLocation(), plingSound, 1.0f, 1.0f);
                             }
-						}
-					}
-				}
-			});
-			
-			for (SpleefPlayer player : ingamePlayers) {
-				player.getBukkitPlayer().setLevel(countdownLength);
-				player.getBukkitPlayer().setExp(1.0f);
-			}
-			
-			countdownTask.start();
-		} else {
-			//Countdown is not enabled so just start the game
-			start();
-		}
-		
-		return true;
-	}
+                        }
+                    }
+                }
+            });
+
+            for (SpleefPlayer player : ingamePlayers) {
+                player.getBukkitPlayer().setLevel(countdownLength);
+                player.getBukkitPlayer().setExp(1.0f);
+            }
+
+            countdownTask.start();
+        } else {
+            //Countdown is not enabled so just start the game
+            start();
+        }
+    }
 
     public static Sound getSoundEnumType(String... searchStrings) {
         Sound[] sounds = Sound.values();
@@ -849,7 +897,7 @@ public class Game implements VariableSuppliable {
 		
 		leave(player, cause == null ? QuitCause.LOSE : cause, true, args);
 		
-		if (gameState == GameState.STARTING || gameState == GameState.INGAME) {
+		if (gameState.isGameActive()) {
 			if (ingamePlayers.size() == 1 && checkWin) {
 				SpleefPlayer playerLeft = ingamePlayers.iterator().next();
 				requestWin(playerLeft);
@@ -1428,7 +1476,7 @@ public class Game implements VariableSuppliable {
 	}
 	
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event, SpleefPlayer player) {
-		if (gameState != GameState.INGAME && gameState != GameState.STARTING) {
+		if (!gameState.isGameActive()) {
 			return;
 		}
 		

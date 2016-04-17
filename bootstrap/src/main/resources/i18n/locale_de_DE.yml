@@ -187,6 +187,8 @@ broadcast:
   bossbar-playing-on: "&7Du spielst auf &6$[game]"
   bossbar-players-left: "&7Noch &6&l$[left] &7Spieler übrig!"
   bossbar-go: "&6&lGO!"
+
+  warmup-started: "&eDer Warmup wurde gestartet. Du wirst in wenigen Sekunden teleportiert..."
 player:
   player-leave: "&7Du hast das Spiel verlassen"
   player-kick: "&cDu wurdest von $[kicker] gekickt: $[message]"

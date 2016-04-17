@@ -34,6 +34,8 @@ public class GeneralSection {
 	private boolean broadcastGameStart;
 	private List<String> broadcastGameStartBlacklist;
 	private boolean winMessageToAll;
+    private boolean warmupMode;
+    private int warmupTime;
 	
 	public GeneralSection(ConfigurationSection section) {
 		String prefix = section.getString("spleef-prefix");
@@ -56,6 +58,8 @@ public class GeneralSection {
 		this.broadcastGameStart = section.getBoolean("broadcast-game-start", true);
 		this.broadcastGameStartBlacklist = section.getStringList("broadcast-game-start-blacklist");
 		this.winMessageToAll = section.getBoolean("win-message-to-all", true);
+        this.warmupMode = section.getBoolean("warmup-mode", false);
+        this.warmupTime = section.getInt("warmup-time", 10);
 	}
 	
 	public String getSpleefPrefix() {
@@ -89,5 +93,12 @@ public class GeneralSection {
 	public boolean isWinMessageToAllEnabled() {
 		return winMessageToAll;
 	}
-	
+
+    public boolean isWarmupMode() {
+        return warmupMode;
+    }
+
+    public int getWarmupTime() {
+        return warmupTime;
+    }
 }
