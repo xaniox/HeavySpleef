@@ -352,7 +352,7 @@ public class Game implements VariableSuppliable {
                 .setVariable("length", String.valueOf(warmupTimeSeconds))
                 .toString());
 
-            WarmupTeleportTask warmupTask = new WarmupTeleportTask(heavySpleef.getPlugin(), finalSpawns, warmupTimePeriod);
+            WarmupTeleportTask warmupTask = new WarmupTeleportTask(heavySpleef.getPlugin(), this, finalSpawns, warmupTimePeriod);
             warmupTask.start();
 
             CountdownTask warmupCountdownTask = new CountdownTask(heavySpleef.getPlugin(), warmupTimeSeconds, new CountdownTask.CountdownCallback() {

@@ -18,6 +18,7 @@
 package de.xaniox.heavyspleef.core.game;
 
 import de.xaniox.heavyspleef.core.SimpleBasicTask;
+import de.xaniox.heavyspleef.core.event.PlayerWarmupTeleportEvent;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
@@ -29,12 +30,14 @@ import java.util.Random;
 public class WarmupTeleportTask extends SimpleBasicTask {
 
     private final Random random = new Random();
+    private Game game;
     private Map<SpleefPlayer, Location> teleportMap;
     private WarmupFinishedListener finishListener;
 
-    public WarmupTeleportTask(Plugin plugin, Map<SpleefPlayer, Location> teleportMap, long warmupTimeInterval) {
+    public WarmupTeleportTask(Plugin plugin, Game game, Map<SpleefPlayer, Location> teleportMap, long warmupTimeInterval) {
         super(plugin, TaskType.SYNC_REPEATING_TASK, warmupTimeInterval, warmupTimeInterval);
 
+        this.game = game;
         this.teleportMap = teleportMap;
     }
 
@@ -66,6 +69,9 @@ public class WarmupTeleportTask extends SimpleBasicTask {
 
         player.teleport(location);
         teleportMap.remove(player);
+
+        PlayerWarmupTeleportEvent event = new PlayerWarmupTeleportEvent(game, player, location);
+        game.getEventBus().callEvent(event);
 
         if (teleportMap.size() == 0) {
             cancel();

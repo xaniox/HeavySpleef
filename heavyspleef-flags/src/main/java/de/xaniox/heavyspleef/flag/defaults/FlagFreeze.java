@@ -21,9 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.xaniox.heavyspleef.core.HeavySpleef;
 import de.xaniox.heavyspleef.core.SimpleBasicTask;
-import de.xaniox.heavyspleef.core.event.GameStateChangeEvent;
-import de.xaniox.heavyspleef.core.event.PlayerLeaveGameEvent;
-import de.xaniox.heavyspleef.core.event.Subscribe;
+import de.xaniox.heavyspleef.core.event.*;
 import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.flag.FlagInit;
 import de.xaniox.heavyspleef.core.game.Game;
@@ -73,7 +71,7 @@ public class FlagFreeze extends BaseFlag {
 			for (SpleefPlayer player : game.getPlayers()) {
 				freezePlayer(player);
 			}
-		} else if (oldState == GameState.STARTING) {
+		} else if (oldState == GameState.STARTING && newState != GameState.WARMUP) {
 			//Unfreeze all players
 			for (SpleefPlayer player : game.getPlayers()) {
 				unfreezePlayer(player);
@@ -82,6 +80,29 @@ public class FlagFreeze extends BaseFlag {
 			checkTaskNeed();
 		}
 	}
+
+    @Subscribe
+    public void onPlayerJoinGame(PlayerJoinGameEvent event) {
+        Game game = event.getGame();
+        if (game.getGameState() != GameState.STARTING && game.getGameState() != GameState.WARMUP) {
+            return;
+        }
+
+        if (!task.isRunning()) {
+            task.start();
+        }
+
+        freezePlayer(event.getPlayer());
+    }
+
+    @Subscribe
+    public void onPlayerWarmupTeleport(PlayerWarmupTeleportEvent event) {
+        if (!task.isRunning()) {
+            task.start();
+        }
+
+        freezePlayer(event.getPlayer());
+    }
 	
 	@Subscribe
 	public void onPlayerLeaveGame(PlayerLeaveGameEvent event) {
