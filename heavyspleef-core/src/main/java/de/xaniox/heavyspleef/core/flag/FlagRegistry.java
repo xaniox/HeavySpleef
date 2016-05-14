@@ -539,24 +539,26 @@ public class FlagRegistry {
 		}
 		
 		//Do a search on the path
-		Class<? extends AbstractFlag<?>> recentParent = annotation.parent();
+		Class<? extends AbstractFlag<?>> recentChildParent = annotation.parent();
 		
 		loop: do {
-			if (recentParent == childCandidate) {
+			if (recentChildParent == parent) {
 				return true;
 			}
 			
 			for (FlagClassHolder holder : inverse.keySet()) {
-				if (holder.flagClass != recentParent) {
+				if (holder.flagClass != recentChildParent) {
 					continue;
 				}
-				
-				recentParent = holder.flagClass;
+
+                //Get the parent of the parent
+				Flag parentData = holder.flagClass.getAnnotation(Flag.class);
+                recentChildParent = parentData.parent();
 				continue loop;
 			}
 			
-			recentParent = null;
-		} while (recentParent != null && recentParent != NullFlag.class);
+			recentChildParent = null;
+		} while (recentChildParent != null && recentChildParent != NullFlag.class);
 		//NullFlag is the root parent as annotations require non-null values
 		
 		return false;
