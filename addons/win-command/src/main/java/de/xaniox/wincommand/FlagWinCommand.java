@@ -18,6 +18,8 @@
 package de.xaniox.wincommand;
 
 import com.google.common.collect.Lists;
+import de.xaniox.heavyspleef.core.event.Cancellable;
+import de.xaniox.heavyspleef.core.event.PlayerGameEvent;
 import de.xaniox.heavyspleef.core.event.PlayerWinGameEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
 import de.xaniox.heavyspleef.core.flag.AbstractFlag;
@@ -26,8 +28,8 @@ import de.xaniox.heavyspleef.core.flag.InputParseException;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.presets.IntegerFlag;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.dom4j.Element;
 
@@ -48,9 +50,15 @@ public class FlagWinCommand extends PairListFlag<Integer, String> {
             return Lists.newArrayList();
         }
 
-        List<Pair<Integer, String>> list = Lists.newArrayList();
+        List<Pair<Integer, String>> list;
+        if (getValue() == null) {
+            list = Lists.newArrayList();
+            sendInstructions(player);
+        } else {
+            list = getValue();
+        }
+
         list.add(FlagAddWinCommand.parseInputStatically(player, input));
-        sendInstructions(player);
         return list;
     }
 
@@ -133,6 +141,13 @@ public class FlagWinCommand extends PairListFlag<Integer, String> {
         if (winnerCommand != null) {
             for (SpleefPlayer winner : event.getWinners()) {
                 String inflated = inflateCommand(winnerCommand, winner, game);
+                WinCommandExecutionEvent cmdEvent = new WinCommandExecutionEvent(game, winner, 1, inflated);
+                game.getEventBus().callEvent(cmdEvent);
+
+                if (cmdEvent.isCancelled()) {
+                    continue;
+                }
+
                 Bukkit.dispatchCommand(console, inflated);
             }
         }
@@ -148,6 +163,13 @@ public class FlagWinCommand extends PairListFlag<Integer, String> {
             }
 
             String inflated = inflateCommand(command, player, game);
+            WinCommandExecutionEvent cmdEvent = new WinCommandExecutionEvent(game, player, place, inflated);
+            game.getEventBus().callEvent(cmdEvent);
+
+            if (cmdEvent.isCancelled()) {
+                continue;
+            }
+
             Bukkit.dispatchCommand(console, inflated);
         }
     }
@@ -221,7 +243,7 @@ public class FlagWinCommand extends PairListFlag<Integer, String> {
 
     }
 
-    private abstract static class PairFlagDummy<K, V> extends AbstractFlag<Pair<K, V>> {
+    abstract static class PairFlagDummy<K, V> extends AbstractFlag<Pair<K, V>> {
 
         @Override
         public String getValueAsString() {
@@ -237,6 +259,43 @@ public class FlagWinCommand extends PairListFlag<Integer, String> {
         public void unmarshal(Element element) {
             throw new UnsupportedOperationException("Operation not supported");
         }
+    }
+
+    public static class WinCommandExecutionEvent extends PlayerGameEvent implements Cancellable {
+
+        private int place;
+        private String command;
+        private boolean cancel;
+
+        public WinCommandExecutionEvent(Game game, SpleefPlayer player, int place, String command) {
+            super(game, player);
+
+            this.place = place;
+            this.command = command;
+        }
+
+        public int getPlace() {
+            return place;
+        }
+
+        public String getCommand() {
+            return command;
+        }
+
+        public void setCommand(String command) {
+            this.command = command;
+        }
+
+        @Override
+        public void setCancelled(boolean cancel) {
+            this.cancel = cancel;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancel;
+        }
+
     }
 
 }

@@ -8,3 +8,6 @@ flags:
 - de.xaniox.wincommand.FlagWinCommand
 - de.xaniox.wincommand.FlagWinCommand$FlagAddWinCommand
 - de.xaniox.wincommand.FlagWinCommand$FlagRemoveWinCommand
+- de.xaniox.wincommand.FlagWinCommandProbability
+- de.xaniox.wincommand.FlagWinCommandProbability$FlagSetProbability
+- de.xaniox.wincommand.FlagWinCommandProbability$FlagRemoveProbability
