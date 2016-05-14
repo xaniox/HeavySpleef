@@ -37,6 +37,7 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagAntiCamping.class);
 		registry.registerFlag(FlagAutoSpectate.class);
 		registry.registerFlag(FlagAutostart.class);
+		registry.registerFlag(FlagAutoQueue.class);
         registry.registerFlag(FlagBossbar.class);
 		registry.registerFlag(FlagBowspleef.class);
 		registry.registerFlag(FlagCountdown.class);
