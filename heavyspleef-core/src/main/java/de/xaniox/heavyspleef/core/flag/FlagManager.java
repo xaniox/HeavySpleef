@@ -130,7 +130,7 @@ public class FlagManager {
 		}
 	}
 	
-	private String generatePath(Flag flagAnnotation) {
+	public static String generatePath(Flag flagAnnotation) {
 		//Generate the full path
 		StringBuilder pathBuilder = new StringBuilder();
 		

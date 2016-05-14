@@ -218,25 +218,18 @@ public class CommandFlag {
 	}
 	
 	private void validateFlagParents(Flag flagData, Game game) throws CommandException {
-		Class<? extends AbstractFlag<?>> parentClass;
-		Flag parentFlagData = flagData;
-		
-		while (true) {
-			parentClass = parentFlagData.parent();
-			
-			if (parentClass != NullFlag.class) {
-				parentFlagData = parentClass.getAnnotation(Flag.class);
-				String parentName = parentFlagData.name();
-				
-				if (!game.isFlagPresent(parentName)) {
-					throw new CommandException(i18n.getVarString(Messages.Command.PARENT_FLAG_NOT_SET)
-							.setVariable("parent-flag", parentName)
-							.toString());
-				}
-			} else {
-				return;
-			}
-		}
+		Class<? extends AbstractFlag<?>> parentClass = flagData.parent();
+
+        if (parentClass != NullFlag.class) {
+            Flag parentFlagData = parentClass.getAnnotation(Flag.class);
+            String path = FlagManager.generatePath(parentFlagData);
+
+            if (!game.isFlagPresent(path)) {
+                throw new CommandException(i18n.getVarString(Messages.Command.PARENT_FLAG_NOT_SET)
+                        .setVariable("parent-flag", path)
+                        .toString());
+            }
+        }
 	}
 	
 	@TabComplete("flag")
