@@ -36,9 +36,14 @@ public class GlobalEventBus extends EventBus {
 		this.singleInstanceBusMap = Sets.newHashSet();
 		this.globalListeners = Sets.newHashSet();
 	}
+
+    @Override
+    public void registerListener(SpleefListener listener) {
+        registerListener(listener, false);
+    }
 	
 	@Override
-	public void registerListener(SpleefListener listener) {
+	public void registerListener(SpleefListener listener, boolean registerSuper) {
 		Validate.isTrue(!globalListeners.contains(listener), "Global listener already registered");
 		for (EventBus bus : singleInstanceBusMap) {
 			if (bus.isRegistered(listener)) {
@@ -48,7 +53,7 @@ public class GlobalEventBus extends EventBus {
 		
 		globalListeners.add(listener);
 		for (EventBus bus : singleInstanceBusMap) {
-			bus.registerListener(listener);
+			bus.registerListener(listener, registerSuper);
 		}
 	}
 	
