@@ -51,7 +51,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
-@Flag(name = "showbarriers", requiresVersion = MinecraftVersion.V1_8, depend = HookReference.PROTOCOLLIB)
+@Flag(name = "showbarriers", requiresVersion = MinecraftVersion.V1_8_ID, depend = HookReference.PROTOCOLLIB)
 public class FlagShowBarriers extends IntegerFlag {
 	
 	@Inject

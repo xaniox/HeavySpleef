@@ -40,7 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Level;
 
-@Flag(name = "countdown-titles", requiresVersion = MinecraftVersion.V1_8, depend = HookReference.PROTOCOLLIB)
+@Flag(name = "countdown-titles", requiresVersion = MinecraftVersion.V1_8_ID, depend = HookReference.PROTOCOLLIB)
 public class FlagCountdownTitles extends BaseFlag {
 
 	private static final int FADE_IN = 5;

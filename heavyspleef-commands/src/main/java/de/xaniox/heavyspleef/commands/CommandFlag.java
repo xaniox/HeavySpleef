@@ -22,6 +22,7 @@ import de.xaniox.heavyspleef.commands.base.*;
 import de.xaniox.heavyspleef.core.HeavySpleef;
 import de.xaniox.heavyspleef.core.MinecraftVersion;
 import de.xaniox.heavyspleef.core.Permissions;
+import de.xaniox.heavyspleef.core.Updater;
 import de.xaniox.heavyspleef.core.collection.DualKeyBiMap;
 import de.xaniox.heavyspleef.core.flag.*;
 import de.xaniox.heavyspleef.core.game.Game;
@@ -105,15 +106,17 @@ public class CommandFlag {
 			}
 			
 			Flag flagData = registry.getFlagData(flagClass);
-			if (flagData.requiresVersion() != MinecraftVersion.UNKNOWN_VERSION) {
-				int implementationVersion = MinecraftVersion.getImplementationVersion();
-				if (implementationVersion < flagData.requiresVersion()) {
-					player.sendMessage(i18n.getVarString(Messages.Command.NEED_MC_VERSION_FOR_FLAG)
-							.setVariable("required", MinecraftVersion.getImplementationVersionString(flagData.requiresVersion()))
-							.toString());
-					return;
-				}
-			}
+            if (flagData.requiresVersion() != MinecraftVersion.UNKNOWN_VERSION) {
+                Updater.Version implementationVersion = MinecraftVersion.getImplementationVersion();
+                Updater.Version requiredVersion = MinecraftVersion.getVersionByInt(flagData.requiresVersion());
+
+                if (implementationVersion.compareTo(requiredVersion) < 0) {
+                    player.sendMessage(i18n.getVarString(Messages.Command.NEED_MC_VERSION_FOR_FLAG)
+                            .setVariable("required", requiredVersion.toString())
+                            .toString());
+                    return;
+                }
+            }
 			
 			HookReference[] references = flagData.depend();
 			HookManager hookManager = heavySpleef.getHookManager();

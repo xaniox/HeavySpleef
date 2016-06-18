@@ -37,7 +37,7 @@ import org.bukkit.boss.BossBar;
 
 import java.util.List;
 
-@Flag(name = "bossbar", requiresVersion = MinecraftVersion.V1_9)
+@Flag(name = "bossbar", requiresVersion = MinecraftVersion.V1_9_ID)
 public class FlagBossbar extends BaseFlag {
 
     private static final double DEFAULT_PROGRESS = 1.0d;

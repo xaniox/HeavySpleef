@@ -19,18 +19,25 @@ package de.xaniox.heavyspleef.core;
 
 import org.bukkit.Bukkit;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MinecraftVersion {
-	
-	public static final int V1_6 = 1;
-	public static final int V1_7 = 2;
-	public static final int V1_8 = 3;
-    public static final int V1_9 = 4;
-	public static final int UNKNOWN_VERSION = -1;
-	
-	private static int implementationVersion = UNKNOWN_VERSION;
+
+    public static final Updater.Version V1_6 = Updater.Version.parse("1.6");
+    public static final Updater.Version V1_7 = Updater.Version.parse("1.7");
+    public static final Updater.Version V1_8 = Updater.Version.parse("1.8");
+    public static final Updater.Version V1_9 = Updater.Version.parse("1.9");
+    public static final Updater.Version V1_10 = Updater.Version.parse("1.10");
+
+    public static final int V1_6_ID = 0;
+    public static final int V1_7_ID = 1;
+    public static final int V1_8_ID = 2;
+    public static final int V1_9_ID = 3;
+    public static final int V1_10_ID = 4;
+
+    public static final int UNKNOWN_VERSION = -1;
+
+	private static Updater.Version implementationVersion;
 	private static String implementationVersionString;
 	private static boolean spigot;
 
@@ -62,24 +69,7 @@ public class MinecraftVersion {
 		}
 		
 		String majorVersion = majorVersionBuilder.toString();
-		switch (majorVersion) {
-		case "1.6":
-			implementationVersion = V1_6;
-			break;
-		case "1.7":
-			implementationVersion = V1_7;
-			break;
-		case "1.8":
-			implementationVersion = V1_8;
-			break;
-        case "1.9":
-            implementationVersion = V1_9;
-            break;
-		default:
-			logger.log(Level.WARNING, "Unable to determine version of Minecraft implementation! Some flags may cause compatibility problems!");
-			break;
-		}
-		
+        implementationVersion = Updater.Version.parse(majorVersion);
 		implementationVersionString = majorVersion;
 		
 		String version = Bukkit.getVersion();
@@ -88,33 +78,26 @@ public class MinecraftVersion {
 		}
 	}
 	
-	public static String getImplementationVersionString(int version) {
-		String versionString;
-		
-		switch (version) {
-		case V1_6:
-			versionString = "1.6";
-			break;
-		case V1_7:
-			versionString = "1.7";
-			break;
-		case V1_8:
-			versionString = "1.8";
-			break;
-        case V1_9:
-            versionString = "1.9";
-            break;
-		default:
-			versionString = "Unknown";
-			break;
-		}
-		
-		return versionString;
-	}
-	
-	public static int getImplementationVersion() {
+	public static Updater.Version getImplementationVersion() {
 		return implementationVersion;
 	}
+
+    public static Updater.Version getVersionByInt(int versionIdentifier) {
+        switch (versionIdentifier) {
+            case V1_6_ID:
+                return V1_6;
+            case V1_7_ID:
+                return V1_7;
+            case V1_8_ID:
+                return V1_8;
+            case V1_9_ID:
+                return V1_9;
+            case V1_10_ID:
+                return V1_10;
+            default:
+                return null;
+        }
+    }
 
 	public static String getImplementationVersionString() {
 		return implementationVersionString;
