@@ -31,6 +31,8 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 	
 	private static final int DATABASE_VERSION = 0;
 	private static final String DATABASE_VERSION_TABLE = "heavyspleef_database_version";
+    //Default connection timeout is 4 seconds
+    private static final int DEFAULT_LOGIN_TIMEOUT = 4;
 	
 	private SQLImplementation implementationType;
 	private DBPoolDataSource dataSource;
@@ -93,6 +95,13 @@ public class SQLDatabaseContext extends DatabaseContext<SQLAccessor<?, ?>> {
 		dataSource.setMaxPool(maxSize);
 		dataSource.setMaxSize(maxSize);
 		dataSource.setIdleTimeout((int)properties.get("idle-timeout"));
+
+        int loginTimeout = DEFAULT_LOGIN_TIMEOUT;
+        if (properties.containsKey("login-timeout")) {
+            loginTimeout = (int) properties.get("login-timeout");
+        }
+
+        dataSource.setLoginTimeout(loginTimeout);
 		checkDatabaseVersionTable();
 	}
 	

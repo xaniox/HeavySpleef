@@ -77,3 +77,7 @@ persistence-connection:
     # For experts only. Specify the idle closure-timeout for an unused connection
     # in the connection pool (in seconds)
     idle-timeout: 600
+
+    # For experts only. Specify the login timeout when establishing
+    # a database connection (in seconds)
+    login-timeout: 4
