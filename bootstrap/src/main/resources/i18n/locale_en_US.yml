@@ -303,6 +303,7 @@ arrays:
   - "Disabled"
   - "Waiting"
   - "Lobby"
+  - "Warmup"
   - "Starting"
   - "Ingame"
   places:

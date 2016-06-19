@@ -305,6 +305,7 @@ arrays:
   - "Deaktiviert"
   - "Wartet"
   - "Lobby"
+  - "Warmup"
   - "Startet"
   - "Im Spiel"
   places:

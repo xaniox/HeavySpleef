@@ -303,6 +303,7 @@ arrays:
   - "uitgeschakeld"
   - "wachtend"
   - "Lobby"
+  - "Warmup"
   - "Startend"
   - "In spel"
   places:

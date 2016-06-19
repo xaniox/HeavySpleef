@@ -253,7 +253,17 @@ public class I18N {
 				if (!fileConfig.contains(key)) {
 					fileConfig.set(key, resourceConfig.get(key));
 					changesToCommit = true;
-				}
+				} else if (fileConfig.isList(key)) {
+                    List<String> fileConfigList = fileConfig.getStringList(key);
+                    List<String> resourceConfigList = resourceConfig.getStringList(key);
+
+                    if (!fileConfigList.equals(resourceConfigList)) {
+                        //Arrays and lists have to be replaced if a newer version is available
+                        //as older resource versions could possibly break functionality
+                        fileConfig.set(key, resourceConfigList);
+                        changesToCommit = true;
+                    }
+                }
 			}
 			
 			if (changesToCommit) {
