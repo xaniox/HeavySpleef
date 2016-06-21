@@ -121,7 +121,7 @@ public class PlayerStateHolder {
 	
 	public void apply(Player player, boolean teleport) {
 		PlayerInventory playerInv = player.getInventory();
-		boolean is1_9 = MinecraftVersion.getImplementationVersion().compareTo(MinecraftVersion.V1_9) > 0;
+		boolean is1_9 = MinecraftVersion.getImplementationVersion().compareTo(MinecraftVersion.V1_9) >= 0;
         boolean isSimpleSize = playerInv.getContents().length <= SIMPLE_INVENTORY_SIZE;
 
         ItemStack[] inventoryContents = new ItemStack[is1_9 && !isSimpleSize ? playerInv.getSize() : SIMPLE_INVENTORY_SIZE];
@@ -208,7 +208,7 @@ public class PlayerStateHolder {
 	
 	public void updateState(Player player, boolean location, GameMode mode) {
 		PlayerInventory inventory = player.getInventory();
-        boolean is1_9 = MinecraftVersion.getImplementationVersion().compareTo(MinecraftVersion.V1_9) > 0;
+        boolean is1_9 = MinecraftVersion.getImplementationVersion().compareTo(MinecraftVersion.V1_9) >= 0;
         boolean isSimpleSize = inventory.getContents().length <= SIMPLE_INVENTORY_SIZE;
 
         ItemStack[] contents = inventory.getContents();
