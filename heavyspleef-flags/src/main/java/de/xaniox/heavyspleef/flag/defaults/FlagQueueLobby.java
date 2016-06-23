@@ -97,8 +97,9 @@ public class FlagQueueLobby extends LocationFlag {
 		
 		holder.updateState(bukkitPlayer, false, holder.getGamemode());
 		player.savePlayerState(this, holder);
-		
-		PlayerStateHolder.applyDefaultState(bukkitPlayer);
+
+        boolean adventureMode = config.getGeneralSection().isAdventureMode();
+		PlayerStateHolder.applyDefaultState(bukkitPlayer, adventureMode);
 		
 		MaterialData data = config.getFlagSection().getLeaveItem();
 		MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));

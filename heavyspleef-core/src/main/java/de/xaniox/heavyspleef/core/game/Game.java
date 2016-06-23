@@ -481,8 +481,13 @@ public class Game implements VariableSuppliable {
 		GameStartEvent event = new GameStartEvent(this);
 		eventBus.callEvent(event);
 
-        for (SpleefPlayer player : ingamePlayers) {
-            player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+        DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+        boolean adventureMode = config.getGeneralSection().isAdventureMode();
+
+        if (adventureMode) {
+            for (SpleefPlayer player : ingamePlayers) {
+                player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+            }
         }
 
 		setGameState(GameState.INGAME);
@@ -684,8 +689,11 @@ public class Game implements VariableSuppliable {
 		//Store a reference to the player state
 		holder.updateState(player.getBukkitPlayer(), false, holder.getGamemode());
 		player.savePlayerState(this, holder);
-		
-		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer());
+
+        DefaultConfig config = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
+        boolean adventureMode = config.getGeneralSection().isAdventureMode();
+
+		PlayerStateHolder.applyDefaultState(player.getBukkitPlayer(), adventureMode);
 		
 		//This event is called when the player actually joins the game
 		PlayerJoinGameEvent joinGameEvent = new PlayerJoinGameEvent(this, player);

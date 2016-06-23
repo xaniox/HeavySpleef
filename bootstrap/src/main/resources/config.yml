@@ -69,6 +69,11 @@ general:
   # Warmup time in seconds (will be added to the countdown)
   # (Values less than 10 seconds may break the invisibility glitch fix)
   warmup-time: 10
+
+  # If enabled players will be put into adventure mode while in lobby
+  # You may have to disable this feature if you got strange inventory
+  # issues
+  adventure-mode: true
   
 queues:
   # Wether players are able to use queues if they
@@ -291,4 +296,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 10
+config-version: 11

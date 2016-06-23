@@ -490,8 +490,9 @@ public class FlagSpectate extends LocationFlag {
 		
 		holder.updateState(bukkitPlayer, false, holder.getGamemode());
 		player.savePlayerState(this, holder);
-		
-		PlayerStateHolder.applyDefaultState(bukkitPlayer);
+
+        boolean adventureMode = config.getGeneralSection().isAdventureMode();
+		PlayerStateHolder.applyDefaultState(bukkitPlayer, adventureMode);
 		
 		spectators.add(player);
 		

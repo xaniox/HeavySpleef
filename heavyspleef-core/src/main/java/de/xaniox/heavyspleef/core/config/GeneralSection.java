@@ -36,6 +36,7 @@ public class GeneralSection {
 	private boolean winMessageToAll;
     private boolean warmupMode;
     private int warmupTime;
+    private boolean adventureMode;
 	
 	public GeneralSection(ConfigurationSection section) {
 		String prefix = section.getString("spleef-prefix");
@@ -60,6 +61,7 @@ public class GeneralSection {
 		this.winMessageToAll = section.getBoolean("win-message-to-all", true);
         this.warmupMode = section.getBoolean("warmup-mode", false);
         this.warmupTime = section.getInt("warmup-time", 10);
+        this.adventureMode = section.getBoolean("adventure-mode", true);
 	}
 	
 	public String getSpleefPrefix() {
@@ -100,5 +102,9 @@ public class GeneralSection {
 
     public int getWarmupTime() {
         return warmupTime;
+    }
+
+    public boolean isAdventureMode() {
+        return adventureMode;
     }
 }

@@ -41,7 +41,7 @@ public class PlayerStateHolder {
 	private static final int SIMPLE_INVENTORY_SIZE = 4 * 9;
 	private static final int ARMOR_INVENTORY_SIZE = 4;
 	private static final int INVENTORY_SIZE = SIMPLE_INVENTORY_SIZE + ARMOR_INVENTORY_SIZE;
-	
+
 	private ItemStack[] inventory;
 	private ItemStack onCursor;
 	private GameMode gamemode;
@@ -85,8 +85,8 @@ public class PlayerStateHolder {
 	 * 
 	 * @param player
 	 */
-	public static void applyDefaultState(Player player) {
-		player.setGameMode(GameMode.ADVENTURE);
+	public static void applyDefaultState(Player player, boolean adventureMode) {
+		player.setGameMode(adventureMode ? GameMode.ADVENTURE : GameMode.SURVIVAL);
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);
 		player.setItemOnCursor(null);
