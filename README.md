@@ -1,4 +1,4 @@
-# HeavySpleef-2.2
+# HeavySpleef-2.4.1
 
 This is a completely recoded and revamped version of HeavySpleef. Source code for versions below 2.0 can be found [here](https://github.com/matzefratze123/HeavySpleef-Legacy).
 
@@ -48,7 +48,7 @@ And add HeavySpleef to your dependency list to automatically download the jar an
   <dependency>
     <groupId>de.matzefratze123</groupId>
     <artifactId>heavyspleef-api</artifactId>
-    <version>2.2</version>
+    <version>2.4.1</version>
     <scope>provided</scope>
   </dependency>
   <!-- And so on -->
