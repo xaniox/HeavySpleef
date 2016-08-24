@@ -8,7 +8,7 @@
 general:
   # This prefix will be shown in every message
   # you receive by the plugin
-  spleef-prefix: '&8[&6&lSpleef&8]'
+  spleef-prefix: '&8[&6&lSpleef&8] '
   
   # Whitelisted commands
   # A list of commands which are not blocked
@@ -296,4 +296,4 @@ update:
   enable-update-command: true
 
 # DO NOT CHANGE THIS UNLESS YOU WANT TO RESET YOUR CONFIG
-config-version: 11
+config-version: 12

@@ -205,7 +205,7 @@ public final class HeavySpleef {
 		
 		CommandManagerService service = commandManager.getService();
 		DefaultCommandExecution execution = service.getExecution();
-		spleefPrefix = generalSection.getSpleefPrefix() + " ";
+		spleefPrefix = generalSection.getSpleefPrefix();
 		execution.setPrefix(spleefPrefix);
 		vipPrefix = generalSection.getVipPrefix();
 		
