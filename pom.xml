@@ -241,7 +241,7 @@
 		<repository>
 			<id>vault-repo</id>
 			<name>vault's repository</name>
-			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
 		</repository>
 		<repository>
 			<id>sk89q-repo</id>
