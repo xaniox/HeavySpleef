@@ -17,6 +17,7 @@
  */
 package de.xaniox.heavyspleef.core.extension;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -52,9 +53,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.dom4j.Element;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Extension(name = "lobby-wall", hasCommands = true)
 public class ExtensionLobbyWall extends GameExtension {
@@ -291,7 +290,9 @@ public class ExtensionLobbyWall extends GameExtension {
 			Iterator<SpleefPlayer> currentIterator = game.getPlayers().iterator();
 			
 			@Override
-			public LoopReturn loop(int index, Sign sign) {
+			public LoopReturn loop(int index, SignRow.WrappedMetadataSign sign) {
+                Sign bukkitSign = sign.getBukkitSign();
+
 				if (index == 0) {
 					//First sign is the join sign
 					DefaultConfig defConfig = heavySpleef.getConfiguration(ConfigType.DEFAULT_CONFIG);
@@ -299,16 +300,16 @@ public class ExtensionLobbyWall extends GameExtension {
 					vars.add(new Variable("prefix", defConfig.getSignSection().getSpleefPrefix()));
 					game.supply(vars, joinLayout.getRequestedVariables());
 					
-					joinLayout.inflate(sign, vars);
+					joinLayout.inflate(bukkitSign, vars);
 				} else if (index == 1) {
 					//Second sign is the informational sign
-					infoLayout.inflate(sign, game);
+					infoLayout.inflate(bukkitSign, game);
 				} else {
 					boolean breakLoop = false;
 					
 					for (int i = 0; i < SignLayout.LINE_COUNT; i++) {
 						if (reset) {
-							sign.setLine(i, "");
+                            bukkitSign.setLine(i, "");
 							continue;
 						}
 						
@@ -341,17 +342,16 @@ public class ExtensionLobbyWall extends GameExtension {
 						if (line.length() > MAX_SIGN_CHARS) {
 							line = line.substring(0, MAX_SIGN_CHARS);
 						}
-						
-						sign.setLine(i, line);
+
+                        bukkitSign.setLine(i, line);
 					}
 					
 					if (breakLoop) {
 						return LoopReturn.BREAK;
 					}
 				}
-				
-				sign.update(true);
-				
+
+                bukkitSign.update(true);
 				return LoopReturn.DEFAULT;
 			}
 		});
@@ -380,6 +380,8 @@ public class ExtensionLobbyWall extends GameExtension {
 		private BlockFace2D direction;
 		/* The length of this row */
 		private int length;
+        /* Saved metadata for each sign if requested */
+        private Map<Vector, Map<String, Object>> metadata;
 		
 		public SignRow() {}
 		
@@ -464,7 +466,27 @@ public class ExtensionLobbyWall extends GameExtension {
 		public BlockFace2D getDirection() {
 			return direction;
 		}
-		
+
+		public void enableSignMetadata() {
+            if (metadata != null) {
+                throw new IllegalStateException("Metadata has already been enabled");
+            }
+
+            metadata = new HashMap<>();
+        }
+
+        /**
+         * <b>Note:</b> The caller is responsible for checking if the vector lies inside this sign row
+         * @return Returns a mutable map that contains the metadata for the provided sign (vector)
+         */
+        public Map<String, Object> getMetadata(Vector vector) {
+            if (metadata == null) {
+                return null;
+            }
+
+            return metadata.get(vector);
+        }
+
 		public void loopSigns(SignLooper looper) {
 			Vector startVec = new Vector(start.getBlockX(), start.getBlockY(), start.getBlockZ());
 			Vector endVec = new Vector(end.getBlockX(), end.getBlockY(), end.getBlockZ());
@@ -485,10 +507,22 @@ public class ExtensionLobbyWall extends GameExtension {
 				if (block.getType() != Material.WALL_SIGN) {
 					continue;
 				}
-				
+
+                Vector blockVec = block.getLocation().toVector();
+                Map<String, Object> preMeta = metadata == null ? null : metadata.get(blockVec);
+
 				Sign sign = (Sign) block.getState();
-				
-				SignLooper.LoopReturn loopReturn = looper.loop(i, sign);
+				WrappedMetadataSign wrappedMetadataSign = new WrappedMetadataSign(sign, preMeta);
+
+				SignLooper.LoopReturn loopReturn = looper.loop(i, wrappedMetadataSign);
+                if (preMeta == null && wrappedMetadataSign.metadataValues != null) {
+                    if (metadata == null) {
+                        enableSignMetadata();
+                    }
+
+                    metadata.put(blockVec, wrappedMetadataSign.metadataValues);
+                }
+
 				if (loopReturn == SignLooper.LoopReturn.CONTINUE) {
 					continue;
 				} else if (loopReturn == SignLooper.LoopReturn.BREAK) {
@@ -503,12 +537,13 @@ public class ExtensionLobbyWall extends GameExtension {
 			loopSigns(new SignLooper() {
 				
 				@Override
-				public LoopReturn loop(int index, Sign sign) {
+				public LoopReturn loop(int index, WrappedMetadataSign sign) {
+                    Sign bukkitSign = sign.getBukkitSign();
 					for (int i = 0; i < SignLayout.LINE_COUNT; i++) {
-						sign.setLine(i, "");
+                        bukkitSign.setLine(i, "");
 					}
-					
-					sign.update();
+
+                    bukkitSign.update();
 					return LoopReturn.DEFAULT;
 				}
 			});
@@ -601,9 +636,51 @@ public class ExtensionLobbyWall extends GameExtension {
 			}
 		}
 
+		public class WrappedMetadataSign {
+
+            private Sign sign;
+            private Map<String, Object> metadataValues;
+
+            protected WrappedMetadataSign(Sign sign) {
+                this.sign = sign;
+            }
+
+            protected WrappedMetadataSign(Sign sign, Map<String, Object> preMeta) {
+                this(sign);
+
+                this.metadataValues = preMeta;
+            }
+
+            public Sign getBukkitSign() {
+                return sign;
+            }
+
+            public void setMetadata(String id, Object value) {
+                if (metadataValues == null) {
+                    metadataValues = Maps.newHashMap();
+                }
+
+                metadataValues.put(id, value);
+            }
+
+            public boolean removeMetadata(String id) {
+                return metadataValues != null && metadataValues.remove(id) != null;
+
+            }
+
+            protected void clearAllMetadata() {
+                if (metadataValues == null) {
+                    return;
+                }
+
+                metadataValues.clear();
+            }
+
+        }
+
 		public interface SignLooper {
 			
-			public LoopReturn loop(int index, Sign sign);
+			public LoopReturn loop(int index, WrappedMetadataSign sign);
 			
 			public enum LoopReturn {
 				
@@ -671,7 +748,7 @@ public class ExtensionLobbyWall extends GameExtension {
 					return null;
 				}
 			}
-			
+
 			public static BlockFace2D byVector2D(int x, int z) {
 				x = normalize(x);
 				z = normalize(z);

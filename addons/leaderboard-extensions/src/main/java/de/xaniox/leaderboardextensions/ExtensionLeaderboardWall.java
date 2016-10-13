@@ -29,6 +29,7 @@ import de.xaniox.heavyspleef.commands.base.CommandContext;
 import de.xaniox.heavyspleef.commands.base.CommandException;
 import de.xaniox.heavyspleef.commands.base.PlayerOnly;
 import de.xaniox.heavyspleef.core.HeavySpleef;
+import de.xaniox.heavyspleef.core.Permissions;
 import de.xaniox.heavyspleef.core.PlayerPostActionHandler;
 import de.xaniox.heavyspleef.core.config.ConfigType;
 import de.xaniox.heavyspleef.core.config.DatabaseConfig;
@@ -41,6 +42,8 @@ import de.xaniox.heavyspleef.core.extension.ExtensionLobbyWall.SignRow;
 import de.xaniox.heavyspleef.core.extension.ExtensionLobbyWall.SignRow.SignLooper;
 import de.xaniox.heavyspleef.core.extension.ExtensionManager;
 import de.xaniox.heavyspleef.core.extension.GameExtension;
+import de.xaniox.heavyspleef.core.i18n.I18N;
+import de.xaniox.heavyspleef.core.i18n.I18NManager;
 import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.core.script.Variable;
@@ -50,6 +53,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.dom4j.Element;
 
@@ -62,6 +66,8 @@ import java.util.logging.Level;
 
 @Extension(name = "leaderboard-wall", hasCommands = true)
 public class ExtensionLeaderboardWall extends GameExtension {
+
+    private static final String METADATA_ID = "leaderboard_wall";
 
 	@Command(name = "addleaderboardwall", minArgs = 1, usage = "/spleef addleaderboardwall <name>",
 			descref = LEMessages.ADDLEADERBOARDWALL, i18nref = LeaderboardAddOn.I18N_REFERENCE, 
@@ -186,6 +192,7 @@ public class ExtensionLeaderboardWall extends GameExtension {
 				
 				if (add) {
 					SignRow row = SignRow.generateRow(sign);
+                    row.enableSignMetadata();
 					wall.addRow(row);
 				} else {
 					for (Iterator<SignRow> iterator = wall.getRows().iterator(); iterator.hasNext();) {
@@ -224,6 +231,7 @@ public class ExtensionLeaderboardWall extends GameExtension {
 	private String name;
 	private SignLayoutConfiguration layoutConfig;
 	private List<SignRow> rows;
+    private I18N i18n = I18NManager.getGlobal();
 	
 	protected ExtensionLeaderboardWall() {
 		this.rows = Lists.newArrayList();
@@ -266,6 +274,62 @@ public class ExtensionLeaderboardWall extends GameExtension {
 	public void onGameEnd(GameEndEvent event) {
 		update();
 	}
+
+	@SuppressWarnings("unchecked")
+	@EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        SpleefPlayer player = heavySpleef.getSpleefPlayer(event.getPlayer());
+        if (!player.hasPermission(Permissions.PERMISSION_STATS_OTHER)) {
+            return;
+        }
+
+        Block block = event.getClickedBlock();
+        boolean isWallBlock = false;
+        SignRow clickedRow = null;
+
+        for (SignRow row : rows) {
+            org.bukkit.util.Vector sv = row.getStart();
+            org.bukkit.util.Vector ev = row.getEnd();
+
+            Block start = row.getWorld().getBlockAt(sv.getBlockX(), sv.getBlockY(), sv.getBlockZ());
+            Block end = row.getWorld().getBlockAt(ev.getBlockX(), ev.getBlockY(), ev.getBlockZ());
+            Block current = start;
+
+            do {
+                if (current.equals(block)) {
+                    clickedRow = row;
+                    isWallBlock = true;
+                    break;
+                }
+
+                current = current.getRelative(row.getDirection().getBlockFace3D());
+            } while (!current.equals(end));
+
+            if (isWallBlock) {
+                break;
+            }
+        }
+
+        if (!isWallBlock) {
+            return;
+        }
+
+        org.bukkit.util.Vector blockVec = block.getLocation().toVector();
+        Map<String, Object> metadata = clickedRow.getMetadata(blockVec);
+        if (metadata == null) {
+            return;
+        }
+
+        Entry<String, Statistic> statisticEntry = (Entry<String, Statistic>) metadata.get(METADATA_ID);
+        if (statisticEntry == null) {
+            player.sendMessage(i18n.getString(Messages.Command.ERROR_ON_STATISTIC_LOAD));
+            return;
+        }
+
+        Statistic.FullStatisticPrinter printer = new Statistic.FullStatisticPrinter(heavySpleef.getDatabaseHandler(),
+                player.getBukkitPlayer(), statisticEntry.getKey(), heavySpleef.getLogger());
+        printer.print();
+    }
 	
 	public void update() {
 		int lengthSum = 0;
@@ -342,7 +406,8 @@ public class ExtensionLeaderboardWall extends GameExtension {
 		}
 		
 		@Override
-		public LoopReturn loop(int rowIndex, Sign sign) {
+		public LoopReturn loop(int rowIndex, SignRow.WrappedMetadataSign sign) {
+            Sign bukkitSign = sign.getBukkitSign();
 			if (!iterator.hasNext()) {
 				return LoopReturn.RETURN;
 			}
@@ -351,9 +416,11 @@ public class ExtensionLeaderboardWall extends GameExtension {
 			Set<Variable> variables = Sets.newHashSet();
 			entry.getValue().supply(variables, null);
 			variables.add(new Variable("player", entry.getKey()));
-			variables.add(new Variable("rank", index + 1));			
-			layoutConfig.getLayout().inflate(sign, variables);
-			sign.update();
+			variables.add(new Variable("rank", index + 1));
+			layoutConfig.getLayout().inflate(bukkitSign, variables);
+            bukkitSign.update();
+
+            sign.setMetadata(METADATA_ID, entry);
 			
 			++index;
 			return LoopReturn.DEFAULT;
