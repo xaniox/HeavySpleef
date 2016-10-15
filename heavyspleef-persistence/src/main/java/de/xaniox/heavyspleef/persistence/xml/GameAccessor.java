@@ -208,7 +208,8 @@ public class GameAccessor extends XMLAccessor<Game> {
 			}
 			
 			if (world == null) {
-				throw new RuntimeException("World \"" + worldName + "\" does not exist (game: " + name + ")");
+				throw new WorldNotFoundException("World \"" + worldName + "\" does not exist (game: " + name + ")"
+                        , name, worldName);
 			}
 			
 			game = new Game(heavySpleef, name, world);
@@ -347,10 +348,42 @@ public class GameAccessor extends XMLAccessor<Game> {
 				game.addDeathzone(deathzoneName, region);
 			}
 		} finally {
-			rl.unlock();
-		}
+            rl.unlock();
+        }
 		
 		return game;
 	}
+
+	public static class WorldNotFoundException extends RuntimeException {
+
+        private String game;
+        private String worldName;
+
+        public WorldNotFoundException(String message, String game, String worldName) {
+            super(message);
+
+            this.game = game;
+        }
+
+        public WorldNotFoundException(String message, String game, String worldName, Throwable cause) {
+            super(message, cause);
+
+            this.game = game;
+        }
+
+        public WorldNotFoundException(String game, String worldName, Throwable cause) {
+            super(cause);
+
+            this.game = game;
+        }
+
+        public String getGameName() {
+            return game;
+        }
+
+        public String getWorldName() {
+            return worldName;
+        }
+    }
 
 }

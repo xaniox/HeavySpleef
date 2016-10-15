@@ -247,8 +247,15 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		}
 		
 		Element rootElement = document.getRootElement();
-		
-		Game game = xmlContext.read(rootElement, Game.class);
+		Game game;
+
+        try {
+            game = xmlContext.read(rootElement, Game.class);
+        } catch (GameAccessor.WorldNotFoundException wnfe) {
+            logger.log(Level.SEVERE, "Failed to load game \"" + wnfe.getGameName() + "\". " +
+                    "World \"" + wnfe.getWorldName() + "\" has been deleted or hasn't been loaded yet!");
+            return null;
+        }
 		
 		File gameFloorFolder = new File(schematicFolder, game.getName());
 		if (gameFloorFolder.exists()) {
@@ -269,7 +276,7 @@ public class CachingReadWriteHandler implements ReadWriteHandler {
 		for (File gameFile : xmlFolder.listFiles(XML_GAME_FILTER)) {
 			Game game = getGame(gameFile);
 			if (game == null) {
-				return null;
+				continue;
 			}
 			
 			result.add(game);
