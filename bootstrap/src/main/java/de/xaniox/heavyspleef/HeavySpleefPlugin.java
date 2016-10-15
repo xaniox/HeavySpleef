@@ -73,5 +73,9 @@ public class HeavySpleefPlugin extends JavaPlugin {
 			heavySpleef.disable(); 
 		}
 	}
+
+	public HeavySpleef getCoreHeavySpleef() {
+        return heavySpleef;
+    }
 	
 }
