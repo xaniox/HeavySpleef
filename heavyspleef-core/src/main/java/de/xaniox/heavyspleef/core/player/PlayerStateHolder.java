@@ -227,7 +227,7 @@ public class PlayerStateHolder {
 		setOnCursor(player.getItemOnCursor());
 		setGamemode(mode != null ? mode : player.getGameMode());
         setMaxHealth(player.getMaxHealth());
-		setHealth(player.getHealth());
+		setHealth(player.getHealth(), player.getMaxHealth());
 		setFoodLevel(player.getFoodLevel());
 		setLevel(player.getLevel());
 		setExperience(player.getExp());
@@ -295,8 +295,12 @@ public class PlayerStateHolder {
 		return health;
 	}
 
-	public void setHealth(double health) {
-		this.health = health;
+	public void setHealth(double health, double maxHealth) {
+		if (health <= maxHealth) {
+			this.health = health;
+		} else {
+			this.health = maxHealth;
+		}
 	}
 
 	public int getFoodLevel() {
