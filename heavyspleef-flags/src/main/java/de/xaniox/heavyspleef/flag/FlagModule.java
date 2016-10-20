@@ -75,6 +75,7 @@ public class FlagModule extends SimpleModule {
 		registry.registerFlag(FlagSnowballs.class);
 		registry.registerFlag(FlagSpawnpoint.class);
 		registry.registerFlag(FlagSpectate.class);
+		registry.registerFlag(FlagSpectateLeavepoint.class);
 		registry.registerFlag(FlagSplegg.class);
 		registry.registerFlag(FlagTeam.class);
 		registry.registerFlag(FlagTeamLeatherArmor.class);

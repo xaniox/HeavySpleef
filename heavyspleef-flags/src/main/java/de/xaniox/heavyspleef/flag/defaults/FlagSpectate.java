@@ -400,6 +400,7 @@ public class FlagSpectate extends LocationFlag {
 	}
 	
 	@EventHandler
+	@SuppressWarnings("deprecation")
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
 		if (!isSpectating(player)) {
@@ -543,13 +544,18 @@ public class FlagSpectate extends LocationFlag {
             player.getBukkitPlayer().setScoreboard(mainBoard);
         }
 
+        Location teleportationLocation = event.getTeleportationLocation();
 		PlayerStateHolder state = player.getPlayerState(this);
 		if (state != null) {
-			state.apply(player.getBukkitPlayer(), true);
+			state.apply(player.getBukkitPlayer(), teleportationLocation == null);
 			player.removePlayerState(this);
 		} else {
 			//Ugh, something went wrong
 			player.sendMessage(getI18N().getString(Messages.Player.ERROR_ON_INVENTORY_LOAD));
+		}
+		
+		if (teleportationLocation != null) {
+			player.teleport(teleportationLocation);
 		}
 		
 		spectators.remove(player);
@@ -652,6 +658,7 @@ public class FlagSpectate extends LocationFlag {
 	public static class SpectateLeaveEvent extends PlayerGameEvent implements Cancellable {
 
         private boolean cancel;
+        private Location teleportationLocation;
 
 		public SpectateLeaveEvent(Game game, SpleefPlayer player) {
 			super(game, player);
@@ -666,6 +673,14 @@ public class FlagSpectate extends LocationFlag {
         public boolean isCancelled() {
             return cancel;
         }
+        
+        public void setTeleportationLocation(Location teleportationLocation) {
+			this.teleportationLocation = teleportationLocation;
+		}
+        
+        public Location getTeleportationLocation() {
+			return teleportationLocation;
+		}
 
     }
 
