@@ -18,6 +18,10 @@
 package de.xaniox.heavyspleef.commands.base;
 
 import com.google.common.collect.Sets;
+import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginManager;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -157,11 +161,13 @@ public class CommandContainer {
 	}
 
     @Deprecated
-    public static Set<CommandContainer> create(Class<?> rootClass, Instantiator instantiator, CommandExecution execution, Logger logger) {
+    public static Set<CommandContainer> create(Class<?> rootClass, Instantiator instantiator,
+                                               CommandExecution execution, Logger logger) {
         return create(rootClass, null, instantiator, execution, logger);
     }
 
-    public static Set<CommandContainer> create(Class<?> rootClass, CommandContainer parent, Instantiator instantiator, CommandExecution execution, Logger logger) {
+    public static Set<CommandContainer> create(Class<?> rootClass, CommandContainer parent, Instantiator instantiator,
+                                               CommandExecution execution, Logger logger) {
 		return buildHierarchy(new Class<?>[] {rootClass}, instantiator, parent, logger, execution);
 	}
 	
@@ -201,7 +207,9 @@ public class CommandContainer {
 					
 					childCommands = buildHierarchy(nestedCommandClasses, instantiator, container, logger, execution);
 				}
-				
+
+                buildPermissionHierarchy(command.permission());
+
 				container.setChildCommands(childCommands);
 				containers.add(container);
 			}
@@ -238,5 +246,53 @@ public class CommandContainer {
 		
 		return containers;
 	}
-	
+
+	private static void buildPermissionHierarchy(String permissionStr) {
+        PluginManager manager = Bukkit.getPluginManager();
+        String choppedPermStr = permissionStr;
+        if (permissionStr.endsWith(".*")) {
+            choppedPermStr = permissionStr.substring(0, permissionStr.length() - 2);
+        }
+
+        String parentPermissionStr = getParentPermission(choppedPermStr);
+        if (parentPermissionStr == null) {
+            return;
+        }
+
+        Permission parentPermission = manager.getPermission(parentPermissionStr);
+        if (parentPermission == null) {
+            parentPermission = new Permission(parentPermissionStr, PermissionDefault.OP);
+            manager.addPermission(parentPermission);
+
+            buildPermissionHierarchy(parentPermissionStr);
+        }
+
+        Permission actualPermission = manager.getPermission(permissionStr);
+        if (actualPermission == null) {
+            actualPermission = new Permission(permissionStr, PermissionDefault.OP);
+            manager.addPermission(actualPermission);
+        }
+
+        if (!parentPermission.getChildren().containsKey(permissionStr)) {
+            parentPermission.getChildren().put(permissionStr, true);
+            manager.recalculatePermissionDefaults(parentPermission);
+        }
+    }
+
+    private static String getParentPermission(String permissionStr) {
+        String[] parts = permissionStr.split("\\.");
+        if (parts.length == 1) {
+            return null;
+        }
+
+        StringBuilder parentBuilder = new StringBuilder();
+        for (int i = 0; i < parts.length - 1; i++) {
+            parentBuilder.append(parts[i]);
+            parentBuilder.append('.');
+        }
+
+        parentBuilder.append('*');
+        return parentBuilder.toString();
+    }
+
 }
