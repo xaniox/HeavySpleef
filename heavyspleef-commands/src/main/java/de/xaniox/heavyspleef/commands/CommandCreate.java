@@ -33,7 +33,7 @@ public class CommandCreate {
 	
 	@Command(name = "create", minArgs = 1, usage = "/spleef create <game>", 
 			descref = Messages.Help.Description.CREATE,
-			permission = Permissions.PERMISSION_DELETE)
+			permission = Permissions.PERMISSION_CREATE)
 	@PlayerOnly
 	public void onCreateCommand(CommandContext context, HeavySpleef heavySpleef) throws CommandException {
 		SpleefPlayer sender = heavySpleef.getSpleefPlayer(context.getSender());
