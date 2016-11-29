@@ -475,7 +475,7 @@ public class FlagSpectate extends LocationFlag {
 	public boolean spectate(SpleefPlayer player, Game game) {
 		SpectateEnterEvent enterEvent = new SpectateEnterEvent(game, player);
 		game.getEventBus().callEvent(enterEvent);
-		
+
 		if (enterEvent.isCancelled()) {
 			return false;
 		}
@@ -518,6 +518,10 @@ public class FlagSpectate extends LocationFlag {
 
     private void addLeaveItem(Player player) {
         MaterialData data = config.getFlagSection().getLeaveItem();
+        if (data == null) {
+        	return;
+		}
+
         MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_SPECTATE_DISPLAYNAME));

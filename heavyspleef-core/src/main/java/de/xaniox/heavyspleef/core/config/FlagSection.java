@@ -45,10 +45,15 @@ public class FlagSection {
 		readyBlock = matcher.result();
 		
 		String leaveItemStr = section.getString("leave-item", "MAGMA_CREAM");
-		matcher = MaterialDataMatcher.newMatcher(leaveItemStr);
-		matcher.match();
-		
-		leaveItem = matcher.result();
+		if (!leaveItemStr.equalsIgnoreCase("NONE")) {
+			matcher = MaterialDataMatcher.newMatcher(leaveItemStr);
+			matcher.match();
+
+			leaveItem = matcher.result();
+		} else {
+			leaveItem = null;
+		}
+
 
         this.spleggEggVelocityFactor = section.getDouble("splegg-egg-velocity-factor", 1d);
         this.spleggEggCooldown = section.getInt("splegg-egg-cooldown", 0);

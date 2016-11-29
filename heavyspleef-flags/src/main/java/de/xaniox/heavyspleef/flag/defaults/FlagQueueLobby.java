@@ -102,16 +102,18 @@ public class FlagQueueLobby extends LocationFlag {
 		PlayerStateHolder.applyDefaultState(bukkitPlayer, adventureMode);
 		
 		MaterialData data = config.getFlagSection().getLeaveItem();
-		MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
-		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_QUEUE_DISPLAYNAME));
-		meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_QUEUE_LORE)));
-		stack.setItemMeta(meta);
-		
-		stack.setMetadata(LEAVE_ITEM_KEY, null);
-		
-		bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
-		bukkitPlayer.updateInventory();
+		if (data != null) {
+			MetadatableItemStack stack = new MetadatableItemStack(data.toItemStack(1));
+			ItemMeta meta = stack.getItemMeta();
+			meta.setDisplayName(getI18N().getString(Messages.Player.LEAVE_QUEUE_DISPLAYNAME));
+			meta.setLore(Lists.newArrayList(getI18N().getString(Messages.Player.LEAVE_QUEUE_LORE)));
+			stack.setItemMeta(meta);
+
+			stack.setMetadata(LEAVE_ITEM_KEY, null);
+
+			bukkitPlayer.getInventory().setItem(RIGHT_HOTBAR_SLOT, stack);
+			bukkitPlayer.updateInventory();
+		}
 	}
 	
 	@Subscribe
