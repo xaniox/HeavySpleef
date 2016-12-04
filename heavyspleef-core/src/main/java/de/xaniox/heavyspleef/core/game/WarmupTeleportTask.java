@@ -66,9 +66,13 @@ public class WarmupTeleportTask extends SimpleBasicTask {
 
         SpleefPlayer player = entry.getKey();
         Location location = entry.getValue();
+        teleportMap.remove(player);
+
+        if (!player.isOnline()) {
+            return;
+        }
 
         player.teleport(location);
-        teleportMap.remove(player);
 
         PlayerWarmupTeleportEvent event = new PlayerWarmupTeleportEvent(game, player, location);
         game.getEventBus().callEvent(event);
