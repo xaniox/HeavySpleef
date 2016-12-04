@@ -187,7 +187,8 @@ public abstract class SignExtension extends GameExtension {
 			player.sendMessage(i18n.getString(Messages.Command.NO_PERMISSION));
 			return;
 		}
-		
+
+		event.setCancelled(true);
 		onSignClick(player);
 	}
 	
