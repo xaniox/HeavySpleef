@@ -69,6 +69,7 @@ public class WarmupTeleportTask extends SimpleBasicTask {
         teleportMap.remove(player);
 
         if (!player.isOnline()) {
+            checkTriggerWarmupFinished();
             return;
         }
 
@@ -77,6 +78,10 @@ public class WarmupTeleportTask extends SimpleBasicTask {
         PlayerWarmupTeleportEvent event = new PlayerWarmupTeleportEvent(game, player, location);
         game.getEventBus().callEvent(event);
 
+        checkTriggerWarmupFinished();
+    }
+
+    private void checkTriggerWarmupFinished() {
         if (teleportMap.size() == 0) {
             cancel();
 
@@ -88,7 +93,7 @@ public class WarmupTeleportTask extends SimpleBasicTask {
 
     public interface WarmupFinishedListener {
 
-        public void warmupFinished();
+        void warmupFinished();
 
     }
 
