@@ -367,6 +367,12 @@ public class Game implements VariableSuppliable {
 
                 @Override
                 public void onCountdownFinish(CountdownTask task) {
+                	//Check if all other players left the game while in warmup
+                	if (ingamePlayers.size() <= 1) {
+                		stop();
+                		return;
+					}
+
                     for (SpleefPlayer player : ingamePlayers) {
                         Player bukkitPlayer = player.getBukkitPlayer();
 

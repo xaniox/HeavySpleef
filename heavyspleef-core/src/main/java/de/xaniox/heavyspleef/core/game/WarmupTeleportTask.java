@@ -68,7 +68,7 @@ public class WarmupTeleportTask extends SimpleBasicTask {
         Location location = entry.getValue();
         teleportMap.remove(player);
 
-        if (!player.isOnline()) {
+        if (!player.isOnline() || !game.isIngame(player)) {
             checkTriggerWarmupFinished();
             return;
         }
