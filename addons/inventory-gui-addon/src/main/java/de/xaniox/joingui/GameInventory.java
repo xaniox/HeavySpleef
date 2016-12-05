@@ -18,8 +18,6 @@
 package de.xaniox.joingui;
 
 import com.google.common.collect.Lists;
-import de.matzefratze123.inventoryguilib.GuiInventory;
-import de.matzefratze123.inventoryguilib.GuiInventorySlot;
 import de.xaniox.heavyspleef.addon.java.BasicAddOn;
 import de.xaniox.heavyspleef.core.HeavySpleef;
 import de.xaniox.heavyspleef.core.event.*;
@@ -27,6 +25,8 @@ import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.game.GameManager;
 import de.xaniox.heavyspleef.core.i18n.I18N;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
+import de.xaniox.inventoryguilib.GuiInventory;
+import de.xaniox.inventoryguilib.GuiInventorySlot;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -210,6 +210,10 @@ public abstract class GameInventory extends GuiInventory implements SpleefListen
     @Override
     public void onClick(GuiClickEvent event) {
         event.setCancelled(true);
+
+        if (!event.isUpperInventory()) {
+            return;
+        }
 
         GuiInventorySlot slot = event.getSlot();
         Object val = slot.getValue();

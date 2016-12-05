@@ -20,8 +20,6 @@ package de.xaniox.heavyspleef.flag.defaults;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import de.matzefratze123.inventoryguilib.GuiInventory;
-import de.matzefratze123.inventoryguilib.GuiInventorySlot;
 import de.xaniox.heavyspleef.core.MetadatableItemStack;
 import de.xaniox.heavyspleef.core.event.*;
 import de.xaniox.heavyspleef.core.flag.*;
@@ -33,6 +31,8 @@ import de.xaniox.heavyspleef.core.stats.Statistic;
 import de.xaniox.heavyspleef.core.stats.StatisticRecorder;
 import de.xaniox.heavyspleef.flag.presets.EnumListFlag;
 import de.xaniox.heavyspleef.flag.presets.LocationFlag;
+import de.xaniox.inventoryguilib.GuiInventory;
+import de.xaniox.inventoryguilib.GuiInventorySlot;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -200,11 +200,14 @@ public class FlagTeam extends EnumListFlag<FlagTeam.TeamColor> {
 			
 			@Override
 			public void onClick(GuiClickEvent event) {
+				event.setCancelled(true);
+				if (!event.isUpperInventory()) {
+					return;
+				}
+
 				Player player = event.getPlayer();
 				SpleefPlayer spleefPlayer = getHeavySpleef().getSpleefPlayer(player);
 				GuiInventorySlot slot = event.getSlot();
-				
-				event.setCancelled(true);
 				
 				TeamColor color = (TeamColor) slot.getValue();
 				if (color == null) {

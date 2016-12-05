@@ -19,8 +19,6 @@ package de.xaniox.heavyspleef.flag.defaults;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import de.matzefratze123.inventoryguilib.GuiInventory;
-import de.matzefratze123.inventoryguilib.GuiInventorySlot;
 import de.xaniox.heavyspleef.core.HeavySpleef;
 import de.xaniox.heavyspleef.core.MetadatableItemStack;
 import de.xaniox.heavyspleef.core.SimpleBasicTask;
@@ -37,6 +35,8 @@ import de.xaniox.heavyspleef.core.game.GameManager;
 import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.presets.BaseFlag;
+import de.xaniox.inventoryguilib.GuiInventory;
+import de.xaniox.inventoryguilib.GuiInventorySlot;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
@@ -265,7 +265,10 @@ public class FlagTrackingSpectate extends BaseFlag {
 				@Override
 				public void onClick(GuiClickEvent event) {
 					event.setCancelled(true);
-					
+					if (!event.isUpperInventory()) {
+						return;
+					}
+
 					SpleefPlayer player = getHeavySpleef().getSpleefPlayer(event.getPlayer());
 					GuiInventorySlot slot = event.getSlot();
 					
