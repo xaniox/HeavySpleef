@@ -295,17 +295,17 @@ public interface Messages {
 		String LEAVE_GAME_DISPLAYNAME = PREFIX + "leave-game-displayname";
 		String LEAVE_GAME_LORE = PREFIX + "leave-game-lore";
 
-		String SHOVEL = "shovel";
-		String SHOVEL_LORE = "shovel-lore";
+		String SHOVEL = PREFIX + "shovel";
+		String SHOVEL_LORE = PREFIX + "shovel-lore";
 
-		String SPLEGG = "splegg";
-		String SPLEGG_LORE = "splegg-lore";
+		String SPLEGG = PREFIX + "splegg";
+		String SPLEGG_LORE = PREFIX + "splegg-lore";
 
-		String BOW = "bow";
-		String BOW_LORE = "bow_lore";
+		String BOW = PREFIX + "bow";
+		String BOW_LORE = PREFIX + "bow_lore";
 
-		String SHEARS = "shears";
-		String SHEARS_LORE = "shears_lore";
+		String SHEARS = PREFIX + "shears";
+		String SHEARS_LORE = PREFIX + "shears_lore";
 		
 	}
 	
