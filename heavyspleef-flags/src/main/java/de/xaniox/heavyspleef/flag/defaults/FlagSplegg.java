@@ -34,6 +34,7 @@ import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.game.GameManager;
 import de.xaniox.heavyspleef.core.game.GameProperty;
 import de.xaniox.heavyspleef.core.game.GameState;
+import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.presets.BaseFlag;
 import org.bukkit.*;
@@ -63,9 +64,7 @@ import java.util.Map;
 public class FlagSplegg extends BaseFlag {
 
 	private static final String TNT_METADATA_KEY = "heavyspleef_tnt";
-	private static final String SPLEGG_LAUNCHER_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Splegg Launcher";
-	private static final List<String> SPLEGG_LAUNCHER_LORE = Lists.newArrayList(ChatColor.GRAY + "Right-Click to launch an egg");
-	private static final ItemStack SPLEGG_LAUNCHER_ITEMSTACK;
+	private static final Material SPLEGG_LAUNCHER_MATERIAL = Material.IRON_SPADE;
 	private static Listener listener;
 	
 	@Inject
@@ -73,16 +72,6 @@ public class FlagSplegg extends BaseFlag {
     @Inject
     private DefaultConfig config;
     private Map<SpleefPlayer, Long> spleggCooldownTimes;
-
-	static {
-		SPLEGG_LAUNCHER_ITEMSTACK = new ItemStack(Material.IRON_SPADE);
-		
-		ItemMeta meta = SPLEGG_LAUNCHER_ITEMSTACK.getItemMeta();
-		meta.setDisplayName(SPLEGG_LAUNCHER_DISPLAYNAME);
-		meta.setLore(SPLEGG_LAUNCHER_LORE);
-		
-		SPLEGG_LAUNCHER_ITEMSTACK.setItemMeta(meta);
-	}
 	
 	@FlagInit
 	public static void initListener(HeavySpleef heavySpleef) {
@@ -109,6 +98,20 @@ public class FlagSplegg extends BaseFlag {
 	public void getDescription(List<String> description) {
 		description.add("Enables the Splegg gamemode in spleef games.");
 	}
+
+	private ItemStack getSpleggLauncherItemstack() {
+		ItemStack stack = new ItemStack(SPLEGG_LAUNCHER_MATERIAL);
+
+		ItemMeta meta = stack.getItemMeta();
+		meta.setDisplayName(getI18N().getString(Messages.Player.SPLEGG));
+		String lore = getI18N().getString(Messages.Player.SPLEGG_LORE);
+		if (!lore.isEmpty()) {
+			meta.setLore(Lists.newArrayList(lore.split("\n")));
+		}
+
+		stack.setItemMeta(meta);
+		return stack;
+	}
 	
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
@@ -116,7 +119,7 @@ public class FlagSplegg extends BaseFlag {
 		
 		for (SpleefPlayer player : game.getPlayers()) {
 			Inventory inv = player.getBukkitPlayer().getInventory();
-			inv.addItem(SPLEGG_LAUNCHER_ITEMSTACK);
+			inv.addItem(getSpleggLauncherItemstack());
 			
 			player.getBukkitPlayer().updateInventory();
 		}
@@ -146,7 +149,7 @@ public class FlagSplegg extends BaseFlag {
 		
 		Player bukkitPlayer = player.getBukkitPlayer();
 		ItemStack inHand = bukkitPlayer.getItemInHand();
-		if (inHand.getType() != SPLEGG_LAUNCHER_ITEMSTACK.getType()) {
+		if (inHand.getType() != SPLEGG_LAUNCHER_MATERIAL) {
 			return;
 		}
 

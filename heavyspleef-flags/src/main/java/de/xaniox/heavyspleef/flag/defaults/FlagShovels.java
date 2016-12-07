@@ -17,6 +17,7 @@
  */
 package de.xaniox.heavyspleef.flag.defaults;
 
+import com.google.common.collect.Lists;
 import de.xaniox.heavyspleef.core.event.GameStartEvent;
 import de.xaniox.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
@@ -24,9 +25,9 @@ import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.flag.GamePropertyPriority;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.game.GameProperty;
+import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.presets.BaseFlag;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -38,14 +39,16 @@ import java.util.Map;
 
 @Flag(name = "shovels", hasGameProperties = true)
 public class FlagShovels extends BaseFlag {
-	
-	private static final String SHOVEL_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef Shovel";
-	
-	private static ItemStack createShovel() {
+
+	private ItemStack createShovel() {
 		ItemStack shovelStack = new ItemStack(Material.DIAMOND_SPADE);
 		
 		ItemMeta meta = shovelStack.getItemMeta();
-		meta.setDisplayName(SHOVEL_DISPLAYNAME);
+		meta.setDisplayName(getI18N().getString(Messages.Player.SHOVEL));
+		String lore = getI18N().getString(Messages.Player.SHOVEL_LORE);
+		if (!lore.isEmpty()) {
+			meta.setLore(Lists.newArrayList(lore.split("\n")));
+		}
 		
 		shovelStack.setItemMeta(meta);
 		return shovelStack;

@@ -27,6 +27,7 @@ import de.xaniox.heavyspleef.core.flag.Inject;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.game.GameProperty;
 import de.xaniox.heavyspleef.core.game.GameState;
+import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.defaults.FlagScoreboard.GetScoreboardDisplayNameEvent;
 import de.xaniox.heavyspleef.flag.presets.BaseFlag;
@@ -57,23 +58,12 @@ import java.util.Map;
 @BukkitListener
 public class FlagBowspleef extends BaseFlag {
 
-	private static final String BOW_DISPLAYNAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef-Bow";
-	private static final ItemStack BOW_ITEMSTACK;
+	private static final Material BOW_MATERIAL = Material.BOW;
 	private static final String BOWSPLEEF_METADATA_KEY = "bowspleef";
 	private static final double BLOCK_PADDING = 0.4;
 	
 	@Inject
 	private Game game;
-	
-	static {
-		BOW_ITEMSTACK = new ItemStack(Material.BOW);
-		BOW_ITEMSTACK.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-		
-		ItemMeta meta = BOW_ITEMSTACK.getItemMeta();
-		meta.setDisplayName(BOW_DISPLAYNAME);
-		
-		BOW_ITEMSTACK.setItemMeta(meta);
-	}
 	
 	@Override
 	public void defineGameProperties(Map<GameProperty, Object> properties) {
@@ -85,7 +75,22 @@ public class FlagBowspleef extends BaseFlag {
 	public void getDescription(List<String> description) {
 		description.add("Enables the BowSpleef gamemode");
 	}
-	
+
+	public ItemStack getBowItemstack() {
+		ItemStack stack = new ItemStack(BOW_MATERIAL);
+		stack.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+
+		ItemMeta meta = stack.getItemMeta();
+		meta.setDisplayName(getI18N().getString(Messages.Player.BOW));
+		String lore = getI18N().getString(Messages.Player.BOW_LORE);
+		if (!lore.isEmpty()) {
+			meta.setLore(Lists.newArrayList(lore.split("\n")));
+		}
+
+		stack.setItemMeta(meta);
+		return stack;
+	}
+
 	@Subscribe
 	public void onGameStart(GameStartEvent event) {
 		Game game = event.getGame();
@@ -94,7 +99,7 @@ public class FlagBowspleef extends BaseFlag {
 		
 		for (SpleefPlayer player : game.getPlayers()) {
 			Inventory inventory = player.getBukkitPlayer().getInventory();
-			inventory.addItem(BOW_ITEMSTACK);
+			inventory.addItem(getBowItemstack());
 			inventory.addItem(arrow);
 			
 			player.getBukkitPlayer().updateInventory();

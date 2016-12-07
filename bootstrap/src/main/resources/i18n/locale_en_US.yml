@@ -251,6 +251,18 @@ player:
   
   leave-game-displayname: "&c&lLeave Game"
   leave-game-lore: "&aRight-Click &7to leave the game"
+
+  shovel: "&3&lSpleef-Shovel"
+  shovel-lore: "";
+
+  splegg: "&3&lSplegg-Launcher"
+  splegg-lore: "&7Right-Click to throw an egg"
+
+  bow: "&3&lSpleef-Bow"
+  bow-lore: ""
+
+  shears: "&3&lSpleef-Shears"
+  shears-lore: ""
 help:
   description:
     addon: "Loads, unloads an add-on or lists all installed add-ons"

@@ -17,15 +17,16 @@
  */
 package de.xaniox.heavyspleef.flag.defaults;
 
+import com.google.common.collect.Lists;
 import de.xaniox.heavyspleef.core.event.GameStartEvent;
 import de.xaniox.heavyspleef.core.event.PlayerBlockBreakEvent;
 import de.xaniox.heavyspleef.core.event.Subscribe;
 import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.game.GameProperty;
+import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.presets.BaseFlag;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -38,13 +39,15 @@ import java.util.Map;
 @Flag(name = "shears", hasGameProperties = true)
 public class FlagShears extends BaseFlag {
 
-	private static final String SHEARS_DISPLAY_NAME = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Spleef Shears";
-	
-	private static ItemStack createShears() {
+	private ItemStack createShears() {
 		ItemStack shearsStack = new ItemStack(Material.SHEARS);
 		
 		ItemMeta meta = shearsStack.getItemMeta();
-		meta.setDisplayName(SHEARS_DISPLAY_NAME);
+		meta.setDisplayName(getI18N().getString(Messages.Player.SHEARS));
+		String lore = getI18N().getString(Messages.Player.SHEARS_LORE);
+		if (!lore.isEmpty()) {
+			meta.setLore(Lists.newArrayList(lore.split("\n")));
+		}
 		
 		shearsStack.setItemMeta(meta);
 		return shearsStack;

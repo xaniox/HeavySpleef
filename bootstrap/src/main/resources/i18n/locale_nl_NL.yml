@@ -251,6 +251,18 @@ player:
 
   leave-game-displayname: "&c&lVerlaat spel"
   leave-game-lore: "&aRechts-klik &7om het spel te verlaten"
+
+  shovel: "&3&lSpleef-Schop"
+  shovel-lore: "";
+
+  splegg: "&3&lSplegg-Draagraket"
+  splegg-lore: "&7Right-Click to throw an egg"
+
+  bow: "&3&lSpleef-Boog"
+  bow-lore: ""
+
+  shears: "&3&lSpleef-Scharen"
+  shears-lore: ""
 help:
   description:
     addon: "Activeert, deactiveert een add-on of geeft een lijst van alle geinstalleerde add-ons"

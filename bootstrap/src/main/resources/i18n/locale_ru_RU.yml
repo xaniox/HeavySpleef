@@ -251,6 +251,18 @@ player:
 
   leave-game-displayname: "&c&lВыйти из игры"
   leave-game-lore: "&aПКМ &7чтобы выйти"
+
+  shovel: "&3&lSpleef-Shovel"
+  shovel-lore: "";
+
+  splegg: "&3&lSplegg-Launcher"
+  splegg-lore: "&7Right-Click to throw an egg"
+
+  bow: "&3&lSpleef-Bow"
+  bow-lore: ""
+
+  shears: "&3&lSpleef-Shears"
+  shears-lore: ""
 help:
   description:
     addon: "Загружает, выгружает и отображает список установленных дополнений"
