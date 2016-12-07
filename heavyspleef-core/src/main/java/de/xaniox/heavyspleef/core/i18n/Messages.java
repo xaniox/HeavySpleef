@@ -302,10 +302,10 @@ public interface Messages {
 		String SPLEGG_LORE = PREFIX + "splegg-lore";
 
 		String BOW = PREFIX + "bow";
-		String BOW_LORE = PREFIX + "bow_lore";
+		String BOW_LORE = PREFIX + "bow-lore";
 
 		String SHEARS = PREFIX + "shears";
-		String SHEARS_LORE = PREFIX + "shears_lore";
+		String SHEARS_LORE = PREFIX + "shears-lore";
 		
 	}
 	

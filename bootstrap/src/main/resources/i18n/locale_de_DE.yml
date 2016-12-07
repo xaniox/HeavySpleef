@@ -255,7 +255,7 @@ player:
   leave-game-lore: "&aRechtsklicken &7um das Spiel zu verlassen"
 
   shovel: "&3&lSpleef-Schaufel"
-  shovel-lore: "";
+  shovel-lore: ""
 
   splegg: "&3&lSplegg-Werfer"
   splegg-lore: "&7Rechts-Klick um ein Ei zu werfen"

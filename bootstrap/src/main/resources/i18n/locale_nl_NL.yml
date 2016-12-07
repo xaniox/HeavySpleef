@@ -253,7 +253,7 @@ player:
   leave-game-lore: "&aRechts-klik &7om het spel te verlaten"
 
   shovel: "&3&lSpleef-Schop"
-  shovel-lore: "";
+  shovel-lore: ""
 
   splegg: "&3&lSplegg-Draagraket"
   splegg-lore: "&7Right-Click to throw an egg"
