@@ -17,19 +17,18 @@
  */
 package de.xaniox.heavyspleef.core.i18n;
 
-
 public interface Messages {
-	
+
 	interface Command {
-	
+
 		String PREFIX = "command.";
-		
+
 		String PLAYER_ONLY = PREFIX + "player-only";
 		String NO_PERMISSION = PREFIX + "no-permission";
 		String DESCRIPTION_FORMAT = PREFIX + "description-format"; // $[description]
 		String USAGE_FORMAT = PREFIX + "usage-format"; // $[usage]
 		String UNKNOWN_COMMAND = PREFIX + "unknown-command";
-		
+
 		String GAME_CREATED = PREFIX + "game-created"; // $[game]
 		String GAME_ALREADY_EXIST = PREFIX + "game-already-exist"; // $[game]
 		String GAME_DOESNT_EXIST = PREFIX + "game-doesnt-exist"; // $[game]
@@ -43,37 +42,37 @@ public interface Messages {
 		String GAME_STOPPED = PREFIX + "game-stopped"; // $[game]
 		String GAME_IS_INGAME = PREFIX + "game-is-ingame"; // $[game]
 		String PLAYER_NOT_FOUND = PREFIX + "player-not-found"; // $[player]
-		String PLAYER_NOT_IN_GAME = PREFIX + "player-not-ingame"; //$[player]
+		String PLAYER_NOT_IN_GAME = PREFIX + "player-not-ingame"; // $[player]
 		String PLAYER_KICKED = PREFIX + "player-kicked"; // $[player]
 		String NOT_INGAME = PREFIX + "not-ingame";
-		
+
 		String INVALID_FLAG_INPUT = PREFIX + "invalid-flag-input";
 		String FLAG_SET = PREFIX + "flag-set"; // $[flag]
 		String PARENT_FLAG_NOT_SET = PREFIX + "parent-flag-not-set"; // $[parent-flag]
 		String FLAG_REQUIRES_HOOK = PREFIX + "flag-requires-hook"; // $[hook]
 		String FLAG_NOT_PRESENT = PREFIX + "flag-not-present"; // $[flag]
 		String FLAG_REMOVED = PREFIX + "flag-removed"; // $[flag]
-		
+
 		String CLICK_TO_JOIN = PREFIX + "click-to-join"; // $[game]
 		String DEFINE_FULL_WORLDEDIT_REGION = PREFIX + "define-full-worldedit-region";
 
-		String WORLDEDIT_SELECTION_NOT_SUPPORTED = PREFIX +"worldedit-selection-not-supported";
-		String FLOOR_ADDED = PREFIX +"floor-added";
+		String WORLDEDIT_SELECTION_NOT_SUPPORTED = PREFIX + "worldedit-selection-not-supported";
+		String FLOOR_ADDED = PREFIX + "floor-added";
 		String FLOOR_NOT_PRESENT = PREFIX + "floor-not-present";
 		String FLOOR_REMOVED = PREFIX + "floor-removed";
 		String REGION_VISUALIZED = PREFIX + "region-visualized";
-		
+
 		String DEATHZONE_NOT_PRESENT = PREFIX + "deathzone-not-present";
 		String DEATHZONE_REMOVED = PREFIX + "deathzone-removed";
 		String DEATHZONE_ADDED = PREFIX + "deathzone-added";
-		
+
 		String BLOCK_NOT_A_SIGN = PREFIX + "block-not-a-sign";
 		String CLICK_ON_SIGN_TO_ADD_WALL = PREFIX + "click-on-sign-to-add-wall";
 		String WALL_ADDED = PREFIX + "wall-added";
 		String CLICK_ON_WALL_TO_REMOVE = PREFIX + "click-on-wall-to-remove";
 		String WALLS_REMOVED = PREFIX + "walls-removed"; // $[count]
 		String NO_WALLS_FOUND = PREFIX + "no-walls-found";
-		
+
 		String GAME_INFORMATION = PREFIX + "game-information";
 		String NAME = PREFIX + "name";
 		String WORLD = PREFIX + "world";
@@ -82,36 +81,38 @@ public interface Messages {
 		String FLOORS = PREFIX + "floors";
 		String DEATH_ZONES = PREFIX + "death-zones";
 		String EXTENSIONS = PREFIX + "extensions";
-		
+
 		String CUBOID = PREFIX + "cuboid";
 		String CYLINDRICAL = PREFIX + "cylindrical";
 		String POLYGONAL = PREFIX + "polygonal";
 
 		String ERROR_ON_STATISTIC_LOAD = PREFIX + "error-on-statistic-load";
-		String TOP_STATISTICS_HEADER = PREFIX + "top-statistics-header";
-		String TOP_STATISTIC_FORMAT = PREFIX + "top-statistics-format";
-		String TOP_STATISTICS_FOOTER = PREFIX + "top-statistics-footer";
+
+		String TOP_STATISTICS_HEADER = "top-statistics-header";
+		String TOP_STATISTIC_FORMAT = "top-statistics-format";
+		String TOP_STATISTICS_FOOTER = "top-statistics-footer";
+
 		String TIME_FORMAT = PREFIX + "time-format";
-		
-		String STATISTIC_HEADER = PREFIX + "statistic-header";
-		String STATISTIC_FORMAT = PREFIX + "statistic-format";
-		String STATISTIC_FOOTER = PREFIX + "statistic-footer";
+
+		String STATISTIC_HEADER = "statistic-header";
+		String STATISTIC_FORMAT = "statistic-format";
+		String STATISTIC_FOOTER = "statistic-footer";
 
 		String STATISTIC_CACHE_CLEARED = PREFIX + "statistic-cache-cleared";
-		
+
 		String NO_VOTE_ENABLED = PREFIX + "no-vote-enabled";
 		String SUCCESSFULLY_VOTED = PREFIX + "successfully-voted";
 		String ALREADY_VOTED = PREFIX + "already-voted";
 
 		String CANNOT_DO_THAT_INGAME = PREFIX + "cannot-do-that-ingame";
 		String GAME_DOESNT_ALLOW_SPECTATE = PREFIX + "game-doesnt-allow-spectate";
-		
+
 		String SAVING_DATA = PREFIX + "saving-data";
 		String ERROR_ON_SAVE = PREFIX + "error-on-save";
 		String EVERYTHING_SAVED = PREFIX + "everything-saved";
 		String STATISTICS_SAVED = PREFIX + "statistics-saved";
 		String GAMES_SAVED = PREFIX + "games-saved";
-		
+
 		String HELP_HEADER = PREFIX + "help-header";
 		String HELP_RECORD = PREFIX + "help-record";
 
@@ -136,7 +137,7 @@ public interface Messages {
 		String JOIN = PREFIX + "join";
 		String ADMIN_INFO = PREFIX + "admin-info";
 		String SHOW_ADMIN_INFO = PREFIX + "show-admin-info";
-		
+
 		String INVALID_REGEN_INTERVAL = PREFIX + "invalid-regen-interval";
 		String INVALID_AUTOSTART = PREFIX + "invalid-autostart";
 		String INVALID_COUNTDOWN = PREFIX + "invalid-countdown";
@@ -171,31 +172,33 @@ public interface Messages {
 		String NO_ADDONS_INSTALLED = PREFIX + "no-addons-installed";
 		String ADDON_LIST_HEADER = PREFIX + "addon-list-header";
 		String ADDON_LIST_ENTRY = PREFIX + "addon-list-entry";
-		
+
 		String NEED_AT_LEAST_ONE_NUMBER = PREFIX + "need-at-least-one-number";
 		String ALREADY_QUEUED = PREFIX + "already-queued";
 
 		String ADDON_NOT_EXISTING = PREFIX + "addon-not-existing";
 		String ADDON_RELOADED = PREFIX + "addon-reloaded";
-		
+
 	}
-	
+
 	interface Broadcast {
-		
+
 		String PREFIX = "broadcast.";
-		
+
 		String PLAYER_LEFT_GAME = PREFIX + "player-left-game"; // $[player]
 		String GAME_STARTED = PREFIX + "game-started";
 		String GAME_STOPPED = PREFIX + "game-stopped";
 		String GAME_COUNTDOWN_MESSAGE = PREFIX + "game-countdown-message"; // $[remaining]
 		String PLAYER_JOINED_GAME = PREFIX + "player-joined-game"; // $[player]
-		String PLAYER_LOST_GAME = PREFIX + "player-lost-game"; // $[player]; $[killer]
+		String PLAYER_LOST_GAME = PREFIX + "player-lost-game"; // $[player];
+																// $[killer]
 		String PLAYER_LOST_GAME_UNKNOWN_KILLER = PREFIX + "player-lost-game-unknown-killer"; // $[player]
 		String PLAYER_WON_GAME = PREFIX + "player-won-game"; // $[player]
-		
+
 		String GAME_TIMED_OUT = PREFIX + "game-timeout";
-		String GAME_TIMEOUT_COUNTDOWN = PREFIX + "game-timeout-countdown"; // $[minutes]; $[seconds]
-		
+		String GAME_TIMEOUT_COUNTDOWN = PREFIX + "game-timeout-countdown"; // $[minutes];
+																			// $[seconds]
+
 		String TEAM_IS_OUT = PREFIX + "team-is-out"; // $[color]
 		String NEED_FLOORS = PREFIX + "need-floors";
 		String TOO_FEW_PLAYERS_TEAM = PREFIX + "too-few-players-team"; // $[amount]
@@ -205,32 +208,32 @@ public interface Messages {
 		String TEAMS_LEFT = PREFIX + "teams-left";
 		String TEAM_WON = PREFIX + "team-won";
 		String PLAYER_VOTED = PREFIX + "player-voted";
-		
+
 		String BROADCAST_GAME_START = PREFIX + "broadcast-game-start";
 
 		String NEED_MORE_PLAYERS = PREFIX + "need-more-players";
-        String COUNTDOWN_TITLES_NUMBER_FORMAT = PREFIX + "countdown-titles-number-format";
-        String COUNTDOWN_TITLES_GO = PREFIX + "countdown-titles-go";
+		String COUNTDOWN_TITLES_NUMBER_FORMAT = PREFIX + "countdown-titles-number-format";
+		String COUNTDOWN_TITLES_GO = PREFIX + "countdown-titles-go";
 
-        String BOSSBAR_PLAYER_JOINED = PREFIX + "bossbar-player-joined";
-        String BOSSBAR_PLAYERS_NEEDED = PREFIX + "bossbar-players-needed";
-        String BOSSBAR_PLAYER_LEFT = PREFIX + "bossbar-player-left";
-        String BOSSBAR_PLAYER_LOST = PREFIX + "bossbar-player-lost";
-        String BOSSBAR_COUNTDOWN = PREFIX + "bossbar-countdown";
-        String BOSSBAR_PLAYING_ON = PREFIX + "bossbar-playing-on";
-        String BOSSBAR_PLAYERS_LEFT = PREFIX + "bossbar-players-left";
-        String BOSSBAR_GO = PREFIX + "bossbar-go";
+		String BOSSBAR_PLAYER_JOINED = PREFIX + "bossbar-player-joined";
+		String BOSSBAR_PLAYERS_NEEDED = PREFIX + "bossbar-players-needed";
+		String BOSSBAR_PLAYER_LEFT = PREFIX + "bossbar-player-left";
+		String BOSSBAR_PLAYER_LOST = PREFIX + "bossbar-player-lost";
+		String BOSSBAR_COUNTDOWN = PREFIX + "bossbar-countdown";
+		String BOSSBAR_PLAYING_ON = PREFIX + "bossbar-playing-on";
+		String BOSSBAR_PLAYERS_LEFT = PREFIX + "bossbar-players-left";
+		String BOSSBAR_GO = PREFIX + "bossbar-go";
 
-        String WARMUP_STARTED = PREFIX + "warmup-started";
+		String WARMUP_STARTED = PREFIX + "warmup-started";
 
-    }
-	
+	}
+
 	interface Player {
-	
+
 		String PREFIX = "player.";
-		
+
 		String NOT_A_NUMBER = PREFIX + "not-a-number";
-		
+
 		String PLAYER_LEAVE = PREFIX + "player-leave";
 		String PLAYER_KICK = PREFIX + "player-kick"; // $[kicker]; $[message]
 		String PLAYER_KICK_NO_REASON = PREFIX + "player-kick-no-reason";
@@ -240,24 +243,24 @@ public interface Messages {
 		String ERROR_ON_INVENTORY_LOAD = PREFIX + "error-on-inventory-load";
 		String ERROR_NO_LOBBY_POINT_SET = PREFIX + "error-no-lobby-point-set";
 		String AVAILABLE_FLAGS = PREFIX + "available-flags"; // $[flags]
-		
+
 		String TEAM_MAX_PLAYER_COUNT_REACHED = PREFIX + "team-max-player-count-reached";
-		
+
 		String PAID_ENTRY_FEE = PREFIX + "paid-entry-fee"; // $[amount]
-		
+
 		String NO_SPECTATE_FLAG = PREFIX + "no-spectate-flag";
 		String PLAYER_SPECTATE = PREFIX + "player-spectate";
 		String PLAYER_LEAVE_SPECTATE = PREFIX + "player-leave-spectate";
-		
+
 		String PLAYER_RECEIVE_JACKPOT = PREFIX + "player-receive-jackpot"; // $[amount]
-		
+
 		String MAX_PLAYER_COUNT_REACHED = PREFIX + "max-player-count-reached"; // $[max]
 
 		String TEAM_SELECTOR_TITLE = PREFIX + "team-selector-title";
 		String CLICK_TO_JOIN_TEAM = PREFIX + "click-to-join-team";
 		String NEED_MIN_PLAYERS = PREFIX + "need-min-players"; // $[amount]
 
-		String NO_SIGN_AVAILABLE = PREFIX + "no-sign-available"; //$[identifier]
+		String NO_SIGN_AVAILABLE = PREFIX + "no-sign-available"; // $[identifier]
 		String SIGN_REMOVED = PREFIX + "sign-removed";
 		String ANTICAMPING_WARN = PREFIX + "anticamping-warn";
 		String ANTICAMPING_TELEPORT = PREFIX + "anticamping-teleport";
@@ -306,17 +309,17 @@ public interface Messages {
 
 		String SHEARS = PREFIX + "shears";
 		String SHEARS_LORE = PREFIX + "shears-lore";
-		
+
 	}
-	
+
 	interface Help {
-		
+
 		String PREFIX = "help.";
-		
+
 		interface Description {
-			
+
 			String PREFIX = Help.PREFIX + "description.";
-			
+
 			String ADDONS = PREFIX + "addon";
 			String CLEARCACHE = PREFIX + "clearcache";
 			String CREATE = PREFIX + "create";
@@ -350,20 +353,19 @@ public interface Messages {
 			String VERSION = PREFIX + "version";
 			String VOTE = PREFIX + "vote";
 
-			
 		}
-		
+
 	}
-	
+
 	interface Arrays {
-		
+
 		String PREFIX = "arrays.";
-		
+
 		String TEAM_COLOR_ARRAY = PREFIX + "team-color-array";
 		String TIME_UNIT_ARRAY = PREFIX + "time-unit-array";
 		String GAME_STATE_ARRAY = PREFIX + "game-state-array";
 		String PLACES = PREFIX + "places";
-		
+
 	}
-	
+
 }
