@@ -150,6 +150,14 @@ command:
   addon-not-existing: "&cДополнения с именем $[addon] нет в папке дополнений!"
   addon-reloaded: "&7Дополнение '&a$[addon]&7' перезагружено!"
   already-queued: "&cВы уже в очереди в игру '$[game]'! Используйте /spleef leave чтобы покинуть очередь."
+
+  # A compound of different sentence parts for spleef help
+  click-for-help: "Click here to access help"
+  type: "Type "
+  for-help-or: " for help or click "
+  for-help: " for help"
+  here: "here"
+  version: "version"
 broadcast:
   player-left-game: "&a$[player] &7вышел из игры"
   game-started: "&7Игра на арене &a$[game] &7началась. Удачи!"

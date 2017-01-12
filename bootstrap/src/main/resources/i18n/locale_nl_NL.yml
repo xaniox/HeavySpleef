@@ -150,6 +150,14 @@ command:
   addon-not-existing: "&cEen add-on met de naam $[addon] bestaat niet in de add-on map!"
   addon-reloaded: "&7Add-on '&a$[addon]&7' herladen!"
   already-queued: "&cJe bent al in de wachtrij voor het spel '$[game]'! Gebruik /spleef leave om de wachtrij te verlaten."
+
+  # A compound of different sentence parts for spleef help
+  click-for-help: "Click here to access help"
+  type: "Type "
+  for-help-or: " for help or click "
+  for-help: " for help"
+  here: "here"
+  version: "version"
 broadcast:
   player-left-game: "&a$[player] &7heeft het spel verlaten"
   game-started: "&7Het spel &a$[game] &7is gestart. Veel succes!"

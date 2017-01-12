@@ -149,7 +149,15 @@ command:
   addon-list-entry: "&7- $[addon] &7(&6$[version]&7)"
   addon-not-existing: "&cAn add-on with the name $[addon] does not exist in the add-on folder!"
   addon-reloaded: "&7Add-on '&a$[addon]&7' reloaded!"
-  already-queued: "&cYou are already queued for the game '$[game]'! Use /spleef leave to leave the queue."
+  already-queued: "&cYou are already queued for the game '$[game]'! Use /spleef leve to leave the queue."
+
+  # A compound of different sentence parts for spleef help
+  click-for-help: "Click here to access help"
+  type: "Type "
+  for-help-or: " for help or click "
+  for-help: " for help"
+  here: "here"
+  version: "version"
 broadcast:
   player-left-game: "&a$[player] &7left the game"
   game-started: "&7The game &a$[game] &7has started. Good luck!"

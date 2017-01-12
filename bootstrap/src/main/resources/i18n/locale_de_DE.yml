@@ -151,6 +151,15 @@ command:
   addon-not-existing: "&cEin Add-on mit dem Namen $[addon] existiert nicht im Add-on Installationsordner!"
   addon-reloaded: "&7Add-on '&a$[addon]&7' neu geladen!"
   already-queued: "&cDu bist bereits in der Warteschlange für das Spiel '$[game]'! Benutze /spleef leave um die Warteschlange zu verlassen."
+
+  # A compound of different sentence parts for spleef help
+  click-for-help: "Klicke hier für Hilfe"
+  type: "Benutze "
+  for-help-or: " für Hilfe oder klicke "
+  for-help: " für Hilfe"
+  here: "hier"
+  version: "Version"
+
 broadcast:
   player-left-game: "&a$[player] &7hat das Spiel verlassen"
   game-started: "&7Spiel &a$[game] &7gestartet. Viel Glück!"

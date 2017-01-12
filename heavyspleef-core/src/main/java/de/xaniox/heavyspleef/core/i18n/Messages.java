@@ -177,6 +177,13 @@ public interface Messages {
 
 		String ADDON_NOT_EXISTING = PREFIX + "addon-not-existing";
 		String ADDON_RELOADED = PREFIX + "addon-reloaded";
+
+		String CLICK_FOR_HELP = PREFIX + "click-for-help";
+		String TYPE = PREFIX + "type";
+		String FOR_HELP_OR = PREFIX + "for-help-or";
+		String FOR_HELP = "for-help";
+		String HERE = PREFIX + "here";
+		String VERSION = PREFIX + "version";
 		
 	}
 	

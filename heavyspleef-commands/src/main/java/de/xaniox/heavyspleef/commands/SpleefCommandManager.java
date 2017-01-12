@@ -141,27 +141,29 @@ public class SpleefCommandManager implements CommandManager {
 		}
 		
 		PluginDescriptionFile desc = heavySpleef.getPlugin().getDescription();
+		I18N i18n = I18NManager.getGlobal();
 		
 		if (sender instanceof SpleefPlayer && MinecraftVersion.isSpigot()) {
 			BaseComponent[] infoMsg = new ComponentBuilder(desc.getName())
 					.color(ChatColor.GRAY)
 					.bold(true)
-				.append(" version " + desc.getVersion())
+				.append(" " + i18n.getString(Messages.Command.VERSION) + " " + desc.getVersion())
 					.color(ChatColor.WHITE)
 					.bold(false)
 				.create();
-			
-			BaseComponent[] helpMsg = new ComponentBuilder("Type ")
+
+			String clickAccessHelpMsg = i18n.getString(Messages.Command.CLICK_FOR_HELP);
+			BaseComponent[] helpMsg = new ComponentBuilder(i18n.getString(Messages.Command.TYPE))
 					.color(ChatColor.GOLD)
 				.append("/spleef help")
 					.color(ChatColor.WHITE)
-					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click here to access help").color(ChatColor.GOLD).create()))
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(clickAccessHelpMsg).color(ChatColor.GOLD).create()))
 					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef help"))
-				.append(" for help or click ")
+				.append(i18n.getString(Messages.Command.FOR_HELP_OR))
 					.color(ChatColor.GOLD)
-				.append("here")
+				.append(i18n.getString(Messages.Command.HERE))
 					.color(ChatColor.GRAY)
-					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click here to access help").color(ChatColor.GOLD).create()))
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(clickAccessHelpMsg).color(ChatColor.GOLD).create()))
 					.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spleef help"))
 				.create();
 			
@@ -169,8 +171,10 @@ public class SpleefCommandManager implements CommandManager {
 			bukkitPlayer.spigot().sendMessage(infoMsg);
 			bukkitPlayer.spigot().sendMessage(helpMsg);
 		} else {
-			sender.sendMessage(org.bukkit.ChatColor.GRAY + "" + org.bukkit.ChatColor.BOLD + desc.getName() + org.bukkit.ChatColor.RESET + " version " + desc.getVersion());
-			sender.sendMessage(org.bukkit.ChatColor.GOLD + "Type " + org.bukkit.ChatColor.RESET + "/spleef help" + org.bukkit.ChatColor.GOLD + " for help");
+			sender.sendMessage(org.bukkit.ChatColor.GRAY + "" + org.bukkit.ChatColor.BOLD + desc.getName() +
+					org.bukkit.ChatColor.RESET + " " + i18n.getString(Messages.Command.VERSION) + " " + desc.getVersion());
+			sender.sendMessage(org.bukkit.ChatColor.GOLD + i18n.getString(Messages.Command.TYPE) +
+					org.bukkit.ChatColor.RESET + "/spleef help" + org.bukkit.ChatColor.GOLD + i18n.getString(Messages.Command.FOR_HELP));
 		}
 	}
 	
