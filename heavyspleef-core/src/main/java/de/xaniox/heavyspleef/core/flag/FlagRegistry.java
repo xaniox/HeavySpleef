@@ -350,6 +350,15 @@ public class FlagRegistry {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public boolean checkHooks(Class<? extends AbstractFlag<?>> flagClass) {
+		if (!flagClass.isAnnotationPresent(Flag.class)) {
+			throw new IllegalArgumentException("Flag class is not attached with @Flag");
+		}
+
+		Flag flagAnnot = flagClass.getAnnotation(Flag.class);
+		return checkHooks(flagAnnot);
+	}
 	
 	private boolean checkHooks(Flag annotation) {
 		HookReference[] refs = annotation.depend();

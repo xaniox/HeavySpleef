@@ -38,7 +38,8 @@ public class UnloadedFlag extends NullFlag {
 	 * in a {@link FlagRegistry} 
 	 */
 	public boolean validateLoad(FlagRegistry registry) {
-		return registry.isFlagPresent(flagName);
+		Class<? extends AbstractFlag<?>> flagClass = registry.getFlagClass(flagName);
+		return registry.isFlagPresent(flagClass) && registry.checkHooks(flagClass);
 	}
 	
 	/**
