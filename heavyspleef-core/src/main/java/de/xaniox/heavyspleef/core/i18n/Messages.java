@@ -181,7 +181,7 @@ public interface Messages {
 		String CLICK_FOR_HELP = PREFIX + "click-for-help";
 		String TYPE = PREFIX + "type";
 		String FOR_HELP_OR = PREFIX + "for-help-or";
-		String FOR_HELP = "for-help";
+		String FOR_HELP = PREFIX + "for-help";
 		String HERE = PREFIX + "here";
 		String VERSION = PREFIX + "version";
 		
