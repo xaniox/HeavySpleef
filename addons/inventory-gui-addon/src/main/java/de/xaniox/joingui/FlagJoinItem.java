@@ -31,12 +31,13 @@ import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.flag.FlagInit;
 import de.xaniox.heavyspleef.core.flag.Inject;
 import de.xaniox.heavyspleef.core.game.Game;
+import de.xaniox.heavyspleef.flag.presets.ItemStackFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
 @Flag(name = "join-item")
-public class FlagJoinItem extends SingleItemStackFlag {
+public class FlagJoinItem extends ItemStackFlag {
 
 	private static ProxyExecution joinExecution;
 	private static JoinInventory joinInventory;
