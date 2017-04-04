@@ -57,13 +57,13 @@ public class InventoryEntryLayout {
 		
 		ItemMeta meta = stack.getItemMeta();
 
-		if (meta.hasDisplayName()) {
+		if (!meta.hasDisplayName()) {
 			//Don't overwrite display names that have been explicitly set
 			String title = this.title.generate(vars);
 			meta.setDisplayName(title);
 		}
 
-		if (meta.hasLore()) {
+		if (!meta.hasLore()) {
 			//Don't overwrite lores that have been explicitly set
 			List<String> lore = Lists.newArrayList();
 			for (CustomizableLine line : this.lore) {
