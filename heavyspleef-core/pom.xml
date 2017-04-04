@@ -12,10 +12,6 @@
 			<name>sk89q's repository</name>
 			<url>http://maven.sk89q.com/repo</url>
 		</repository>
-		<repository>
-			<id>plugin-metrics</id>
-			<url>http://repo.mcstats.org/content/repositories/public</url>
-		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
