@@ -55,15 +55,22 @@ public class InventoryEntryLayout {
 		
 		suppliable.supply(vars, requestedVars);
 		
-		String title = this.title.generate(vars);
-		List<String> lore = Lists.newArrayList();
-		for (CustomizableLine line : this.lore) {
-			lore.add(line.generate(vars));
-		}
-		
 		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(title);
-		meta.setLore(lore);
+
+		if (meta.hasDisplayName()) {
+			//Don't overwrite display names that have been explicitly set
+			String title = this.title.generate(vars);
+			meta.setDisplayName(title);
+		}
+
+		if (meta.hasLore()) {
+			//Don't overwrite lores that have been explicitly set
+			List<String> lore = Lists.newArrayList();
+			for (CustomizableLine line : this.lore) {
+				lore.add(line.generate(vars));
+			}
+			meta.setLore(lore);
+		}
 		
 		stack.setItemMeta(meta);
 	}
