@@ -26,6 +26,7 @@ import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.flag.ValidationException;
 import de.xaniox.heavyspleef.core.floor.Floor;
 import de.xaniox.heavyspleef.core.floor.FloorRegenerator;
+import de.xaniox.heavyspleef.core.floor.FloorRegeneratorFactory;
 import de.xaniox.heavyspleef.core.floor.RegenerationCause;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.core.i18n.Messages;
@@ -85,8 +86,9 @@ public class FlagRegen extends IntegerFlag {
 		@Override
 		public void run() {
 			EditSession session = game.newEditSession();
-			FloorRegenerator regenerator = game.getFloorRegenerator();
-			
+			FloorRegeneratorFactory regeneratorFactory = game.getFloorRegeneratorFactory();
+			FloorRegenerator regenerator = regeneratorFactory.retrieveRegeneratorInstance();
+
 			for (Floor floor : game.getFloors()) {
 				regenerator.regenerate(floor, session, RegenerationCause.OTHER);
 			}

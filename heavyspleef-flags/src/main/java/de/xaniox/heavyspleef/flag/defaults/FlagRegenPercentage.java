@@ -30,6 +30,7 @@ import de.xaniox.heavyspleef.core.flag.Flag;
 import de.xaniox.heavyspleef.core.flag.Inject;
 import de.xaniox.heavyspleef.core.floor.Floor;
 import de.xaniox.heavyspleef.core.floor.FloorRegenerator;
+import de.xaniox.heavyspleef.core.floor.FloorRegeneratorFactory;
 import de.xaniox.heavyspleef.core.floor.RegenerationCause;
 import de.xaniox.heavyspleef.core.game.Game;
 import de.xaniox.heavyspleef.flag.presets.IntegerFlag;
@@ -45,6 +46,7 @@ public class FlagRegenPercentage extends IntegerFlag {
 	
 	@Inject
 	private Game game;
+	private ComponentFloorRegeneratorFactory regeneratorFactory = new ComponentFloorRegeneratorFactory();
 	private ComponentFloorRegenerator regenerator;
 	
 	public FlagRegenPercentage() {
@@ -53,17 +55,25 @@ public class FlagRegenPercentage extends IntegerFlag {
 	
 	@Override
 	public void onFlagAdd(Game game) {
-		game.setFloorRegenerator(regenerator);
+		game.setFloorRegeneratorFactory(regeneratorFactory);
 	}
 	
 	@Override
 	public void onFlagRemove(Game game) {
-		game.setFloorRegenerator(null);
+		game.setFloorRegeneratorFactory(null);
 	}
 	
 	@Override
 	public void getDescription(List<String> description) {
 		description.add("Regenerates only a certain percentage of blocks for each floor in the game");
+	}
+
+	private class ComponentFloorRegeneratorFactory extends FloorRegeneratorFactory {
+
+		@Override
+		public FloorRegenerator retrieveRegeneratorInstance() {
+			return regenerator;
+		}
 	}
 	
 	private class ComponentFloorRegenerator implements FloorRegenerator {

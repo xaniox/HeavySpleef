@@ -37,9 +37,9 @@ import de.xaniox.heavyspleef.core.extension.ExtensionManager;
 import de.xaniox.heavyspleef.core.extension.GameExtension;
 import de.xaniox.heavyspleef.core.flag.AbstractFlag;
 import de.xaniox.heavyspleef.core.flag.FlagManager;
-import de.xaniox.heavyspleef.core.floor.DefaultFloorRegenerator;
 import de.xaniox.heavyspleef.core.floor.Floor;
 import de.xaniox.heavyspleef.core.floor.FloorRegenerator;
+import de.xaniox.heavyspleef.core.floor.FloorRegeneratorFactory;
 import de.xaniox.heavyspleef.core.floor.RegenerationCause;
 import de.xaniox.heavyspleef.core.hook.HookReference;
 import de.xaniox.heavyspleef.core.hook.WorldEditHook;
@@ -102,7 +102,7 @@ public class Game implements VariableSuppliable {
 	private Queue<SpleefPlayer> queuedPlayers;
 	private CountdownTask countdownTask;
 	private StatisticRecorder statisticRecorder;
-	private FloorRegenerator floorRegenerator;
+	private FloorRegeneratorFactory regeneratorFactory;
 	private Queue<Location> spawnLocationQueue;
 	
 	private String name;
@@ -124,7 +124,7 @@ public class Game implements VariableSuppliable {
 		this.deadPlayers = Lists.newArrayList();
 		this.eventBus = heavySpleef.getGlobalEventBus().newChildBus();
 		this.statisticRecorder = new StatisticRecorder(heavySpleef, heavySpleef.getLogger());
-		this.floorRegenerator = new DefaultFloorRegenerator();
+		this.regeneratorFactory = new FloorRegeneratorFactory();
 		this.killedPlayers = Lists.newArrayList();
         this.killedLobbyPlayers = Lists.newArrayList();
 		
@@ -216,16 +216,16 @@ public class Game implements VariableSuppliable {
 		return statisticRecorder;
 	}
 	
-	public FloorRegenerator getFloorRegenerator() {
-		return floorRegenerator;
+	public FloorRegeneratorFactory getFloorRegeneratorFactory() {
+		return regeneratorFactory;
 	}
 	
-	public void setFloorRegenerator(FloorRegenerator regenerator) {
-		if (regenerator == null) {
-			regenerator = new DefaultFloorRegenerator();
+	public void setFloorRegeneratorFactory(FloorRegeneratorFactory regeneratorFactory) {
+		if (regeneratorFactory == null) {
+			regeneratorFactory = new FloorRegeneratorFactory();
 		}
 		
-		this.floorRegenerator = regenerator;
+		this.regeneratorFactory = regeneratorFactory;
 	}
 	
 	public boolean countdown() {
@@ -288,8 +288,9 @@ public class Game implements VariableSuppliable {
 		EditSession editSession = editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
 		
 		// Regenerate all floors
+		FloorRegenerator regenerator = regeneratorFactory.retrieveRegeneratorInstance();
 		for (Floor floor : floors.values()) {
-			floorRegenerator.regenerate(floor, editSession, RegenerationCause.COUNTDOWN);
+			regenerator.regenerate(floor, editSession, RegenerationCause.COUNTDOWN);
 		}
 		
 		// Generate a random spawnpoint
@@ -523,8 +524,9 @@ public class Game implements VariableSuppliable {
 	
 	private void resetGame() {
 		EditSession editSession = editSessionFactory.getEditSession(worldEditWorld, NO_BLOCK_LIMIT);
+		FloorRegenerator regenerator = regeneratorFactory.retrieveRegeneratorInstance();
 		for (Floor floor : floors.values()) {
-			floorRegenerator.regenerate(floor, editSession, RegenerationCause.RESET);
+			regenerator.regenerate(floor, editSession, RegenerationCause.RESET);
 		}
 		
 		blocksBroken.clear();
