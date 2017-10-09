@@ -31,10 +31,7 @@ import de.xaniox.heavyspleef.core.i18n.Messages;
 import de.xaniox.heavyspleef.core.player.SpleefPlayer;
 import de.xaniox.heavyspleef.flag.defaults.FlagScoreboard.GetScoreboardDisplayNameEvent;
 import de.xaniox.heavyspleef.flag.presets.BaseFlag;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -275,16 +272,18 @@ public class FlagBowspleef extends BaseFlag {
 	@SuppressWarnings("deprecation")
 	private void dropBlock(Block block) {
 		Plugin plugin = getHeavySpleef().getPlugin();
-		Location location = block.getLocation();
-		World world = location.getWorld();
+		Location location = block.getLocation().add(0.5D, 0D, 0.5D);
 		
 		if (block.getType() == Material.TNT) {
-			TNTPrimed tntEntity = (TNTPrimed) world.spawnEntity(location.add(0.5, 0, 0.5), EntityType.PRIMED_TNT);
+			World world = location.getWorld();
+
+			TNTPrimed tntEntity = (TNTPrimed) world.spawnEntity(location, EntityType.PRIMED_TNT);
 			tntEntity.setMetadata(BOWSPLEEF_METADATA_KEY, new FixedMetadataValue(plugin, true));
 			tntEntity.setVelocity(new Vector());
 		} else {
 			FallingBlock fallingBlock = block.getWorld().spawnFallingBlock(location, block.getType(), block.getData());
 			fallingBlock.setMetadata(BOWSPLEEF_METADATA_KEY, new FixedMetadataValue(plugin, true));
+			fallingBlock.setDropItem(false);
 		}
 		
 		block.setType(Material.AIR);
