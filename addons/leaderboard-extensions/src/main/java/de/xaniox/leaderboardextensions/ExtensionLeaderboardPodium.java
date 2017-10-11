@@ -316,12 +316,12 @@ public class ExtensionLeaderboardPodium extends GameExtension {
 			entry.getValue().supply(variables, null);
 			variables.add(new Variable("player", entry.getKey()));
 			variables.add(new Variable("rank", i + 1));
-			
-			layout.inflate(sign, variables);
+
 			org.bukkit.material.Sign data = new org.bukkit.material.Sign(Material.WALL_SIGN);
 			data.setFacingDirection(direction.getBlockFace3D());
 			sign.setData(data);
-			sign.update();
+
+			layout.inflate(sign, variables);
 		}
 	}
 	

@@ -288,7 +288,7 @@ public class PlayerStateHolder {
     }
 
     public void setMaxHealth(double maxHealth) {
-        this.maxHealth = maxHealth;
+        this.maxHealth = 20D;
     }
 
     public double getHealth() {
@@ -296,6 +296,8 @@ public class PlayerStateHolder {
 	}
 
 	public void setHealth(double health, double maxHealth) {
+		maxHealth = 20D;
+
 		if (health <= maxHealth) {
 			this.health = health;
 		} else {
